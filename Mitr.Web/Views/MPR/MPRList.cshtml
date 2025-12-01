@@ -1,0 +1,94 @@
+﻿
+@model IList<MPR.MPRList>
+@{
+    var Modify = clsApplicationSetting.GetSessionValue("Modify");
+    string MenuID = "0";
+    if (ViewBag.MenuID != null)
+    {
+        MenuID = ViewBag.MenuID;
+    }
+
+}
+
+<div class="inner-main mb-5 pb-0">
+    @Html.Partial("ListHeader_Partial", "MPR List")
+
+
+
+    <div class="row">
+        <div class="control-section">
+
+            @Html.EJS().Grid("FlatGrid").DataSource((List <MPR.MPRList>)Model).GridLines(Syncfusion.EJ2.Grids.GridLine.Both).Columns(col =>
+       {
+           col.Field("MPRID").Visible(false).Add();
+           col.Field("IsActive").Visible(false).Add();
+           col.Field("Priority").Visible(false).Add();
+           col.Field("RowNum").HeaderText("SNo").Width("50").Add();
+           col.HeaderText("Action").TextAlign(Syncfusion.EJ2.Grids.TextAlign.Center).Template("#tmpAction").Width("100").Add();
+           col.HeaderText("Priority").TextAlign(Syncfusion.EJ2.Grids.TextAlign.Center).Template("#tmpPriority").Width("100").Add();
+
+           col.Field("MPRCode").HeaderText("Code").Width("160").Add();
+           col.Field("MPRName").HeaderText("Name").Width("160").Add();
+           col.Field("State").HeaderText("State").Width("160").Add();
+           col.Field("Project").HeaderText("Project").Width("160").Add();
+           col.Field("Version").HeaderText("Version").Width("160").Add();
+
+
+
+       }).AllowPaging().PageSettings(page => page.PageCount(10)).Created("created").Toolbar(new List<string>() { "Search" }).Render()
+
+
+
+
+
+        </div>
+    </div>
+</div>
+
+<script>
+    function created() {
+        var grid = document.getElementById("FlatGrid").ej2_instances[0];
+        document.getElementById(grid.element.id + "_searchbar").addEventListener('keyup', () => {
+            grid.search(event.target.value)
+        });
+    }
+</script>
+        <script id="tmpPriority" type="text/x-template">
+            ${if('@Modify' === 'True')}
+            <input type="number" onblur="BindPriority(this)" list="MPRList" value="${Priority}" />
+            ${else}
+            ${Priority}
+            ${/if}
+        </script>
+
+
+        <script id="tmpAction" type="text/x-template">
+            ${if('@Modify' === 'True')}
+            <input type="hidden" name="I" value="${MPRID}" />
+            <input type="hidden" name="N" value="${MPRName}" />
+            <a onclick="BindEdit(this)"><i class="fas fa-edit checkgreen" aria-hidden="true"></i> </a>
+
+            ${if(IsActive)}
+            <a title='Click to DeActivate' onclick="BindIsActive(this)" list='MPRList' OP='0' class='AIsActive'> <i class='fa fa-check-circle checkgreen' aria-hidden='true'></i></a>
+            ${else}
+            <a title='Click to Activate' onclick="BindIsActive(this)" list='MPRList' OP='1' class='AIsActive'> <i class='fa fa-times-circle crossred' aria-hidden='true'></i></a>
+            ${/if}
+            ${/if}
+        </script>
+        <script>
+            function ListAdd(ID) {
+				var ID = Number(ID);
+				var MenuID = Number('@MenuID');
+                ShowLoadingDialog();
+                var url = "/MPR/CreateMPR?src=" + EncryptQueryStringJSON(MenuID + "*" + "/MPR/CreateMPR" + "*" + ID);
+                window.location.href = url;
+            }
+            function ListHeaderAdd() {
+                ListAdd(0);
+            }
+
+        </script>
+        @Html.IncludeVersionedJs(Url.Content("~/assets/design/Scripts/SyncScripts.js"))
+
+
+        @(Html.EJS().ScriptManager())

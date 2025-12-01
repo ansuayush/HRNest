@@ -1,0 +1,94 @@
+﻿@model Mitr.Models.SalaryStructure.EmployeeSalary.Add
+@{
+    ViewBag.Title = "EmploymentHistory";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@Html.Partial("HeaderMsg_Partial")
+<div class="inner-main">
+    <h1 class="heading-one">Employment History</h1>
+
+        <div class="row">
+            <div class="col-sm-3 hf-575 form-group">
+                <label class="lbl-abs">From Month</label>
+                @Html.TextBoxFor(model => model.FromDate, new { @class = "form-control actdate h-30", @type = "month" })
+                @Html.ValidationMessageFor(model => model.FromDate, "", new { @class = "text-danger" })
+            </div>
+            <div class="col-sm-3 hf-575 form-group">
+                <label class="lbl-abs">To Month</label>
+                @Html.TextBoxFor(model => model.ToDate, new { @class = "form-control actdate h-30", @type = "month" })
+                @Html.ValidationMessageFor(model => model.ToDate, "", new { @class = "text-danger" })
+            </div>
+
+            <div class="col-sm-3 hf-575 form-group">
+                <button type="button" onclick="GetList()" class="btn mtr-g-grn btn-l ripplelink pull-right" name="Command" value="Add"><i class="fas fa-search" aria-hidden="true"></i> Show</button>
+
+            </div>
+
+            <div class="col-sm-12 form-group">
+                <div id="TagetDiv">
+                </div>
+            </div>
+        </div>
+</div>
+
+
+@section scripts    {
+    @System.Web.Optimization.Scripts.Render("~/bundle/dataTablesjs")
+    <script src="~/assets/design/Scripts/AddInit.js?v=@clsApplicationSetting.GetWebConfigValue("Version")"></script>
+    @System.Web.Optimization.Scripts.Render("~/bundle/unobtrusivejs");
+    <script src="~/assets/tableToExcel.js"></script>
+    <script>
+		$(document).ready(function (id) {
+			debugger;
+            $('#Empid option[value="' + id + '"]').attr("selected", "selected");
+            $('#Empid').trigger('change');
+        });
+        function GetList() {
+
+            var FDate = $("#FromDate").val();
+            var TDate = $("#ToDate").val();
+			//var Emp_id = $("#Empid option:selected").val();
+
+            /*if (Emp_id == "") { Emp_id = 0 }*/
+
+            ShowLoadingDialog();
+            var Src = EncryptQueryStringJSON(@ViewBag.MenuID+"*" + "/Personnel/_EmploymentHistory" + "*" + '0' + "*" + '0')
+                 var menuid =@ViewBag.MenuID;
+                    $.ajax({
+                        url: "/Personnel/_EmploymentHistory",
+                        type: "Get",
+                        async: true,
+                        data: { src: Src, FromDate: FDate, ToDate: TDate },
+                        success: function (data) {
+                            debugger;
+
+                            $("#TagetDiv").empty();
+                            $("#TagetDiv").html(data);
+                            CloseLoadingDialog();
+                        },
+                        error: function (er) {
+                            CloseLoadingDialog();
+                            alert(er);
+
+                        }
+                    });
+
+            
+        }
+       
+        function OnSuccess(obj) {
+            if (obj.Status) {
+                SuccessToaster(obj.SuccessMessage);
+                //  window.location.href = obj.RedirectURL;
+                GetList();
+            }
+            else {
+                CloseLoadingDialog();
+                FailToaster(obj.SuccessMessage);
+
+            }
+		}
+
+
+    </script>
+}

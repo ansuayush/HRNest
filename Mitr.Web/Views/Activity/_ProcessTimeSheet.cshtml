@@ -1,0 +1,224 @@
+﻿@model Mitr.Models.ProcessTimeSheet
+	@{
+	bool BtnVisible = false, IsShowSave = false;
+	BtnVisible = true;
+	if (clsApplicationSetting.GetSessionValue("EMPID") == "0")
+	{
+		BtnVisible = true;
+			//Changes
+	}
+}
+
+<tbody>
+	@{ int count = 0;}
+	@for (int i = 0; i < Model.EmployeeDetails.Count; i++)
+	{
+		count++;
+		if (Model.EmployeeDetails[i].Modify == 0)
+		{
+			<tr>
+				<td>
+					@count
+					@Html.HiddenFor(x => Model.EmployeeDetails[i].IsDataComingFormTimeSheet)
+					@Html.HiddenFor(x => Model.EmployeeDetails[i].EMPID, new { @class = "E" })
+					@Html.HiddenFor(x => Model.EmployeeDetails[i].EMPName, new { @class = "N" })
+				</td>
+				<td class="text-center">
+					@if (Model.EmployeeDetails[i].Checkbox != null)
+					{
+						IsShowSave = true;
+					}
+					<input type="checkbox" class="newwidth chksingle" id="Chksingle_@count" name="@Html.NameFor(x => Model.EmployeeDetails[i].Checkbox)" @(Model.EmployeeDetails[i].Checkbox == null ? "" : "checked") />
+					<label for="Chksingle_@count"></label>
+				</td>
+				<td>
+					@Model.EmployeeDetails[i].EMPCode
+					@Html.HiddenFor(x => Model.EmployeeDetails[i].EMPCode)
+				</td>
+				<td>
+					<a class="anhorEmployeeTimeSheet"><div class="ellipsis fn-bold">@Model.EmployeeDetails[i].EMPName</div> </a>
+				</td>
+				<td class="text-right">
+					@Model.EmployeeDetails[i].PerHourRate
+					@Html.HiddenFor(x => Model.EmployeeDetails[i].PerHourRate)
+				</td>
+				<td class="text-right">
+					@Model.EmployeeDetails[i].AdjHourRate
+					@Html.HiddenFor(x => Model.EmployeeDetails[i].AdjHourRate)
+					@Html.HiddenFor(x => Model.EmployeeDetails[i].hdnAdjHourRate)
+				</td>
+				<td class="text-right">
+					@Model.EmployeeDetails[i].DiffHourRate
+					@Html.HiddenFor(x => Model.EmployeeDetails[i].DiffHourRate)
+					@Html.ValidationMessageFor(x => Model.EmployeeDetails[i].DiffHourRate, "", new { @class = "text-danger" })
+				</td>
+				@for (int K = 0; K < Model.EmployeeDetails[i].ProjectDetails.Count; K++)
+				{
+					if (Model.EmployeeDetails[i].Checkbox == null)
+					{
+						<td class="text-right">
+							@Html.TextBoxFor(model => Model.EmployeeDetails[i].ProjectDetails[K].TH, new { @class = "form-control text-right", @onkeydown = "if(event.key==='.'){event.preventDefault();}", @oninput = "event.target.value = event.target.value.replace(/[^0-9]*/g,'');" })
+
+						</td>
+						<td class="text-right">
+							@Html.TextBoxFor(model => Model.EmployeeDetails[i].ProjectDetails[K].WH, new { @class = "form-control text-right", @onkeydown = "if(event.key==='.'){event.preventDefault();}", @oninput = "event.target.value = event.target.value.replace(/[^0-9]*/g,'');" })
+
+						</td>
+					}
+					else
+					{
+						<td class="text-right">
+							@Html.TextBoxFor(model => Model.EmployeeDetails[i].ProjectDetails[K].TH, new { @class = "form-control text-right", @readonly = "readonly", @onkeydown = "if(event.key==='.'){event.preventDefault();}", @oninput = "event.target.value = event.target.value.replace(/[^0-9]*/g,'');" })
+
+						</td>
+						<td class="text-right">
+							@Html.TextBoxFor(model => Model.EmployeeDetails[i].ProjectDetails[K].WH, new { @class = "form-control text-right", @readonly = "readonly", @onkeydown = "if(event.key==='.'){event.preventDefault();}", @oninput = "event.target.value = event.target.value.replace(/[^0-9]*/g,'');" })
+
+						</td>
+					}
+					<td class="text-right">
+						@(Model.EmployeeDetails[i].ProjectDetails[K].Value != 0 ? string.Format("{0:#,0}", Model.EmployeeDetails[i].ProjectDetails[K].Value) : "")
+
+						@Html.HiddenFor(model => Model.EmployeeDetails[i].ProjectDetails[K].TravelValue)
+						@Html.HiddenFor(model => Model.EmployeeDetails[i].ProjectDetails[K].WorkValue)
+						@Html.HiddenFor(model => Model.EmployeeDetails[i].ProjectDetails[K].Value)
+						@Html.HiddenFor(model => Model.EmployeeDetails[i].ProjectDetails[K].ProjectID)
+						@Html.HiddenFor(model => Model.EmployeeDetails[i].ProjectDetails[K].ProjectName)
+						@Html.HiddenFor(model => Model.EmployeeDetails[i].ProjectDetails[K].hdnPrAdjsutHours)
+					</td>
+				}
+
+
+				<td class="text-right">
+					@Model.EmployeeDetails[i].AL
+					@Html.HiddenFor(x => Model.EmployeeDetails[i].AL)
+					@Html.HiddenFor(x => Model.EmployeeDetails[i].hdnAL)
+
+				</td>
+				<td class="text-right">
+					@Model.EmployeeDetails[i].PaidLeave
+					@Html.HiddenFor(x => Model.EmployeeDetails[i].PaidLeave)
+					@Html.HiddenFor(x => Model.EmployeeDetails[i].hdnPaidLeave)
+				</td>
+				<td class="text-right">
+					@Model.EmployeeDetails[i].Holiday
+					@Html.HiddenFor(x => Model.EmployeeDetails[i].Holiday)
+					@Html.HiddenFor(x => Model.EmployeeDetails[i].hdnHolidayHours)
+
+				</td>
+				<td class="text-right">
+					@Model.EmployeeDetails[i].PaidHours
+					@Html.HiddenFor(x => Model.EmployeeDetails[i].PaidHours)
+
+				</td>
+				<td class="text-right">
+					@Model.EmployeeDetails[i].LWP
+					@Html.HiddenFor(x => Model.EmployeeDetails[i].LWP)
+					@Html.HiddenFor(x => Model.EmployeeDetails[i].hdnLWP)
+
+				</td>
+				<td class="text-right">
+					@Model.EmployeeDetails[i].MonthHours
+					@Html.HiddenFor(x => Model.EmployeeDetails[i].MonthHours)
+				</td>
+				<td class="text-right">
+					@Model.EmployeeDetails[i].OT
+					@Html.HiddenFor(model => Model.EmployeeDetails[i].OT)
+				</td>
+				<td class="text-right">
+					@(Model.EmployeeDetails[i].GrossSalary != 0 ? string.Format("{0:#,0}", Model.EmployeeDetails[i].GrossSalary) : "")
+					@Html.HiddenFor(x => Model.EmployeeDetails[i].GrossSalary)
+				</td>
+			</tr>
+		}
+		else
+		{
+			<tr>
+				<td>@count</td>
+				<td>
+					<input type="checkbox" class="newwidth chksingle" id="Chksingle_@count" name="@Html.NameFor(x => Model.EmployeeDetails[i].Checkbox)" checked="checked" readonly="readonly" />
+					<label for="Chksingle_@count"></label>
+				</td>
+				<td>@Model.EmployeeDetails[i].EMPCode</td>
+				<td>@Model.EmployeeDetails[i].EMPName</td>
+				<td>@Model.EmployeeDetails[i].PerHourRate</td>
+				<td>@Model.EmployeeDetails[i].AdjHourRate</td>
+				<td>@Model.EmployeeDetails[i].DiffHourRate</td>
+
+
+				@for (int K = 0; K < Model.EmployeeDetails[i].ProjectDetails.Count; K++)
+				{
+					<td>
+						@(Model.EmployeeDetails[i].ProjectDetails[K].TH == 0 ? "" : Model.EmployeeDetails[i].ProjectDetails[K].TH.ToString())
+					</td>
+					<td>
+						@(Model.EmployeeDetails[i].ProjectDetails[K].WH == 0 ? "" : Model.EmployeeDetails[i].ProjectDetails[K].WH.ToString())
+
+
+					</td>
+
+					<td>
+						@(Model.EmployeeDetails[i].ProjectDetails[K].Value != 0 ? string.Format("{0:#,0}", Model.EmployeeDetails[i].ProjectDetails[K].Value) : "")
+
+
+					</td>
+				}
+
+				<td>@Model.EmployeeDetails[i].AL</td>
+				<td>@Model.EmployeeDetails[i].PaidLeave</td>
+				<td>@Model.EmployeeDetails[i].Holiday</td>
+				<td>@Model.EmployeeDetails[i].PaidHours</td>
+				<td>@Model.EmployeeDetails[i].LWP</td>
+				<td>@Model.EmployeeDetails[i].MonthHours</td>
+				<td>@Model.EmployeeDetails[i].OT</td>
+				<td>@Model.EmployeeDetails[i].GrossSalary</td>
+			</tr>
+		}
+	}
+
+
+	<tr class="lgt-mtr-o-bg">
+		@*<td></td>*@
+		<td></td>
+		<td></td>
+		<td></td>
+		<td class="text-right"><strong>Total</strong></td>
+		<td></td>
+		<td class="text-right"><strong>@Model.EmployeeDetails.Sum(x => x.AdjHourRate)</strong></td>
+		<td class="text-right"><strong>@Model.EmployeeDetails.Sum(x => x.DiffHourRate)</strong></td>
+
+		@foreach (var item in Model.EmployeeDetails.Select(x => x.ProjectDetails).FirstOrDefault())
+		{
+			var result = Model.EmployeeDetails
+.SelectMany(order => order.ProjectDetails)
+.GroupBy(addon => addon.ProjectID)
+.Select(grouping => new
+{
+Key = grouping.Key,
+TH = grouping.Sum(addon => addon.TH),
+WH = grouping.Sum(addon => addon.WH),
+Value = grouping.Sum(addon => addon.Value),
+ID = grouping.Sum(addon => addon.ProjectID)
+
+});
+
+<td class="text-right"> <strong> @(result.Where(x => x.Key == item.ProjectID).Select(x => x.TH).FirstOrDefault() != 0 ? string.Format("{0:#,0}", result.Where(x => x.Key == item.ProjectID).Select(x => x.TH).FirstOrDefault()) : "")</strong> </td>
+<td class="text-right"> <strong>@(result.Where(x => x.Key == item.ProjectID).Select(x => x.WH).FirstOrDefault() != 0 ? string.Format("{0:#,0}", result.Where(x => x.Key == item.ProjectID).Select(x => x.WH).FirstOrDefault()) : "") </strong></td>
+<td class="text-right"> <strong> @(result.Where(x => x.Key == item.ProjectID).Select(x => x.Value).FirstOrDefault() != 0 ? string.Format("{0:#,0}", result.Where(x => x.Key == item.ProjectID).Select(x => x.Value).FirstOrDefault()) : "") </strong></td>
+
+
+
+}
+
+		<td class="text-right"><strong>@Model.EmployeeDetails.Sum(x => x.AL)</strong></td>
+		<td class="text-right"><strong>@Model.EmployeeDetails.Sum(x => x.PaidLeave)</strong></td>
+		<td class="text-right"><strong>@Model.EmployeeDetails.Sum(x => x.Holiday)</strong></td>
+		<td class="text-right"><strong>@Model.EmployeeDetails.Sum(x => x.PaidHours)</strong></td>
+		<td class="text-right"><strong>@Model.EmployeeDetails.Sum(x => x.LWP)</strong></td>
+		<td class="text-right"><strong>@Model.EmployeeDetails.Sum(x => x.MonthHours)</strong></td>
+		<td class="text-right"><strong>@Model.EmployeeDetails.Sum(x => x.OT)</strong></td>
+		<td class="text-right"><strong>@Model.EmployeeDetails.Sum(x => x.GrossSalary)</strong></td>
+
+
+	</tr>
+</tbody>

@@ -1,0 +1,888 @@
+﻿@model Mitr.Models.CreateTravelRequest
+
+<h1 class="heading-one mb-0">Travel Request  </h1>
+<ul class="list-unstyled trl-rq">
+	@if (Model.TravelRequest.reqno != null)
+	{
+		<li>Request No : @Model.TravelRequest.reqno</li>
+	}
+	else
+	{
+		<li>Request No : @Model.TravelRequest.req_no</li>
+	}
+
+	<li>Request Date : @Convert.ToDateTime(Model.TravelRequest.req_date).ToString("dd-MMM-yyyy") </li>
+</ul>
+@Html.Partial("TravelHeader_Partial")
+
+@using (Ajax.BeginForm("CreateRequest", "Travel",
+		  new { src = clsApplicationSetting.EncryptQueryString(ViewBag.MenuID.ToString() + "*/Travel/CreateRequest*" + ViewBag.TravelREQID + "*" + ViewBag.RequestType) },
+		  new AjaxOptions { HttpMethod = "POST", OnSuccess = "ActionOnSuccess", OnFailure = "ActionOnSuccess" },
+	  new { @id = "CreateRequestFrom", enctype = "multipart/form-data" })
+	  )
+{
+	@Html.AntiForgeryToken()
+	@Html.ValidationSummary(false, "", new { @class = "text-danger" })
+	@Html.HiddenFor(model => model.TravelRequest.req_no)
+	@Html.HiddenFor(model => model.TravelRequest.req_date)
+	@Html.HiddenFor(model => model.TravelRequest.submited)
+	
+	<div class="shadow-box pt-4 trlbox TRStep1">
+		<div class="row mb-0">
+			<div class="col-sm-10 mx-auto">
+				@if (@ViewBag.RequestType == "Amendment" && (Model.TravelRequest.ApprovedStatus > 0))
+				
+				{
+					@Html.HiddenFor(model => model.TravelRequest.ApprovedStatus)
+					<div class="row">
+						<div class="col-lg-2 form-group">
+							<label>Nature Of Amendment<sup class="red-clr">*</sup> </label>
+							@{
+								List<SelectListItem> AmedTypeList = new List<SelectListItem>
+																												{
+												new SelectListItem{Text="Select",Value="" },
+								new SelectListItem{Text="Purpose",Value="Purpose" },
+								new SelectListItem{Text="Travel Date",Value="Travel Date" },
+								new SelectListItem{Text="Travel City",Value="Travel City" },
+									new SelectListItem{Text="All",Value="All" }
+								};
+							}
+							@*@Html.DropDownListFor(model => model.TravelRequest.AmendmentType, new SelectList(AmedTypeList, "Value", "text", Model.TravelRequest.AmendmentType), new { @class = "form-control applyselect" })*@
+							@Html.DropDownListFor(model => model.TravelRequest.AmendmentType, new SelectList(AmedTypeList, "Value", "text", Model.TravelRequest.AmendmentType), new { @class = "form-control " })
+						</div>
+						<div class="col-lg-5 col-md-5 col-sm-5 form-group">
+							<label>Reason for Amendment <sup class="red-clr">*</sup> </label>
+
+							@Html.TextBoxFor(model => model.TravelRequest.ReasonAmendment, new { @class = "form-control", @placeholder = "Enter" })
+							@Html.ValidationMessageFor(model => model.TravelRequest.ReasonAmendment, "", new { @class = "text-danger" })
+						</div>
+					</div>
+
+
+				}
+				<div class="row mbthrclm">
+
+
+					<div class="col-lg-4 col-md-4 col-sm-4 form-group">
+						<label>Name of Traveller</label>
+						<div id="dividtraveller" class="">
+							<select class="form-control applyselect" id="@Html.IdFor(model => model.TravelRequest.traveller_name)" name="@Html.NameFor(model => model.TravelRequest.traveller_name)">
+								<option value="">Select</option>
+								@if (Model.TravellerNameList != null)
+								{
+									foreach (var item in Model.TravellerNameList)
+									{
+										if (Model.TravelRequest.TravelRequestID == 0)
+										{
+											<option @(item.EmpID == "E" + clsApplicationSetting.GetSessionValue("EMPID") ? "selected" : "") emp_type="@item.EmpType" value="@item.EmpID#@item.EmpType#@item.EmpCode">@item.EmpCode</option>
+										}
+										else
+										{
+											<option @(item.EmpID == "E" + Model.TravelRequest.emp_id.ToString() ? "selected" : "") emp_type="@item.EmpType" value="@item.EmpID#@item.EmpType#@item.EmpCode">@item.EmpCode</option>
+										}
+									}
+								}
+							</select>
+						</div>
+
+						@Html.ValidationMessageFor(model => model.TravelRequest.traveller_name, "", new { @class = "text-danger" })
+						@Html.HiddenFor(model => model.TravelRequest.emp_type)
+					</div>
+					<div class="col-lg-5 col-md-5 col-sm-5 form-group">
+						<label>Purpose</label>
+
+						@Html.TextBoxFor(model => model.TravelRequest.purpofvisit, new { @class = "form-control", @placeholder = "Enter" })
+						@Html.ValidationMessageFor(model => model.TravelRequest.purpofvisit, "", new { @class = "text-danger" })
+					</div>
+					<div class="col-lg-3 col-md-3 col-sm-3 form-group pr">
+						<label>Travel Type @*@Model.TravelRequest.TravelType*@</label>
+						@{
+							List<SelectListItem> TravelTypeList = new List<SelectListItem>
+																																																																																																	{
+			new SelectListItem{Text="Official",Value="Offical" },
+			new SelectListItem{Text="Sponsored",Value="Sponsored" }
+			};
+						}
+						<div id="dvdtrvelertype">
+							@Html.DropDownListFor(model => model.TravelRequest.TravelType, new SelectList(TravelTypeList, "Value", "text", Model.TravelRequest.TravelType), new { @class = "form-control applyselect" })
+						</div>
+
+						@Html.ValidationMessageFor(model => model.TravelRequest.TravelType, "", new { @class = "text-danger" })
+
+						<div class="drop-pophr OfficalDiv" style="@(string.IsNullOrEmpty(Model.TravelRequest.TravelType) || Model.TravelRequest.TravelType=="Offical"?"display:none":"")" data-toggle="dropdown"><i class="fas fa-info-circle"></i></div>
+						<div class="dropdown-menu" role="menu">
+							<ul class="list-unstyled text-clr tr-pophover p-2 SponsoredU">
+								<li><strong>Sponsor's Name</strong> <span></span></li>
+								<li><strong>Attachment</strong> <span> </span></li>
+								<li><strong>Tickets to be booked </strong> <span></span></li>
+								<li><strong> Hotel to be booked</strong> <span></span></li>
+							</ul>
+						</div>
+
+
+					</div>
+					<div class="col-sm-12">
+						<div class="table-responsive">
+							<table id="tblProjects" class="table table-striped mt-0 mb-2">
+								<thead>
+									<tr>
+										<th width="45">S. No.</th>
+										<th width="150">Project Name</th>
+										<th>Cost Centre</th>
+										<th width="50" class="text-center">Action</th>
+									</tr>
+								</thead>
+								<tbody>
+									@{ int procount = 0;}
+									@if (Model.ProjectList_Travel != null)
+									{
+										for (int i = 0; i < Model.ProjectList_Travel.Count; i++)
+										{
+											procount++;
+											<tr>
+												<td class="hfmapprojectId">
+													@Html.HiddenFor(modal => modal.ProjectList_Travel[i].MapProjectID)
+													<label id="span_@procount" name="span_@procount">@procount </label>
+													<input type="hidden" id="CostCenterandItem_@procount" Name="CostCenterandItem" value="@(Model.ProjectList_Travel[i].ProjectID + "#" + Model.ProjectList_Travel[i].proReqDet_ID + "")" />
+												</td>
+												<td>
+													@Model.ProjectList_Travel[i].Proj_name
+													@Html.HiddenFor(modal => modal.ProjectList_Travel[i].ProjectID)
+													@Html.HiddenFor(modal => modal.ProjectList_Travel[i].Proj_name)
+												</td>
+												<td class="hfproReqdetid">
+													@Html.HiddenFor(modal => modal.ProjectList_Travel[i].proReqDet_ID)
+													@Model.ProjectList_Travel[i].costcenter_Name
+													@Html.HiddenFor(modal => modal.ProjectList_Travel[i].costcenter_Name)
+
+
+												</td>
+												<td class="text-center">
+													<a class='text-center dellineitem' onclick="DeleteProjectItemList(this)" data-toggle='tooltip' data-original-title='Remove'> <i class='fas fa-window-close red-clr'></i></a>
+												</td>
+											</tr>
+										}
+									}
+
+								</tbody>
+							</table>
+							
+
+						</div>
+						<span class="red-clr">Note: -</span> Maximum 3 projects can be added in a request
+
+							<div class="text-right green-clr NewAddProject">
+								<strong><a class="fn-md btn green-clr m-0" data-toggle="modal" data-target="#ModalProject"> <i class="fas fa-plus"></i> Add</a></strong>
+							</div>
+					</div>
+
+
+					@if (Model.TravelRequest.submited == 1 && @ViewBag.RequestType != "Amendment")
+					{
+						<div class="col-lg-6 col-md-6 col-sm-6 form-group">
+							<label>Reason</label>
+							@Html.TextAreaFor(model => model.TravelRequest.reason, new { @class = "form-control" })
+							@Html.ValidationMessageFor(model => model.TravelRequest.reason, "", new { @class = "text-danger" })
+						</div>
+						<div class="col-lg-6 col-md-6 col-sm-6 form-group">
+							<label>User Remarks</label>
+							@Html.TextAreaFor(model => model.TravelRequest.user_remarks, new { @class = "form-control" })
+							@Html.ValidationMessageFor(model => model.TravelRequest.user_remarks, "", new { @class = "text-danger" })
+						</div>
+					}
+					else
+					{
+						@Html.HiddenFor(model => model.TravelRequest.reason)
+						@Html.HiddenFor(model => model.TravelRequest.user_remarks)
+					}
+
+
+
+					<div class="col-sm-12">
+						<div class="radiotab">
+							<input type="radio" name="@Html.NameFor(model => model.TravelRequest.TripType)" id="roundtrip" value="RoundTrip" @(string.IsNullOrEmpty(Model.TravelRequest.TripType) ? "checked" : Model.TravelRequest.TripType == "RoundTrip" ? "checked" : "") />
+							<label for="roundtrip" class="radiotablist">Round Trip</label>
+							<input type="radio" name="@Html.NameFor(model => model.TravelRequest.TripType)" id="multiplecity" value="MultiCity" @(Model.TravelRequest.TripType == "MultiCity" ? "checked" : "") />
+							<label for="multiplecity" class="radiotablist">Multi City</label>
+							@Html.Hidden("hdfTriptype", Model.TravelRequest.TripType)
+							<div class="content roundtrip">
+								<ul class="list-unstyled src-location">
+
+									<li>
+										<span class="swipCircle "><i class="fas fa-exchange-alt mtr-o-clr"></i></span>
+										<label for="tocity">
+											<i class="fas fa-map-marker-alt"></i>From
+
+											@Html.DropDownListFor(n => n.TravelRequest.FromCity, new SelectList(Model.CityList, "CityID", "CityName", Model.TravelRequest.FromCity), "Select City",
+											new { @class = "form-control  applyselect" })
+
+											@Html.ValidationMessageFor(model => model.TravelRequest.FromCity, "", new { @class = "text-danger" })
+										</label>
+									</li>
+
+									<li>
+										<label for="tocity">
+											<i class="fas fa-map-marker-alt"></i>Destination
+
+											@Html.DropDownListFor(n => n.TravelRequest.ToCity, new SelectList(Model.CityList, "CityID", "CityName", Model.TravelRequest.ToCity), "Select City",
+											new { @class = "form-control  applyselect" })
+
+											@Html.ValidationMessageFor(model => model.TravelRequest.ToCity, "", new { @class = "text-danger" })
+										</label>
+									</li>
+									<li>
+										<label for="tocity">
+											<i class="fas fa-calendar-alt"></i>Departure
+											@Html.TextBoxFor(model => model.TravelRequest.DepartureDate, new { @class = "p-0 font-lg txtDate", @type = "date", onchange = "checkdeptDate()" })
+											@Html.ValidationMessageFor(model => model.TravelRequest.DepartureDate, "", new { @class = "text-danger" })
+										</label>
+									</li>
+									<li>
+										<label for="tocity">
+											<span class="lbl_input latoBold  appendBottom5"><i class="fas fa-calendar-alt"></i>Return</span>
+											@Html.TextBoxFor(model => model.TravelRequest.ReturnDate, new { @class = "p-0 font-lg", @type = "date", onchange = "checkRetDate()" })
+
+											@Html.ValidationMessageFor(model => model.TravelRequest.ReturnDate, "", new { @class = "text-danger" })
+										</label>
+									</li>
+
+								</ul>
+							</div>
+
+							<div class="content multiplecity UlMulticity">
+								@if (Model.MultipleCityList != null)
+								{
+									int multiCityCount = 0;
+									for (int i = 0; i < Model.MultipleCityList.Count; i++)
+									{
+										multiCityCount++;
+										@Html.HiddenFor(n => Model.MultipleCityList[i].ID)
+										<ul class="list-unstyled src-location">
+											<li id="divfromcity" class="hdftrdetid">
+												<input type="hidden" value="@Model.MultipleCityList[i].ID" id="hdftrveldetid" name="hdftravelname" />
+												<label for="tocity">
+
+
+
+													<i class="fas fa-map-marker-alt"></i>From
+
+													@Html.DropDownListFor(n => Model.MultipleCityList[i].FromCity, new SelectList(Model.CityList, "CityID", "CityName", Model.MultipleCityList[i].FromCity), "Select City",
+											new { @class = "form-control  applyselect ddmultiFromCity" })
+
+
+
+													@Html.ValidationMessageFor(model => Model.MultipleCityList[i].FromCity, "", new { @class = "text-danger" })
+
+												</label>
+											</li>
+											<li id="divdestcity" class="">
+												<label>
+
+													<i class="fas fa-map-marker-alt"></i>Destination
+													@Html.DropDownListFor(n => Model.MultipleCityList[i].ToCity, new SelectList(Model.CityList, "CityID", "CityName", Model.MultipleCityList[i].ToCity), "Select City",
+													new { @class = "form-control  applyselect ddmultiToCity", onchange = "checkdestmulti(this)" })
+													@Html.ValidationMessageFor(model => Model.MultipleCityList[i].ToCity, "", new { @class = "text-danger" })
+
+												</label>
+											</li>
+											<li id="divdestdate">
+												<label>
+													<i class="fas fa-calendar-alt"></i>Departure
+													@Html.TextBoxFor(model => Model.MultipleCityList[i].DepartureDate, new { @class = "p-0 font-lg departuredate", @type = "date", onchange = "checkdeptMUlDate(this)" })
+													@Html.ValidationMessageFor(model => Model.MultipleCityList[i].DepartureDate, "", new { @class = "text-danger" })
+
+												</label>
+
+											</li>
+											<li id="divrtndate" class="addcitymore">
+												@if (Model.MultipleCityList.Count == 1)
+												{
+													<a class="btn mtr-g-grn btn-l ripplelink btnAddRowMulti">+ ADD ANOTHER CITY</a>
+												}
+												else if (Model.MultipleCityList.Count == multiCityCount)
+												{
+													<div id="divmulcity">
+														<a class="btn mtr-g-grn btn-l ripplelink btnAddRowMulti">+ ADD ANOTHER CITY</a>
+														<a onclick="DeleteRow(this)" class="remove" data-toggle="tooltip" data-original-title="Remove"><i class="fas fa-window-close red-clr" aria-hidden="true"></i></a>
+													</div>
+
+												}
+											</li>
+										</ul>
+									}
+
+								}
+							</div>
+						</div>
+					</div>
+					<div class="col-sm-12 text-center mt-4">
+						<button type="button" class="btn cnl-btn ripplelink  pull-right" onclick="ShowLoadingDialog();window.location='@Url.Action("TravelDashboard", new { src = clsApplicationSetting.EncryptQueryString(ViewBag.MenuID.ToString() + "*/Travel/TravelDashboard") })';"><i class="fas fa-times"></i> Cancel</button>
+
+						@if (@ViewBag.RequestType == "Amendment")
+						{
+							<button type="submit" class="btn mtr-o-grn ripplelink" name="Command" value="Amendment">Submit <i class="fas fa-angle-double-right m-0"></i></button>
+						}
+						else
+						{
+							<button type="submit" class="btn mtr-o-grn ripplelink" name="Command" value="Add">Next <i class="fas fa-angle-double-right m-0"></i></button>
+						}
+
+					</div>
+
+				</div>
+			</div>
+		</div>
+	</div>
+
+
+
+
+	<!--- Add Cost Centre step 1 --->
+	<div class="modal fade pop-dgn" id="ModalProject">
+		<div class="modal-dialog modal-lg">
+			<div class="modal-content">
+				<div class="modal-header blk-gdn-btn">
+					<h4 class="modal-title"><i class="fas fa-plus"></i>Add Cost Centre & Line Item</h4>
+					<div class="close" data-dismiss="modal">&times;</div>
+				</div>
+				<div class="modal-body">
+					<div class="row">
+						<div class="col-md-4 col-sm-4 form-group">
+							<label>Projects</label>
+							<select class="form-control applyselect" id="ddProjectDropdown" name="ddProjectDropdown">
+								<option value="">Select</option>
+								@foreach (var item in Model.Projects_Dropdown)
+								{
+									@*<option value="@item.ID">@item.ProjectRefNo (@item.ProjectName)</option>*@
+									<option value="@item.ID">@item.ProjectRefNo @item.ProjectName</option>
+								}
+							</select>
+						</div>
+						<div class="col-md-8 col-sm-8 form-group">
+							<label>Line Item</label>
+							<select class="form-control applyselect" id="ddProjectDetailDropdown" name="ddProjectDetailDropdown">
+								<option value="">Select</option>
+								@*<option value="1">Travel002-001-001</option>
+									<option value="2">Travel002-001-002</option>
+									<option value="3">Travel002-001-003</option>
+									<option value="4">Travel002-002-001</option>
+									<option value="5">Travel002-002-002</option>
+									<option value="6">Travel002-002-003</option>
+									<option value="7">Travel002-002-004</option>
+									<option value="8">Travel002-003-001</option>
+									<option value="9">Travel002-003-002</option>
+									<option value="10">Travel002-003-003</option>
+									<option value="11">Travel002-004-001</option>
+									<option value="12">Travel002-004-002</option>
+									<option value="13">Travel002-004-003</option>
+									<option value="14">Travel002-004-004</option>
+									<option value="15">Travel002-005-001</option>
+									<option value="16">Travel002-005-002</option>
+									<option value="17">Travel002-005-003</option>*@
+							</select>
+						</div>
+
+						<div class="col-md-12 form-group text-center">
+							<a class="btn mtr-g-grn btn-l ripplelink btnSaveProject"> <i class="fa fa-plus"></i> Add </a>
+							<button type="button" class="btn cnl-btn btn-l ripplelink" data-dismiss="modal"><i class="fas fa-times"></i> Close</button>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+
+	<!-- Sponsorship Details  Step 1-->
+	<!-- TASK Modal -->
+	<div class="modal fade pop-dgn" id="SponsoredModal">
+		<div class="modal-dialog mdl-sm">
+			<div class="modal-content">
+
+				<!-- Modal Header -->
+				<div class="modal-header blk-gdn-btn">
+					<h4 class="modal-title">Sponsorship Details</h4>
+					<div class="close" data-dismiss="modal">&times;</div>
+				</div>
+
+				<!-- Modal body -->
+				<div class="modal-body">
+					<div class="row">
+						<div class="col-sm-6 form-group">
+							<label>Sponsor's Name</label>
+							@Html.TextBoxFor(model => model.TravelRequest.TripSponsorName, new { @class = "form-control" })
+							@Html.ValidationMessageFor(model => model.TravelRequest.TripSponsorName, "", new { @class = "text-danger" })
+						</div>
+						<div class="col-sm-6 form-group">
+							<label>Attachment</label>
+							@Html.HiddenFor(modal => modal.TravelRequest.SponsorAttachID)
+							<div class="divAttachmentShow" style="@(Model.TravelRequest.SponsorAttachID > 0 ? "" : "display:none")">
+
+								<a class="achor-link" target="_blank" href="~/Attachments/@Model.TravelRequest.SponsorAttachID@Model.TravelRequest.ContentType">@Model.TravelRequest.FileName</a>
+
+								<a style="color:red;cursor:pointer;" onclick="DeleteMyFile(this);"><i class="fa fa-times" aria-hidden="true"></i></a>
+
+							</div>
+
+							<div class="divAttachmentUpload" style="@(Model.TravelRequest.SponsorAttachID > 0 ? "display:none" : "")">
+								@Html.TextBoxFor(model => model.TravelRequest.UploadFile, new { @class = "form-control", @type = "file" })
+								@Html.ValidationMessageFor(model => model.TravelRequest.UploadFile, "", new { @class = "text-danger" })
+							</div>
+						</div>
+						<div class="col-sm-6">
+							<input type="checkbox" id="vr1" name="@Html.NameFor(model => model.TravelRequest.IsTicketToBeBooked)" @(Model.TravelRequest.IsTicketToBeBooked == "True" ? "checked" : "")>
+							<label for="vr1" class="m-0"> <strong>Tickets to be booked</strong></label>
+						</div>
+						<div class="col-sm-6">
+							<input type="checkbox" id="vr2" name="@Html.NameFor(model => model.TravelRequest.IsHotelToBeBooked)" @(Model.TravelRequest.IsHotelToBeBooked == "True" ? "checked" : "")>
+							<label for="vr2" class="m-0"> <strong>Hotel to be booked</strong></label>
+						</div>
+					</div>
+					<div class="mt-4 text-center">
+						<button type="button" class="btn mtr-o-grn ripplelink" id="SponsorBtnSave"><i class="fas fa-save"></i>Save</button>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+}
+
+
+@section scripts    {
+
+	@System.Web.Optimization.Scripts.Render("~/bundle/unobtrusivejs")
+	<script src="~/assets/design/Scripts/AddInit.js?v=@clsApplicationSetting.GetWebConfigValue("Version")"></script>
+	<script src="~/assets/design/Scripts/PagesJS/CreateTravelRequest.js?v=@clsApplicationSetting.GetWebConfigValue("Version")"></script>
+
+	<script>
+
+		$(document).ready(function () {
+			FillSponsoredHower();
+
+			var RequestType = '@ViewBag.RequestType';
+			if (RequestType == "Amendment") {
+				$('input[id=roundtrip]').attr("disabled", true);
+				$(".dellineitem").addClass("d-none ");
+				$(".NewAddProject").hide();
+				if ($("#hdfTriptype").val() == "RoundTrip") {
+					var x = document.getElementById("multiplecity");
+					x.checked = true;
+				}
+
+			}
+		});
+
+		// check past date
+		function checkdestmulti(obj) {
+
+			debugger;
+			var tocityid = parseInt ($(obj).val());
+			var fromcityid = parseInt($('#MultipleCityList_0__FromCity').val());
+			if (tocityid == fromcityid) {
+				$(".addcitymore").hide();
+			}
+			else {
+				$(".addcitymore").show();
+			}
+		}
+
+		// past date code
+
+		//function checkdeptMUlDate(obj) {
+
+		//	var datetext = $(obj).val();
+		//	var selectedDate = new Date(datetext);
+		//	var now = new Date();
+		//	if (selectedDate < now) {
+		//		var currentdate = now.getDate();
+		//		var selectchkdate = selectedDate.getDate();
+		//		if (selectchkdate < currentdate) {
+		//			$(obj).val("");
+		//		}
+
+		//	}
+		//}
+
+		//function checkdeptDate() {
+
+		//	var selectedText = document.getElementById('TravelRequest_DepartureDate').value;
+		//	var selectedDate = new Date(selectedText);
+		//	var now = new Date();
+		//	if (selectedDate < now) {
+		//		var currentdate = now.getDate();
+		//		var selectchkdate = selectedDate.getDate();
+		//		if (selectchkdate < currentdate) {
+		//			document.getElementById('TravelRequest_DepartureDate').value = "";
+		//		}
+
+		//	}
+		//}
+		//function checkRetDate() {
+
+		//	var selectedText = document.getElementById('TravelRequest_ReturnDate').value;
+		//	var selectedDate = new Date(selectedText);
+		//	var textboxdate = Date.parse(selectedDate);
+		//	var now = new Date();
+		//	if (selectedDate < now) {
+		//		var currentdate = now.getDate();
+		//		var selectchkdate = selectedDate.getDate();
+		//		if (selectchkdate < currentdate) {
+		//			document.getElementById('TravelRequest_ReturnDate').value = "";
+		//		}
+
+		//	}
+
+		//}
+		// Bind On Click To Show Next
+		$("#TravelRequest_FromCity").on("change", function () {
+			var a = $(this).find("option:selected").val();
+			if (a != "") {
+				$('#TravelRequest_ToCity').select2('open');
+			}
+		});
+
+		$(".ddmultiFromCity").on("change", function () {
+			debugger;
+			var a = $(this).find("option:selected").val();
+			if (a != "") {
+				$(this).closest('ul').find("select.ddmultiToCity").select2('open');
+			}
+		});
+
+		$("#TravelRequest_ToCity").on("change", function () {
+			var a = $(this).find("option:selected").val();
+			if (a != "") {
+				$(this).select2().trigger("select2:close");
+				$("#TravelRequest_DepartureDate").focus().click();
+
+			}
+		});
+
+
+		function DeleteMyFile(obj) {
+			ConfirmMsgBox('Do you really Want to Change Attachemnt?', '', function () {
+				$(obj).closest("div").find('div.divAttachmentUpload').show();
+				$(obj).closest("div").find('div.divAttachmentShow').hide();
+				$(obj).closest("div").find('input[type="hidden').val("0")
+			});
+		}
+		//TravelRequest.AmendmentType
+
+		$("#TravelRequest_AmendmentType").on("change", function () {
+
+
+			var AmendmentName =$("#TravelRequest_AmendmentType").val();
+			if (AmendmentName == "Purpose") {
+				$('input[id=roundtrip]').attr("disabled", true);
+				$('#dividtraveller').addClass("trvsltdisable");
+				$('#dvdtrvelertype').addClass("trvsltdisable");
+				$('#TravelRequest_purpofvisit').attr('readonly', false);
+				$(".dellineitem").addClass("d-none ");
+				$(".NewAddProject").hide();
+				$("#divmulcity").hide();
+				$('#divfromcity ').addClass("trvsltdisable");
+				$('#divdestcity ').addClass("trvsltdisable");
+				$('#divdestdate ').addClass("trvsltdisable");
+				$('#divrtndate ').addClass("trvsltdisable");
+				$('.departuredate').attr('readonly', true);
+
+			}
+			else if (AmendmentName == "Travel Date") {
+				$('input[id=roundtrip]').attr("disabled", true);
+				$('#dividtraveller').addClass("trvsltdisable");
+				$('#dvdtrvelertype').addClass("trvsltdisable");
+				$(".dellineitem").addClass("d-none ");
+				$(".NewAddProject").hide();
+				$('#TravelRequest_purpofvisit').attr('readonly', true);
+				$("#divmulcity").hide();
+				$('#divfromcity ').addClass("trvsltdisable");
+				$('#divdestcity ').addClass("trvsltdisable");
+				$('#divdestdate ').removeClass("trvsltdisable");
+				$('#divrtndate ').removeClass("trvsltdisable");
+				$('.departuredate').attr('readonly', false);
+
+			}
+			else if (AmendmentName == "Travel City") {
+				$('input[id=roundtrip]').attr("disabled", true);
+				$('#dividtraveller').addClass("trvsltdisable");
+				$('#dvdtrvelertype').addClass("trvsltdisable");
+				$('#TravelRequest_purpofvisit').attr('readonly', true);
+				$(".dellineitem").addClass("d-none ");
+				$(".NewAddProject").hide();
+				$("#divmulcity").hide();
+
+				$('#divfromcity ').removeClass("trvsltdisable");
+				$('#divdestcity ').removeClass("trvsltdisable");
+				$('#divdestdate ').addClass("trvsltdisable");
+				$('#divrtndate ').addClass("trvsltdisable");
+				$('.departuredate').attr('readonly', true);
+			}
+			else
+			{
+				$('input[id=roundtrip]').attr("disabled", true);
+				$('#dividtraveller').removeClass("trvsltdisable");
+				$('#dvdtrvelertype').removeClass("trvsltdisable");
+				$('#TravelRequest_purpofvisit').attr('readonly', false);
+				$(".dellineitem").addClass("d-none ");
+				$(".NewAddProject").hide();
+				$("#divmulcity").show();
+				$('#divfromcity ').removeClass("trvsltdisable");
+				$('#divdestcity ').removeClass("trvsltdisable");
+				$('#divdestdate ').removeClass("trvsltdisable");
+				$('#divrtndate ').removeClass("trvsltdisable");
+				$('.departuredate').attr('readonly', false);
+			}
+
+		});
+		$("#TravelRequest_TravelType").on("change", function () {
+			$modal = $('#SponsoredModal');
+			if ($(this).val() === 'Sponsored') {
+				$modal.modal('show');
+				$(".OfficalDiv").show();
+			}
+			else {
+				$(".OfficalDiv").hide();
+			}
+		});
+
+		$(document).ready(function () {
+
+			$("#btn2").click(function () {
+				$("#addrow").append("<ul class='list-unstyled src-location'><li><label for='tocity'><span class=''><i class='fas fa-map-marker-alt'></i>From</span><select class='dpselect'><option>Select Destination</option><option>Gujrat</option><option>Goa</option><option>Delhi</option></select></li><li><label for='tocity'><span class=''><i class='fas fa-map-marker-alt'></i>Destination</span><select class='dpselect'><option>Select Destination</option><option>Gujrat</option><option>Goa</option><option>Delhi</option></select></li><li><label for='tocity'><span class=''><i class='fas fa-calendar-alt'></i>Departure</span><input type='date' class='p-0 font-lg'  value='' placeholder='Select Date'></label></label></li><li></li></ul>");
+			});
+		});
+
+		$('.btnAddRowMulti').on('click', function (e) {
+			e.preventDefault();
+			e.stopPropagation();
+			AddNewRow();
+		});
+
+		function AddNewRow() {
+			debugger;
+			var LastTRCount = parseInt($('.UlMulticity').find("ul").length) - 1;
+			$('.applyselect').select2("destroy");
+			var $tableBody = $('.UlMulticity').find("ul:last"),
+				$trLast = $tableBody,
+				$trNew = $trLast.clone();
+			$trLast.find("li:last").html('');
+
+			$trNew.find("li:last").html('<a class="btn mtr-g-grn btn-l ripplelink btnAddRowMulti">+ ADD ANOTHER CITY</a> <a onclick="DeleteRow(this)" class="remove" data-toggle="tooltip" data-original-title="Remove"><i class="fas fa-window-close red-clr" aria-hidden="true"></i></a>')
+			$trNew.find("input").each(function (i) {
+				$(this).attr({
+					'id': function (_, name) { return name.replace('_' + LastTRCount + '_', '_' + (parseInt(LastTRCount) + 1) + '_'); },
+					'name': function (_, name) { return name.replace('[' + LastTRCount + ']', '[' + (parseInt(LastTRCount) + 1) + ']'); },
+				});
+				$(this).val('')
+			});
+
+			$trNew.find("select").each(function (i) {
+
+				$(this).attr({
+					'id': function (_, name) { return name.replace('_' + LastTRCount + '_', '_' + (parseInt(LastTRCount) + 1) + '_'); },
+					'name': function (_, name) { return name.replace('[' + LastTRCount + ']', '[' + (parseInt(LastTRCount) + 1) + ']'); },
+				});
+				$(this).val('');
+
+
+			});
+			$trNew.find("span").each(function (i) {
+				if ($(this).attr("data-valmsg-for")) {
+					$(this).attr({
+						'data-valmsg-for': function (_, name) { return name.replace('[' + LastTRCount + ']', '[' + (parseInt(LastTRCount) + 1) + ']'); }
+					});
+				}
+				if ($(this).attr("for")) {
+					$(this).attr({
+						'for': function (_, name) { return name.replace('_' + LastTRCount + '_', '_' + (parseInt(LastTRCount) + 1) + '_'); }
+					});
+				}
+			});
+
+			$trLast.after($trNew);
+			var form = $("#CreateRequestFrom").closest("form");
+			form.removeData('validator');
+			form.removeData('unobtrusiveValidation');
+			$.validator.unobtrusive.parse(form);
+			$('[data-toggle="tooltip"]').tooltip();
+			$('.btnAddRowMulti').on('click', function (e) {
+				e.preventDefault();
+				e.stopPropagation();
+				AddNewRow();
+			});
+			$(".applyselect").select2();
+		}
+
+
+		function DeleteRow(obj) {
+	
+
+			var id = parseInt($(obj).closest('ul').find("li.hdftrdetid input[type='hidden']").val());
+			if (isNaN(id)) {
+				ConfirmMsgBox("Are you sure want to delete", '', function () {
+
+					$(obj).closest('ul').remove();
+					var LastCount = parseInt($('.UlMulticity').find("ul").length);
+					if (LastCount == 1) {
+						$('.UlMulticity').find("li:last").html('<a class="btn mtr-g-grn btn-l ripplelink btnAddRowMulti">+ ADD ANOTHER CITY</a>');
+					}
+					else {
+						$('.UlMulticity').find("li:last").html('<a class="btn mtr-g-grn btn-l ripplelink btnAddRowMulti">+ ADD ANOTHER CITY</a> <a onclick="DeleteRow(this)" class="remove" data-toggle="tooltip" data-original-title="Remove"><i class="fas fa-window-close red-clr" aria-hidden="true"></i></a>');
+					}
+					$(".UlMulticity ul").each(function (i) {
+						$(this).closest("ul").find("input").each(function () {
+							$(this).attr({
+								'id': function (_, id) { return id.replace('_' + (parseInt(i) + 1) + '_', '_' + i + '_'); },
+								'name': function (_, name) { return name.replace('[' + (parseInt(i) + 1) + ']', '[' + i + ']'); },
+							});
+						});
+
+						$(this).closest("ul").find("select").each(function () {
+							$(this).attr({
+								'id': function (_, id) { return id.replace('_' + (parseInt(i) + 1) + '_', '_' + i + '_'); },
+								'name': function (_, name) { return name.replace('[' + (parseInt(i) + 1) + ']', '[' + i + ']'); },
+							});
+
+						});
+						$(this).closest("ul").find("span").each(function () {
+							if ($(this).attr("data-valmsg-for")) {
+								$(this).attr({
+									'data-valmsg-for': function (_, name) { return name.replace('[' + (parseInt(i) + 1) + ']', '[' + i + ']'); },
+								});
+							}
+							if ($(this).attr("for")) {
+								$(this).attr({
+									'for': function (_, id) { return id.replace('_' + (parseInt(i) + 1) + '_', '_' + i + '_'); },
+								});
+							}
+						});
+					});
+					var form = $("#CreateRequestFrom").closest("form");
+					form.removeData('validator');
+					form.removeData('unobtrusiveValidation');
+					$.validator.unobtrusive.parse(form);
+					$('.btnAddRowMulti').on('click', function (e) {
+						e.preventDefault();
+						e.stopPropagation();
+						AddNewRow();
+					});
+
+				})
+			}
+			else {
+				ConfirmMsgBox("Are you sure want to delete", '', function () {
+					var TravelId = parseInt($("#TravelRequest.req_no").val());
+					$(obj).closest('ul').remove();
+					var LastCount = parseInt($('.UlMulticity').find("ul").length);
+					if (LastCount == 1) {
+						$('.UlMulticity').find("li:last").html('<a class="btn mtr-g-grn btn-l ripplelink btnAddRowMulti">+ ADD ANOTHER CITY</a>');
+					}
+					else {
+						$('.UlMulticity').find("li:last").html('<a class="btn mtr-g-grn btn-l ripplelink btnAddRowMulti">+ ADD ANOTHER CITY</a> <a onclick="DeleteRow(this)" class="remove" data-toggle="tooltip" data-original-title="Remove"><i class="fas fa-window-close red-clr" aria-hidden="true"></i></a>');
+					}
+					$(".UlMulticity ul").each(function (i) {
+						$(this).closest("ul").find("input").each(function () {
+							$(this).attr({
+								'id': function (_, id) { return id.replace('_' + (parseInt(i) + 1) + '_', '_' + i + '_'); },
+								'name': function (_, name) { return name.replace('[' + (parseInt(i) + 1) + ']', '[' + i + ']'); },
+							});
+						});
+
+						$(this).closest("ul").find("select").each(function () {
+							$(this).attr({
+								'id': function (_, id) { return id.replace('_' + (parseInt(i) + 1) + '_', '_' + i + '_'); },
+								'name': function (_, name) { return name.replace('[' + (parseInt(i) + 1) + ']', '[' + i + ']'); },
+							});
+
+						});
+						$(this).closest("ul").find("span").each(function () {
+							if ($(this).attr("data-valmsg-for")) {
+								$(this).attr({
+									'data-valmsg-for': function (_, name) { return name.replace('[' + (parseInt(i) + 1) + ']', '[' + i + ']'); },
+								});
+							}
+							if ($(this).attr("for")) {
+								$(this).attr({
+									'for': function (_, id) { return id.replace('_' + (parseInt(i) + 1) + '_', '_' + i + '_'); },
+								});
+							}
+						});
+					});
+					var form = $("#CreateRequestFrom").closest("form");
+					form.removeData('validator');
+					form.removeData('unobtrusiveValidation');
+					$.validator.unobtrusive.parse(form);
+					$('.btnAddRowMulti').on('click', function (e) {
+						e.preventDefault();
+						e.stopPropagation();
+						AddNewRow();
+					});
+
+					var dataObject = JSON.stringify({
+						'ID': id,
+						'Doctype': 'Travelltriplinedel',
+					});
+				
+					var data = $.parseJSON($.ajax({
+						url: '/CommonAjax/DelRecord_CommonJson',
+						type: "post",
+						data: dataObject,
+						contentType: 'application/json',
+						async: false
+					}).responseText);
+				
+					if (data.StatusCode == 1) {
+						location.reload();
+					}
+					return data;
+
+
+				})
+			}
+
+		}
+
+		function ActionOnSuccess(obj) {
+			if (obj.Status) {
+				window.location = obj.RedirectURL;
+			}
+			else {
+				FailToaster(obj.SuccessMessage);
+			}
+
+		}
+
+		$('#SponsorBtnSave').on('click', function (e) {
+			e.preventDefault();
+			e.stopPropagation();
+			FillSponsoredHower();
+		});
+
+
+		function FillSponsoredHower() {
+		
+			var a = $("#SponsoredModal");
+			var TripSponsorName = a.find("#TravelRequest_TripSponsorName").val();
+			var UploadFile = a.find("#TravelRequest_UploadFile").val();
+			var IsTicketToBeBooked = (a.find("#vr1").is(":checked") ? "Yes" : "No");
+			var IsHotelToBeBooked = (a.find("#vr2").is(":checked") ? "Yes" : "No");
+			var b = $(".SponsoredU");
+			b.find("li:eq(0) span").html(TripSponsorName);
+			b.find("li:eq(1) span").html(UploadFile);
+			b.find("li:eq(2) span").html(IsTicketToBeBooked);
+			b.find("li:eq(3) span").html(IsHotelToBeBooked);
+			$("#SponsoredModal").modal('hide');
+		}
+
+
+		function ShowHideNewAddProject() {
+			var a = $('#tblProjects').find("tbody tr").length;
+			if (a > 2) {
+				$(".NewAddProject").hide();
+			}
+			else {
+				$(".NewAddProject").show();
+			}
+		}
+	</script>
+}

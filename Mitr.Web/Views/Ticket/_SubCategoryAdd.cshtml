@@ -1,0 +1,69 @@
+﻿
+@model Mitr.Models.Helpdesk.SubCategory
+
+
+
+@using (Ajax.BeginForm("_SubCategoryAdd", "Ticket",
+        new { src = ViewBag.src },
+        new AjaxOptions { HttpMethod = "POST", OnSuccess = "OnSuccess" },
+    new { @id = "_SubCategoryAddFrom" })
+    )
+{
+
+    @Html.AntiForgeryToken()
+    @Html.HiddenFor(x => Model.SubCategoryID)
+    <div class="row">
+        <div class="col-lg-6 col-md-6 col-sm-6 form-group">
+            <label>Category <sup>*</sup></label>
+            @Html.DropDownListFor(model => model.CategoryID, new SelectList(ViewBag.CategoryList, "ID", "Name", Model.CategoryID), "select", new { @class = "form-control " })
+            @Html.ValidationMessageFor(model => model.CategoryID, "", new { @class = "text-danger" })
+        </div>
+
+        <div class="col-lg-6 col-md-6 col-sm-6 form-group">
+            <label>Sub Category<sup>*</sup></label>
+            @Html.TextBoxFor(model => model.Name, new { @class = "form-control" })
+            @Html.ValidationMessageFor(model => model.Name, "", new { @class = "text-danger" })
+        </div>
+        <div class="col-lg-6 col-md-6 col-sm-6 form-group">
+            <label>Related<sup>*</sup></label>
+            <ul class="list-unstyled">
+                <li>
+                    <input type="radio" @(string.IsNullOrEmpty(Model.RelatedTo)?"checked":Model.RelatedTo == "HR" ? "checked" : "") id="chek1" name="@Html.NameFor(x=>x.RelatedTo)" value="HR" />
+                    <label for="chek1">HR</label>
+                </li>
+                <li>
+                    <input type="radio" @(Model.RelatedTo == "IT" ? "checked" : "") id="chk2" name="@Html.NameFor(x=>x.RelatedTo)"  value="IT" />
+                    <label for="chk2"> IT</label>
+                </li>
+            </ul>
+            @Html.ValidationMessageFor(model => model.RelatedTo, "", new { @class = "text-danger" })
+        </div>
+        <div class="col-lg-6 col-md-6 col-sm-6 form-group">
+            <label>Priority<sup>*</sup></label>
+            @Html.TextBoxFor(model => model.Priority, new { @class = "form-control" })
+            @Html.ValidationMessageFor(model => model.Priority, "", new { @class = "text-danger" })
+        </div>
+        <div class="col-lg-12 col-md-12 col-sm-12 form-group">
+            <label>Description</label>
+            @Html.TextAreaFor(model => model.Description, new { @class = "form-control" })
+            @Html.ValidationMessageFor(model => model.Description, "", new { @class = "text-danger" })
+        </div>
+
+
+
+    </div>
+
+    <div class="row">
+
+        @if (Model.SubCategoryID > 0)
+        {
+            <button type="submit" class="btn mtr-o-grn btn-l ripplelink pull-right" name="Command" value="Add"><i class="fa fa-paper-plane" aria-hidden="true"></i> Update</button>
+        }
+        else
+        {
+            <button type="submit" class="btn mtr-o-grn btn-l ripplelink pull-right" name="Command" value="Add"><i class="fa fa-paper-plane" aria-hidden="true"></i> Submit</button>
+        }
+    </div>
+
+}
+

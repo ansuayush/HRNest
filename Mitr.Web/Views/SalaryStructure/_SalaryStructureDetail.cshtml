@@ -1,0 +1,165 @@
+﻿@model  SalaryStructure.EmployeeSalary.Detail
+<div class="row m-0 p-0" id="print">
+    <div class="col-sm-4 gry-clr-bg " id="sidebar">
+        <table class="leftside-pop sticky">
+            <tr>
+                <td>Employee Code</td>
+                <td><strong>@Model.emp_code</strong>  </td>
+            </tr>
+            <tr>
+                <td>Employee Name</td>
+                <td><strong>@Model.emp_name</strong>  </td>
+            </tr>
+            <tr>
+                <td>Designation</td>
+                <td><strong>@Model.Designation</strong></td>
+            </tr>
+            <tr>
+                <td>Date of Joining </td>
+                <td><strong>@Model.DateOfJoining</strong></td>
+            </tr>
+            <tr>
+                <td>Location</td>
+                <td><strong>@Model.Location</strong></td>
+            </tr>
+        </table>
+    </div>
+    <div class="col-sm-8 p-0 ">
+        <div class="p-3">
+
+            <table class="table prc-tbl">
+                <tr>
+                    <td>Hourly Rate</td>
+                    <td class="w-200 text-right">@Model.HourlyRate</td>
+                </tr>
+                <tr>
+                    <td>Package</td>
+                    <td class="text-right">@Model.AnnualSalary</td>
+                </tr>
+                <tr>
+                    <td>Add Benefits</td>
+                    <td class="text-right">@Model.TotalBenefit</td>
+                </tr>
+
+                <tr class="green-clr lgt-mtr-o-bg">
+                    <td><strong>Total Salary</strong></td>
+                    <td class="text-right"><strong><i class="fas fa-rupee-sign green-clr"></i>@Model.CTC</strong> </td>
+                </tr>
+
+            </table>
+
+            <table class="table prc-tbl mt-0">
+                <thead>
+                    <tr>
+                        <th> Salary Structure </th>
+                        <th width="90"> Amount </th>
+                        <th width="100"> Taxable</th>
+                        <th width="100"> Taxfree </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @{ string DoctypeOld = ""; decimal AmountTaxable = 0; decimal AmountTaxfree = 0;
+                        int Days = Convert.ToInt32(ViewBag.Days == "6 Days" ? "6" : "5");
+                    }
+                    @for (int i = 0; i < Model.ListStructure.Count; i++)
+                    {
+                        if (Model.ListStructure[i].Doctype != DoctypeOld)
+                        {
+                            <tr>
+                                <td colspan="2" class="text-left">
+                                    <strong>@Model.ListStructure[i].Doctype</strong>
+                                </td>
+                            </tr>
+                        }
+                        <tr>
+                            <td>
+                                @Model.ListStructure[i].Component
+                            </td>
+                            <td class="text-right">@Model.ListStructure[i].Amount</td>
+                            <td class="text-right">
+                                @if (Model.ListStructure[i].Taxable == "Taxable")
+                                {
+                                    @Model.ListStructure[i].Amount
+                                    AmountTaxable = AmountTaxable + Convert.ToDecimal(Model.ListStructure[i].Amount);
+                                }
+                            </td>
+                            <td class="text-right">
+                                @if (Model.ListStructure[i].Taxable != "Taxable")
+                                {
+                                    @Model.ListStructure[i].Amount
+                                    AmountTaxfree = AmountTaxfree + Convert.ToDecimal(Model.ListStructure[i].Amount);
+                                }
+                            </td>
+                        </tr>
+
+                        DoctypeOld = Model.ListStructure[i].Doctype;
+                    }
+
+                    <tr class="green-clr lgt-mtr-o-bg">
+                        <td><strong>Total CTC</strong></td>
+                        <td class="text-right"><strong><i class="fas fa-rupee-sign green-clr"></i>@Model.CTC</strong></td>
+                        <td class="text-right"><strong><i class="fas fa-rupee-sign green-clr"></i> @AmountTaxable</strong></td>
+                        <td class="text-right"><strong><i class="fas fa-rupee-sign green-clr"></i> @AmountTaxfree</strong></td>
+                    </tr>
+
+                </tbody>
+            </table>
+            <table class="table prc-tbl mt-0">
+                <thead>
+                    <tr>
+                        <th>Month</th>
+                        <th width="90"> Total Hours </th>
+                        <th width="100"> Rate</th>
+                        <th width="100"> Total Amount </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @{ decimal TotalHours = 0, TotalHourlyRate = 0, TotalAmt = 0; }
+                    @foreach (var item in Model.ListStructureMonthly)
+                    {
+                        TotalHours = TotalHours + Convert.ToDecimal(item.TotalHours);
+                        TotalHourlyRate = TotalHourlyRate + Convert.ToDecimal(item.HourlyRate);
+                        TotalAmt = TotalAmt + Convert.ToDecimal(item.TotalAmount);
+                        <tr>
+                            <td>@item.Month</td>
+                            <td class="text-right">@item.TotalHours Hr.</td>
+                            <td class="text-right">@item.HourlyRate </td>
+                            <td class="text-right">@item.TotalAmount</td>
+                        </tr>
+                    }
+                    <tr class="green-clr lgt-mtr-o-bg">
+                        <td><strong>Total</strong></td>
+                        <td class="text-right"><strong>@TotalHours Hr.</strong></td>
+                        <td class="text-right"><strong>@TotalHourlyRate</strong> </td>
+                        <td class="text-right"><strong><i class="fas fa-rupee-sign green-clr"></i>@TotalAmt</strong></td>
+                    </tr>
+
+                </tbody>
+            </table>
+
+
+        </div>
+        <div class=" mt-2 mb-2 text-center ">
+            <button type="button" class="btn cnl-btn ripplelink" data-dismiss="modal"><i class="fas fa-times"></i>Close</button>
+            <button type="button" id="btnprint" onclick="printDiv()" class="btn mtr-g-grn ripplelink"><i class="fas fa-print"></i>Print</button>
+        </div>
+    </div>
+
+</div>
+<script>
+    function printDiv() {
+
+        var divToPrint = document.getElementById('print');
+
+        var newWin = window.open('', 'Print-Window');
+
+        newWin.document.open();
+
+        newWin.document.write('<html><body onload="window.print()">' + divToPrint.innerHTML + '</body></html>');
+
+        newWin.document.close();
+
+        setTimeout(function () { newWin.close(); }, 10);
+
+    }
+</script>

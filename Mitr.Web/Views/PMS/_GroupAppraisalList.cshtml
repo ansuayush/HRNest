@@ -1,0 +1,91 @@
+﻿@model IList<PMS.GroupAppraisal.List>
+@{
+    List<PMS.GroupAppraisal.List> MyTeam = new List<PMS.GroupAppraisal.List>();
+    MyTeam = ViewBag.TeamList;
+}
+<div class="tab-main mt-3">
+    <ul id="tabs" class="nav nav-tabs" role="tablist">
+        <li class="nav-item"> <a class="nav-link active" href="#Tab1" role="tab" data-toggle="tab"><i class="far fa-clock"></i>Pending</a> </li>
+        <li class="nav-item"> <a class="nav-link " href="#Tab2" role="tab" data-toggle="tab"><i class="fas fa-check-square"></i>Approved</a> </li>
+        <li class="nav-item"> <a class="nav-link " href="#Tab3" role="tab" data-toggle="tab"><i class="fas fa-check-teamspeak"></i>My Team</a> </li>
+
+    </ul>
+
+    <!-- Tab panes -->
+    <div class="tab-content">
+      
+        <div role="tabpanel" class="tab-pane in active" id="Tab1">
+
+            @Html.EJS().Grid("FlatGrid1").DataSource((List<PMS.GroupAppraisal.List>)Model.Where(x => x.Approved == 4 || x.Approved == 8).ToList()).GridLines(Syncfusion.EJ2.Grids.GridLine.Both).Columns(col =>
+       {
+           col.Field("PMS_AID").Visible(false).Add();
+           col.Field("EMPCode").HeaderText("Employee Code").Width("80").Add();
+           col.Field("EMPName").HeaderText("Employee Name").Width("200").Add();
+           col.Field("Department").HeaderText("Department").Width("100").Add();
+           col.Field("DesignationName").HeaderText("Designation").Width("100").Add();
+           col.Field("LocationName").HeaderText("Location").Width("100").Add();
+           col.Field("SubmitedDate").HeaderText("Submitted Date").Width("100").Add();
+           col.Field("Status").HeaderText("Status").Width("80").Add();
+           col.HeaderText("Action").TextAlign(Syncfusion.EJ2.Grids.TextAlign.Center).Template("#tmpAction").Width("60").Add();
+       }).AllowPaging().PageSettings(page => page.PageCount(10)).Toolbar(new List<string>() { "Search" }).Render()
+
+
+
+        </div>
+
+        <div role="tabpanel" class="tab-pane" id="Tab2">
+            <div class="table-responsive">
+
+
+                @Html.EJS().Grid("FlatGrid2").DataSource((List<PMS.GroupAppraisal.List>)Model.Where(x => x.Approved == 5 || x.Approved == 7).ToList()).GridLines(Syncfusion.EJ2.Grids.GridLine.Both).Columns(col =>
+           {
+               col.Field("PMS_AID").Visible(false).Add();
+               col.Field("EMPCode").HeaderText("Employee Code").Width("80").Add();
+               col.Field("EMPName").HeaderText("Employee Name").Width("200").Add();
+               col.Field("Department").HeaderText("Department").Width("100").Add();
+               col.Field("DesignationName").HeaderText("Designation").Width("100").Add();
+               col.Field("LocationName").HeaderText("Location").Width("100").Add();
+               col.Field("SubmitedDate").HeaderText("Submitted Date").Width("100").Add();
+               col.Field("HODName").HeaderText("Appraiser").Width("100").Add();
+               col.Field("Status").HeaderText("Status").Width("80").Add();
+               col.HeaderText("Action").TextAlign(Syncfusion.EJ2.Grids.TextAlign.Center).Template("#tmpAction").Width("60").Add();
+           }).AllowPaging().PageSettings(page => page.PageCount(10)).Toolbar(new List<string>() { "Search" }).Render()
+            </div>
+
+        </div>
+        <div role="tabpanel" class="tab-pane" id="Tab3">
+            <div class="table-responsive">
+
+
+                @Html.EJS().Grid("FlatGrid3").DataSource((List<PMS.GroupAppraisal.List>)MyTeam.ToList()).GridLines(Syncfusion.EJ2.Grids.GridLine.Both).Columns(col =>
+           {
+               col.Field("PMS_AID").Visible(false).Add();
+               col.Field("EMPID").Visible(false).Add();
+               col.Field("Approved").Visible(false).Add();
+               col.Field("EMPCode").HeaderText("Employee Code").Width("80").Add();
+               col.Field("EMPName").HeaderText("Employee Name").Width("200").Add();
+               col.Field("Department").HeaderText("Department").Width("100").Add();
+               col.Field("DesignationName").HeaderText("Designation").Width("100").Add();
+               col.Field("LocationName").HeaderText("Location").Width("100").Add();
+               col.HeaderText("PA Report").TextAlign(Syncfusion.EJ2.Grids.TextAlign.Center).Template("#ReportAction").Width("40").Add();
+           }).AllowPaging().PageSettings(page => page.PageCount(10)).Toolbar(new List<string>() { "Search" }).Render()
+            </div>
+
+        </div>
+
+    </div>
+</div>
+
+<script id="tmpAction" type="text/x-template">
+    <input type="hidden" name="I" value="${PMS_AID}" />
+    <a onclick="BindEdit(this)"><i class="fas fa-edit checkgreen" aria-hidden="true"></i> </a>
+
+</script>
+<script id="ReportAction" type="text/x-template">
+    <input type="hidden" name="EMPID" value="${EMPID}" />
+    <input type="hidden" name="EMPCode" value="${EMPCode}" />
+    <input type="hidden" name="Approved" value="${Approved}" />
+    <a onclick="BindReport(this)"><i class="fas fa-download" aria-hidden="true"></i>Download </a>
+
+</script>
+@(Html.EJS().ScriptManager())

@@ -1,0 +1,230 @@
+﻿@model Exit.Req_Process.Approve
+
+
+<script>
+	$(document).ready(function () {
+		$(function () {
+			$('.datepicker').datepicker({
+				changeMonth: true,
+				changeYear: true,
+				dateFormat: "dd/mm/yy",
+				yearRange: "-90:+10"
+			});
+
+		});
+	});
+</script>
+@using (Ajax.BeginForm("_HR_ExitApproveAndProcess", "Exit",
+    new { src = clsApplicationSetting.EncryptQueryString(ViewBag.MenuID.ToString() + "*/Exit/_HR_ExitApproveAndProcess*" + ViewBag.Exit_ID) },
+          new AjaxOptions { HttpMethod = "POST", OnSuccess = "OnProcessSuccess", OnBegin = "ShowLoadingDialog()" },
+    new { @id = "_RequestProcessingFrom", @enctype = "multipart/form-data" })
+    )
+{
+    <div class="row">
+        <div class="col-sm-12 form-group">
+            <h3 class="subheading">Instructions for Asset Handover</h3>
+            <div class="table-responsive">
+                <table class="table table-striped  mb-0 mt-0 vt-a">
+                    <thead>
+                        <tr>
+                            <th>Department </th>
+                            <th class="w-100">Location</th>
+                            <th class="w-100">HOD </th>
+                            <th class="w-500">Remarks</th>
+                            <th class="w-150">Notification CC</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @for (int i = 0; i < Model.DepartmentList.Count; i++)
+                        {
+                            <tr>
+                                <td>
+                                    @Model.DepartmentList[i].Dept
+                                    @Html.HiddenFor(x => x.DepartmentList[i].Dept)
+                                </td>
+								<td>
+									@Html.DropDownListFor(x => Model.DepartmentList[i].LocationID, new SelectList(Model.LocationList, "ID", "Name", Model.DepartmentList[i].LocationID), "Select Location",
+new { @class = "form-control  applyselect" })  @*onchange = "LoadEMP(this)"*@
+									@Html.ValidationMessageFor(model => Model.DepartmentList[i].LocationID, "", new { @class = "text-danger" })
+
+								</td>
+                                <td>
+                                    @Html.DropDownListFor(x => Model.DepartmentList[i].HODID, new SelectList(Model.EmpList, "ID", "Name", Model.DepartmentList[i].HODID), "Select HOD",
+new { @class = "form-control  applyselect HodList" })
+                                    @Html.ValidationMessageFor(model => Model.DepartmentList[i].HODID, "", new { @class = "text-danger" })
+
+                                </td>
+                                <td>
+                                    @Html.TextAreaFor(model => Model.DepartmentList[i].Remarks, new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(model => Model.DepartmentList[i].Remarks, "", new { @class = "text-danger" })
+                                </td>
+                                <td>
+                                    @Html.DropDownListFor(x => Model.DepartmentList[i].Notify_CC, new SelectList(Model.NotificationEMPList, "ID", "Email", Model.DepartmentList[i].Notify_CC), "Select Email",
+new { @class = "form-control  applyselect", @multiple = "multiple" })
+                                    @Html.ValidationMessageFor(model => Model.DepartmentList[i].Notify_CC, "", new { @class = "text-danger" })
+
+                                </td>
+                            </tr>
+                        }
+
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="col-sm-3 form-group">
+            <label>Relieving Date</label>
+            @Html.TextBoxFor(model => Model.RelievingDate,   new { @class = "form-control datepicker" })
+            @Html.ValidationMessageFor(model => Model.RelievingDate, "", new { @class = "text-danger" })
+        </div>
+        <div class="col-sm-3 align-self-center">
+            <input type="checkbox" id="annoance" name="@Html.NameFor(x => x.DeactiveSurvey)">
+            <label for="annoance" class="mb-0"> Deactivate Exit Survey</label>
+        </div>
+        <div class="col-sm-12 form-group">
+            <label>Direct Confirmation Remarks</label>
+            @Html.TextBoxFor(model => Model.Approved_Remarks, new { @class = "form-control" })
+            @Html.ValidationMessageFor(model => Model.Approved_Remarks, "", new { @class = "text-danger" })
+        </div>
+        <div class="col-sm-12">
+            <h3 class="subheading">Instructions for Task Handover</h3>
+        </div>
+        <div class="col-sm-4 form-group align-self-end ">
+            <a onclick="NewTask();" class="btn mtr-g-grn mb-0 btn-l "><i class="fas fa-plus"></i>Add Row</a>
+        </div>
+        <div class="col-sm-12 form-group">
+            <div class="table-responsive">
+                <table class="table table-striped" id="tblTask">
+                    <thead>
+                        <tr>
+                            <th class="w-10 text-left">S.No</th>
+                            <th>Task</th>
+                            <th class="w-100">Assignee</th>
+                            <th class="w-80">Priority</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @{
+                            if (Model.Exit_TaskList == null)
+                            {
+                                List<Exit.Exit_Task> List = new List<Exit.Exit_Task>();
+                                Exit.Exit_Task toz = new Exit.Exit_Task();
+                                List.Add(toz);
+                                Model.Exit_TaskList = List;
+                            }
+                            int count = 0;
+
+                            List<SelectListItem> PriorityList = new List<SelectListItem>
+                            {
+                                new SelectListItem{Text="Low",Value="Low" },
+                                new SelectListItem{Text="Medium",Value="Medium" },
+                                new SelectListItem{Text="High",Value="High" }
+                            };
+
+                        }
+                        @for (int i = 0; i < Model.Exit_TaskList.Count; i++)
+                        {
+                            count++;
+                            <tr>
+                                <td><label id="span_@count" name="span_@count">@count </label></td>
+                                <td>
+                                    @Html.TextAreaFor(model => Model.Exit_TaskList[i].Task, new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(model => Model.Exit_TaskList[i].Task, "", new { @class = "text-danger" })
+                                </td>
+                                <td>
+                                    @Html.DropDownListFor(x => Model.Exit_TaskList[i].Assignee_ID, new SelectList(Model.EmpList, "ID", "Name", Model.Exit_TaskList[i].Assignee_ID), "Select Assignee",
+new { @class = "form-control  applyselect" })
+                                    @Html.ValidationMessageFor(model => Model.Exit_TaskList[i].Assignee_ID, "", new { @class = "text-danger" })
+                                </td>
+                                <td>
+                                    @Html.DropDownListFor(x => Model.Exit_TaskList[i].Priority, new SelectList(PriorityList, "Value", "Text", Model.Exit_TaskList[i].Priority), "Select Priority",
+new { @class = "form-control  applyselect" })
+                                    @Html.ValidationMessageFor(model => Model.Exit_TaskList[i].Priority, "", new { @class = "text-danger" })
+                                </td>
+                                <td>
+                                    @if (count > 1)
+                                    {
+                                        <a onclick="DeleteTaskRow(this)" class="remove"><i class="fas fa-window-close red-clr" aria-hidden="true"></i></a>
+                                    }
+                                    else
+                                    {
+                                        <a class="disabled"><i class="fas fa-window-close" aria-hidden="true"></i></a>
+                                    }
+                                </td>
+                            </tr>
+                        }
+
+
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="col-sm-12">
+            <h3 class="subheading">Attach</h3>
+        </div>
+        <div class="col-sm-4 form-group align-self-end ">
+            <a onclick="NewAttachment()" class="btn mtr-g-grn mb-0 btn-l "><i class="fas fa-plus"></i>Add Row</a>
+        </div>
+        <div class="col-sm-12 form-group">
+            <div class="table-responsive">
+                @{
+                    if (Model.AttachmentList == null)
+                    {
+                        List<Exit.Attachment> List = new List<Exit.Attachment>();
+                        Exit.Attachment toz = new Exit.Attachment();
+                        List.Add(toz);
+                        Model.AttachmentList = List;
+                    }
+                    int Acount = 0;
+                }
+                <table class="table table-striped" id="tblAttachment">
+                    <thead>
+                        <tr>
+                            <th class="w-10 text-left">S.No</th>
+                            <th class="w-250">Attachment</th>
+                            <th>Description</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @for (int i = 0; i < Model.AttachmentList.Count; i++)
+                        {
+                            Acount++;
+                            <tr>
+                                <td><label id="span_@Acount" name="span_@Acount">@Acount </label></td>
+                                <td>
+                                    @Html.TextBoxFor(model => Model.AttachmentList[i].Upload, new { @class = "form-control", @type = "file" })
+                                    @Html.ValidationMessageFor(model => Model.AttachmentList[i].Upload, "", new { @class = "text-danger" })
+
+                                </td>
+                                <td>
+                                    @Html.TextAreaFor(model => Model.AttachmentList[i].Decription, new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(model => Model.AttachmentList[i].Decription, "", new { @class = "text-danger" })
+                                </td>
+                                <td>
+                                    @if (Acount > 1)
+                                    {
+
+
+                                        <a onclick="DeleteAttachRow(this)" class="remove"><i class="fas fa-window-close red-clr" aria-hidden="true"></i></a>
+                                    }
+                                    else
+                                    {
+                                        <a class="disabled"><i class="fas fa-window-close" aria-hidden="true"></i></a>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+
+        <div class="col-sm-12 text-left">
+            <button type="submit" name="Command" value="Add" class="btn mtr-o-grn btn-l ripplelink"> <i class="fas fa-share"></i>Submit </button>
+            <button type="button" class="btn cnl-btn btn-l ripplelink close" data-dismiss="modal"><i class="fas fa-times"></i>Close</button>
+        </div>
+    </div>
+}

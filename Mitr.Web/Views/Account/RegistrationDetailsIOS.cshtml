@@ -1,0 +1,114 @@
+﻿@model  Employee.RegistrationDetailsIOS
+@{
+	Layout = "~/Views/Shared/_IOSLayout.cshtml";
+	if (Model.DOB == "1900-01-01")
+	{
+		Model.DOB = "";
+	}
+}
+
+
+<div class="mb-100">
+
+	
+	@using (Ajax.BeginForm("RegistrationDetailsIOS", "Account",
+				new { src = ViewBag.src },
+				new AjaxOptions { HttpMethod = "POST", OnSuccess = "OnSuccess", OnBegin = "ShowLoadingDialog()", OnFailure = "OnPostFailure()" },
+			new { @id = "RegistrationDetailsIOSFrom", @autocomplete = "Off" })
+			)
+		{
+			@Html.HiddenFor(Model => Model.Id)
+			<div class="inner-main mb-2">
+				<h1 class="heading-one ">Registration Details</h1>
+				<div class="row">
+					<div class="col-md-12 col-sm-12 form-group">
+						<label>Employee Name <sup>*</sup> </label>
+						@Html.TextBoxFor(model => model.EmployeeName, new { @class = "form-control", @placeholder = "Email" })
+						@Html.ValidationMessageFor(model => model.EmployeeName, "", new { @class = "text-danger" })
+					</div>
+
+					<div class="col-md-12 col-sm-12 form-group">
+						<label>Company Name<sup>*</sup> </label>
+						@Html.TextBoxFor(model => model.CompanyName, new { @class = "form-control", @placeholder = "Email" })
+						@Html.ValidationMessageFor(model => model.CompanyName, "", new { @class = "text-danger" })
+					</div>
+
+
+					<div class="col-md-12 col-sm-12 form-group">
+						<label>Email ID<sup>*</sup> </label>
+						@Html.TextBoxFor(model => model.EMail, new { @class = "form-control", @placeholder = "Email" })
+						@Html.ValidationMessageFor(model => model.EMail, "", new { @class = "text-danger" })
+					</div>
+
+					<div class="col-md-12 col-sm-12 form-group">
+						<label>DOB<sup>*</sup> </label>
+						@Html.TextBoxFor(model => model.DOB, new { @class = "form-control", @type = "date" })
+						@Html.ValidationMessageFor(model => model.DOB, "", new { @class = "text-danger" })
+					</div>
+
+					<div class="col-md-12 col-sm-12 form-group">
+						<label>Mobile<sup>*</sup> </label>
+						@Html.TextBoxFor(model => model.Mobile, new { @class = "form-control", @placeholder = "Email" })
+						@Html.ValidationMessageFor(model => model.Mobile, "", new { @class = "text-danger" })
+					</div>
+
+					<div class="col-md-12 col-sm-12 form-group">
+						<label>Address<sup>*</sup> </label>
+						@Html.TextBoxFor(model => model.Address, new { @class = "form-control", @placeholder = "Email" })
+						@Html.ValidationMessageFor(model => model.Address, "", new { @class = "text-danger" })
+					</div>
+
+					<div class="col-md-12 col-sm-12 form-group">
+						<label>Zip Code<sup>*</sup> </label>
+						@Html.TextBoxFor(model => model.ZipCode, new { @class = "form-control", @placeholder = "Email" })
+						@Html.ValidationMessageFor(model => model.ZipCode, "", new { @class = "text-danger" })
+					</div>
+
+					<div class="col-sm-12 text-center ">
+						<button type="submit" class="btn mtr-o-grn" name="Command" value="Add"><i class="fas fa-paper-plane"></i>Submit</button>
+
+						<button type="button" onclick="ListDashAdd();" class="btn cnl-btn ripplelink  pull-right"><i class="fas fa-times"></i>Close</button>
+					</div>
+
+				</div>
+
+			</div>
+
+		}
+</div>
+
+@section scripts    {
+	@System.Web.Optimization.Scripts.Render("~/bundle/dataTablesjs")
+
+	@System.Web.Optimization.Scripts.Render("~/bundle/unobtrusivejs")
+
+
+	@Html.IncludeVersionedJs(Url.Content("~/assets/design/Scripts/AddInit.js"))
+	@Html.IncludeVersionedJs(Url.Content("~/assets/design/Scripts/ToolTip.js"))
+	<script>
+
+				function ListDashAdd() {
+		debugger;
+		//var ID = Number('@ViewBag.EmpId');
+		var UserId = Number('@ViewBag.UserId');
+		var MenuID = Number(0);
+		//var url = "/Account/RegistrationDetails?Empid=" + ID;
+		//var url = "/Account/MDashboard?src=" + EncryptQueryStringJSON(0 + "*" + "/Account/MIOSDashboard" + "*" + ID+"*" + "Mobile"+"*"+UserId);
+		var url = "/Account/MIOSDashboard?src=" + EncryptQueryStringJSON(0 + "*/Account/MIOSDashboard*" + "*" + UserId+"*" + "IOSMobile"+"*");
+		window.location = url;
+	}
+      function OnSuccess(obj) {
+		debugger;
+            if (obj.Status) {
+                SuccessToaster(obj.SuccessMessage);
+		        CloseLoadingDialog();
+            }
+            else {
+                CloseLoadingDialog();
+                FailToaster(obj.SuccessMessage);
+
+            }
+        }
+
+	</script>
+}

@@ -1,0 +1,553 @@
+﻿@model Mitr.Models.DailyLogCompleteModal
+@using System.Data
+@using Mitr.Models
+@using Syncfusion.EJ2.Popups
+@{
+
+	string[] COlor = new string[32];
+	string[] HolidayType = new string[32];
+	string[] Description = new string[32];
+	string[] ClassName = new string[32];
+	string[] ValidHours = new string[32];
+	string[] IsLock = new string[32];
+
+	for (int i = 0; i < 32; i++)
+	{
+		COlor[i] = "";
+		HolidayType[i] = "";
+		Description[i] = "";
+		ClassName[i] = "";
+		ValidHours[i] = "";
+		IsLock[i] = "";
+
+	}
+
+
+	DateTime SelectedDate = ViewBag.SelectedDate;
+	DateTime StartDate = new DateTime(SelectedDate.Year, SelectedDate.Month, 1);
+	DateTime EndDate = StartDate.AddMonths(1).AddDays(-1);
+	List<HolidayDailyLog> LeaveList = new List<HolidayDailyLog>();
+	List<TravelDailyLog> TravelList = new List<TravelDailyLog>();
+	LeaveList = ViewBag.GetHolidayDailyLog;
+	TravelList = ViewBag.GetTravelDailyLog;
+	string FixHolidays = ClsCommon.GetFixHolidaysByEmpid(clsApplicationSetting.GetSessionValue("EMPID").ToString());
+
+	//clsApplicationSetting.GetConfigValue("FixHolidays");
+	//Model.Doj = Convert.ToDateTime(Model.Doj.ToString("yyyy-MMM-dd"));
+	//Model.LastWorkingDay = Convert.ToDateTime(Model.LastWorkingDay.ToString("yyyy-MMM-dd"));
+
+
+	DateTime Doj, LastWorkingDay;
+	Doj = Convert.ToDateTime(Model.Doj.ToString("yyyy-MMM-dd"));
+	LastWorkingDay = Convert.ToDateTime(Model.LastWorkingDay.ToString("yyyy-MMM-dd"));
+
+
+	for (DateTime date = StartDate; date <= EndDate; date = date.AddDays(1))
+	{
+		int result = DateTime.Compare(date, LastWorkingDay);
+		int resultdoj = DateTime.Compare(date, Doj);
+		if (result == 1)
+		{
+			IsLock[Convert.ToInt32(date.ToString("dd"))] = "disabled";
+		}
+		if (resultdoj == -1)
+		{
+			IsLock[Convert.ToInt32(date.ToString("dd"))] = "disabled";
+		}
+		ClassName[Convert.ToInt32(date.ToString("dd"))] = (FixHolidays.Contains(date.ToString("dddd")) ? "fixholidaycolor" : "");
+		ValidHours[Convert.ToInt32(date.ToString("dd"))] = (FixHolidays.Contains(date.ToString("dddd")) || Doj > date || LastWorkingDay < date ? "" : "validatehours");
+		// ValidHours[Convert.ToInt32(date.ToString("dd"))] = (FixHolidays.Contains(date.ToString("dddd")) ? "" : "validatehours");
+		if (LeaveList.Any(x => x.Date == date.ToString("dd/MM/yyyy")))
+		{
+			COlor[Convert.ToInt32(date.ToString("dd"))] = LeaveList.Where(x => x.Date == date.ToString("dd/MM/yyyy")).Select(x => x.Color).FirstOrDefault();
+			HolidayType[Convert.ToInt32(date.ToString("dd"))] = LeaveList.Where(x => x.Date == date.ToString("dd/MM/yyyy")).Select(x => x.HolidayType).FirstOrDefault();
+			Description[Convert.ToInt32(date.ToString("dd"))] = LeaveList.Where(x => x.Date == date.ToString("dd/MM/yyyy")).Select(x => x.Description).FirstOrDefault();
+			ClassName[Convert.ToInt32(date.ToString("dd"))] = ClassName[Convert.ToInt32(date.ToString("dd"))] + " " + LeaveList.Where(x => x.Date == date.ToString("dd/MM/yyyy")).Select(x => x.ClassName).FirstOrDefault();
+			ValidHours[Convert.ToInt32(date.ToString("dd"))] = (string.IsNullOrEmpty(LeaveList.Where(x => x.Date == date.ToString("dd/MM/yyyy")).Select(x => x.ClassName).FirstOrDefault()) ? "validatehours" : "");
+		}
+		else if (TravelList.Any(x => x.Date == date.ToString("dd/MM/yyyy")))
+		{
+			COlor[Convert.ToInt32(date.ToString("dd"))] = "approvedtravel";
+		}
+
+	}
+
+}
+<div class="row">
+
+	@using (Ajax.BeginForm("_SaveDailyLog", "Activity",
+new { src = clsApplicationSetting.EncryptQueryString(ViewBag.MenuID.ToString() + "*/Activity/_SaveDailyLog*" + Model.LeaveWithAttachmentPending + "*" + Model.SelectedDate) },
+new AjaxOptions { HttpMethod = "POST", OnSuccess = "AfterOnSuccess", OnBegin = "ShowLoadingDialog();", OnFailure = "CloseLoadingDialog();" },
+new
+{
+	name = "_SaveDailyLogForm",
+	id = "_SaveDailyLogForm",
+	@class = "form-horizontal form-label-left input_mask",
+	enctype = "multipart/form-data"
+}))
+	{
+
+		@Html.HiddenFor(x => x.IsHaveComOff)
+		@Html.HiddenFor(x => x.LeaveWithAttachmentPending)
+		@Html.HiddenFor(x => x.LeaveWithAttachmentPendingDates)
+		@Html.HiddenFor(x => x.SelectedDate)
+		@Html.HiddenFor(x => x.RecallRemarks)
+		@Html.HiddenFor(x => x.IsSubmitted)
+		@Html.HiddenFor(x => x.WorkingHours)
+		@Html.HiddenFor(x => x.IsLoad)
+		@*@Html.HiddenFor(x => x.Doj)
+			@Html.HiddenFor(x => x.LastWorkingDay)*@
+		<input type="hidden" value="@Model.LastWorkingDay" id="LastWorkingDay" name="LastWorkingDay" class="hfLastworkingday" />
+		<input type="hidden" value="@Model.Doj" id="Doj" name="Doj" class="hfDoj" />
+		@*<input type="hidden" value="@Doj" id="hfDOJ" name="hfDOJ" />
+			<input type="hidden" value="@LastWorkingDay" id="hfLastWorkingDay" name="hfLastWorkingDay" />*@
+		if (!Model.IsSubmitted)
+		{
+			<div class="col-sm-12 form-group pr ">
+				<a target="_blank" href="@Url.Action("ApplyLeave", "Leave", new { src = clsApplicationSetting.EncryptQueryString(ViewBag.MenuID.ToString() + "*/Leave/ApplyLeave") })" class="btn add-btn ripplelink mb-2 "><i class="fa fa-share" aria-hidden="true"></i>Apply Leaves</a>
+				<a class="btn add-btn white-btn ripplelink mb-2 " id="btnAddproject"><i class="fas fa-plus"></i> Add Project</a>
+				<a class="btn add-btn white-btn ripplelink mb-2 " id="AStandardtask"><i class="fas fa-clipboard-list"></i>Create Standard Task</a>
+				<a class="btn add-btn white-btn ripplelink mb-2 ALSummary">
+					<i class="fas fa-signal"></i>View Leave Status
+				</a>
+			</div>
+			<div class="col-sm-12  pr ">
+				<div class="act-nxt weeksection">
+					<a class="disabled"> <i class="fas fa-arrow-left"></i></a>
+					<span>@StartDate.ToString("dd") @StartDate.ToString("MMM") <small>to</small> @StartDate.AddDays(13).ToString("dd") @StartDate.AddDays(13).ToString("MMM")</span>
+					<a start="@StartDate.AddDays(14).ToString("dd")" end="@StartDate.AddDays(27).ToString("dd")" class="Nextweek"> <i class="fas fa-arrow-right"></i></a>
+				</div>
+				<div class="act-nxt weeksection">
+					<a start="@StartDate.AddDays(0).ToString("dd")" end="@StartDate.AddDays(13).ToString("dd")" class="PrevWeek"> <i class="fas fa-arrow-left"></i></a>
+					<span>
+						@StartDate.AddDays(14).ToString("dd") @StartDate.AddDays(14).ToString("MMM") <small>to</small> @StartDate.AddDays(27).ToString("dd") @StartDate.AddDays(27).ToString("MMM")
+					</span>
+					@if (EndDate.Day == 28)
+					{
+						<a class=" disabled"> <i class="fas fa-arrow-right"></i></a>
+					}
+					else
+					{
+						<a start="@StartDate.AddDays(28).ToString("dd")" end="@StartDate.AddMonths(1).AddDays(-1).ToString("dd")" class="Nextweek"> <i class="fas fa-arrow-right"></i></a>
+					}
+				</div>
+				@*<div class="act-nxt weeksection">
+						<a start="@StartDate.ToString("dd")" end="@StartDate.AddDays(0).ToString("dd")" class="PrevWeek"> <i class="fas fa-arrow-left"></i></a>
+						<span>
+							@StartDate.AddDays(14).ToString("dd") @StartDate.AddDays(14).ToString("MMM") <small>to</small> @StartDate.AddDays(27).ToString("dd") @StartDate.AddDays(27).ToString("MMM")
+						</span>
+						<a start="@StartDate.AddDays(28).ToString("dd")" end="@StartDate.AddDays(20).ToString("dd")" class="Nextweek"> <i class="fas fa-arrow-right"></i></a>
+					</div>*@
+				@*<div class="act-nxt weeksection">
+						<a class="disabled"> <i class="fas fa-arrow-left"></i></a>
+						<span>@StartDate.ToString("dd") @StartDate.ToString("MMM") <small>to</small> @StartDate.AddDays(15).ToString("dd") @StartDate.AddDays(15).ToString("MMM")</span>
+						<a start="@StartDate.AddDays(16).ToString("dd")" end="@StartDate.AddDays(30).ToString("dd")" class="Nextweek"> <i class="fas fa-arrow-right"></i></a>
+					</div>*@
+
+
+
+				@if (EndDate.Day != 28)
+				{
+					<div class="act-nxt weeksection">
+						<a start="@StartDate.AddDays(14).ToString("dd")" end="@StartDate.AddDays(27).ToString("dd")" class="PrevWeek"> <i class="fas fa-arrow-left"></i></a>
+						<span>@StartDate.AddDays(28).ToString("dd") @StartDate.AddDays(28).ToString("MMM") <small>to</small> <span class="MonthLastDay"> @StartDate.AddMonths(1).AddDays(-1).ToString("dd")</span> @StartDate.AddMonths(1).AddDays(-1).ToString("MMM")</span>
+						<a class=" disabled"> <i class="fas fa-arrow-right"></i></a>
+					</div>
+				}
+
+
+
+				<div class="table-scrollable">
+					<table id="tblActivity" class="table table-scroll act-table">
+						<thead>
+							<tr>
+								<th class="td-10">S.No</th>
+								<th class="text-left tw-100">
+									Project
+								</th>
+								<th class="text-left tw-100">
+									Activity
+								</th>
+								<th class="text-left 2-300">
+									Description <small>[Maximum Character Limit -1000]</small>
+								</th>
+								@for (DateTime date = StartDate; date <= EndDate; date = date.AddDays(1))
+								{
+									if (TravelList.Any(x => x.Date == date.ToString("dd/MM/yyyy")))
+									{
+										<th class="text-center w-30 workclass workclass_@Convert.ToInt32(date.ToString("dd")) approvedtravel">@Convert.ToInt32(date.ToString("dd")) <span class="weektxt"> @date.ToString("ddd") </span></th>
+									}
+									else
+									{
+										<th class="text-center w-30 workclass workclass_@Convert.ToInt32(date.ToString("dd")) @(FixHolidays.Contains(date.ToString("dddd")) ? "fixholidaycolor" : "")">@Convert.ToInt32(date.ToString("dd")) <span class="weektxt"> @date.ToString("ddd") </span></th>
+									}
+
+
+								}
+								<th class="extratd1 w-30 dnone"></th>
+								<th class="extratd2 w-30 dnone"></th>
+								<th class="extratd3 w-30 dnone"></th>
+								<th class="extratd4 w-30 dnone"></th>
+								<th class="extratd5 w-30 dnone"></th>
+								<th class="extratd6 w-30 dnone"></th>
+
+								<th class="extratd7 w-30 blankbox dnone"></th>
+								<th class="extratd8 w-30 blankbox dnone"></th>
+								<th class="extratd9 w-30 blankbox dnone"></th>
+								<th class="extratd10 w-30 blankbox dnone"></th>
+								<th class="extratd11 w-30 blankbox dnone"></th>
+								<th class="extratd12 w-30 blankbox dnone"></th>
+								<th class="extratd13 w-30 blankbox dnone"></th>
+								<th class="text-center w-30">Action</th>
+							</tr>
+						</thead>
+						<tbody>
+							@if (Model.DailyLogList != null)
+							{
+
+								int count = 0;
+
+								for (int i = 0; i < Model.DailyLogList.Count; i++)
+
+								{
+
+
+									count++;
+									<tr>
+										@Html.HiddenFor(model => Model.DailyLogList[i].TravelrequestID)
+										<td class="text-center">
+											<label id="span_@count" name="span_@count">@count </label>
+											@*<input type="hidden" value="@Model.DailyLogList[i].LastWorkingDay" id="DailyLogListlast_@i" name="DailyLogList[@i].LastWorkingDay" class="hfLastworkingday" />
+												<input type="hidden" value="@Model.DailyLogList[i].Doj" id="DailyLogListdoj_@i" name="DailyLogList[@i].Doj" class="hfDoj"/>*@
+										</td>
+										<td>
+											@Html.DropDownListFor(n => Model.DailyLogList[i].proj_id, new SelectList(Model.ProjectMappedList, "ProjectRegID", "ProjectName", Model.DailyLogList[i].proj_id), "Select Project",
+		new { @class = "form-control  applyselect" })
+											@Html.ValidationMessageFor(model => Model.DailyLogList[i].proj_id, "", new { @class = "text-danger" })
+										</td>
+										<td>
+											@Html.DropDownListFor(n => Model.DailyLogList[i].ActivityID, new SelectList(Model.ActivityMasterList, "ID", "Name", Model.DailyLogList[i].ActivityID), "Select Activity",
+		new { @class = "form-control  applyselect" })
+											@Html.ValidationMessageFor(model => Model.DailyLogList[i].ActivityID, "", new { @class = "text-danger" })
+										</td>
+										<td>
+											@Html.TextAreaFor(model => Model.DailyLogList[i].description, new { @class = "form-control", @placeholder = "Enter Description", @autocomplete = "off", @onkeydown = "GetStandardTask(this);" })
+											@Html.ValidationMessageFor(model => Model.DailyLogList[i].description, "", new { @class = "text-danger" })
+										</td>
+
+										<td data-toggle="tooltip" data-original-title="@Html.Raw(Description[1])" class="@ClassName[1]  workclass workclass_1 @COlor[1] ">
+											<input type="number" @IsLock[1] id="@Html.IdFor(x => Model.DailyLogList[i].Day1)" name="@Html.NameFor(x => Model.DailyLogList[i].Day1)" class="dayshours_1" onfocus="if(this.value == '0') { this.value=''}" onblur="if(this.value==''){this.value='0'} else{CalculateHours(1);}" value="@Model.DailyLogList[i].Day1">
+										</td>
+										<td data-toggle="tooltip" data-original-title="@Html.Raw(Description[2])" class="@ClassName[2] workclass workclass_2 @COlor[2]">
+											<input type="number" @IsLock[2] id="@Html.IdFor(x => Model.DailyLogList[i].Day2)" name="@Html.NameFor(x => Model.DailyLogList[i].Day2)" class="dayshours_2" onfocus="if(this.value == '0') { this.value=''}" onblur="if(this.value==''){this.value='0'} else{CalculateHours(2);}" value="@Model.DailyLogList[i].Day2">
+										</td>
+										<td data-toggle="tooltip" data-original-title="@Html.Raw(Description[3])" class="@ClassName[3] workclass workclass_3 @COlor[3]">
+											<input type="number" @IsLock[3] id="@Html.IdFor(x => Model.DailyLogList[i].Day3)" name="@Html.NameFor(x => Model.DailyLogList[i].Day3)" class="dayshours_3" onfocus="if(this.value == '0') { this.value=''}" onblur="if(this.value==''){this.value='0'} else{CalculateHours(3);}" value="@Model.DailyLogList[i].Day3">
+										</td>
+										<td data-toggle="tooltip" data-original-title="@Html.Raw(Description[4])" class="@ClassName[4] workclass workclass_4 @COlor[4]">
+											<input type="number" @IsLock[4] id="@Html.IdFor(x => Model.DailyLogList[i].Day4)" name="@Html.NameFor(x => Model.DailyLogList[i].Day4)" class="dayshours_4" onfocus="if(this.value == '0') { this.value=''}" onblur="if(this.value==''){this.value='0'} else{CalculateHours(4);}" value="@Model.DailyLogList[i].Day4">
+										</td>
+										<td data-toggle="tooltip" data-original-title="@Html.Raw(Description[5])" class="@ClassName[5] workclass workclass_5 @COlor[5]">
+											<input type="number" @IsLock[5] id="@Html.IdFor(x => Model.DailyLogList[i].Day5)" name="@Html.NameFor(x => Model.DailyLogList[i].Day5)" class="dayshours_5" onfocus="if(this.value == '0') { this.value=''}" onblur="if(this.value==''){this.value='0'} else{CalculateHours(5);}" value="@Model.DailyLogList[i].Day5">
+										</td>
+										<td data-toggle="tooltip" data-original-title="@Html.Raw(Description[6])" class="@ClassName[6] workclass workclass_6 @COlor[6]">
+											<input type="number" @IsLock[6] id="@Html.IdFor(x => Model.DailyLogList[i].Day6)" name="@Html.NameFor(x => Model.DailyLogList[i].Day6)" class="dayshours_6" onfocus="if(this.value == '0') { this.value=''}" onblur="if(this.value==''){this.value='0'} else{CalculateHours(6);}" value="@Model.DailyLogList[i].Day6">
+										</td>
+										<td data-toggle="tooltip" data-original-title="@Html.Raw(Description[7])" class="@ClassName[7] workclass workclass_7 @COlor[7]">
+											<input type="number" @IsLock[7] id="@Html.IdFor(x => Model.DailyLogList[i].Day7)" name="@Html.NameFor(x => Model.DailyLogList[i].Day7)" class="dayshours_7" onfocus="if(this.value == '0') { this.value=''}" onblur="if(this.value==''){this.value='0'} else{CalculateHours(7);}" value="@Model.DailyLogList[i].Day7">
+										</td>
+
+
+										<td data-toggle="tooltip" data-original-title="@Html.Raw(Description[8])" class="@ClassName[8] workclass workclass_8 @COlor[8]">
+											<input type="number" @IsLock[8] id="@Html.IdFor(x => Model.DailyLogList[i].Day8)" name="@Html.NameFor(x => Model.DailyLogList[i].Day8)" class="dayshours_8" onfocus="if(this.value == '0') { this.value=''}" onblur="if(this.value==''){this.value='0'} else{CalculateHours(8);}" value="@Model.DailyLogList[i].Day8">
+										</td>
+										<td data-toggle="tooltip" data-original-title="@Html.Raw(Description[9])" class="@ClassName[9] workclass workclass_9 @COlor[9]">
+											<input type="number" @IsLock[9] id="@Html.IdFor(x => Model.DailyLogList[i].Day9)" name="@Html.NameFor(x => Model.DailyLogList[i].Day9)" class="dayshours_9" onfocus="if(this.value == '0') { this.value=''}" onblur="if(this.value==''){this.value='0'} else{CalculateHours(9);}" value="@Model.DailyLogList[i].Day9">
+										</td>
+										<td data-toggle="tooltip" data-original-title="@Html.Raw(Description[10])" class="@ClassName[10] workclass workclass_10 @COlor[10]">
+											<input type="number" @IsLock[10] id="@Html.IdFor(x => Model.DailyLogList[i].Day10)" name="@Html.NameFor(x => Model.DailyLogList[i].Day10)" class="dayshours_10" onfocus="if(this.value == '0') { this.value=''}" onblur="if(this.value==''){this.value='0'} else{CalculateHours(10);}" value="@Model.DailyLogList[i].Day10">
+										</td>
+
+										<td data-toggle="tooltip" data-original-title="@Html.Raw(Description[11])" class="@ClassName[11] workclass workclass_11 @COlor[11]">
+											<input type="number" @IsLock[11] id="@Html.IdFor(x => Model.DailyLogList[i].Day11)" name="@Html.NameFor(x => Model.DailyLogList[i].Day11)" class="dayshours_11" onfocus="if(this.value == '0') { this.value=''}" onblur="if(this.value==''){this.value='0'} else{CalculateHours(11);}" value="@Model.DailyLogList[i].Day11">
+										</td>
+										<td data-toggle="tooltip" data-original-title="@Html.Raw(Description[12])" class="@ClassName[12] workclass workclass_12 @COlor[12]">
+											<input type="number" @IsLock[12] id="@Html.IdFor(x => Model.DailyLogList[i].Day12)" name="@Html.NameFor(x => Model.DailyLogList[i].Day12)" class="dayshours_12" onfocus="if(this.value == '0') { this.value=''}" onblur="if(this.value==''){this.value='0'} else{CalculateHours(12);}" value="@Model.DailyLogList[i].Day12">
+										</td>
+										<td data-toggle="tooltip" data-original-title="@Html.Raw(Description[13])" class="@ClassName[13] workclass workclass_13 @COlor[13]">
+											<input type="number" @IsLock[13] id="@Html.IdFor(x => Model.DailyLogList[i].Day13)" name="@Html.NameFor(x => Model.DailyLogList[i].Day13)" class="dayshours_13" onfocus="if(this.value == '0') { this.value=''}" onblur="if(this.value==''){this.value='0'} else{CalculateHours(13);}" value="@Model.DailyLogList[i].Day13">
+										</td>
+										<td data-toggle="tooltip" data-original-title="@Html.Raw(Description[14])" class="@ClassName[14] workclass workclass_14 @COlor[14]">
+											<input type="number" @IsLock[14] id="@Html.IdFor(x => Model.DailyLogList[i].Day14)" name="@Html.NameFor(x => Model.DailyLogList[i].Day14)" class="dayshours_14" onfocus="if(this.value == '0') { this.value=''}" onblur="if(this.value==''){this.value='0'} else{CalculateHours(14);}" value="@Model.DailyLogList[i].Day14">
+										</td>
+										<td data-toggle="tooltip" data-original-title="@Html.Raw(Description[15])" class="@ClassName[15] workclass workclass_15 @COlor[15]">
+											<input type="number" @IsLock[15] id="@Html.IdFor(x => Model.DailyLogList[i].Day15)" name="@Html.NameFor(x => Model.DailyLogList[i].Day15)" class="dayshours_15" onfocus="if(this.value == '0') { this.value=''}" onblur="if(this.value==''){this.value='0'} else{CalculateHours(15);}" value="@Model.DailyLogList[i].Day15">
+										</td>
+										<td data-toggle="tooltip" data-original-title="@Html.Raw(Description[16])" class="@ClassName[16] workclass workclass_16 @COlor[16]">
+											<input type="number" @IsLock[16] id="@Html.IdFor(x => Model.DailyLogList[i].Day16)" name="@Html.NameFor(x => Model.DailyLogList[i].Day16)" class="dayshours_16" onfocus="if(this.value == '0') { this.value=''}" onblur="if(this.value==''){this.value='0'} else{CalculateHours(16);}" value="@Model.DailyLogList[i].Day16">
+										</td>
+										<td data-toggle="tooltip" data-original-title="@Html.Raw(Description[17])" class="@ClassName[17] workclass workclass_17 @COlor[17]">
+											<input type="number" @IsLock[17] id="@Html.IdFor(x => Model.DailyLogList[i].Day17)" name="@Html.NameFor(x => Model.DailyLogList[i].Day17)" class="dayshours_17" onfocus="if(this.value == '0') { this.value=''}" onblur="if(this.value==''){this.value='0'} else{CalculateHours(17);}" value="@Model.DailyLogList[i].Day17">
+										</td>
+										<td data-toggle="tooltip" data-original-title="@Html.Raw(Description[18])" class="@ClassName[18] workclass workclass_18 @COlor[18]">
+											<input type="number" @IsLock[18] id="@Html.IdFor(x => Model.DailyLogList[i].Day18)" name="@Html.NameFor(x => Model.DailyLogList[i].Day18)" class="dayshours_18" onfocus="if(this.value == '0') { this.value=''}" onblur="if(this.value==''){this.value='0'} else{CalculateHours(18);}" value="@Model.DailyLogList[i].Day18">
+										</td>
+										<td data-toggle="tooltip" data-original-title="@Html.Raw(Description[19])" class="@ClassName[19] workclass workclass_19 @COlor[19]">
+											<input type="number" @IsLock[19] id="@Html.IdFor(x => Model.DailyLogList[i].Day19)" name="@Html.NameFor(x => Model.DailyLogList[i].Day19)" class="dayshours_19" onfocus="if(this.value == '0') { this.value=''}" onblur="if(this.value==''){this.value='0'} else{CalculateHours(19);}" value="@Model.DailyLogList[i].Day19">
+										</td>
+										<td data-toggle="tooltip" data-original-title="@Html.Raw(Description[20])" class="@ClassName[20] workclass workclass_20 @COlor[20]">
+											<input type="number" @IsLock[20] id="@Html.IdFor(x => Model.DailyLogList[i].Day20)" name="@Html.NameFor(x => Model.DailyLogList[i].Day20)" class="dayshours_20" onfocus="if(this.value == '0') { this.value=''}" onblur="if(this.value==''){this.value='0'} else{CalculateHours(20);}" value="@Model.DailyLogList[i].Day20">
+										</td>
+										<td data-toggle="tooltip" data-original-title="@Html.Raw(Description[21])" class="@ClassName[21] workclass workclass_21 @COlor[21]">
+											<input type="number" @IsLock[21] id="@Html.IdFor(x => Model.DailyLogList[i].Day21)" name="@Html.NameFor(x => Model.DailyLogList[i].Day21)" class="dayshours_21" onfocus="if(this.value == '0') { this.value=''}" onblur="if(this.value==''){this.value='0'} else{CalculateHours(21);}" value="@Model.DailyLogList[i].Day21">
+										</td>
+										<td data-toggle="tooltip" data-original-title="@Html.Raw(Description[22])" class="@ClassName[22] workclass workclass_22 @COlor[22]">
+											<input type="number" @IsLock[22] id="@Html.IdFor(x => Model.DailyLogList[i].Day22)" name="@Html.NameFor(x => Model.DailyLogList[i].Day22)" class="dayshours_22" onfocus="if(this.value == '0') { this.value=''}" onblur="if(this.value==''){this.value='0'} else{CalculateHours(22);}" value="@Model.DailyLogList[i].Day22">
+										</td>
+										<td data-toggle="tooltip" data-original-title="@Html.Raw(Description[23])" class="@ClassName[23] workclass workclass_23 @COlor[23]">
+											<input type="number" @IsLock[23] id="@Html.IdFor(x => Model.DailyLogList[i].Day23)" name="@Html.NameFor(x => Model.DailyLogList[i].Day23)" class="dayshours_23" onfocus="if(this.value == '0') { this.value=''}" onblur="if(this.value==''){this.value='0'} else{CalculateHours(23);}" value="@Model.DailyLogList[i].Day23">
+										</td>
+										<td data-toggle="tooltip" data-original-title="@Html.Raw(Description[24])" class="@ClassName[24] workclass workclass_24 @COlor[24]">
+											<input type="number" @IsLock[24] id="@Html.IdFor(x => Model.DailyLogList[i].Day24)" name="@Html.NameFor(x => Model.DailyLogList[i].Day24)" class="dayshours_24" onfocus="if(this.value == '0') { this.value=''}" onblur="if(this.value==''){this.value='0'} else{CalculateHours(24);}" value="@Model.DailyLogList[i].Day24">
+										</td>
+										<td data-toggle="tooltip" data-original-title="@Html.Raw(Description[25])" class="@ClassName[25] workclass workclass_25 @COlor[25]">
+											<input type="number" @IsLock[25] id="@Html.IdFor(x => Model.DailyLogList[i].Day25)" name="@Html.NameFor(x => Model.DailyLogList[i].Day25)" class="dayshours_25" onfocus="if(this.value == '0') { this.value=''}" onblur="if(this.value==''){this.value='0'} else{CalculateHours(25);}" value="@Model.DailyLogList[i].Day25">
+										</td>
+										<td data-toggle="tooltip" data-original-title="@Html.Raw(Description[26])" class="@ClassName[26] workclass workclass_26 @COlor[26]">
+											<input type="number" @IsLock[26] id="@Html.IdFor(x => Model.DailyLogList[i].Day26)" name="@Html.NameFor(x => Model.DailyLogList[i].Day26)" class="dayshours_26" onfocus="if(this.value == '0') { this.value=''}" onblur="if(this.value==''){this.value='0'} else{CalculateHours(26);}" value="@Model.DailyLogList[i].Day26">
+										</td>
+										<td data-toggle="tooltip" data-original-title="@Html.Raw(Description[27])" class="@ClassName[27] workclass workclass_27 @COlor[27]">
+											<input type="number" @IsLock[27] id="@Html.IdFor(x => Model.DailyLogList[i].Day27)" name="@Html.NameFor(x => Model.DailyLogList[i].Day27)" class="dayshours_27" onfocus="if(this.value == '0') { this.value=''}" onblur="if(this.value==''){this.value='0'} else{CalculateHours(27);}" value="@Model.DailyLogList[i].Day27">
+										</td>
+										<td data-toggle="tooltip" data-original-title="@Html.Raw(Description[28])" class="@ClassName[28] workclass workclass_28 @COlor[28]">
+											<input type="number" @IsLock[28] id="@Html.IdFor(x => Model.DailyLogList[i].Day28)" name="@Html.NameFor(x => Model.DailyLogList[i].Day28)" class="dayshours_28" onfocus="if(this.value == '0') { this.value=''}" onblur="if(this.value==''){this.value='0'} else{CalculateHours(28);}" value="@Model.DailyLogList[i].Day28">
+										</td>
+										<td data-toggle="tooltip" data-original-title="@Html.Raw(Description[29])" class="@ClassName[29] workclass workclass_29 @COlor[29]">
+											<input type="number" @IsLock[29] id="@Html.IdFor(x => Model.DailyLogList[i].Day29)" name="@Html.NameFor(x => Model.DailyLogList[i].Day29)" class="dayshours_29" onfocus="if(this.value == '0') { this.value=''}" onblur="if(this.value==''){this.value='0'} else{CalculateHours(29);}" value="@Model.DailyLogList[i].Day29">
+										</td>
+										<td data-toggle="tooltip" data-original-title="@Html.Raw(Description[30])" class="@ClassName[30] workclass workclass_30 @COlor[30]">
+											<input type="number" @IsLock[30] id="@Html.IdFor(x => Model.DailyLogList[i].Day30)" name="@Html.NameFor(x => Model.DailyLogList[i].Day30)" class="dayshours_30" onfocus="if(this.value == '0') { this.value=''}" onblur="if(this.value==''){this.value='0'} else{CalculateHours(30);}" value="@Model.DailyLogList[i].Day30">
+										</td>
+										<td data-toggle="tooltip" data-original-title="@Html.Raw(Description[31])" class="@ClassName[31] workclass workclass_31 @COlor[31]">
+											<input type="number" @IsLock[31] id="@Html.IdFor(x => Model.DailyLogList[i].Day31)" name="@Html.NameFor(x => Model.DailyLogList[i].Day31)" class="dayshours_31" onfocus="if(this.value == '0') { this.value=''}" onblur="if(this.value==''){this.value='0'} else{CalculateHours(31);}" value="@Model.DailyLogList[i].Day31">
+										</td>
+										<td class="extratd1 w-30 dnone"></td>
+										<td class="extratd2 w-30 dnone"></td>
+										<td class="extratd3 w-30 dnone"></td>
+										<td class="extratd4 w-30 dnone"></td>
+										<td class="extratd5 w-30 dnone"></td>
+										<td class="extratd6 w-30 dnone"></td>
+
+										<td class="extratd7 w-30 blankbox dnone"></td>
+										<td class="extratd8 w-30 blankbox dnone"></td>
+										<td class="extratd9 w-30 blankbox dnone"></td>
+										<td class="extratd10 w-30 blankbox dnone"></td>
+										<td class="extratd11 w-30 blankbox dnone"></td>
+										<td class="extratd12 w-30 blankbox dnone"></td>
+										<td class="extratd13 w-30 blankbox dnone"></td>
+										<td class="text-center">
+											@if (count > 1)
+											{
+												<a onclick="DeleteRow(this)" data-toggle='tooltip' data-original-title='Remove'> <i class='fas fa-window-close red-clr'></i></a>
+											}
+											else
+											{
+												<a class="disabled"><i class="fas fa-window-close" aria-hidden="true"></i></a>
+											}
+										</td>
+									</tr>
+								}
+							}
+						</tbody>
+						<tfoot>
+							<tr class="ttl-bg">
+								<td colspan="4" class="text-right">Total Hours </td>
+								@for (DateTime date = StartDate; date <= EndDate; date = date.AddDays(1))
+								{
+									<td class="workclass text-center workclass_@Convert.ToInt32(date.ToString("dd"))">
+										<span id="spnLeaveFinalHour_@Convert.ToInt32(date.ToString("dd"))"
+											  class="@ValidHours[Convert.ToInt32(date.ToString("dd"))] spnFinalHour_@Convert.ToInt32(date.ToString("dd"))">
+										</span>
+									</td>
+
+								}
+								<td class="extratd1 w-30 dnone text-center"></td>
+								<td class="extratd2 w-30 dnone text-center"></td>
+								<td class="extratd3 w-30 dnone text-center"></td>
+								<td class="extratd4 w-30 dnone text-center"></td>
+								<td class="extratd5 w-30 dnone text-center"></td>
+								<td class="extratd6 w-30 dnone text-center"></td>
+
+								<td class="extratd7 w-30 blankbox dnone text-center"></td>
+								<td class="extratd8 w-30 blankbox dnone text-center"></td>
+								<td class="extratd9 w-30 blankbox dnone text-center"></td>
+								<td class="extratd10 w-30 blankbox dnone text-center"></td>
+								<td class="extratd11 w-30 blankbox dnone text-center"></td>
+								<td class="extratd12 w-30 blankbox dnone text-center"></td>
+								<td class="extratd13 w-30 text-center blankbox dnone"></td>
+								<td></td>
+							</tr>
+						</tfoot>
+					</table>
+				</div>
+				<div class="col-sm-12 form-group mt-2 text-right">
+					<button type="button" onclick="AddNewRow()" class="btn green-clr ripplelink mb-0 mt-2">
+						<i class="fas fa-plus"></i> Add Row
+					</button>
+				</div>
+
+
+				@if (!string.IsNullOrEmpty(Model.ResubmitRemarks))
+				{
+					<div class="col-md-8 mx-auto">
+						<strong class="heading-three"><i class="fas fa-comments"></i>Supervisor Remarks</strong>
+						@Model.ResubmitRemarks
+
+					</div>
+
+				}
+
+
+				<div class="col-sm-12 text-center mt-3">
+					<button type="submit" id="btnsave" class="btn mtr-o-grn btn-l ripplelink " name="Command" value="Save"><i class="fas fa-save"></i>Save</button>
+					<button type="submit" id="btnSubmit" style="display:none" name="Command" value="VerifyAndSave"></button>
+					<button type="button" class="btn mtr-o-grn btn-l ripplelink" id="btnVerifyAndSave"><i class="fas fa-check-circle"></i>Verify and Submit</button>
+					@if (Model.IsShowRequestForCompOFF)
+					{
+						<button type="button" class="btn blk-gdn-btn btn-l ripplelink btnrequestforCO"><i class="fas fa-envelope"></i>Request For Comp Off</button>
+					}
+					<a href="/Dashboard" class="btn cnl-btn ripplelink  "><i class="fas fa-times"></i>Close</a>
+				</div>
+			</div>
+		}
+		else
+		{
+			<div class="col-sm-12 form-group text-center">
+				<div class="successmgs-dgn">
+					<i class="far fa-calendar-check green-clr msgicon"></i> Activity Log has been Submitted.<br />
+
+					@if (Model.ShowRecall)
+					{
+						<a class="btn mt-3 mtr-o-grn btn-l ripplelink Anchrrecall"><i class="fas fa-undo"></i><span>Recall</span></a>
+						<button style="display:none" id="btnbtnrecall" type="submit" name="Command" value="Recall"></button>
+					}
+				</div>
+			</div>
+		}
+	}
+</div>
+
+
+
+<!---- add project popup --->
+<!-- TASK Modal -->
+
+<div class="modal fade pop-dgn" id="ModalLeaveSum">
+	<div class="modal-dialog modal-lg">
+		<div class="modal-content">
+			<!-- Modal Header -->
+			<div class="modal-header blk-gdn-btn">
+				<h4 class="modal-title"><i class="fas fa-signal"></i> View Leave Status </h4>
+				<div class="close" data-dismiss="modal">&times;</div>
+			</div>
+			<div id="LeaveSumDiv"></div>
+		</div>
+	</div>
+</div>
+
+
+<div class="modal fade pop-dgn" id="adproject">
+	<div class="modal-dialog modal-lg">
+		<div class="modal-content">
+			<div class="modal-header blk-gdn-btn">
+				<h4 class="modal-title"> <i class="fas fa-plus"></i> Add Projects </h4>
+				<div class="close" data-dismiss="modal">&times;</div>
+			</div>
+			<div id="AddProjectDiv"></div>
+		</div>
+	</div>
+</div>
+
+<!---- Create Standard Task --->
+<!-- TASK Modal -->
+<div class="modal fade pop-dgn" id="poptask">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header blk-gdn-btn">
+				<h4 class="modal-title"> <i class="fas fa-clipboard-list"></i> Create Standard Task</h4>
+				<div class="close" data-dismiss="modal">&times;</div>
+			</div>
+			<div class="modal-body p-3">
+				<div class="row">
+					<div class="col-sm-12 form-group">
+						<textarea class="form-control hgt-ato" maxlength="500" placeholder="Enter Standard TasK" id="txtStandardTask" name="txtStandardTask"></textarea>
+					</div>
+					<div class="col-sm-12 text-center mt-2 mb-2">
+						<button type="button" class="btn mtr-o-grn btn-l ripplelink " id="btnAddTask"> <i class="fas fa-save"></i>Save </button>
+						<button type="button" class="btn cnl-btn ripplelink  " data-dismiss="modal"><i class="fas fa-times"></i>Close</button>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-md-12">
+						<div class="StandardTaskList">
+							<div class="table-loading">@Html.Partial("_Loading")</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+
+<!-- Load Request for Comp Off-->
+<div class="modal fade pop-dgn" id="RequestCompOffModal">
+	<div class="modal-dialog popw--md">
+		<div class="modal-content">
+			<!-- Modal Header -->
+			<div class="modal-header blk-gdn-btn">
+				<h4 class="modal-title"><i class="fas fa-envelope"></i> Request for Comp Off </h4>
+				<div class="close" data-dismiss="modal">&times;</div>
+			</div>
+			<div id="DivComOFF"></div>
+		</div>
+	</div>
+</div>
+
+
+<script type="text/javascript">
+	$("[data-toggle=popover]").popover({
+		html: true,
+		trigger: 'hover',
+		content: function () {
+			var content = $(this).attr("data-popover-content");
+			return $(content).children(".popover-body").html();
+		}
+	});
+</script>
+@section PreScripts {
+	<script>
+		var alertObj, confirmObj, promptObj;
+		function onLoadconfirm() {
+			confirmObj = this;
+			document.getElementById('confirmBtn').onclick = function () {
+				confirmObj.show();
+			};
+		}
+		function confirmBtnClick() {
+			confirmObj.hide();
+		}
+
+		function dialogOpen() {
+
+			document.getElementById('confirmBtn').style.display = 'none';
+
+		}
+		function dialogClose() {
+
+			document.getElementById('confirmBtn').style.display = 'inline-block';
+
+		}
+	</script>
+}
+@(Html.EJS().ScriptManager())

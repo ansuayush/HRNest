@@ -1,0 +1,90 @@
+﻿
+@using System.Data;
+@section style{
+    @System.Web.Optimization.Styles.Render("~/bundle/dataTablecss")
+}
+<h1 class="heading-one "> Leave Availed</h1>
+<div class="card p-0">
+    <div class="card-body p-0">
+        <div class="card cr-border p-0">
+
+            <div class="card-body p-0">
+                @using (Ajax.BeginForm("_LeaveAvailed", "Personnel",
+                    new { src = clsApplicationSetting.EncryptQueryString(ViewBag.MenuID.ToString() + "*/Personnel/_LeaveAvailed") },
+                    new AjaxOptions { UpdateTargetId = "targetId", HttpMethod = "Post", OnComplete = "Completed", OnFailure = "OnFailure" }, new { @class = "form-horizontal" }))
+                {
+
+                    <div class="">
+                        <div class="row mb-3  widht-sm  text-clr">
+                            <div class="col-md-3 form-group">
+                                <label>Employee Name </label>
+                                <p class="mb-0 sz-sm"><strong>@clsApplicationSetting.GetSessionValue("UserName")</strong></p>
+                            </div>
+
+                            <div class="col-md-3 form-group">
+                                <label>Leave Type</label>
+
+                                <select class="form-control applyselect" id="ddLeaveType" name="ddLeaveType">
+                                    <option value="0">All</option>
+                                    @if (Model != null)
+                                    {
+                                        foreach (DataRow item in Model.Tables[0].Rows)
+                                        {
+                                            <option value="@item["ID"]">@item["Leave_Name"]</option>
+                                        }
+                                    }
+                                </select>
+                            </div>
+                            <div class="col-md-3 form-group">
+                                <button type="submit" class="btn mtr-g-grn btn-l ripplelink pull-right" name="Command" value="Search"><i class="fas fa-search"></i> Search</button>
+                                <button type="button" class="btn cnl-btn ripplelink  pull-right" onclick="ShowLoadingDialog();window.location='@Url.Action("EssPortal",new { src = clsApplicationSetting.EncryptQueryString(ViewBag.MenuID.ToString() + "*/Personnel/EssPortal")})';"><i class="fas fa-times"></i> Cancel</button>
+
+                            </div>
+                        </div>
+                    </div>
+
+
+
+                }
+            </div>
+
+
+        </div>
+    </div>
+
+    <div id="targetId"></div>
+</div>
+
+
+
+
+@section scripts    {
+    @System.Web.Optimization.Scripts.Render("~/bundle/dataTablesjs")
+    <script src="~/js/AddInit.js"></script>
+    @System.Web.Optimization.Scripts.Render("~/bundle/unobtrusivejs")
+    <script>
+
+        function Completed() {
+            DatatableScripts();
+        }
+
+        function OnFailure() {
+            swal('Something is not good', '')
+        }
+        //function PrintPanel() {
+        //    var HTML = $("#empdetails").prop('outerHTML');
+        //    HTML += $(".table-responsive").prop('outerHTML');
+
+        //    var printWindow = window.open('', '', 'height=550,width=800');
+        //    printWindow.document.write('<html><head><title>Print</title>');
+        //    printWindow.document.write('</head><body >');
+        //    printWindow.document.write(HTML);
+        //    printWindow.document.write('</body></html>');
+        //    printWindow.document.close();
+        //    setTimeout(function () {
+        //        printWindow.print();
+        //    }, 500);
+        //    return false;
+        //}
+    </script>
+}

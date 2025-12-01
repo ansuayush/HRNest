@@ -1,0 +1,109 @@
+﻿
+
+@using System.Data
+@model DataSet
+@{
+	string MonthName = ""; string YearName = "";
+	string CompanyName = "", Address = "";
+	if (Model != null)
+	{
+		try
+		{
+			MonthName = Model.Tables[0].Rows[0]["MonthName"].ToString();
+			YearName = Model.Tables[0].Rows[0]["YearName"].ToString();
+			CompanyName = Model.Tables[0].Rows[0]["CompanyName"].ToString();
+			Address = Model.Tables[0].Rows[0]["CompanyAddress"].ToString();
+		}
+		catch
+		{
+		}
+	}
+}
+
+
+<table id="tblBankReport" name="tblBankReport">
+	<thead>
+		<tr>
+			<th class="text-center" style="font-size:medium" colspan="4"><img src="~/assets/design/images/c3.png" /></th>
+			<th class="text-center" style="font-size:medium" colspan="6">@CompanyName <br />@Address</th>
+		</tr>
+		<tr>
+			<th class="text-center" style="font-size:medium" colspan="4"></th>
+			<th class="text-center" style="font-size:medium" colspan="6">Bank Report </th>
+		</tr>
+		<tr style="font-weight:bold">
+			<th class="text-left"><strong>Employee Code</strong></th>
+			<th class="text-left"><strong>Payment Type	</strong></th>
+			<th class="text-left"><strong>Payment Date</strong></th>
+			<th class="text-left"><strong>Beneficary Name</strong></th>
+			<th class="text-left"><strong>Beneficary Account No	</strong></th>
+			<th class="text-left"><strong>Beneficary Bank Code	</strong></th>
+			<th class="text-right"><strong>Amount	</strong></th>
+			<th class="text-left"><strong>Narration	</strong></th>
+			<th class="text-left"><strong>Email Id	</strong></th>
+			<th class="text-left"><strong>Debit Account Number	</strong></th>
+			<th class="text-left"><strong>Type	</strong></th>
+			
+		</tr>
+
+	</thead>
+	<tbody>
+		@{
+			var Employee = from myRow in Model.Tables[1].AsEnumerable()
+						   select myRow;
+
+			int count = 0;
+			string style = @"<style> .textmode { mso-number-format:\@; } </style>";
+		}
+		@{ decimal NetFCRA = 0; decimal NetNFCRA = 0; }
+		@foreach (var item in Employee)
+		{
+
+
+			count++;
+			string acno = Convert.ToString(item["AccountNo"]);
+		<tr>
+
+			<td>@item["emp_code"]</td>
+			<td>PAY</td>
+
+			<td>@item["SalaryDate"]</td>
+			<td>@item["emp_name"]</td>
+			<td class="text-right" style='mso-number-format: General'>
+				@Html.Raw(acno)
+
+			</td>
+			@*<td class="text-right"  style="@style" >
+			@Html.Raw(acno)
+
+
+		</td>*@
+			<td>@item["IFSCCode"]</td>
+
+			@if (Convert.ToString(item["ProjectType"]) == "FCRA")
+			{
+				<td class="text-right">@item["NetFCRAAmt"]</td>
+			}
+			else
+			{
+				<td class="text-right">@item["NetNFCRAAmt"]</td>
+			}
+
+
+			<td class="text-right"> Salary for the month of @item["YearName"]</td>
+			<td>@item["email"]</td>
+			@if (Convert.ToString(item["ProjectType"]) == "FCRA")
+			{
+				<td class="text-right">52510891000 </td>
+			}
+			else
+			{
+				<td class="text-right">52510891019</td>
+			}
+
+			<td> @item["ProjectType"]</td>
+
+		</tr>
+		}
+	</tbody>
+</table>

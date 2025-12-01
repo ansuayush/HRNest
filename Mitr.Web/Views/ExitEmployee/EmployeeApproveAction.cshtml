@@ -1,0 +1,187 @@
+﻿
+@{
+    ViewBag.Title = "EmployeeApproveAction";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@using (Ajax.BeginForm("EmployeeApproveAction", "ExitEmployee",
+     new { src = clsApplicationSetting.EncryptQueryString(ViewBag.MenuID.ToString() + "*/ExitEmployee/EmployeeApproveAction") },
+     new AjaxOptions { HttpMethod = "POST", OnSuccess = "BindTarget", OnFailure = "CloseLoadingDialog()", OnBegin = "ShowLoadingDialog();" },
+ new { @id = "EmployeeApproveActionFrom" })
+ )
+{
+    <div class="inner-main defult-height pb-0">
+       
+        <div class="row">
+            <div class="inner-main defult-height p-3 pb-0">
+                <h1 class="heading-one mb-3">Resignation Request </h1>
+                <div class="row">
+                    <div class="col-sm-12 form-group">
+                        <ul class="list-unstyled inline-li m-0 rqt-dtl">
+                            <li>
+                                <label>Req No</label>
+                                <label id="labelreq"></label>
+                                 <input type="hidden" id="hdfid" value="@ViewBag.ID " />
+                            </li>
+                            <li>
+                                <label>Requested Date</label>
+                                <label id="labelreqdate"></label>
+                            </li>
+                            <li>
+                                <label>Requested by</label>
+                                <label id="labelreqby"></label>
+                            </li>
+
+
+
+                            <li>
+                                <label>Location</label>
+                                <label id="labelloc"></label>
+                            </li>
+                            <li>
+                                <label>Department</label>
+
+                                <label id="labeldept"></label>
+                            </li>
+                            <li>
+                                <label>Designation</label>
+
+                                <label id="labeldesg"></label>
+                            </li>
+
+                        </ul>
+                    </div>
+                    <div class="col-xl-3 col-lg-4 form-group">
+                        <label>Reason for Resignation</label>
+                        <p id="pReason"></p>
+                    </div>
+                    <div class="col-xl-3 col-lg-4 form-group" data-popover-content="#comment" data-toggle="popover" data-placement="top" data-original-title="" title="">
+                        <label>Employee's Comment on Resignation</label>
+                        <p><span class="ellipsis-text" id="spanComment"></span><span class="cmt-view">View</span></p>
+                        <div id="comment" style="display: none">
+                            <div class="popover-body">
+                                <button type="button" class="popover-close close"> <i class="fas fa-times"></i> </button>
+                                <span id="spanFullComment"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-12"></div>
+                    <div class="col-xl-3 col-lg-4 form-group align-self-end"><strong>Notice Period as per Policy: <span class="red-clr" id="NPAP"></span></strong></div>
+                    <div class="col-xl-3 col-lg-4 form-group align-self-end" id="divEPNP"><strong>Employee proposed notice period: <span class="red-clr" id="EPNP"></span></strong>  </div>
+                    <div class="col-sm-12"></div>
+                    <div class="col-xl-3 col-lg-4 col-sm-6 wh-575 form-group">
+                        <label>Relieving date as per policy</label>
+                        <p id="RDateP"></p>
+                    </div>
+                    <div class="col-xl-3 col-lg-4  col-sm-6 wh-575 form-group" id="divEPRD">
+                        <label>Employee Proposed Relieving Date</label>
+                        <p id="ERDate"></p>
+                    </div>
+                    <div class="col-sm-12"></div>
+                    <div class="col-xl-12 col-lg-12 form-group " id="divlevelComment">
+                        <div data-popover-content="#comment1" data-toggle="popover" data-placement="top" data-original-title="" title="" id="divcomment">
+                            <label>Reason for not accepting the notice period</label>
+                            <p><span class="ellipsis-text" id="spanReasonNP"></span><span class="cmt-view">View</span></p>
+                            <div id="comment1" style="display: none">
+                                <div class="popover-body">
+                                    <button type="button" class="popover-close close"> <i class="fas fa-times"></i> </button>
+                                    <span id="spanFullReasonNP"></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-12"></div>
+                        <div class="col-xl-6 col-lg-8 form-group ">
+                            <hr>
+                            <span class="hr-aps"><i class="fas fa-check"></i>Approval Comments</span>
+                        </div>
+                        <div class="col-xl-12"></div>
+                        <div class="col-xl-6 col-lg-8 form-group">
+                            @*<input type="hidden" id="hdnUploadActualFileName" />
+                            <input type="hidden" id="hdnUploadNewFileName" />
+                            <input type="hidden" id="hdnUploadFileUrl" />*@
+                            <div class="table-responsive">
+                                <table class="table table-striped  mb-0 mt-0 vt-a" id="TabellevelComment">
+                                    <thead>
+                                        <tr>
+                                            <th width="50">Level</th>
+                                            <th width="150">Name</th>
+                                            <th width="100">Suggested Relieving Date</th>
+                                            <th>Reason for Declining Notice Period</th>
+
+                                            <th>Comment on Resignation</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+
+
+                    </div>
+
+                    <div class="col-xl-6 col-lg-8 form-group ">
+                        <hr>
+                        <span class="hr-aps"><i class="fas fa-file-alt"></i>Resolution Recorded</span>
+                    </div>
+                    <div class="col-xl-12"></div>
+
+                    <div class="col-xl-6 col-lg-8 form-group">
+                        <input type="hidden" id="hdnUploadActualFileName" />
+
+                        <input type="hidden" id="hdnUploadNewFileName" />
+
+                        <input type="hidden" id="hdnUploadFileUrl" />
+                        <div class="table-responsive">
+                            <table class="table table-striped  mb-0 mt-0 vt-a">
+                                <thead>
+                                    <tr>
+                                        <th width="150">Attachment</th>
+                                        <th>Reason</th>
+
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>
+                                            <a href="" onclick="DownloadFileRFP()" target='_blank' class="green-clr"><strong>Download</strong></a>
+
+                                            @*<button id="btnDownload1" onclick="DownloadFileRFP()" target='_blank' class='green-clr'><i class="fas fa-download float-right" data-toggle="tooltip" title="" data-original-title="Download"></i></button>*@
+                                        </td>
+
+                                        <td><span class="ellipsis-text" id="spanFullRReason"></span><span class="cmt-view"></span> </td>
+
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="col-sm-12 text-left">
+
+                        <button type="button" class="btn cnl-btn btn-l ripplelink" onclick="ShowLoadingDialog();window.location='@Url.Action("ResignationRequest", new { src = clsApplicationSetting.EncryptQueryString(ViewBag.MenuID.ToString() + "*/ExitEmployee/ResignationRequest*0")  })';"><i class="fas fa-times"></i>Close</button>
+                    </div>
+
+
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+
+
+@section scripts    {
+    @System.Web.Optimization.Scripts.Render("~/bundle/unobtrusivejs")
+    @System.Web.Optimization.Scripts.Render("~/bundle/dataTablesjs")
+
+    <script src="~/assets/design/scripts/DevScriptExit/EmployeeHistory.js"></script>
+    <script src="~/assets/design/Scripts/AddInit.js?v=@clsApplicationSetting.GetWebConfigValue("Version")"></script>
+    <script>
+       
+      
+    </script>
+}
+
+

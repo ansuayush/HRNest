@@ -1,0 +1,61 @@
+﻿
+@model Mitr.Models.Helpdesk.LocationGroup
+
+
+
+@using (Ajax.BeginForm("_LocationGroupAdd", "Ticket",
+        new { src = ViewBag.src },
+        new AjaxOptions { HttpMethod = "POST", OnSuccess = "OnSuccess" },
+    new { @id = "_LocationGroupAddFrom" })
+    )
+{
+
+    @Html.AntiForgeryToken()
+    @Html.HiddenFor(x => Model.LocationGroupID)
+    <div class="row">
+
+
+        <div class="col-lg-8 col-md-8 col-sm-6 form-group">
+            <label>Name<sup>*</sup></label>
+            @Html.TextBoxFor(model => model.GroupName, new { @class = "form-control" })
+            @Html.ValidationMessageFor(model => model.GroupName, "", new { @class = "text-danger" })
+        </div>
+
+        <div class="col-lg-4 col-md-4 col-sm-4 form-group">
+            <label>Priority<sup>*</sup></label>
+            @Html.TextBoxFor(model => model.Priority, new { @class = "form-control" })
+            @Html.ValidationMessageFor(model => model.Priority, "", new { @class = "text-danger" })
+        </div>
+        <div class="col-lg-12 col-md-12 col-sm-12 form-group">
+            <label>Map Location <sup>*</sup></label>
+            <input type="hidden" id="hdnLocationIDs" value="@(Model.LocationIDs !=null?String.Join(",", Model.LocationIDs):"")" />
+            
+           @Html.DropDownListFor(model => model.LocationIDs, new SelectList(ViewBag.LocationList, "LocationID", "Name", Model.LocationIDs), "select", new { @class = "form-control applyselect ddselect", @multiple = "multiple" })
+           @Html.ValidationMessageFor(model => model.LocationIDs, "", new { @class = "text-danger" })
+        </div>
+
+
+        <div class="col-lg-12 col-md-12 col-sm-12 form-group">
+            <label>Description</label>
+            @Html.TextAreaFor(model => model.Description, new { @class = "form-control" })
+            @Html.ValidationMessageFor(model => model.Description, "", new { @class = "text-danger" })
+        </div>
+
+
+
+    </div>
+
+    <div class="row">
+
+        @if (Model.LocationGroupID > 0)
+        {
+            <button type="submit" class="btn mtr-o-grn btn-l ripplelink pull-right" name="Command" value="Add"><i class="fa fa-paper-plane" aria-hidden="true"></i> Update</button>
+        }
+        else
+        {
+            <button type="submit" class="btn mtr-o-grn btn-l ripplelink pull-right" name="Command" value="Add"><i class="fa fa-paper-plane" aria-hidden="true"></i> Submit</button>
+        }
+    </div>
+
+}
+

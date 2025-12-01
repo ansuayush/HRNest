@@ -1,0 +1,46 @@
+﻿@using System.Data
+@model DataSet
+@{
+    DateTime SelectedDate = ViewBag.SelectedDate;
+    DateTime StartDate = new DateTime(SelectedDate.Year, SelectedDate.Month, 1);
+    DateTime EndDate = StartDate.AddMonths(1).AddDays(-1);
+}
+
+<div class="x_content table-currency mt-0">
+    <div class="table-responsive">
+
+
+        <table class="table table-scroll act-table  mt-0">
+            <thead>
+				<tr>
+					<th class="w-100">Project Name</th>
+					<th class="w-100">Activity</th>
+					<th class="w-200">Description</th>
+					@for (DateTime date = StartDate; date <= EndDate; date = date.AddDays(1))
+					{
+						<th class="text-center hasdays">@Convert.ToInt32(date.ToString("dd")) <span> @date.ToString("ddd") </span></th>
+					}
+					<th class="w-50 text-right">Total</th>
+				</tr>
+            </thead>
+            <tbody>
+                @{ int count = 0;}
+                @foreach (DataRow item in Model.Tables[0].Rows)
+                {
+
+                    <tr class="@(item["doc_type"].ToString()=="A"?"actHolhours":"actHolSperator")">
+                        <td>@(item["proj_name"] + (string.IsNullOrEmpty(item["proj_no"].ToString()) ? "" : " (" + item["proj_no"] + ")")) </td>
+                        <td>@item["Activity"]</td>
+						   <td>@item["Description"]</td>
+                        @for (DateTime date = StartDate; date <= EndDate; date = date.AddDays(1))
+                        {
+                            <td class="hasdays text-right">@item["day" + Convert.ToInt32(date.ToString("dd"))]</td>
+                        }
+                        <td class="text-right"><strong>@item["Total"]</strong></td>
+                    </tr>
+
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

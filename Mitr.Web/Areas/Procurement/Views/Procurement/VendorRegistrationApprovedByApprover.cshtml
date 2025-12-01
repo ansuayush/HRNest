@@ -1,0 +1,1283 @@
+﻿
+@{
+    ViewBag.Title = "VendorRegistrationApproval";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<!-- Start -->
+<div class="inner-main defult-height p-0">
+    <div class="serbox " data-select2-id="19" style="display:none;">
+        <div class="row" data-select2-id="18">
+            <input type="hidden" id="hdnLoggedInUser" />
+            <input type="hidden" value="@ViewBag.VendorRegId" id="hdnContentId" />
+            <input type="hidden" id="hdnApprovar" />
+            <div class="col-sm-4 form-group">
+                <label>Is this entity an NGO ?</label>
+                <select class="form-control applyselect" id="youngo" onchange="FillData(this)">
+                    <option>Select</option>
+                    <option value="yes">Yes</option>
+                    <option value="no">No</option>
+
+
+                </select>
+            </div>
+
+
+        </div>
+    </div>
+
+    <div class="p-3 yes vtbox" style="display: none;">
+        <div class="row">
+            <div class="col-sm-6 align-self-center"><h1 class="heading-one ">Vendor Registration Approval</h1></div>
+
+        </div>
+        <div class="row">
+
+
+
+            <div class="col-sm-2 form-group">
+                <label>Req No</label>
+                <input type="text" disabled="" id="ReqNo" placeholder="Enter" name="">
+            </div>
+
+            <div class="col-sm-2 form-group">
+                <label>Req Date</label>
+                <input type="text" disabled="" id="ReqDate" placeholder="Enter" name="">
+
+            </div>
+            <div class="col-sm-2 form-group">
+                <label>Req By</label>
+                <input type="text" disabled="" id="Reqby" placeholder="Enter" name="">
+            </div>
+
+            <div class="col-sm-2 form-group yes" style="display: none;">
+                <label>Vendor Type <sup>*</sup></label>
+                <select disabled="" class="form-control applyselect VR VY" id="vtngo" onchange="Fillvtngo(this);HideErrorMessage(this)">
+                </select>
+                <span id="spvtngo" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+            </div>
+
+            <div class="col-sm-4 ml-auto form-group  yes " style="display: none;">
+                <div class="ngoother" style="display:none" id="dvvtngoOther">
+                    <label>Please specify (Other) <sup>*</sup></label>
+                    <textarea disabled="" id="vtngoOther" class="form-control VR VY maxSize[1200]" placeholder="Enter" onchange="HideErrorMessage(this)"></textarea>
+                    <span id="spvtngoOther" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+                </div>
+            </div>
+
+            <div class="col-sm-2 form-group no " style="display: none;">
+                <label>Vendor Type <sup>*</sup></label>
+                <select disabled="" class="form-control applyselect VR VN" id="vtnngo" onchange="Fillvtnngo(this);HideErrorMessage(this)">
+                </select>
+                <span id="spvtnngo" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+            </div>
+
+            <div class="col-sm-4 ml-auto form-group  no">
+                <div class="nngoother" style="display:none" id="dvvtnngoOther">
+                    <label>Please specify (Other)</label>
+                    <textarea disabled="" id="vtnngoOther" style="display: none;" class="form-control VR VN maxSize[1200]" placeholder="Enter" onchange="HideErrorMessage(this)"></textarea>
+                    <span id="spvtnngoOther" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+                </div>
+            </div>
+            <div class="col-sm-12 mb-0"></div>
+            <div class="col-sm-4 form-group yes" style="display:none">
+                <label>Partner Name <sup>*</sup></label>
+                <input disabled="" type="text" value="" class="form-control VR VY" id="txtPartName" placeholder="Enter" name="" onchange="HideErrorMessage(this)">
+                <span id="sptxtPartName" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+            </div>
+
+            <div class="col-sm-4 form-group no">
+                <label>Vendor Name <sup>*</sup></label>
+                <input disabled="" type="text" value="" class="form-control VR VN" id="txtVendorName" placeholder="Enter" name="" onchange="HideErrorMessage(this)">
+                <span id="sptxtVendorName" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+            </div>
+
+
+            <div class="col-sm-4 form-group">
+                <label>Relationship  with C3 <span class="required">*</span> </label>
+                <select disabled="" class="selectothersecond form-control applyselect VR" id="ddlC3Relation" multiple="" onchange="DisplayOther(this); HideErrorMessage(this)">
+                </select>
+                <span id="spddlC3Relation" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+            </div>
+
+
+
+            <div class="col-sm-4 ml-auto form-group hidefieldsecond">
+                <div class="Relationshipoother" style="display:none" id="dvRelationshipOther">
+                    <label>Please specify (Relationship with C3) <sup>*</sup></label>
+                    <textarea id="txtOtherC3Relation" class="form-control VR maxSize[1200]" placeholder="Enter" onchange="HideErrorMessage(this)"></textarea>
+                    <span id="sptxtOtherC3Relation" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+                </div>
+            </div>
+            <div class="col-sm-12 form-group yes">
+                <hr>
+                <span class="hr-aps"><i class="fas fa-user-tie"></i>Registraion Detail</span>
+            </div>
+
+            <div class="col-sm-3 form-group yes">
+                <label>Entity Registration No <sup>*</sup></label>
+                <input type="text" value="" class="VR VY" id="txtEntityRegistrationNo" placeholder="Enter" name="" onchange="HideErrorMessage(this)">
+                <span id="sptxtEntityRegistrationNo" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+
+            </div>
+
+            <div class="col-sm-3 form-group yes">
+                <label>Registration Date  <sup>*</sup></label>
+
+                <input disabled="" class="form-control Mandatory datepicker VR VY" autocomplete="off" placeholder="dd-mm-yyyy" id="txtRegistrationDate" onchange="HideErrorMessage(this)">
+                <span id="sptxtRegistrationDate" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+            </div>
+            <div class="col-sm-3 form-group yes">
+                <label>Act  <sup>*</sup></label>
+                <input disabled="" type="text" value="" id="txtAct" placeholder="Enter" name="" class="VR VY" onchange="HideErrorMessage(this)">
+                <span id="sptxtAct" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+            </div>
+            <div class="col-sm-3 form-group yes">
+                <label>Valid Upto</label>
+
+                <input disabled="" class="form-control Mandatory datepicker VY" autocomplete="off" placeholder="dd-mm-yyyy" id="txtValidUpDate">
+
+            </div>
+
+            <div class="col-sm-12 form-group yes">
+                <label>Are you registered under FCRA ?</label>
+                <ul class="list-unstyled inline-li mt-2">
+                    <li>
+                        <div class="radio-button">
+                            <input disabled="" id="yes13" name="radionewFCRA" type="radio" onclick="show1();" value="yesFCRA" checked>
+                            <label for="yes13" class="radio-label">Yes</label>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="radio-button">
+                            <input disabled="" id="no14" name="radionewFCRA" type="radio" onclick="show2();">
+                            <label for="no14" class="radio-label">No</label>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+            <div id="div1" class="hide col-sm-12 mb-0" style="display: block;">
+                <div class="row ">
+                    <div class="col-sm-3 form-group yes">
+                        <label>FCRA Registration No  <sup>*</sup></label>
+                        <input disabled="" type="text" id="txtFCRARegistration" value="" placeholder="Enter" name="" onchange="HideErrorMessage(this)">
+                        <span id="sptxtFCRARegistration" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+                    </div>
+                    <div class="col-sm-3 form-group yes">
+                        <label> Registration Date <sup>*</sup></label>
+
+                        <input disabled="" class="form-control Mandatory datepicker" autocomplete="off" placeholder="dd-mm-yyyy" id="txtFCRARegistrationDate" onchange="HideErrorMessage(this)">
+                        <span id="sptxtFCRARegistrationDate" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+                    </div>
+                    <div class="col-sm-3 form-group yes">
+                        <label>Valid Upto <sup>*</sup></label>
+
+                        <input disabled="" class="form-control Mandatory datepicker" autocomplete="off" placeholder="dd-mm-yyyy" id="txtFCRAValidUpDate" onchange="HideErrorMessage(this)">
+                        <span id="sptxtFCRAValidUpDate" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="col-sm-12 form-group yes">
+                <label>Are you registered under Section 12A & 80G ?</label>
+                <ul class="list-unstyled inline-li mt-2">
+                    <li>
+                        <div class="radio-button">
+                            <input disabled="" id="yes14" name="raditwo" onclick="show3();" type="radio" value="" checked>
+                            <label for="yes14" class="radio-label">Yes</label>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="radio-button">
+                            <input disabled="" id="no15" name="raditwo" type="radio" onclick="show4();">
+                            <label for="no15" class="radio-label">No</label>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+            <div id="div2" class="hide col-sm-12 mb-0" style="display: block;">
+                <div class="row ">
+                    <div class="col-sm-3 form-group chechedgnone yes">
+                        <label>12 A Registration No <sup>*</sup></label>
+                        <input disabled="" type="text" value="" id="txt12ARegistrationNo" placeholder="Enter" name="" onchange="HideErrorMessage(this)">
+                        <span id="sptxt12ARegistrationNo" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+                    </div>
+                    <div class="col-sm-3 form-group yes">
+                        <label> Registration Date <sup>*</sup></label>
+
+                        <input disabled="" class="form-control Mandatory datepicker" autocomplete="off" placeholder="dd-mm-yyyy" id="txt12ARegistrationDate" onchange="HideErrorMessage(this)">
+                        <span id="sptxt12ARegistrationDate" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+                    </div>
+                    <div class="col-sm-3 form-group yes">
+                        <label>Valid Upto <sup>*</sup></label>
+
+                        <input disabled="" class="form-control Mandatory datepicker" autocomplete="off" placeholder="dd-mm-yyyy" id="txt12AValidDateUp" onchange="HideErrorMessage(this)">
+                        <span id="sptxt12AValidDateUp" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+                    </div>
+                    <div class="col-sm-12 mb-0"></div>
+                    <div class="col-sm-3 form-group yes">
+                        <label>80 G Registration No</label>
+                        <input disabled="" type="text" value="" id="txt80GRegistrationNo" placeholder="Enter" name="">
+                    </div>
+                    <div class="col-sm-3 form-group yes">
+                        <label> Registration Date</label>
+
+                        <input disabled="" class="form-control Mandatory datepicker" autocomplete="off" placeholder="dd-mm-yyyy" id="txt80GRegistrationDate">
+                    </div>
+                    <div class="col-sm-3 form-group yes">
+                        <label>Valid Upto</label>
+
+                        <input disabled="" class="form-control Mandatory datepicker" autocomplete="off" placeholder="dd-mm-yyyy" id="txt80GValidUpTo">
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-sm-12 form-group">
+                <hr>
+                <span class="hr-aps"><i class="fas fa-user-tie"></i>Vendor Details </span>
+            </div>
+
+            <div class="col-sm-12 form-group">
+                <label>Address <sup>*</sup></label>
+                <textarea disabled="" class="form-control h-100 VR maxSize[1200]" id="txtAddress" placeholder="Enter" onchange="HideErrorMessage(this)"></textarea>
+                <span id="sptxtAddress" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+            </div>
+
+
+            <div class="col-sm-3 form-group">
+                <label>Phone </label>
+                <input disabled="" type="number" value="" id="txtPhoneNo" class="form-control" placeholder="Enter" name="">
+            </div>
+            <div class="col-sm-3 form-group">
+                <label>State </label>
+                <select disabled class="form-control applyselect" id="txtState">
+                </select>
+                <span id="sptxtState" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+            </div>
+            <div class="col-sm-3 form-group">
+                <label>Related Entities (if any)</label>
+                <input disabled="" type="text" id="txtRelatedEntities" value="" class="form-control" placeholder="Enter" name="">
+            </div>
+
+
+
+            <div class="col-sm-12 form-group yes">
+                <label>Has the vendor ever worked with C3 in any capacity</label>
+                <ul class="list-unstyled inline-li mt-2">
+                    <li>
+                        <div class="radio-button">
+                            <input disabled="" id="yes25" name="radionewone" type="radio" onclick="show5();" value="" checked>
+                            <label for="yes25" class="radio-label">Yes</label>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="radio-button">
+                            <input disabled="" id="no23" name="radionewone" type="radio" onclick="show6();">
+                            <label for="no23" class="radio-label">No</label>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="col-sm-12 form-group  yes">
+                <div class="hide" id="div3" style="display:block">
+                    <label>Please share more details<sup>*</sup></label>
+                    <textarea disabled="" id="txtShareMoredetails" class="form-control h-100 maxSize[1200]" placeholder="Explain Here" onchange="HideErrorMessage(this)"></textarea>
+                    <span id="sptxtShareMoredetails" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+                </div>
+            </div>
+
+            <div class="col-sm-12 form-group">
+                <hr>
+                <span class="hr-aps"><i class="fas fa-info-circle"></i>Registration Details </span>
+            </div>
+
+            <div class="col-sm-3 form-group">
+                <label>PAN <sup>*</sup></label>
+                <input disabled="" type="text" id="txtPan" value="" class="form-control VR" placeholder="Enter" name="" onchange="HideErrorMessage(this)">
+                <span id="sptxtPan" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+            </div>
+            <div class="col-sm-3 form-group">
+                <label>Name on PAN Card <sup>*</sup></label>
+                <input disabled="" type="text" value="" id="txtPanHolder" class="form-control VR" placeholder="Enter" name="" onchange="HideErrorMessage(this)">
+                <span id="sptxtPanHolder" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+            </div>
+            <div class="col-sm-3 form-group">
+                <label>GST </label>
+                <input disabled="" id="txtGST" type="text" value="" class="form-control VR" placeholder="Enter" name="">
+
+            </div>
+
+            <div class="col-sm-9 form-group">
+                <label>Categories of Good & Services <sup>*</sup></label>
+                <select disabled="" class=" form-control applyselect VR" multiple="" id="ddlGoodsNService" onchange="HideErrorMessage(this)">
+                </select>
+                <span id="spddlGoodsNService" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+            </div>
+
+
+            <div class="col-sm-12 form-group">
+                <hr>
+                <span class="hr-aps"><i class="fas fa-info-circle"></i>MSME Details </span>
+            </div>
+
+            <div class="col-sm-12 form-group">
+                <label>Is this entity's registered under MSME ?</label>
+                <ul class="list-unstyled inline-li mt-2">
+                    <li>
+                        <div class="radio-button">
+                            <input disabled="" id="yes17" name="radioMSME" type="radio" onclick="show10();" value="" checked>
+                            <label for="yes17" class="radio-label">Yes</label>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="radio-button">
+                            <input disabled="" id="no18" name="radioMSME" type="radio" onclick="show9();">
+                            <label for="no18" class="radio-label">No</label>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+            <div class="col-sm-12" id="div5" style="display:block">
+                <div class="row">
+                    <div class="col-sm-3 form-group">
+                        <label>MSME No</label>
+                        <input disabled="" type="text" value="" id="txtMSMENo" class="form-control" placeholder="Enter" name="">
+                    </div>
+                    <div class="col-sm-12 mb-0"></div>
+                    <div class="col-sm-9 form-group">
+                        <label>Any other detail, please specify</label>
+                        <table class="table table-striped mb-2" id="tblActivity">
+                            <thead>
+                            <th>Details</th>
+                            <th>Remarks</th>
+                            </thead>
+                            <tbody>
+                            </tbody>
+                        </table>
+
+
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-sm-12 form-group">
+                <hr>
+                <span class="hr-aps"><i class="fas fa-info-circle"></i>Authorised Signatories</span>
+            </div>
+
+
+            <div class="col-sm-12 form-group">
+
+                <table class="table table-striped mb-2" id="tblAuthSignature">
+                    <thead>
+                    <th>Name</th>
+                    <th>Designation</th>
+                    <th>Email</th>
+                    <th>Mobile No.</th>
+                    <th>Purposes</th>
+
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+
+            </div>
+
+
+
+
+            <div class="col-sm-12 form-group">
+                <hr>
+                <span class="hr-aps"><i class="fas fa-info-circle"></i>Area of Operations</span>
+            </div>
+
+            <div class="col-sm-12 form-group">
+                <label>Area of Operations <sup>*</sup></label>
+                <select disabled="" class="form-control applyselect VR" multiple="" id="ddlAreaOfOperation" onchange="HideErrorMessage(this)">
+                </select>
+                <span id="spddlAreaOfOperation" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+            </div>
+
+            <div class="col-sm-12 form-group">
+                <hr>
+                <span class="hr-aps"><i class="fas fa-university"></i>Bank Details</span>
+            </div>
+
+            <div class="col-sm-12 form-group">
+
+                <table class="table table-striped mb-2" id="tblBankDetails">
+                    <thead>
+                    <th width="200">Bank Name</th>
+                    <th width="300">A/c No</th>
+                    <th width="300">IFSC Code</th>
+                    <th>Type of A/c</th>
+                    <th>Classification</th>
+
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+
+
+            </div>
+
+            <div class="col-sm-12 form-group">
+                <label>
+                    Are you aware of any conflict of interest, as per C3's policy<br />
+                    <small>
+                        (w.r.t. the proposed vendor )
+                    </small>
+                </label>
+                <ul class="list-unstyled inline-li mt-2">
+                    <li>
+                        <div class="radio-button">
+                            <input disabled="" id="yes2" name="radionew" type="radio" onclick="show7();" value="" checked>
+                            <label for="yes2" class="radio-label">Yes</label>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="radio-button">
+                            <input disabled="" id="no2" name="radionew" type="radio" onclick="show8();">
+                            <label for="no2" class="radio-label">No</label>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="col-sm-12 form-group hide" id="div4" style="display: block;">
+
+                <label>Please share more details<sup>*</sup></label>
+                <textarea disabled="" id="txtAreaOfOperationDetails" class="form-control h-100 maxSize[1200]" placeholder="Explain Here" onchange="HideErrorMessage(this)"></textarea>
+                <span id="sptxtAreaOfOperationDetails" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+
+            </div>
+
+
+
+            <div class="col-sm-12 form-group">
+                <hr>
+                <span class="hr-aps"><i class="fas fa-paperclip"></i>Attachments </span>
+            </div>
+
+            <div class="col-sm-12 form-group">
+
+                <table class="table table-striped mb-2" id="tblDocumentList">
+                    <thead>
+                    <th width="50">SR. No</th>
+                    <th width="150">Nature of Documents</th>
+                    <th width="300">Attachments</th>
+                    <th width="300">File Name</th>
+                    <th>Remarks</th>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>1</td>
+                            <td>PAN Card <sup>*</sup> <input type="hidden" value="PAN Card" id="hdnNature1" /></td>
+                            <td>
+                                <button id="btnDownload1" onclick='DownloadFile(1)' target='_blank' class='green-clr'><i class='fas fa-download'></i>Download</button>
+                                <input style="display:none;" type="file" class="form-control" placeholder="Enter" name="" id="fileAttach1">
+                                <span id="spfileAttach1" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+                            </td>
+                            <td> <label id="lblAttachement1"></label></td>
+
+                            <td>
+                                <label id="lblRemark1"></label>
+                                <input type="hidden" id="hdnUploadFileUrl1" />
+                                <input type="hidden" id="hdnUploadActualFileName1" />
+                                <input type="hidden" id="hdnUploadNewFileName1" />
+                            </td>
+
+                        </tr>
+                        <tr class="no">
+                            <td>2</td>
+                            <td>GST Certificate <input type="hidden" value="GST Certificate" id="hdnNature2" /></td>
+                            <td>
+                                <button id="btnDownload2" onclick='DownloadFile(2)' target='_blank' class='green-clr'><i class='fas fa-download'></i>Download</button>
+                                <input style="display:none;" type="file" class="form-control" placeholder="Enter" name="" id="fileAttach2">
+                            </td>
+                            <td> <label id="lblAttachement2"></label></td>
+                            <td>
+                                <label id="lblRemark2"></label>
+                                <input type="hidden" id="hdnUploadFileUrl2" />
+                                <input type="hidden" id="hdnUploadActualFileName2" />
+                                <input type="hidden" id="hdnUploadNewFileName2" />
+                            </td>
+
+
+
+                        </tr>
+                        <tr class="no">
+                            <td>3</td>
+                            <td>MSME Registration  <input type="hidden" value="MSME Registration" id="hdnNature3" /></td>
+                            <td>
+                                <button id="btnDownload3" onclick='DownloadFile(3)' target='_blank' class='green-clr'><i class='fas fa-download'></i>Download</button>
+                                <input style="display:none;" type="file" class="form-control" placeholder="Enter" name="" id="fileAttach3">
+
+                            </td>
+                            <td> <label id="lblAttachement3"></label></td>
+                            <td>
+                                <label id="lblRemark3"></label>
+                                <input type="hidden" id="hdnUploadFileUrl3" />
+                                <input type="hidden" id="hdnUploadActualFileName3" />
+                                <input type="hidden" id="hdnUploadNewFileName3" />
+                            </td>
+
+
+                        </tr>
+
+                        <tr class="no">
+                            <td>4</td>
+                            <td>OFAC  Clearance  Detail <input type="hidden" value="OFAC  Clearance  Detail" id="hdnNature4" /></td>
+                            <td>
+                                <button id="btnDownload4" onclick='DownloadFile(4)' target='_blank' class='green-clr'><i class='fas fa-download'></i>Download</button>
+                                <input style="display:none;" type="file" class="form-control" placeholder="Enter" name="" id="fileAttach4">
+                                <span id="spfileAttach4" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+                            </td>
+                            <td> <label id="lblAttachement4"></label></td>
+                            <td>
+                                <label id="lblRemark4"></label>
+                                <input type="hidden" id="hdnUploadFileUrl4" />
+                                <input type="hidden" id="hdnUploadActualFileName4" />
+                                <input type="hidden" id="hdnUploadNewFileName4" />
+                            </td>
+
+                        </tr>
+
+                        <tr class="yes">
+                            <td>5</td>
+                            <td>Registration Certificate <input type="hidden" value="Registration Certificate" id="hdnNature5" /></td>
+                            <td>
+                                <button id="btnDownload5" onclick='DownloadFile(5)' target='_blank' class='green-clr'><i class='fas fa-download'></i>Download</button>
+                                <input style="display:none;" type="file" class="form-control" placeholder="Enter" name="" id="fileAttach5">
+                            </td>
+                            <td> <label id="lblAttachement5"></label></td>
+                            <td>
+                                <label id="lblRemark5"></label>
+                                <input type="hidden" id="hdnUploadFileUrl5" />
+                                <input type="hidden" id="hdnUploadActualFileName5" />
+                                <input type="hidden" id="hdnUploadNewFileName5" />
+                            </td>
+
+
+                        </tr>
+
+                        <tr class="yes">
+                            <td>6</td>
+                            <td>FCRA Approval & Validity <input type="hidden" value="FCRA Approval & Validity" id="hdnNature6" /></td>
+                            <td>
+                                <button id="btnDownload6" onclick='DownloadFile(6)' target='_blank' class='green-clr'><i class='fas fa-download'></i>Download</button>
+                                <input style="display:none;" type="file" class="form-control" placeholder="Enter" name="" id="fileAttach6">
+                            </td>
+                            <td> <label id="lblAttachement6"></label></td>
+                            <td>
+                                <label id="lblRemark6"></label>
+                                <input type="hidden" id="hdnUploadFileUrl6" />
+                                <input type="hidden" id="hdnUploadActualFileName6" />
+                                <input type="hidden" id="hdnUploadNewFileName6" />
+                            </td>
+
+
+                        </tr>
+
+                        <tr class="yes">
+                            <td>7</td>
+                            <td>12 A Approval <input type="hidden" value="12 A Approval" id="hdnNature7" /></td>
+                            <td>
+                                <button id="btnDownload7" onclick='DownloadFile(7)' target='_blank' class='green-clr'><i class='fas fa-download'></i>Download</button>
+                                <input style="display:none;" type="file" class="form-control" placeholder="Enter" name="" id="fileAttach7">
+                            </td>
+                            <td> <label id="lblAttachement7"></label></td>
+                            <td>
+                                <label id="lblRemark7"></label>
+                                <input type="hidden" id="hdnUploadFileUrl7" />
+                                <input type="hidden" id="hdnUploadActualFileName7" />
+                                <input type="hidden" id="hdnUploadNewFileName7" />
+                            </td>
+
+
+                        </tr>
+
+                        <tr class="yes">
+                            <td>8</td>
+                            <td>80 G Approval <input type="hidden" value="80 G Approval" id="hdnNature8" /></td>
+                            <td>
+                                <button id="btnDownload8" onclick='DownloadFile(8)' target='_blank' class='green-clr'><i class='fas fa-download'></i>Download</button>
+                                <input style="display:none;" type="file" class="form-control" placeholder="Enter" name="" id="fileAttach8">
+                            </td>
+                            <td> <label id="lblAttachement8"></label></td>
+                            <td>
+                                <label id="lblRemark8"></label>
+                                <input type="hidden" id="hdnUploadFileUrl8" />
+                                <input type="hidden" id="hdnUploadActualFileName8" />
+                                <input type="hidden" id="hdnUploadNewFileName8" />
+                            </td>
+
+
+                        </tr>
+
+                        <tr class="yes">
+                            <td>9</td>
+                            <td>Banking Details<input type="hidden" value="Banking Details" id="hdnNature9" /></td>
+                            <td>
+                                <button id="btnDownload9" onclick='DownloadFile(9)' target='_blank' class='green-clr'><i class='fas fa-download'></i>Download</button>
+                                <input style="display:none;" type="file" class="form-control" placeholder="Enter" name="" id="fileAttach9">
+                            </td>
+                            <td> <label id="lblAttachement9"></label></td>
+                            <td>
+                                <label id="lblRemark9"></label>
+                                <input type="hidden" id="hdnUploadFileUrl9" />
+                                <input type="hidden" id="hdnUploadActualFileName9" />
+                                <input type="hidden" id="hdnUploadNewFileName9" />
+                            </td>
+
+                        </tr>
+                        <tr class="yes">
+                            <td>10</td>
+                            <td>Details of Board Member<input type="hidden" value="Details of Board Member" id="hdnNature10" /></td>
+                            <td>
+                                <button id="btnDownload10" onclick='DownloadFile(10)' target='_blank' class='green-clr'><i class='fas fa-download'></i>Download</button>
+                                <input style="display:none;" type="file" class="form-control" placeholder="Enter" name="" id="fileAttach10">
+                            </td>
+                            <td> <label id="lblAttachement10"></label></td>
+                            <td>
+                                <label id="lblRemark10"></label>
+                                <input type="hidden" id="hdnUploadFileUrl10" />
+                                <input type="hidden" id="hdnUploadActualFileName10" />
+                                <input type="hidden" id="hdnUploadNewFileName10" />
+                            </td>
+
+                        </tr>
+                        <tr class="yes">
+                            <td>11</td>
+                            <td>Affidavit <input type="hidden" value="Affidavit" id="hdnNature11" /></td>
+                            <td>
+                                <button id="btnDownload11" onclick='DownloadFile(11)' target='_blank' class='green-clr'><i class='fas fa-download'></i>Download</button>
+                                <input style="display:none;" type="file" class="form-control" placeholder="Enter" name="" id="fileAttach11">
+                            </td>
+                            <td> <label id="lblAttachement11"></label></td>
+                            <td>
+                                <label id="lblRemark11"></label>
+                                <input type="hidden" id="hdnUploadFileUrl11" />
+                                <input type="hidden" id="hdnUploadActualFileName11" />
+                                <input type="hidden" id="hdnUploadNewFileName11" />
+                            </td>
+
+                        </tr>
+                        <tr class="yes">
+                            <td>12</td>
+                            <td>OPAC Clearance Form <sup>*</sup> <input type="hidden" value="OPAC Clearance Form" id="hdnNature12" /></td>
+                            <td>
+                                <button id="btnDownload12" onclick='DownloadFile(12)' target='_blank' class='green-clr'><i class='fas fa-download'></i>Download</button>
+                                <input style="display:none;" type="file" class="form-control" placeholder="Enter" name="" id="fileAttach12">
+                            </td>
+                            <td> <label id="lblAttachement12"></label></td>
+                            <td>
+                                <label id="lblRemark12"></label>
+                                <input type="hidden" id="hdnUploadFileUrl12" />
+                                <input type="hidden" id="hdnUploadActualFileName12" />
+                                <input type="hidden" id="hdnUploadNewFileName12" />
+                            </td>
+
+                        </tr>
+
+                        <tr class="yes">
+                            <td>13</td>
+                            <td>Last  3 Year Annual Report <input type="hidden" value="Last  3 Year Annual Report" id="hdnNature13" /></td>
+                            <td>
+                                <button id="btnDownload13" onclick='DownloadFile(13)' target='_blank' class='green-clr'><i class='fas fa-download'></i>Download</button>
+                                <input style="display:none;" type="file" class="form-control" placeholder="Enter" name="" id="fileAttach13">
+                            </td>
+                            <td> <label id="lblAttachement13"></label></td>
+                            <td>
+                                <label id="lblRemark13"></label>
+                                <input type="hidden" id="hdnUploadFileUrl13" />
+                                <input type="hidden" id="hdnUploadActualFileName13" />
+                                <input type="hidden" id="hdnUploadNewFileName13" />
+                            </td>
+
+                        </tr>
+                        <tr class="yes">
+                            <td>14</td>
+                            <td>Last IT Return  <input type="hidden" value="Last IT Return" id="hdnNature14" /></td>
+                            <td>
+                                <button id="btnDownload14" onclick='DownloadFile(14)' target='_blank' class='green-clr'><i class='fas fa-download'></i>Download</button>
+                                <input style="display:none;" type="file" class="form-control" placeholder="Enter" name="" id="fileAttach14">
+                            </td>
+                            <td> <label id="lblAttachement14"></label></td>
+                            <td>
+                                <label id="lblRemark14"></label>
+                                <input type="hidden" id="hdnUploadFileUrl14" />
+                                <input type="hidden" id="hdnUploadActualFileName14" />
+                                <input type="hidden" id="hdnUploadNewFileName14" />
+                            </td>
+
+                        </tr>
+                        <tr class="yes">
+                            <td>15</td>
+                            <td>Last Audited No  <input type="hidden" value="Last Audited No" id="hdnNature15" /></td>
+                            <td>
+                                <button id="btnDownload15" onclick='DownloadFile(15)' target='_blank' class='green-clr'><i class='fas fa-download'></i>Download</button>
+                                <input style="display:none;" type="file" class="form-control" placeholder="Enter" name="" id="fileAttach15">
+                            </td>
+                            <td> <label id="lblAttachement15"></label></td>
+                            <td>
+
+                                <label id="lblRemark15"></label>
+                                <input type="hidden" id="hdnUploadFileUrl15" />
+                                <input type="hidden" id="hdnUploadActualFileName15" />
+                                <input type="hidden" id="hdnUploadNewFileName15" />
+                            </td>
+
+                        </tr>
+                        <tr class="yes">
+                            <td>16</td>
+                            <td>Last FCRA Return  <input type="hidden" value="Last FCRA Return" id="hdnNature16" /></td>
+                            <td>
+                                <button id="btnDownload16" onclick='DownloadFile(16)' target='_blank' class='green-clr'><i class='fas fa-download'></i>Download</button>
+                                <input style="display:none;" type="file" class="form-control" placeholder="Enter" name="" id="fileAttach16">
+                            </td>
+                            <td> <label id="lblAttachement16"></label></td>
+                            <td>
+                                <input type="hidden" id="hdnUploadFileUrl16" />
+                                <input type="hidden" id="hdnUploadActualFileName16" />
+                                <input type="hidden" id="hdnUploadNewFileName16" />
+                                <label id="lblRemark16"></label>
+
+                            </td>
+
+                        </tr>
+
+                    </tbody>
+                </table>
+
+
+            </div>
+            <div class="col-sm-12 form-group" style="display:none;">
+                <label>Reason</label>
+                <input disabled="" type="text" value="" id="txtReason" placeholder="Enter" name="">
+
+            </div>
+            <div class="col-sm-12 form-group" style="display:none;">
+                <label>Do you want to mark this vendor as empaneled vendor ?</label>
+                <ul class="list-unstyled inline-li mt-2">
+                    <li>
+                        <div class="radio-button">
+                            <input disabled="" id="yes41" name="Empaneled" type="radio" onclick="show11();" value="">
+                            <label for="yes41" class="radio-label">Yes</label>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="radio-button">
+                            <input disabled="" id="no42" name="Empaneled" type="radio" onclick="show12();">
+                            <label for="no42" class="radio-label">No</label>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+            <div class="col-sm-12 hide" style="display:none;">
+                <div class="row">
+                    <div class="col-sm-12 form-group">
+                        <hr>
+                        <span class="hr-aps"><i class="fas fa-user-check"></i>Empanel Details </span>
+                    </div>
+
+
+                    <div class="col-sm-3 form-group">
+                        <label>Start Date</label>
+                        <input disabled="" type="text" class="datepicker" autocomplete="off" placeholder="dd-mm-yyyy" id="txtEmpStartDate" onchange="HideErrorMessage(this)">
+                        <span id="sptxtEmpStartDate" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+                    </div>
+
+
+                    <div class="col-sm-3 form-group">
+                        <label>End Date </label>
+                        <input disabled="" type="text" id="txtEmpEndDate" class="datepicker" autocomplete="off" placeholder="dd-mm-yyyy" onchange="HideErrorMessage(this)">
+
+                        <span id="sptxtEmpEndDate" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+                    </div>
+
+                    <div class="col-sm-3 form-group">
+                        <label>Date of Meeting</label>
+                        <input disabled="" id="txtEmpDateOfMeeting" type="text" class="datepicker" autocomplete="off" placeholder="dd-mm-yyyy" onchange="HideErrorMessage(this)">
+                        <span id="sptxtEmpDateOfMeeting" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+
+                    </div>
+                    <div class="col-sm-3 form-group">
+                        <label>Empanelment Committe Members</label>
+                        <select disabled="" id="ddlEmpCommitteMembers" class="form-control applyselect" multiple onchange="HideErrorMessage(this)">
+                        </select>
+                        <span id="spddlEmpCommitteMembers" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+                    </div>
+                    <div class="col-sm-3 form-group">
+                        <label>Attachment</label>
+                        <input type="hidden" id="fileUploadEmpanelURL" />
+                        <input type="hidden" id="fileUploadEmpanelName" />
+                        <label id="lblfileUploadEmpanelName"></label>
+                        <button id="btnDownload1" onclick='DownloadFileEmpanl()' target='_blank' class='green-clr'><i class='fas fa-download'></i>Download</button>
+                    </div>
+
+                    <div class="col-sm-12 form-group">
+                        <label>Remark</label>
+                        <textarea disabled="" id="txtEmpRemark" class="form-control h-100 maxSize[1200]" placeholder="Explain Here"></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-sm-12 text-center">
+                <button style="display:none;" type="button" class="btn blk-gdn-btn btn-l ripplelink pull-right" data-toggle="modal" data-target="#blacklist"><i class="fas fa-list"></i>Blacklist</button>
+                <button style="display:none;" type="button" class="btn mtr-o-grn btn-l ripplelink pull-right" data-toggle="modal" data-target="#deactivate"><i class="fas fa-times-circle"></i>Deactivate</button>
+                <button style="display:none;" type="button" class="btn mtr-o-grn btn-l ripplelink pull-right" onclick="RegistrationEmpnal()"><i class="fa fa-paper-plane"></i>Submit</button>
+                <button type="button" class="btn cnl-btn ripplelink" onclick="Redirect()"><i class="fas fa-times"></i>Close</button>
+            </div>
+
+
+
+
+
+        </div>
+    </div>
+
+</div>
+<!-- ENd -->
+<div class="modal fade pop-dgn" id="ab">
+    <div class="modal-dialog modal-md">
+        <div class="modal-content">
+
+            <div class="modal-header blk-gdn-btn">
+                <h4 class="modal-title"><i class="fa fa-plus"></i>Add Bank Name</h4>
+                <div class="close" data-dismiss="modal">&times;</div>
+            </div>
+            <!-- Modal body -->
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-sm-12 form-group">
+                        <label>Bank Name</label>
+                        <input type="text" placeholder="Enter" class="form-control BankDetails" id="txtBankName">
+                    </div>
+
+                    <div class="col-sm-12 text-center">
+
+                        <button type="submit" class="btn mtr-o-grn btn-l ripplelink pull-right" data-toggle="modal" data-target="#ss" data-dismiss="modal" name="Command" value="Add" onclick="SaveBankDetails()"><i class="fas fa-save"></i>Save</button>
+                        <button type="button" class="btn cnl-btn ripplelink" data-dismiss="modal"><i class="fas fa-times"></i>Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade pop-dgn" id="blacklist">
+    <div class="modal-dialog modal-md">
+        <div class="modal-content">
+
+            <div class="modal-header blk-gdn-btn">
+                <h4 class="modal-title"><i class="fas fa-list"></i>Blacklist</h4>
+                <div class="close" data-dismiss="modal">&times;</div>
+            </div>
+            <!-- Modal body -->
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-sm-12 form-group">
+                        <label>Please share the reason for Blacklist </label>
+                        <textarea id="txtBlacklistReason" class="from-control h-100 maxSize[1200]" placeholder="Explain Hare" onchange="HideErrorMessage(this)"></textarea>
+                        <span id="sptxtBlacklistReason" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+                    </div>
+
+                    <div class="col-sm-12 form-group mt-3 text-center">
+                        <button type="button" onclick="RegistrationBlacklist()" class="btn mtr-o-grn btn-l ripplelink pull-right"><i class="fa fa-paper-plane"></i>Submit</button>
+                        <button type="button" class="btn cnl-btn ripplelink" data-dismiss="modal"><i class="fas fa-times"></i>Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade pop-dgn" id="deactivate">
+    <div class="modal-dialog modal-md">
+        <div class="modal-content">
+
+            <div class="modal-header blk-gdn-btn">
+                <h4 class="modal-title"><i class="fas fa-times-circle"></i>Deactivate</h4>
+                <div class="close" data-dismiss="modal">&times;</div>
+            </div>
+            <!-- Modal body -->
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-sm-12 form-group">
+                        <label>Please share the reason for Deactivate</label>
+                        <textarea id="txtDeactivateReason" class="from-control h-100 maxSize[1200]" placeholder="Explain Hare" onchange="HideErrorMessage(this)"></textarea>
+                        <span id="sptxtDeactivateReason" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+                    </div>
+
+                    <div class="col-sm-12 form-group mt-3 text-center">
+                        <button type="button" onclick="RegistrationDeactivate()" class="btn mtr-o-grn btn-l ripplelink pull-right"><i class="fa fa-paper-plane"></i>Submit</button>
+                        <button type="button" class="btn cnl-btn ripplelink" data-dismiss="modal"><i class="fas fa-times"></i>Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div style="display:none;">
+    <a id="btnVendorRegistrationReturn" href="~/Procurement/VendorRegistrationList" class="btn mtr-g-grn btn-l ripplelink "><i class="fa fa-plus"></i>Add</a>
+
+</div>
+@section scripts    {
+    @System.Web.Optimization.Scripts.Render("~/bundle/unobtrusivejs")
+    @System.Web.Optimization.Scripts.Render("~/bundle/dataTablesjs")
+    <script src="~/assets/design/Scripts/AddInit.js?v=@clsApplicationSetting.GetWebConfigValue("Version")"></script>
+    <script src="~/Areas/Procurement/DevScript/VendorRegistrationLegacy.js"></script>
+
+    <script>
+		 var IsEDUser = '@ViewBag.IsED';
+       var loggedinUserid = '@ViewBag.UserId';
+		var loggedinUserName = '@ViewBag.UserName';
+		var UserGrade = '@ViewBag.Grade';
+        var IsPM = '@ViewBag.IsPM';
+        var VendorRegId = '@ViewBag.VendorRegId';
+    </script>
+}
+
+<script type="text/javascript">
+    var divs = ["Div3"];
+    var visibleDivId = null;
+    function divVisibility(divId) {
+        if (visibleDivId === divId) {
+            visibleDivId = null;
+        } else {
+            visibleDivId = divId;
+        }
+        hideNonVisibleDivs();
+    }
+    function hideNonVisibleDivs() {
+        var i, divId, div;
+        for (i = 0; i < divs.length; i++) {
+            divId = divs[i];
+            div = document.getElementById(divId);
+            if (visibleDivId === divId) {
+                div.style.display = "block";
+            } else {
+                div.style.display = "none";
+            }
+        }
+    }
+</script>
+
+<script>
+    var MenuID = Number(129);
+
+
+
+
+    function SuccessToaster(Message) {
+        $("#toastMsg").html(Message);
+        $("#toasticon i").addClass("fas fa-check green-clr ");
+        var x = document.getElementById("toast")
+        x.className = "show";
+        setTimeout(function () { x.className = x.className.replace("show", ""); }, 4000);
+    }
+
+    function FailToaster(Message) {
+        $("#toastMsg").html(Message);
+        $("#toasticon i").addClass("fas fa-exclamation-triangle red-clr");
+        var x = document.getElementById("toast")
+        x.className = "show toaster-warning";
+        setTimeout(function () { x.className = x.className.replace("show toaster-warning", ""); }, 4000);
+    }
+
+
+    function ValidateFile(FileName) {
+
+        var result = false;
+        if (document.getElementById(FileName).files[0].name.toUpperCase().match(/\.(PDF|DOCX|TXT|XLS|XLSX)$/)) {
+
+            var filesize = 3145728;
+            var sizeinbytes = document.getElementById(FileName).files[0].size;
+            if (filesize >= sizeinbytes) {
+                result = true;
+            }
+            else {
+                FailToaster("File size should be less than 3 MB");
+                document.getElementById(FileName).value = '';
+                result = false;
+
+            }
+            return result;
+        }
+        else {
+            FailToaster("Invalid file type , please select valid file again");
+            document.getElementById(FileName).value = '';
+            return result;
+        }
+
+    }
+
+    function ValidateImage(FileName) {
+
+        var result = false;
+        if (document.getElementById(FileName).files[0].name.toUpperCase().match(/\.(JPG|JPEG|PNG|PDF)$/)) {
+
+            var filesize = 2097152;
+            var sizeinbytes = document.getElementById(FileName).files[0].size;
+            if (filesize >= sizeinbytes) {
+                result = true;
+            }
+            else {
+                FailToaster("Image should be less than 2 MB");
+
+                document.getElementById(FileName).value = '';
+                result = false;
+
+            }
+            return result;
+        }
+        else {
+            FailToaster("Invalid Image type , please select valid Image");
+            document.getElementById(FileName).value = '';
+            return result;
+        }
+
+    }
+</script>
+<script>
+    // JavaScript Document
+    $(function () {
+        $('#js-nav-toggle').click(function (e) {
+            e.preventDefault();
+            $("html").toggleClass("is-sideopen");
+            $("#js-nav-toggle").toggleClass("is-active");
+        });
+
+        var $content = $('.l-contents');
+        var $header = $('.l-header');
+
+
+        $content.click(function () {
+            $("html").removeClass("is-sideopen");
+        });
+
+
+        $header.click(function () {
+            $("html").removeClass("is-sideopen");
+        });
+
+
+    });
+
+
+    $(function () {
+
+        var $dropdown = $('.js-dropdown');
+        var $content = $('.l-contents');
+        var $toggle = $('#js-nav-toggle');
+
+
+        $('.js-dropdown-menu').hide();
+        $dropdown.click(function () {
+            $('i').removeClass('is-rotate');
+            $('.js-dropdown-menu').slideUp(200);
+            if ($('+.js-dropdown-menu', this).css('display') == 'none') {
+                $('i', this).addClass('is-rotate');
+                $('+.js-dropdown-menu', this).slideDown(200);
+            }
+        });
+
+
+        $content.click(function () {
+            $('i').removeClass('is-rotate');
+            $('.js-dropdown-menu').slideUp(200);
+            if ($('+.js-dropdown-menu', this).css('display') == 'none') {
+                $('i', this).addClass('is-rotate');
+                $('+.js-dropdown-menu', this).slideDown(200);
+            }
+        });
+
+
+        $toggle.click(function () {
+            $('i').removeClass('is-rotate');
+            $('.js-dropdown-menu').slideUp(200);
+            if ($('+.js-dropdown-menu', this).css('display') == 'none') {
+                $('i', this).addClass('is-rotate');
+                $('+.js-dropdown-menu', this).slideDown(200);
+            }
+        });
+
+    });
+
+    $(function () {
+        $('.is-ac-close').hide();
+        $(".is-ac-click").on("click", function () {
+            if ($(this).children('i').is('.fa-angle-right')) {
+                $(this).children('i')
+                    .removeClass('fa-angle-right')
+                    .addClass('fa-angle-down');
+            } else {
+                $(this).children('i')
+                    .removeClass('fa-angle-down')
+                    .addClass('fa-angle-right');
+            }
+            $(this).next().slideToggle(200);
+        });
+
+        $('.is-ac-close').hide();
+        $(".is-ac-bar").on("click", function () {
+
+            if ($(this).find('i').is('.fa-caret-down')) {
+
+                $(this).find('i')
+                    .removeClass()
+                    .addClass('fa fa-caret-up');
+            } else {
+                $(this).find('i')
+                    .removeClass()
+                    .addClass('fa fa-caret-down');
+            }
+            $(this).next().slideToggle(200);
+        });
+    });
+
+
+
+
+    //---------------------------------------------------
+    // ▼　tab
+    //---------------------------------------------------
+    $(function () {
+        var rwdTab = $('.c-tab'),
+            switchPoint = 768,
+            fadeSpeed = 300,
+            slideSpeed = 300;
+
+        var tabBtn = rwdTab.children('.c-tab-panel').children('.c-tab-heading'),
+            contentsArea = rwdTab.children('.c-tab-panel').children('.c-tab-body');
+
+        tabBtn.on('click', function () {
+            if (!$(this).hasClass('c-tab-active')) {
+                tabBtn.removeClass('c-tab-active');
+                $(this).addClass('c-tab-active');
+
+                if (window.innerWidth > switchPoint) {
+                    contentsArea.fadeOut(fadeSpeed);
+                    $(this).next().fadeIn(fadeSpeed);
+                } else {
+                    contentsArea.slideUp(slideSpeed);
+                    $(this).next().slideDown(slideSpeed);
+                }
+            }
+        });
+
+        tabBtn.first().click();
+    });
+
+
+
+</script>
+<!-- required -->
+<script type="text/javascript">
+    jQuery(document).ready(function ($) {
+        jQuery('.stellarnav').stellarNav({
+            theme: 'dark',
+            breakpoint: 960,
+            position: 'right',
+
+        });
+        $('.notifyjs-corner').empty();
+    });
+</script>
+<!-- required -->
+<script>
+    $("document").ready(function () {
+
+        $('.dropdown-menu').on('click', function (e) {
+            if ($(this).hasClass('dropdown-menu-form')) {
+                e.stopPropagation();
+            }
+        });
+    });
+
+
+</script>
+
+<script>
+    function FillData(ctrl) {
+        $('.vtbox').hide();
+
+        if ($(ctrl).val() === 'yes') {
+            $('.yes').show();
+            $('.no').hide();
+        }
+
+        if ($(ctrl).val() === 'no') {
+            $('.no').show();
+            $('.yes').hide();
+            $('.vtbox').show();
+
+        }
+    }
+
+</script>
+
+
+
+<script>
+    function show2() {
+        document.getElementById('div1').style.display = 'none';
+        $('#txtFCRARegistration').val('');
+        $('#txtFCRARegistrationDate').val('');
+        $('#txtFCRAValidUpDate').val('');
+
+    }
+    function show1() {
+        document.getElementById('div1').style.display = 'block';
+    }
+</script>
+
+<script>
+    function show4() {
+        document.getElementById('div2').style.display = 'none';
+        $('#txt12ARegistrationNo').val('');
+        $('#txt12ARegistrationDate').val('');
+        $('#txt12AValidDateUp').val('');
+    }
+    function show3() {
+        document.getElementById('div2').style.display = 'block';
+    }
+</script>
+
+<script>
+    function show6() {
+        document.getElementById('div3').style.display = 'none';
+    }
+    function show5() {
+        document.getElementById('div3').style.display = 'block';
+    }
+</script>
+<script>
+    function show8() {
+        document.getElementById('div4').style.display = 'none';
+    }
+    function show7() {
+        document.getElementById('div4').style.display = 'block';
+    }
+</script>
+
+<script>
+    function show9() {
+        document.getElementById('div5').style.display = 'none';
+    }
+    function show10() {
+        document.getElementById('div5').style.display = 'block';
+    }
+</script>
+
+<script>
+    function show11() {
+        document.getElementById('div6').style.display = 'block';
+    }
+    function show12() {
+        document.getElementById('div6').style.display = 'none';
+    }
+</script>

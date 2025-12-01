@@ -1,0 +1,185 @@
+﻿@using Mitr.CommonClass;
+@model Mitr.Models.LeaveDashboard
+@{
+	ViewBag.Title = "LeaveDashboard";
+}
+@{
+	string TeamAttachment = "", MyAttachment = "";
+	string MenuID = ViewBag.MenuID.ToString();
+	decimal WorkingHours = 0;
+	decimal.TryParse(clsApplicationSetting.GetConfigValue("WorkingHours"), out WorkingHours);
+	if (!clsApplicationSetting.IsSessionExpired("MyLeaveAttachment"))
+	{
+		MyAttachment = "Y";
+	}
+}
+@Html.Partial("HeaderMsg_Partial")
+<input type="hidden" id="MyAttachment" value="@MyAttachment" />
+<input type="hidden" id="TeamAttachment" value="@TeamAttachment" />
+<div class="row">
+	<div class="col-lg-6 col-md-6 col-sm-12">
+
+		<div class="shadow-box pr trboxhg">
+
+			<h2 class="heading-grd heading-btn  blk-gdn-btn m-0">
+
+				Leave Balances
+				<!---@Html.CreateTooltip("fas fa-info-circle", "Your Current leave balances are reflecting on the graphics")---->
+
+				@Html.CreateAnchor(MenuID, "/Leave/ApplyLeave", "Apply Leave", "mtr-o-grn scroll-btm btn rgt-pst text-center", "Click to apply", "fa fa-share", "")
+			
+			</h2>
+		
+			<a href="~/assets/design/download/doc/Mitr2_Leave_module_userhandbook.docx" download data-toggle="tooltip" data-original-title="Download" target="_blank" class="dwnmunl"><i class="fas fa-download"></i></a>
+			<div class="center-div p-3">
+
+				
+				<ul class="list-unstyled cloud-list-vr clud-pd">
+					
+					<li class="row cp-0 d-flex">
+						<div class=" col-sm-3 align-self-center">
+							<div class="cloud-img">
+								@Html.CreateImage("cloud-img.png", "cloud", "")
+							</div>
+						</div>
+						<div class="col-sm-7 align-self-center">
+							<h2>
+								@Model.LeaveBalanceDetails.Where(x => x.LeaveBalanceDetailsID == 4).Select(x => x.LeaveType).FirstOrDefault()
+							</h2>
+						</div>
+
+						<div class="col-sm-2 align-self-center text-center">
+							<div class="cloud-hr">
+								<strong class="mtr-g-clr">
+									@Model.LeaveBalanceDetails.Where(x => x.LeaveBalanceDetailsID == 4).Select(x => x.BInHours).FirstOrDefault()
+								</strong><br>
+								<small class="lgt-text">
+									@Model.LeaveBalanceDetails.Where(x => x.LeaveBalanceDetailsID == 4).Select(x => x.BInGraph).FirstOrDefault()
+								</small>
+							</div>
+						</div>
+					</li>
+
+					<li class="row cp-0 d-flex">
+						<div class=" col-sm-3 align-self-center">
+							<div class="cloud-img">
+								@Html.CreateImage("cloud-img-1.png", "cloud", "")
+							</div>
+						</div>
+						<div class="col-sm-7 align-self-center">
+							<h2>Casual Leave\Sick Leave</h2>
+						</div>
+						<div class="col-sm-2 align-self-center text-center">
+							<div class="cloud-hr">
+								<strong class="mtr-o-clr">
+									@Model.LeaveBalanceDetails.Where(x => x.LeaveBalanceDetailsID == 1).Select(x => x.BInHours).FirstOrDefault()
+								</strong><br>
+								<small class="lgt-text">
+									@Model.LeaveBalanceDetails.Where(x => x.LeaveBalanceDetailsID == 1).Select(x => x.BInGraph).FirstOrDefault()
+								</small>
+							</div>
+						</div>
+					</li>
+
+					<li class="row cp-0 d-flex">
+						<div class=" col-sm-3 align-self-center">
+							<div class="cloud-img">
+								@Html.CreateImage("cloud-img-2.png", "cloud", "")
+							</div>
+						</div>
+						<div class="col-sm-7 align-self-center">
+							<h2>@Model.LeaveBalanceDetails.Where(x => x.LeaveBalanceDetailsID == 2).Select(x => x.LeaveType).FirstOrDefault()</h2>
+						</div>
+						<div class="col-sm-2 align-self-center text-center">
+							<div class="cloud-hr">
+								<strong class="mtr-y-clr">
+									@Model.LeaveBalanceDetails.Where(x => x.LeaveBalanceDetailsID == 2).Select(x => x.BInHours).FirstOrDefault()
+								</strong><br />
+								<small class="lgt-text">
+									@Model.LeaveBalanceDetails.Where(x => x.LeaveBalanceDetailsID == 2).Select(x => x.BInGraph).FirstOrDefault()
+								</small>
+							</div>
+						</div>
+					</li>
+
+				</ul>
+			</div>
+
+		</div>
+	</div>
+
+	<div class="col-lg-6 col-md-6 col-sm-12">
+		<div class="shadow-box usr-h-scrl trboxhg"> @Html.Partial("_MyLeaveRequestDashboard", Model.ApplyLeaveList)</div>
+	</div>
+
+</div>
+
+
+
+@* My Modal Start *@
+<!-- TASK Modal -->
+<div class="modal  fade pop-dgn leave-pop message-popup" id="RFCPopupModal">
+	<div class="modal-dialog modal-md">
+		<div class="modal-content">
+			<div class="close" data-dismiss="modal">&times;</div>
+			<div class="modal-body p-0">
+				<div class="row">
+					<div class="col-md-12">
+						<h2>
+							Please state reason to cancel the leave request
+						</h2>
+						<textarea id="txtRFCReason" class="form-control h-100" Placeholder="Enter Reason"></textarea>
+						<input type="hidden" id="hdnLeaveID" value="0" />
+						@*<span>Are you sure you want to process?</span>*@
+					</div>
+					<div class="col-sm-12 text-center mt-3">
+						<button id="btnRR" class="btn mtr-o-grn btn-l ripplelink mb-0"><i class="fa fa-paper-plane" aria-hidden="true"></i>Submit</button>
+						<button data-dismiss="modal" class="btn cnl-btn btn-l mb-0 ripplelink"><i class="fas fa-times"></i>Close</button>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+@* My Modal End *@
+
+@* My Modal Start *@
+<!-- TASK Modal -->
+<div class="modal  fade pop-dgn leave-pop" id="LeaveModal">
+	<div class="modal-dialog modal-lg">
+		<div class="modal-content">
+			<div class="close" data-dismiss="modal">&times;</div>
+			<div class="modal-body p-0">
+				<div id="ModalTargetDiv"></div>
+			</div>
+		</div>
+	</div>
+</div>
+
+@* My Modal End *@
+<div class="modal fade pop-dgn" id="ModalLeaveAttachment">
+	<div class="modal-dialog modal-lg">
+		<div class="modal-content">
+			<div class="modal-header blk-gdn-btn">
+				<h4 class="modal-title">Leave Attachment <span class="spnhead"></span> </h4>
+				<div class="close" data-dismiss="modal">&times;</div>
+			</div>
+			<div class="modal-body p-2">
+				<div id="LeaveAttachmentTarget"></div>
+			</div>
+		</div>
+	</div>
+</div>
+
+
+@section scripts    {
+	@Html.IncludeVersionedJs(Url.Content("~/assets/design/Scripts/AddInit.js"))
+	@System.Web.Optimization.Scripts.Render("~/bundle/unobtrusivejs");
+	@Html.IncludeVersionedJs(Url.Content("~/assets/design/Scripts/PagesJS/LeaveDashboard.js"))
+	@Html.IncludeVersionedJs(Url.Content("~/assets/design/Scripts/ToolTip.js"))
+	@Html.IncludeVersionedJs(Url.Content("~/assets/design/Scripts/SyncDialogUtility.js"))
+
+	
+
+}
+

@@ -1,0 +1,270 @@
+﻿
+@model IList<Mitr.Models.LeaveMaster>
+
+@section style{
+    @System.Web.Optimization.Styles.Render("~/bundle/dataTablecss")
+}
+<div class="inner-main mb-5 pb-0">
+    @Html.Partial("ListHeader_Partial", "Leave Master List")
+    <div class="row">
+        <div class="col-md-12 col-sm-12 col-xs-12">
+            <div class="card p-0">
+                <div class="card-body p-0">
+                    <div class="x_content table-currency mt-0">
+                        <div class="table-responsive">
+                            <table id="datatable-buttons" class="table table-striped table-bordered dt-responsive nowrap tbltick new_width" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
+                                <thead>
+                                    <tr>
+                                        <th>S.no.</th>
+                                        <th>Action</th>
+                                        <th>Priority</th>
+                                        <th>Show In Summary</th>
+                                        <th>Name</th>
+                                        <th>Applicable</th>
+                                        <th>Leave Type	</th>
+                                        <th>No of Leave	</th>
+                                        <th>Due Type	</th>
+                                        <th>Inserted Date</th>
+                                        <th>Updated Date</th>
+                                        <th>IP Address</th>
+                                    </tr>
+                                    <tr class="searchbar">
+                                        <th class="searchhide"></th>
+                                        <th class="searchhide"></th>
+                                        <th class="searchhide"></th>
+                                        <th class="searchhide"></th>
+                                        <th></th>
+                                        <th></th>
+                                        <th></th>
+                                        <th></th>
+                                        <th></th>
+                                        <th></th>
+                                        <th></th>
+                                        <th></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @{ int Count = 0;}
+                                    @foreach (Mitr.Models.LeaveMaster item in Model)
+                                    {
+                                        Count++;
+                                        <tr class="@(item.IsActive == true?"": "trrowred")">
+                                            <td>@Count</td>
+                                            <td>
+                                                <input type="hidden" name="I" value="@item.LeaveID" />
+                                                <input type="hidden" name="N" value="@item.LeaveName" />
+                                                @if (clsApplicationSetting.GetSessionValue("Modify") == "True")
+                                                {
+                                                    @Html.Raw(item.IsActive == true
+                                                   ? "<a  data-toggle='tooltip' data-original-title='Click to DeActivate' list='LeaveList' OP='0' class='AIsActive' > <i class='fa fa-check-circle checkgreen' aria-hidden='true'></i></a>"
+                                                   : "<a data-toggle='tooltip' data-original-title='Click to Activate' list='LeaveList' OP='1'  class='AIsActive' > <i class='fa fa-times-circle crossred' aria-hidden='true'></i></a>")
+
+                                                    <a title="Edit" onclick="ListHeaderAdd(@item.LeaveID);" data-toggle='tooltip'><i class="fas fa-edit checkgreen" aria-hidden="true"></i> </a>
+                                                }
+                                            </td>
+                                            <td>
+
+                                                @Html.Raw(clsApplicationSetting.GetSessionValue("Modify") == "True" ? "<input type='number' class='listpriority' list='MasterAll' value=\"" + item.Priority + "\" />" : item.Priority.ToString())
+                                            </td>
+
+                                            <td>
+                                                @Html.Raw(item.ShowInSummary == true ? "<a id='AIsDefault_" + @item.LeaveID + "' title='Click to DeActivate Show in Home' onclick='UpdateIsDefaultJSON(" + item.LeaveID + ",0);' data-toggle='tooltip' style='color:green;'> Show In Summary</a>" +
+    "  " : "<a id='AIsDefault_" + @item.LeaveID + "' title='Click to Activate Show in Home' onclick='UpdateIsDefaultJSON(" + item.LeaveID + ",1);' data-toggle='tooltip' style='color:red;'> Show In Summary</a>")
+                                            </td>
+
+
+                                            <td> @item.LeaveName</td>
+                                            <td> @item.ApplicableFor</td>
+                                            <td> @(item.LeaveType == 1 ? "Full Paid" : item.LeaveType == 2 ? "Not Paid" : "")</td>
+                                            <td> @item.NOOfLeave</td>
+                                            <td> @(item.DueType == 1 ? "Monthly" : item.DueType == 2 ? "Yearly" : "")</td>
+                                            <td>@item.createdat</td>
+                                            <td>@item.modifiedat</td>
+                                            <td>@item.IPAddress</td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+<div class="modal fade pop-dgn" id="ViewModal">
+    <div class="modal-dialog modal-md">
+        <div class="modal-content">
+
+            <div class="modal-header blk-gdn-btn">
+                <h4 class="modal-title"><i class="fas fa-briefcase"></i>Add Leave Master  </h4>
+                <div class="close" data-dismiss="modal">&times;</div>
+            </div>
+            <!-- Modal body -->
+            <div class="modal-body">
+                <div id="TagetDiv"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@section scripts    {
+    @System.Web.Optimization.Scripts.Render("~/bundle/dataTablesjs")
+
+    @System.Web.Optimization.Scripts.Render("~/bundle/unobtrusivejs")
+
+
+    @Html.IncludeVersionedJs(Url.Content("~/assets/design/Scripts/AddInit.js"))
+
+    <script>
+
+
+
+    function ListHeaderAdd(CMSID) {
+        if (CMSID == undefined)
+        {
+            CMSID = 0;
+        }
+			$.ajax({
+                url: "/Master/_LeaveAdd",
+				type: "Get",
+				data: { src: EncryptQueryStringJSON(@ViewBag.MenuID+"*" + "/Master/_LeaveAdd" + "*" + CMSID) },
+                success: function (data)
+                {
+					$("#TagetDiv").empty();
+                    $("#TagetDiv").html(data);
+                    $("#ViewModal").modal("show");
+                     var form = $("form")
+                .removeData("validator")
+                .removeData("unobtrusiveValidation");
+                    $.validator.unobtrusive.parse(form);
+                    $(".applyselect").select2();
+                    ShowCarryforwrd();
+
+				},
+				error: function (er) {
+					alert(er);
+
+				}
+			});
+            }
+
+    function OnSuccess(obj)
+    {
+        if (obj.Status) {
+            window.location.reload();
+        }
+        else {
+            FailToaster(obj.SuccessMessage);
+        }
+
+            }
+
+      function ShowCarryforwrd() {
+            var chekLeave_forword = $("#chekLeave_forword").is(":checked");
+
+            if (chekLeave_forword)
+            {
+                $("#DivCarryForward").show();
+            }
+            else {
+                $("#DivCarryForward").hide();
+            }
+            }
+
+
+                 function UpdateIsDefaultJSON(CategoryID, IsActive) {
+                        var hdn = $("#hdn_" + CategoryID).val();
+                        var Msg = '';
+                        var trchange = false;
+                        if (IsActive == 1) {
+                            var Msg = 'Are you sure want to Activate Show In Summary for ' + hdn;
+                        }
+                        if (IsActive == 0) {
+                            var Msg = 'Are you sure want to Deactivate Show In Summary for ' + hdn;
+                        }
+
+                        ConfirmMsgBox(Msg, '', function () {
+                            $('#datatable-buttons tr').each(function () {
+                                $(this).find("a").each(function (i) {
+                                    if ($(this).attr('id') == $("#AIsDefault_" + CategoryID).attr('id')) {
+                                        trchange = true;
+                                    }
+                                });
+
+                            });
+
+                            $.ajax({
+                                url: "/CommonAjax/SetLeaveShowInSummaryJSON",
+                                type: "Get",
+                                async: true,
+                                data: { LeaveID: CategoryID, ShowInSummary: IsActive },
+                                success: function (args) {
+
+                                    var arr = args.split('::');
+                                    if (arr[0] != '-1') {
+                                        if (parseInt(arr[1]) == 0) {
+                                            $("#AIsDefault_" + arr[0]).attr("onclick", "UpdateIsDefaultJSON(\"" + CategoryID + "\",1);");
+                                            $("#AIsDefault_" + arr[0]).attr("style", "color:red");
+                                            $("#AIsDefault_" + arr[0]).attr("title", "Click to  Activate Show in Home");
+                                        } else {
+                                            $("#AIsDefault_" + arr[0]).attr("onclick", "UpdateIsDefaultJSON(\"" + CategoryID + "\",0);");
+                                            $("#AIsDefault_" + arr[0]).attr("style", "color:green");
+                                            $("#AIsDefault_" + arr[0]).attr("title", "Click to  DeActivate Show in Home");
+                                        }
+
+                                    }
+
+                                    $('[data-toggle="tooltip"]').tooltip();
+                                },
+                                error: function (er) {
+                                    alert(er);
+                                }
+                            });
+
+                        })
+
+
+                    }
+
+
+
+     
+
+    function CheckDuplicateValue(sType,lId,sFieldName,sFieldValue)
+    {
+                $('#IndicatorLabel').hide();
+                var fieldvalue = $(this).val();
+                var oldvalue = $("#hdnfieldname").text();
+        if (fieldvalue.length > 0 && fieldvalue != oldvalue) {
+            var tablename = "bank";
+            var idname = "bank_id";
+            var fieldname = "bank_name";
+            var idvalue = $("#BankId").val();
+            $.ajax({
+                url: '/CommonAjax/fnCheckDuplicate',
+                method: 'GET',
+                data: { sTableName: tablename, sIdName: idname, sIdValue: idvalue, sFieldName: fieldname, sFieldValue: fieldvalue },
+                success: function (args) {
+                    var arr = args;
+                    var indicatorText = '';
+                    if (arr == 'False') {
+                        indicatorText = ' is available!';
+                        $('#IndicatorLabel').css("color", "green");
+                    }
+                    else {
+                        indicatorText = ' already exists!';
+                        $('#IndicatorLabel').css("color", "red");
+                        $('#IndicatorLabel').show();
+                        $('#IndicatorLabel').html(fieldvalue + indicatorText);
+                    }
+                }
+            });
+        }
+    }
+    </script>
+}
+

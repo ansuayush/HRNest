@@ -1,0 +1,157 @@
+﻿
+@{
+    ViewBag.Title = "HandoverTaskList";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container-fluid">
+
+    <!-- Start -->
+    <div class="inner-main defult-height p-3 pb-0">
+        <h1 class="heading-one mb-3">Handover Task Request List </h1>
+        <div class="tab-main mb-3">
+            <ul id="tabs" class="nav nav-tabs " role="tablist">
+                <li class="nav-item"> <a id="tab-A" href="#pending" class="nav-link active ripplelink" data-toggle="tab" role="tab"><i class="fas fa-clock"></i>Pending </a> </li>
+                <li class="nav-item"> <a id="tab-B" href="#process" class="nav-link ripplelink" data-toggle="tab" role="tab"><i class="fas fa-check"></i>Process</a> </li>
+
+                <input type="hidden" value="@ViewBag.EMPID" id="hdfEMPID" />
+
+            </ul>
+            <div id="content" class="tab-content shadow-box p-0" role="tablist">
+                <div id="pending" class="card tab-pane fade show active" role="tabpanel" aria-labelledby="tab-A">
+                    <div class="card-header" role="tab" id="heading-A">
+                        <h5 class="mb-0">
+                            <!-- Note: `data-parent` removed from here -->
+                            <a data-toggle="collapse" href="#collapse-A" aria-expanded="true" aria-controls="collapse-A">Pending<i class="fas fa-clock"></i></a>
+                        </h5>
+                    </div>
+
+                    <!-- Note: New place of `data-parent` -->
+                    <div id="collapse-A" class="collapse show" data-parent="#content" role="tabpanel" aria-labelledby="heading-A">
+                        <div class="card-body p-0">
+                            <!-- Start -->
+                            <div class="table-responsive">
+                                <table id="tabelpending" class="table mt-0  table-bordered dt-responsive nowrap tbltick new_width">
+                                    <thead>
+                                        <tr>
+                                            <th width="33">S.No</th>
+                                            <th width="100">Employee Code</th>
+                                            <th>Employee Name</th>
+                                            <th width="100">Location</th>
+                                            <th width="100">Department</th>
+                                            <th width="100">Designation</th>
+                                            <th width="100">Relieving Date	</th>
+                                            <th width="50">Days left</th>
+                                            <th width="80">Action</th>
+                                        </tr>
+                                        <tr class="searchbar" role="row">
+                                            <th class="searchhide"></th>
+                                            <th></th>
+                                            <th></th>
+                                            <th></th>
+                                            <th></th>
+                                            <th></th>
+                                            <th></th>
+                                            <th></th>
+                                            <th class="searchhide"></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <!-- End -->
+                        </div>
+                    </div>
+                </div>
+                <div id="process" class="card tab-pane fade" role="tabpanel" aria-labelledby="tab-B">
+                    <div class="card-header" role="tab" id="heading-B">
+                        <h5 class="mb-0"> <a class="collapsed" data-toggle="collapse" href="#collapse-B" aria-expanded="false" aria-controls="collapse-B">Process<i class="fas fa-check"></i></a> </h5>
+                    </div>
+                    <div id="collapse-B" class="collapse" data-parent="#content" role="tabpanel" aria-labelledby="heading-B">
+                        <!-- Start -->
+                        <div class="table-responsive">
+                            <table id="tabelapproved" class="table mt-0  table-bordered dt-responsive nowrap tbltick new_width">
+                                <thead>
+                                    <tr>
+                                        <th width="33">S.No</th>
+                                        <th width="100">Employee Code</th>
+                                        <th>Employee Name</th>
+                                        <th width="100">Location</th>
+                                        <th width="100">Department</th>
+                                        <th width="100">Designation</th>
+                                        <th width="100">Relieving Date	</th>
+                                        <th width="50">Days left</th>
+                                        <th width="80">Action</th>
+                                    </tr>
+                                    <tr class="searchbar" role="row">
+                                        <th class="searchhide"></th>
+                                        <th></th>
+                                        <th></th>
+                                        <th></th>
+                                        <th></th>
+                                        <th></th>
+                                        <th></th>
+                                        <th></th>
+                                        <th class="searchhide"></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- End -->
+                    </div>
+                </div>
+
+
+
+
+
+
+            </div>
+        </div>
+
+    </div>
+    <!--
+    ENd -->
+</div>
+
+@section scripts    {
+    @System.Web.Optimization.Scripts.Render("~/bundle/unobtrusivejs")
+    @System.Web.Optimization.Scripts.Render("~/bundle/dataTablesjs")
+    <script src="~/assets/design/Scripts/AddInit.js?v=@clsApplicationSetting.GetWebConfigValue("Version")"></script>
+    <script src="~/assets/design/scripts/DevScriptExit/AsginTaskNoc.js"></script>
+    <script>
+        function ViewData(id) {
+          debugger;
+         var mId = "";
+         var url = "";
+        ShowLoadingDialog();
+
+          mId = "@clsApplicationSetting.EncryptQueryString(ViewBag.MenuID.ToString() + "*/ExitEmployee/Assigntask")";
+         url = "/ExitEmployee/Assigntask?src=" + mId + "&id=" + id ;
+          window.location.href = url;
+          setTimeout(function () {
+        CloseLoadingDialog();
+       }, 4000);
+ }
+
+        function ViewSavedata(id) {
+         debugger;
+        var mId = "";
+        var url = "";
+       ShowLoadingDialog();
+
+         mId = "@clsApplicationSetting.EncryptQueryString(ViewBag.MenuID.ToString() + "*/ExitEmployee/AssigntaskSave")";
+            url = "/ExitEmployee/AssigntaskSave?src=" + mId + "&id=" + id  ;
+         window.location.href = url;
+         setTimeout(function () {
+       CloseLoadingDialog();
+      }, 4000);
+}
+    </script>
+
+}

@@ -1,0 +1,550 @@
+﻿
+@{
+    ViewBag.Title = "StandaloneBudgetReport";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+		<div class="inner-main mb-5">
+			<div class="row">
+				<div class="col-sm-4">
+					<h1 class="heading-one mb-3">Create Budget</h1>
+				</div>
+				<div class="col-sm-8 "><div class="hdbtn"><a href="" class="btn mtr-g-grn btn-l ripplelink btnAdd "><i class="fas fa-file-alt"></i>Export to Excel </a></div> </div>
+
+				<div class="col-sm-12 form-group">
+					<ul class="list-unstyled inline-li m-0 rqt-dtl">
+						<li class="d-none"><strong class="green-clr">Details</strong></li>
+
+						<li>
+							<label>Thematic Area</label>
+							<br>Youth
+						</li>
+						<li>
+							<label>Date </label>
+							<br>14/10/2021 to 14/10/2022
+						</li>
+						<li>
+							<label>Purpose  </label>
+							<br> Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+						</li>
+
+						<li class="dtlslt">
+							<label>INR  </label>
+							<select class=" form-control  dpselect">
+								<option selected="">INR</option>
+								<option>EURO</option>
+							</select>
+						</li>
+
+
+					</ul>
+
+				</div>
+
+
+			</div>
+
+
+			<div class="table-responsive">
+				<table class="table mt-0">
+					<thead>
+						<tr>
+							<th class="w-200">Activity/Sub Activity</th>
+							<th class="w-50">Budget Required</th>
+							<th class="w-80 text-left">Human Resource <a href="@Url.Action("AddSallaryBudget", new { src = clsApplicationSetting.EncryptQueryString(ViewBag.MenuID.ToString() + "*/Budget/AddSallaryBudget*0")  })" data-toggle="tooltip" title="" data-original-title="Add Human Resource" class="float-right"><i class="fas fa-plus green-clr"></i></a></th>
+							<th class="w-80 text-left"> Travel and Transportation</th>
+							<th class="w-80 text-left"> Training</th>
+							<th class="w-80 text-left"> Meeting, Workshop and Seminars etc </th>
+							<th class="w-80 text-left"> Consultant </th>
+							<th class="w-80 text-left"> Sub-grants </th>
+							<th class="w-80 text-left"> Information and Dissemination</th>
+							<th class="w-80 text-left">Other <small>(please specify) </small></th>
+							<th class="w-80 text-left">Other Direct Cost </th>
+							<th class="w-80 text-left"> Equipment</th>
+							<th class="w-80 text-left"> Total Direct Cost </th>
+							<th class="w-80 text-left"> Indirect Cost </th>
+							<th class="w-80 text-left"> Total </th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr>
+							<td></td>
+							<td></td>
+							<td class="text-right"><strong> 15,40,718 </strong></td>
+							<td class="text-right"><strong> 18,85,388 </strong></td>
+							<td class="text-right"><strong> 77,10,168 </strong></td>
+							<td class="text-right"><strong> 77,97,288 </strong></td>
+							<td class="text-right"><strong> 38,204 </strong></td>
+							<td class="text-right"><strong> 38,204 </strong></td>
+							<td class="text-right"><strong> 38,204 </strong></td>
+							<td class="text-right"><strong> 38,204 </strong></td>
+							<td class="text-right"><strong> 36,304 </strong></td>
+							<td class="text-right"><strong> 38,204 </strong></td>
+							<td class="text-right"><strong> 1,91,60,886 </strong></td>
+							<td class="text-right"><strong> 19,16,089 </strong></td>
+							<td class="text-right"><strong> 15,40,718 </strong></td>
+						</tr>
+						<tr>
+							<td><strong>Act 1: Activity 1 Description</strong></td>
+							<td></td>
+							<td class="text-right"><strong> </strong></td>
+							<td class="text-right"><strong> 18,85,388 </strong></td>
+							<td class="text-right"><strong> 38,55,084 </strong></td>
+							<td class="text-right"><strong> 38,98,644 </strong></td>
+							<td class="text-right"><strong> 19,102 </strong></td>
+							<td class="text-right"><strong> 19,102 </strong></td>
+							<td class="text-right"><strong> 19,102 </strong></td>
+							<td class="text-right"><strong> 19,102 </strong></td>
+							<td class="text-right"><strong> 18,152 </strong></td>
+							<td class="text-right"><strong> 19,102 </strong></td>
+							<td class="text-right"><strong> 97,52,778 </strong></td>
+							<td class="text-right"><strong> 9,75,278 </strong></td>
+							<td class="text-right"><strong> 1,07,28,056 </strong></td>
+						</tr>
+						<tr>
+							<td class="pl-4">SubAct1.1: Master Trainers</td>
+							<td class="text-center">Yes</td>
+							<td class="text-right"><strong> </strong></td>
+							<td class="text-right"><strong> </strong></td>
+							<td class="text-right"><strong> </strong></td>
+							<td class="text-right"><strong></strong></td>
+							<td class="text-right"><strong></strong></td>
+							<td class="text-right"><strong> </strong></td>
+							<td class="text-right"><strong> </strong></td>
+							<td class="text-right"><strong></strong></td>
+							<td class="text-right"><strong> </strong></td>
+							<td class="text-right"><strong> </strong></td>
+							<td class="text-right"><strong> </strong></td>
+							<td class="text-right"><strong> </strong></td>
+							<td class="text-right"><strong> </strong></td>
+						</tr>
+						<tr>
+							<td class="pl-4">SubAct1.2: doctors</td>
+							<td class="text-center">Yes</td>
+							<td class="text-right"><strong> </strong></td>
+							<td class="text-right"><strong> </strong></td>
+							<td class="text-right"><strong> </strong></td>
+							<td class="text-right"><strong></strong></td>
+							<td class="text-right"><strong></strong></td>
+							<td class="text-right"><strong> </strong></td>
+							<td class="text-right"><strong> </strong></td>
+							<td class="text-right"><strong></strong></td>
+							<td class="text-right"><strong> </strong></td>
+							<td class="text-right"><strong> </strong></td>
+							<td class="text-right"><strong> </strong></td>
+							<td class="text-right"><strong> </strong></td>
+							<td class="text-right"><strong> </strong></td>
+						</tr>
+						<tr>
+							<td class="pl-4">SubAct1.3: Nurses</td>
+							<td class="text-center">Yes</td>
+							<td class="text-right"><strong> </strong></td>
+							<td class="text-right"><strong> </strong></td>
+							<td class="text-right"><strong> </strong></td>
+							<td class="text-right"><strong></strong></td>
+							<td class="text-right"><strong></strong></td>
+							<td class="text-right"><strong> </strong></td>
+							<td class="text-right"><strong> </strong></td>
+							<td class="text-right"><strong></strong></td>
+							<td class="text-right"><strong> </strong></td>
+							<td class="text-right"><strong> </strong></td>
+							<td class="text-right"><strong> </strong></td>
+							<td class="text-right"><strong> </strong></td>
+							<td class="text-right"><strong> </strong></td>
+						</tr>
+						<tr>
+							<td class="pl-4">SubAct1.4: Sub Activity 1.4</td>
+							<td class="text-center">Yes</td>
+							<td class="text-right"><strong> </strong></td>
+							<td class="text-right"><strong> </strong></td>
+							<td class="text-right"><strong> </strong></td>
+							<td class="text-right"><strong></strong></td>
+							<td class="text-right"><strong></strong></td>
+							<td class="text-right"><strong> </strong></td>
+							<td class="text-right"><strong> </strong></td>
+							<td class="text-right"><strong></strong></td>
+							<td class="text-right"><strong> </strong></td>
+							<td class="text-right"><strong> </strong></td>
+							<td class="text-right"><strong> </strong></td>
+							<td class="text-right"><strong> </strong></td>
+							<td class="text-right"><strong> </strong></td>
+						</tr>
+						<tr>
+							<td class="pl-4">SubAct1.5: Sub Activity 1.5</td>
+							<td class="text-center">No</td>
+							<td class="text-right"><strong> </strong></td>
+							<td class="text-right"><strong> </strong></td>
+							<td class="text-right"><strong> </strong></td>
+							<td class="text-right"><strong></strong></td>
+							<td class="text-right"><strong></strong></td>
+							<td class="text-right"><strong> </strong></td>
+							<td class="text-right"><strong> </strong></td>
+							<td class="text-right"><strong></strong></td>
+							<td class="text-right"><strong> </strong></td>
+							<td class="text-right"><strong> </strong></td>
+							<td class="text-right"><strong> </strong></td>
+							<td class="text-right"><strong> </strong></td>
+							<td class="text-right"><strong> </strong></td>
+						</tr>
+						<tr>
+							<td><strong>Act 2: Activity 2 Description</strong></td>
+							<td></td>
+							<td class="text-right"><strong> </strong></td>
+
+							<td class="text-right"><strong><a href="@Url.Action("AddTravelTransportBudget", new { src = clsApplicationSetting.EncryptQueryString(ViewBag.MenuID.ToString() + "*/Budget/AddTravelTransportBudget*0")  })" data-toggle="tooltip" title="Add Travel and Transportation"><i class="fas fa-plus green-clr"></i></a> </strong></td>
+							<td class="text-right"><strong><a href="add-training.html" data-toggle="tooltip" title="Add Training"><i class="fas fa-plus green-clr"></i></a> </strong></td>
+							<td class="text-right"><strong><a href="add-meeting-and-workshop.html" data-toggle="tooltip" title="Add Meeting, Workshop and Seminars etc"><i class="fas fa-plus green-clr"></i></a> </strong></td>
+
+							<td class="text-right"><strong><a href="add-consultant.html" data-toggle="tooltip" title="Add Consultant"><i class="fas fa-plus green-clr"></i></a> </strong></td>
+
+							<td class="text-right"><strong><a href="add-sub-grant.html" data-toggle="tooltip" title="Add Sub Grant"><i class="fas fa-plus green-clr"></i></a> </strong></td>
+
+							<td class="text-right"><strong><a href="add-info-and-disseminate.html" data-toggle="tooltip" title="Add Info and Disseminate"><i class="fas fa-plus green-clr"></i></a> </strong></td>
+
+							<td class="text-right"><strong><a href="add-other.html" data-toggle="tooltip" title="Add other (please specify)	"><i class="fas fa-plus green-clr"></i></a> </strong></td>
+							<td class="text-right"><strong><a href="add-other-direct-cost.html" data-toggle="tooltip" title="Add other Direct Cost"><i class="fas fa-plus green-clr"></i></a> </strong></td>
+
+							<td class="text-right"><strong><a href="add-equipment.html" data-toggle="tooltip" title="Add Equipment"><i class="fas fa-plus green-clr"></i></a> </strong></td>
+							<td class="text-right"><strong></strong></td>
+							<td class="text-right"><strong></strong></td>
+							<td class="text-right"><strong></a> </strong></td>
+						</tr>
+						<tr>
+							<td class="pl-4">SubAct2.1: Monthly monitoring</td>
+							<td class="text-center">Yes</td>
+							<td class="text-right"><strong> </strong></td>
+							<td class="text-right"><strong> </strong></td>
+							<td class="text-right"><strong> </strong></td>
+							<td class="text-right"><strong></strong></td>
+							<td class="text-right"><strong></strong></td>
+							<td class="text-right"><strong> </strong></td>
+							<td class="text-right"><strong> </strong></td>
+							<td class="text-right"><strong></strong></td>
+							<td class="text-right"><strong> </strong></td>
+							<td class="text-right"><strong> </strong></td>
+							<td class="text-right"><strong> </strong></td>
+							<td class="text-right"><strong> </strong></td>
+							<td class="text-right"><strong> </strong></td>
+						</tr>
+						<tr>
+							<td class="pl-4">SubAct2.2: Yearly monitoring</td>
+							<td class="text-center">Yes</td>
+							<td class="text-right"><strong> </strong></td>
+							<td class="text-right"><strong> </strong></td>
+							<td class="text-right"><strong> </strong></td>
+							<td class="text-right"><strong></strong></td>
+							<td class="text-right"><strong></strong></td>
+							<td class="text-right"><strong> </strong></td>
+							<td class="text-right"><strong> </strong></td>
+							<td class="text-right"><strong></strong></td>
+							<td class="text-right"><strong> </strong></td>
+							<td class="text-right"><strong> </strong></td>
+							<td class="text-right"><strong> </strong></td>
+							<td class="text-right"><strong> </strong></td>
+							<td class="text-right"><strong> </strong></td>
+						</tr>
+						<tr>
+							<td class="pl-4">SubAct2.3: Sub Activity 2.3</td>
+							<td class="text-center">No</td>
+							<td class="text-right"><strong> </strong></td>
+							<td class="text-right"><strong> </strong></td>
+							<td class="text-right"><strong> </strong></td>
+							<td class="text-right"><strong></strong></td>
+							<td class="text-right"><strong></strong></td>
+							<td class="text-right"><strong> </strong></td>
+							<td class="text-right"><strong> </strong></td>
+							<td class="text-right"><strong></strong></td>
+							<td class="text-right"><strong> </strong></td>
+							<td class="text-right"><strong> </strong></td>
+							<td class="text-right"><strong> </strong></td>
+							<td class="text-right"><strong> </strong></td>
+							<td class="text-right"><strong> </strong></td>
+						</tr>
+						<tr>
+							<td><strong>Act 3: Activity 3 Description</strong></td>
+							<td></td>
+							<td class="text-right"><strong> </strong></td>
+
+							<td class="text-right"><strong><a href="add-travel.html" data-toggle="tooltip" title="Add Travel and Transportation"><i class="fas fa-plus green-clr"></i></a> </strong></td>
+							<td class="text-right"><strong><a href="add-training.html" data-toggle="tooltip" title="Add Training"><i class="fas fa-plus green-clr"></i></a> </strong></td>
+							<td class="text-right"><strong><a href="add-meeting-and-workshop.html" data-toggle="tooltip" title="Add Meeting, Workshop and Seminars etc"><i class="fas fa-plus green-clr"></i></a> </strong></td>
+
+							<td class="text-right"><strong><a href="add-consultant.html" data-toggle="tooltip" title="Add Consultant"><i class="fas fa-plus green-clr"></i></a> </strong></td>
+
+							<td class="text-right"><strong><a href="add-sub-grant.html" data-toggle="tooltip" title="Add Sub Grant"><i class="fas fa-plus green-clr"></i></a> </strong></td>
+
+							<td class="text-right"><strong><a href="add-info-and-disseminate.html" data-toggle="tooltip" title="Add Info and Disseminate"><i class="fas fa-plus green-clr"></i></a> </strong></td>
+
+							<td class="text-right"><strong><a href="add-other.html" data-toggle="tooltip" title="Add other (please specify) "><i class="fas fa-plus green-clr"></i></a> </strong></td>
+							<td class="text-right"><strong><a href="add-other-direct-cost.html" data-toggle="tooltip" title="Add other Direct Cost"><i class="fas fa-plus green-clr"></i></a> </strong></td>
+
+							<td class="text-right"><strong><a href="add-equipment.html" data-toggle="tooltip" title="Add Equipment"><i class="fas fa-plus green-clr"></i></a> </strong></td>
+
+							<td class="text-right"><strong></strong></td>
+							<td class="text-right"><strong></strong></td>
+							<td class="text-right"><strong></a> </strong></td>
+						</tr>
+						<tr>
+							<td class="pl-4">SubAct3.1: Sub Activity 3.1</td>
+							<td class="text-center">Yes</td>
+							<td class="text-right"><strong> </strong></td>
+							<td class="text-right"><strong> </strong></td>
+							<td class="text-right"><strong> </strong></td>
+							<td class="text-right"><strong></strong></td>
+							<td class="text-right"><strong></strong></td>
+							<td class="text-right"><strong> </strong></td>
+							<td class="text-right"><strong> </strong></td>
+							<td class="text-right"><strong></strong></td>
+							<td class="text-right"><strong> </strong></td>
+							<td class="text-right"><strong> </strong></td>
+							<td class="text-right"><strong> </strong></td>
+							<td class="text-right"><strong> </strong></td>
+							<td class="text-right"><strong> </strong></td>
+						</tr>
+						<tr>
+							<td class="pl-4">SubAct3.2: Sub Activity 3.2</td>
+							<td class="text-center">No</td>
+							<td class="text-right"><strong> </strong></td>
+							<td class="text-right"><strong> </strong></td>
+							<td class="text-right"><strong> </strong></td>
+							<td class="text-right"><strong></strong></td>
+							<td class="text-right"><strong></strong></td>
+							<td class="text-right"><strong> </strong></td>
+							<td class="text-right"><strong> </strong></td>
+							<td class="text-right"><strong></strong></td>
+							<td class="text-right"><strong> </strong></td>
+							<td class="text-right"><strong> </strong></td>
+							<td class="text-right"><strong> </strong></td>
+							<td class="text-right"><strong> </strong></td>
+							<td class="text-right"><strong> </strong></td>
+						</tr>
+						<tr>
+							<td class="pl-4">SubAct3.3: Sub Activity 3.3</td>
+							<td class="text-center">Yes</td>
+							<td class="text-right"><strong> </strong></td>
+							<td class="text-right"><strong> </strong></td>
+							<td class="text-right"><strong> </strong></td>
+							<td class="text-right"><strong></strong></td>
+							<td class="text-right"><strong></strong></td>
+							<td class="text-right"><strong> </strong></td>
+							<td class="text-right"><strong> </strong></td>
+							<td class="text-right"><strong></strong></td>
+							<td class="text-right"><strong> </strong></td>
+							<td class="text-right"><strong> </strong></td>
+							<td class="text-right"><strong> </strong></td>
+							<td class="text-right"><strong> </strong></td>
+							<td class="text-right"><strong> </strong></td>
+						</tr>
+						<tr>
+							<td><strong>Act 4: Activity 4 Description</strong></td>
+							<td></td>
+							<td class="text-right"><strong> </strong></td>
+
+							<td class="text-right"><strong><a href="add-travel.html" data-toggle="tooltip" title="Add Travel and Transportation"><i class="fas fa-plus green-clr"></i></a> </strong></td>
+							<td class="text-right"><strong><a href="add-training.html" data-toggle="tooltip" title="Add Training"><i class="fas fa-plus green-clr"></i></a> </strong></td>
+							<td class="text-right"><strong><a href="add-meeting-and-workshop.html" data-toggle="tooltip" title="Add Meeting, Workshop and Seminars etc"><i class="fas fa-plus green-clr"></i></a> </strong></td>
+
+							<td class="text-right"><strong><a href="add-consultant.html" data-toggle="tooltip" title="Add Consultant"><i class="fas fa-plus green-clr"></i></a> </strong></td>
+
+							<td class="text-right"><strong><a href="add-sub-grant.html" data-toggle="tooltip" title="Add Sub Grant"><i class="fas fa-plus green-clr"></i></a> </strong></td>
+
+							<td class="text-right"><strong><a href="add-info-and-disseminate.html" data-toggle="tooltip" title="Add Info and Disseminate"><i class="fas fa-plus green-clr"></i></a> </strong></td>
+
+							<td class="text-right"><strong><a href="add-other.html" data-toggle="tooltip" title="Add other (please specify) "><i class="fas fa-plus green-clr"></i></a> </strong></td>
+							<td class="text-right"><strong><a href="add-other-direct-cost.html" data-toggle="tooltip" title="Add other Direct Cost"><i class="fas fa-plus green-clr"></i></a> </strong></td>
+
+							<td class="text-right"><strong><a href="add-equipment.html" data-toggle="tooltip" title="Add Equipment"><i class="fas fa-plus green-clr"></i></a> </strong></td>
+
+
+							<td class="text-right"><strong></strong></td>
+							<td class="text-right"><strong></strong></td>
+							<td class="text-right"><strong></a> </strong></td>
+						</tr>
+						<tr>
+							<td class="pl-4">SubAct4.1: Sub Activity 4.1</td>
+							<td class="text-center">Yes</td>
+							<td class="text-right"><strong> </strong></td>
+							<td class="text-right"><strong> </strong></td>
+							<td class="text-right"><strong> </strong></td>
+							<td class="text-right"><strong></strong></td>
+							<td class="text-right"><strong></strong></td>
+							<td class="text-right"><strong> </strong></td>
+							<td class="text-right"><strong> </strong></td>
+							<td class="text-right"><strong></strong></td>
+							<td class="text-right"><strong> </strong></td>
+							<td class="text-right"><strong> </strong></td>
+							<td class="text-right"><strong> </strong></td>
+							<td class="text-right"><strong> </strong></td>
+							<td class="text-right"><strong> </strong></td>
+						</tr>
+						<tr>
+							<td class="pl-4">SubAct4.2: Sub Activity 4.2</td>
+							<td class="text-center">Yes</td>
+							<td class="text-right"><strong> </strong></td>
+							<td class="text-right"><strong> </strong></td>
+							<td class="text-right"><strong> </strong></td>
+							<td class="text-right"><strong></strong></td>
+							<td class="text-right"><strong></strong></td>
+							<td class="text-right"><strong> </strong></td>
+							<td class="text-right"><strong> </strong></td>
+							<td class="text-right"><strong></strong></td>
+							<td class="text-right"><strong> </strong></td>
+							<td class="text-right"><strong> </strong></td>
+							<td class="text-right"><strong> </strong></td>
+							<td class="text-right"><strong> </strong></td>
+							<td class="text-right"><strong> </strong></td>
+						</tr>
+						<tr>
+							<td class="pl-4">SubAct4.3: Sub Activity 4.3 </td>
+							<td class="text-center">Yes</td>
+							<td class="text-right"><strong> </strong></td>
+							<td class="text-right"><strong> </strong></td>
+							<td class="text-right"><strong> </strong></td>
+							<td class="text-right"><strong></strong></td>
+							<td class="text-right"><strong></strong></td>
+							<td class="text-right"><strong> </strong></td>
+							<td class="text-right"><strong> </strong></td>
+							<td class="text-right"><strong></strong></td>
+							<td class="text-right"><strong> </strong></td>
+							<td class="text-right"><strong> </strong></td>
+							<td class="text-right"><strong> </strong></td>
+							<td class="text-right"><strong> </strong></td>
+							<td class="text-right"><strong> </strong></td>
+						</tr>
+						<tr>
+							<td class="pl-4">SubAct4.4: Sub Activity 4.4 </td>
+							<td class="text-center">Yes</td>
+							<td class="text-right"><strong> </strong></td>
+							<td class="text-right"><strong> </strong></td>
+							<td class="text-right"><strong> </strong></td>
+							<td class="text-right"><strong></strong></td>
+							<td class="text-right"><strong></strong></td>
+							<td class="text-right"><strong> </strong></td>
+							<td class="text-right"><strong> </strong></td>
+							<td class="text-right"><strong></strong></td>
+							<td class="text-right"><strong> </strong></td>
+							<td class="text-right"><strong> </strong></td>
+							<td class="text-right"><strong> </strong></td>
+							<td class="text-right"><strong> </strong></td>
+							<td class="text-right"><strong> </strong></td>
+						</tr>
+						<tr>
+							<td><strong>Act 5: Activity 5 Description</strong></td>
+							<td></td>
+							<td class="text-right"><strong> </strong></td>
+
+							<td class="text-right"><strong><a href="add-travel.html" data-toggle="tooltip" title="Add Travel and Transportation"><i class="fas fa-plus green-clr"></i></a> </strong></td>
+							<td class="text-right"><strong><a href="add-training.html" data-toggle="tooltip" title="Add Training"><i class="fas fa-plus green-clr"></i></a> </strong></td>
+							<td class="text-right"><strong><a href="add-meeting-and-workshop.html" data-toggle="tooltip" title="Add Meeting, Workshop and Seminars etc"><i class="fas fa-plus green-clr"></i></a> </strong></td>
+
+							<td class="text-right"><strong><a href="add-consultant.html" data-toggle="tooltip" title="Add Consultant"><i class="fas fa-plus green-clr"></i></a> </strong></td>
+
+							<td class="text-right"><strong><a href="add-sub-grant.html" data-toggle="tooltip" title="Add Sub Grant"><i class="fas fa-plus green-clr"></i></a> </strong></td>
+
+							<td class="text-right"><strong><a href="add-info-and-disseminate.html" data-toggle="tooltip" title="Add Info and Disseminate"><i class="fas fa-plus green-clr"></i></a> </strong></td>
+
+							<td class="text-right"><strong><a href="add-other.html" data-toggle="tooltip" title="Add other (please specify) "><i class="fas fa-plus green-clr"></i></a> </strong></td>
+							<td class="text-right"><strong><a href="add-other-direct-cost.html" data-toggle="tooltip" title="Add other Direct Cost"><i class="fas fa-plus green-clr"></i></a> </strong></td>
+
+							<td class="text-right"><strong><a href="add-equipment.html" data-toggle="tooltip" title="Add Equipment"><i class="fas fa-plus green-clr"></i></a> </strong></td>
+
+
+							<td class="text-right"><strong></strong></td>
+							<td class="text-right"><strong></strong></td>
+							<td class="text-right"><strong></a> </strong></td>
+						</tr>
+						<tr>
+							<td class="pl-4">SubAct5.1: Sub Activity 5.1</td>
+							<td class="text-center">Yes</td>
+							<td class="text-right"><strong> </strong></td>
+							<td class="text-right"><strong> </strong></td>
+							<td class="text-right"><strong> </strong></td>
+							<td class="text-right"><strong></strong></td>
+							<td class="text-right"><strong></strong></td>
+							<td class="text-right"><strong> </strong></td>
+							<td class="text-right"><strong> </strong></td>
+							<td class="text-right"><strong></strong></td>
+							<td class="text-right"><strong> </strong></td>
+							<td class="text-right"><strong> </strong></td>
+							<td class="text-right"><strong> </strong></td>
+							<td class="text-right"><strong> </strong></td>
+							<td class="text-right"><strong> </strong></td>
+						</tr>
+						<tr>
+							<td class="pl-4">SubAct5.2: Sub Activity 5.2 </td>
+							<td class="text-center">Yes</td>
+							<td class="text-right"><strong> </strong></td>
+							<td class="text-right"><strong> </strong></td>
+							<td class="text-right"><strong> </strong></td>
+							<td class="text-right"><strong></strong></td>
+							<td class="text-right"><strong></strong></td>
+							<td class="text-right"><strong> </strong></td>
+							<td class="text-right"><strong> </strong></td>
+							<td class="text-right"><strong></strong></td>
+							<td class="text-right"><strong> </strong></td>
+							<td class="text-right"><strong> </strong></td>
+							<td class="text-right"><strong> </strong></td>
+							<td class="text-right"><strong> </strong></td>
+							<td class="text-right"><strong> </strong></td>
+						</tr>
+						<tr>
+							<td class="pl-4">SubAct5.3: Sub Activity 5.3</td>
+							<td class="text-center">Yes</td>
+							<td class="text-right"><strong> </strong></td>
+							<td class="text-right"><strong> </strong></td>
+							<td class="text-right"><strong> </strong></td>
+							<td class="text-right"><strong></strong></td>
+							<td class="text-right"><strong></strong></td>
+							<td class="text-right"><strong> </strong></td>
+							<td class="text-right"><strong> </strong></td>
+							<td class="text-right"><strong></strong></td>
+							<td class="text-right"><strong> </strong></td>
+							<td class="text-right"><strong> </strong></td>
+							<td class="text-right"><strong> </strong></td>
+							<td class="text-right"><strong> </strong></td>
+							<td class="text-right"><strong> </strong></td>
+						</tr>
+						<tr>
+							<td class="pl-4">SubAct5.4: Sub Activity 5.4</td>
+							<td class="text-center">Yes</td>
+							<td class="text-right"><strong> </strong></td>
+							<td class="text-right"><strong> </strong></td>
+							<td class="text-right"><strong> </strong></td>
+							<td class="text-right"><strong></strong></td>
+							<td class="text-right"><strong></strong></td>
+							<td class="text-right"><strong> </strong></td>
+							<td class="text-right"><strong> </strong></td>
+							<td class="text-right"><strong></strong></td>
+							<td class="text-right"><strong> </strong></td>
+							<td class="text-right"><strong> </strong></td>
+							<td class="text-right"><strong> </strong></td>
+							<td class="text-right"><strong> </strong></td>
+							<td class="text-right"><strong> </strong></td>
+						</tr>
+						<tr>
+							<td class="pl-4">SubAct5.5: Sub Activity 5.5</td>
+							<td class="text-center">Yes</td>
+							<td class="text-right"><strong> </strong></td>
+							<td class="text-right"><strong> </strong></td>
+							<td class="text-right"><strong> </strong></td>
+							<td class="text-right"><strong></strong></td>
+							<td class="text-right"><strong></strong></td>
+							<td class="text-right"><strong> </strong></td>
+							<td class="text-right"><strong> </strong></td>
+							<td class="text-right"><strong></strong></td>
+							<td class="text-right"><strong> </strong></td>
+							<td class="text-right"><strong> </strong></td>
+							<td class="text-right"><strong> </strong></td>
+							<td class="text-right"><strong> </strong></td>
+							<td class="text-right"><strong> </strong></td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+			<div class="mt-3 text-center">
+				<button type="submit" class="btn mtr-o-grn " name="Command" data-toggle="modal" data-target="#vpywb" value="Add"><i class="fas fa-eye"></i>View Project Year Wise Budget</button>
+				<button type="submit" class="btn mtr-o-grn " name="Command" data-toggle="modal" data-target="#vowb" value="Add"><i class="fas fa-eye"></i>View Outcome Wise Budget</button>
+				<button type="button" class="btn cnl-btn"><i class="fas fa-times"></i> Close</button>
+			</div>
+		</div>
+

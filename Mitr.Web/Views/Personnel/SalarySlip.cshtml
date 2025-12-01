@@ -1,0 +1,283 @@
+﻿@using System.Globalization
+@model DataSet
+@using System.Data
+@{
+	Layout = null;
+}
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+	<title>Mitr_SalarySlip_@Model.Tables[0].Rows[0]["MonthYear"]</title>
+	<meta name="title" content="Mitr: ConsolidateActivityLog" />
+	<meta name="keywords" content="Mitr: ConsolidateActivityLog" />
+	<meta name="description" content="Mitr: ConsolidateActivityLog" />
+
+	<link href="https://fonts.googleapis.com/css?family=Roboto:300,400,700&display=swap" rel="stylesheet">
+
+	<link rel="shortcut icon" href="/assets/design/images/favicon.png" type="image/x-icon">
+	<link rel="icon" href="/assets/design/images/favicon.png" type="image/png" sizes="50x50">
+	<link href='/assets/design/css/icons.css?v=1.6' rel='stylesheet' />
+	<link href='/assets/design/css/bootstrap.min.css?v=1.6' rel='stylesheet' />
+	<link href='/assets/design/css/style.css?v=1.6' rel='stylesheet' />
+	<link href='/assets/design/css/custom.css?v=1.6' rel='stylesheet' />
+	<link href='/assets/design/css/responsive.css?v=1.6' rel='stylesheet' />
+
+	<link href='/assets/design/css/print.css?v=1.6' rel='stylesheet' type="text/css" media="print" />
+
+	<style type="text/css">
+		.tdbrd-none td {
+			border: 0px !important;
+			vertical-align: top !important;
+			padding: 3px 0px !important;
+		}
+	</style>
+
+</head>
+<body class=" header">
+	<div class="print-header">
+		<div class="container">
+			<div class="row">
+				<div class="col-md-8 col-sm-12 mx-auto text-right">
+					<a onclick="window.print()" class="btn mtr-g-grn btn-l ripplelink ">
+						<i class="fa fa-print"></i>Print
+					</a>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="container mt-5 pt-4">
+
+
+		@foreach (DataRow item in Model.Tables[0].Rows)
+		{
+			<div class="row pagebreak">
+				<div class="col-md-8 col-sm-12 mx-auto">
+					<div class="inner-main">
+
+						<div class="bgbox">
+							<div class="row">
+								<div class="col-sm-2 align-self-center">
+									<img src=@item["Logo"] alt="">
+								</div>
+								<div class="col-sm-8 text-center">
+									<strong class="cntitle">@item["CompanyName"]</strong><br>
+									<small class="fn-md ">@item["Address"]</small>
+								</div>
+							</div>
+						</div>
+						@if (item["emp_name"].ToString() != "")
+						{
+							<div class="row">
+								<div class="col-sm-12 text-center">
+									<h2 class="heading-one">Salary slip for the month of @item["MonthYear"]</h2>
+								</div>
+								<div class="col-sm-12 mx-auto">
+									<table class="table tdbrd-none">
+										<tr>
+											<td>Name</td>
+											<td class="fn-bold">@item["emp_name"]</td>
+											<td width="100">Employee ID</td>
+											<td class="text-right">@item["emp_code"]</td>
+										</tr>
+										<tr>
+											<td>Designation </td>
+											<td>@item["Designation"]</td>
+											<td>Location</td>
+											<td class="text-right">@item["Location"]</td>
+										</tr>
+
+										<tr>
+											<td>Category </td>
+											<td>@item["EmploymentTerm"]</td>
+											<td>PAN</td>
+											<td class="text-right">@item["pan_no"]</td>
+										</tr>
+
+										<tr>
+											<td>Status  </td>
+											<td>@item["emp_status"]</td>
+
+											<td>UAN</td>
+											<td class="text-right">@item["UAN_No"]</td>
+										</tr>
+
+										<tr>
+											<td>Grade/ Step  </td>
+											@*<td>@item["Grade"]</td>*@
+											<td>Hourly Rate</td>
+											@*<td class="text-right">@(string.Format("{0:#,0}", Convert.ToDecimal(item["HourlyRate"]))) </td>*@
+											<td class="text-right">@((Convert.ToDecimal(item["HourlyRate"])).ToString("N", new CultureInfo("hi-IN"))) </td>
+
+										</tr>
+
+										<tr>
+											<td>Salary Structure  </td>
+											<td>@item["SalaryOption"]</td>
+
+											<td>Monthly Hours</td>
+											<td class="text-right">@item["MonthlyHour"]</td>
+										</tr>
+
+										<tr>
+											<td>Date of Joining </td>
+											<td>@item["DateOfJoining"]</td>
+											<td>LWP</td>
+											<td class="text-right">@item["LWP"]</td>
+										</tr>
+										@if (item["EmploymentTerm"].ToString().Trim() == "Core")
+										{
+											<tr>
+												<td></td>
+												<td></td>
+												<td>Paid Hours</td>
+												<td class="text-right">@item["PaidHours"]</td>
+											</tr>
+										}
+										else
+										{
+											<tr>
+												<td>End Date</td>
+												<td>@item["lastworking_day"]</td>
+												<td>Paid Hours</td>
+												<td class="text-right">@item["PaidHours"]</td>
+											</tr>
+										}
+									</table>
+								</div>
+								<div class="col-sm-12">
+									@{
+										var lstEarning = from emp in Model.Tables[1].AsEnumerable()
+														 where emp.Field<int>("Empid") == Convert.ToInt32(item["id"]) && (emp.Field<string>("Doctype") == "Earning" || emp.Field<string>("Doctype") == "OtherEarning" || emp.Field<string>("Doctype") == "OT")
+														 select new
+														 {
+															 Componentid = emp.Field<int>("Componentid"),
+															 Component = emp.Field<string>("Component").ToString(),
+															 Amount = emp.Field<double>("Amount").ToString(),
+															 Doctype = emp.Field<string>("Doctype").ToString(),
+															 TotalEarning = emp.Field<double>("TotalEarning").ToString(),
+															 FixedBenefits = emp.Field<double>("FixedBenefits").ToString(),
+															 Gross = emp.Field<double>("Gross").ToString(),
+															 TotalDeduction = emp.Field<double>("TotalDeduction").ToString(),
+															 NetAmount = emp.Field<double>("NetAmount").ToString(),
+															 AmtWords = emp.Field<string>("AmtWords").ToString(),
+														 };
+										var lstE = lstEarning.ToList();
+										var lstDeduction = from emp in Model.Tables[1].AsEnumerable()
+														   where emp.Field<int>("Empid") == Convert.ToInt32(item["id"]) && emp.Field<string>("Doctype") == "Deduction"
+														   select new
+														   {
+															   Componentid = emp.Field<int>("Componentid"),
+															   Component = emp.Field<string>("Component"),
+															   Amount = emp.Field<double>("Amount"),
+															   Doctype = emp.Field<string>("Doctype"),
+															   TotalEarning = emp.Field<double>("TotalEarning"),
+															   TotalDeduction = emp.Field<double>("TotalDeduction"),
+															   NetAmount = emp.Field<double>("NetAmount")
+														   };
+										var lstD = lstDeduction.ToList();
+										int LoopCount = lstEarning.Count() > lstDeduction.Count() ? lstEarning.Count() : lstDeduction.Count();
+
+									}
+									<table class="table mb-0">
+										<thead>
+											<tr>
+												<td colspan="7" class="text-right"><i>(all amounts in INR)</i></td>
+											</tr>
+											<tr>
+												<th colspan="2" class="text-center">Salary</th>
+												<th width="100" class="text-center">Fixed Benefits</th>
+												<th width="100" class="text-center">Gross</th>
+												<th colspan="2" class="text-center">Deductions</th>
+												<th class="text-center">Net</th>
+											</tr>
+											<tr>
+												<th colspan="2" class="text-right">@(lstE.Count > 0 ? (string.Format("{0:#,0}", Convert.ToDecimal(lstE[0].TotalEarning))).ToString() : "") </th>
+												<th class="text-right">@(lstE.Count > 0 ? (string.Format("{0:#,0}", Convert.ToDecimal(lstE[0].FixedBenefits))).ToString() : "") </th>
+												<th class="text-right"> @(lstE.Count > 0 ? (string.Format("{0:#,0}", Convert.ToDecimal(lstE[0].Gross))).ToString() : "")  </th>
+												<th colspan="2" class="text-right">@(lstD.Count > 0 ? (string.Format("{0:#,0}", Convert.ToDecimal(lstD[0].TotalDeduction))).ToString() : "")  </th>
+												<th class="text-right">@(lstE.Count > 0 ? (string.Format("{0:#,0}", Convert.ToDecimal(lstE[0].NetAmount))).ToString() : "")</th>
+											</tr>
+										</thead>
+										<tbody>
+											@for (int i = 0; i < LoopCount; i++)
+											{
+												<tr>
+													<td>@(lstE.Count > i ? lstE[i].Component : "")</td>
+													<td class="text-right">@(lstE.Count > i ? (string.Format("{0:#,0}", Convert.ToDecimal(lstE[i].Amount))).ToString() : "") </td>
+													<td colspan="2"></td>
+													<td>@(lstD.Count > i ? lstD[i].Component : "")</td>
+													<td class="text-right"> @(lstD.Count > i ? (string.Format("{0:#,0}", Convert.ToDecimal(lstD[i].Amount))).ToString() : "")  </td>
+													<td class="text-right"> </td>
+												</tr>
+											}
+
+										</tbody>
+										<tfoot>
+											<tr>
+												<td colspan="7" class="lgt-mtr-o-bg fn-bold fn-i">(Rs.@(lstE.Count > 0 ? lstE[0].AmtWords.ToString() : ""))</td>
+											</tr>
+											<tr>
+												<td colspan="2">Mode of Payment:</td>
+
+												<td colspan="5">Cheque/ DD/ NEFT</td>
+
+											</tr>
+										</tfoot>
+
+									</table>
+								</div>
+								<div class="col-sm-12">
+									<h2 class="heading-one text-center">Payment Details (in case of NEFT)</h2>
+								</div>
+								<div class="col-sm-9 mx-auto">
+									<table class="table tdbrd-none">
+										<tbody>
+											<tr>
+												<td width="100">Account Title</td>
+												<td>@item["AccountName"]</td>
+												<td>Account Number</td>
+												<td>@item["AccountNo"]</td>
+
+
+											</tr>
+											<tr>
+												<td>Bank Name</td>
+												<td>@item["BankName"]</td>
+												<td width="100">IFSC Code</td>
+												<td width="150">@item["IFSCCode"]</td>
+
+											</tr>
+
+										</tbody>
+									</table>
+
+								</div>
+								<div class="col-sm-12 text-center fn-bold">
+									<i>It’s a computer generated Salary Slip, hence does not require any signature</i>
+								</div>
+							</div>
+										}
+										else
+										{
+											<div class="col-sm-12 text-center fn-bold">
+	<i>No Data Found</i>
+</div>
+
+										}
+
+
+					</div>
+				</div>
+			</div>
+		}
+
+	</div>
+
+
+
+</body>
+</html>

@@ -1,0 +1,163 @@
+﻿@model Mitr.Models.TimeSheetEmployeeDetails
+@using System.Data
+@using Mitr.Models
+@{
+    DateTime SelectedDate = Convert.ToDateTime(ViewBag.Date);
+    DateTime StartDate = new DateTime(SelectedDate.Year, SelectedDate.Month, 1);
+    DateTime EndDate = StartDate.AddMonths(1).AddDays(-1);
+}
+    <div class="bgbox">
+        <div class="row">
+         <div class="col-sm-2 align-self-center">
+                <img src="../assets/design/images/c3.png" alt="">
+            </div>
+            
+            <div class="col-sm-8 text-center">
+                <strong class="cntitle">@Model.CompanyName</strong><br />
+                <small class="fn-md">@Model.CompanyAddress</small>
+            </div>
+            <div class="col-sm-2 align-self-center text-right">
+                <img src="../assets/design/images/logo.jpg" alt="">
+            </div>
+           
+        </div>
+    </div>
+    <div class="text-center mb-2"> <h2 class="heading-one">@Model.TimeSheetName</h2></div>
+    <div class="ts-list">
+        <div class="row">
+            <div class="col-sm-4">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <td>Code</td>
+                            <td><strong>@Model.Code</strong></td>
+                        </tr>
+                        <tr>
+                            <td>Name</td>
+                            <td><strong>@Model.Name</strong></td>
+                        </tr>
+                        <tr>
+                            <td>Designation</td>
+                            <td><strong>@Model.Designation</strong></td>
+                        </tr>
+                    </thead>
+                </table>
+            </div>
+
+            <div class="col-sm-4">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <td>Supervisors Name</td>
+                            <td><strong>@Model.SupervisorName</strong></td>
+                        </tr>
+                        <tr>
+                            <td>Hourly Rate</td>
+                            <td><strong>@Model.HourlyRate</strong></td>
+                        </tr>
+                        <tr>
+                            <td>Location</td>
+                            <td><strong>@Model.Location</strong></td>
+                        </tr>
+                    </thead>
+                </table>
+            </div>
+
+            <div class="col-sm-4">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <td>Monthly Hours</td>
+                            <td><strong>@Model.MonthHours</strong></td>
+                        </tr>
+                        <tr>
+                            <td>LWP Hours</td>
+                            <td><strong>@Model.LWPHours</strong></td>
+                        </tr>
+                        <tr>
+                            <td>Paid Hours</td>
+                            <td><strong>@Model.PaidHours</strong></td>
+                        </tr>
+                    </thead>
+                </table>
+            </div>       
+            
+                  
+        </div>
+    </div>
+</div>
+
+@if (Model.EmployeeTimeSheet != null)
+{
+    <div class="x_content table-currency mt-0">
+        <div class="table-scrollable mb-3">
+
+
+            <table class="table table-scroll mt-0 act-table">
+                <thead>
+                    <tr>
+                        <th >Project Name</th>
+                        @*<th>Activity</th>*@
+                        @for (DateTime date = StartDate; date <= EndDate; date = date.AddDays(1))
+                        {
+                            <th class="text-center hasdays @(Model.FixHolidays.Contains(date.ToString("dddd"))?"fixholidaycolor":"")">@Convert.ToInt32(date.ToString("dd")) <span> @date.ToString("ddd").Substring(0, 1) </span></th>
+                        }
+                        <th>Total</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (DataRow item in Model.EmployeeTimeSheet.Tables[0].Rows)
+                    {
+                        <tr class="@(item["doc_type"].ToString() == "A" ? "actHolhours" : "actHolSperator") @(item["proj_name"].ToString()=="Monthly Hours" || item["proj_name"].ToString()=="Comp Off" ?"lgt-mtr-o-bg fn-bold":"")">
+                            <td><div class="w-150">@(item["proj_name"] + (string.IsNullOrEmpty(item["proj_no"].ToString()) ? "" : " (" + item["proj_no"] + ")"))</div> </td>
+                          @*<td >@item["Activity"]</td>*@
+                            @for (DateTime date = StartDate; date <= EndDate; date = date.AddDays(1))
+                            {
+                                <td class="hasdays text-center @(Model.FixHolidays.Contains(date.ToString("dddd"))?"fixholidaycolor":"")">@item["day" + Convert.ToInt32(date.ToString("dd"))]</td>
+                            }
+                            <td class="text-right"><strong>@item["Total"]</strong></td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+        <h2 class="headingtwo">Allocation</h2>
+        @if (Model.EmployeeTimeSheet.Tables[1].Rows.Count > 0)
+        {
+            <table class="table table-bordered dt-responsive nowrap tbltick new_width" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
+                <thead>
+                    <tr>
+                        @foreach (DataColumn item in Model.EmployeeTimeSheet.Tables[1].Columns)
+                        {
+                            if (item.ColumnName != "Sno")
+                            {
+                                <th>@item.ColumnName</th>
+                            }
+
+                        }
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (DataRow dtRow in Model.EmployeeTimeSheet.Tables[1].Rows)
+                    {
+                    <tr class="@(dtRow[1].ToString()=="Gross Salary"?"lgt-mtr-o-bg fn-bold":"")">
+                        @foreach (DataColumn dc in Model.EmployeeTimeSheet.Tables[1].Columns)
+                        {
+                            if (dc.ToString() != "Sno")
+                            {
+                                <td> @dtRow[dc].ToString()</td>
+                            }
+
+
+                        }
+                    </tr>
+                    }
+                </tbody>
+            </table>
+        }
+        <div class="bgbox text-center">
+            *This is a computer genertaed time sheet hence does not require any signature*
+        </div>
+    </div>
+
+}

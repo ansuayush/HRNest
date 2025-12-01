@@ -1,0 +1,445 @@
+﻿@model Mitr.Models.TravelDashboard
+
+
+@{
+    string MenuID = ViewBag.MenuID.ToString();
+    string IsHOD = clsApplicationSetting.GetSessionValue("IsHOD");
+}
+@Html.Partial("HeaderMsg_Partial")
+<div class="row">
+    <div class="col-lg-6 col-md-6">
+
+        <div class="shadow-box m-mnh-767 boxheight">
+            <h2 class="heading-grd heading-btn  blk-gdn-btn m-0">
+                Travel Dashboard
+                <div class="rgt-pst">
+                    <ul class="list-unstyled header-mnu">
+                        <li>
+                            <a onclick="ShowLoadingDialog();window.location='@Url.Action("TravelDashboard",new { src = clsApplicationSetting.EncryptQueryString(ViewBag.MenuID.ToString() + "*/Travel/TravelDashboard*0")})';" class="nav-link ripplelink @( ViewBag.Type==0?"active":"")"><i class="fal fa-envelope-open"></i>TR</a>
+                        </li>
+                        <li>
+
+                            <a onclick="ShowLoadingDialog();window.location='@Url.Action("TravelDashboard",new { src = clsApplicationSetting.EncryptQueryString(ViewBag.MenuID.ToString() + "*/Travel/TravelDashboard*1")})';" class="nav-link ripplelink @( ViewBag.Type==1?"active":"")" data-toggle="tab" role="tab"><i class="fa fa-check" aria-hidden="true"></i>TER</a>
+                        </li>
+
+                    </ul>
+                </div>
+            </h2>
+            <ul class="list-unstyled h-130 text-center trvl-lst row @(IsHOD == "Y"?"":"center")">
+                <li class="col-sm-4 align-self-center">
+                        @*<a onclick="ShowLoadingDialog();window.location='@Url.Action("CreateRequest",new { src = clsApplicationSetting.EncryptQueryString(ViewBag.MenuID.ToString() + "*/Travel/CreateRequest*0*I")})';">
+                            <u>International</u>
+                                </a><br />
+                                    <a onclick="ShowLoadingDialog();window.location='@Url.Action("CreateRequest",new { src = clsApplicationSetting.EncryptQueryString(ViewBag.MenuID.ToString() + "*/Travel/CreateRequest*0*I")})';">
+                                @Html.CreateImage("international-icon.png", "international", "")
+                        </a>*@
+                    <a href="#" >
+                        <u class="d-block">International</u>
+                        @Html.CreateImage("international-icon.png", "international", "")
+                    </a>
+                </li>
+                <li class="col-sm-4 align-self-center">
+                    <a onclick="ShowLoadingDialog();window.location='@Url.Action("CreateRequest",new { src = clsApplicationSetting.EncryptQueryString(ViewBag.MenuID.ToString() + "*/Travel/CreateRequest*0*D")})';">
+                        <u class="d-block">Domestic</u>
+                    
+                        @Html.CreateImage("domestic-icon.png", "domestic", "")
+                    </a>
+                </li>
+                <li class="col-sm-4 align-self-center">
+
+                    @*<a onclick="ShowLoadingDialog();window.location='@Url.Action("CreateRequest",new { src = clsApplicationSetting.EncryptQueryString(ViewBag.MenuID.ToString() + "*/Travel/CreateRequest*0*R")})';">
+                        <u>Relocation</u>
+                        </a>
+                        <br />
+                        <a onclick="ShowLoadingDialog();window.location='@Url.Action("CreateRequest",new { src = clsApplicationSetting.EncryptQueryString(ViewBag.MenuID.ToString() + "*/Travel/CreateRequest*0*R")})';">
+                        @Html.CreateImage("relocation-icon.png", "relocation", "")
+                        </a>*@
+                        <a href="#" >
+                            <u class="d-block">Relocation</u>
+                            @Html.CreateImage("relocation-icon.png", "relocation", "")
+                        </a>
+                </li>
+            </ul>
+            @if (IsHOD == "Y")
+            {
+                if (ViewBag.Type == 0)
+                {
+                    @Html.Partial("_MyTravelRequest", Model.MyTravelRequest)
+                }
+                else
+                {
+                    @Html.Partial("_ExpenseMyTravelRequest", Model.MyTravelRequest)
+                }
+            }
+        </div>
+    </div>
+    <div class="col-lg-6 col-md-6">
+        @if (IsHOD == "Y")
+        {
+            if (ViewBag.Type == 0)
+            {
+                @Html.Partial("_TravelRequestForApproval", Model.TravelRequestForApproval)
+            }
+            else
+            {
+                @Html.Partial("_ExpenseRequestForApproval", Model.TravelRequestForApproval)
+            }
+        }
+        else
+        {
+
+            <div class="shadow-box h-380">
+                @if (ViewBag.Type == 0)
+                {
+                    @Html.Partial("_MyTravelRequest", Model.MyTravelRequest)
+                }
+                else
+                {
+                    @Html.Partial("_ExpenseMyTravelRequest", Model.MyTravelRequest)
+                }
+            </div>
+        }
+
+    </div>
+</div>
+
+
+
+
+<!-- Approval Requests Modal -->
+<div class="modal fade pop-dgn" id="TravelRequestModal">
+    <div class="modal-dialog mdl-lg">
+        <div class="modal-content">
+            <div id="UpdateModalTravelRequest"></div>
+        </div>
+    </div>
+</div>
+
+
+<div class="modal fade pop-dgn" id="ViewTravelDocumentModal">
+    <div class="modal-dialog mdl-lg">
+        <div class="modal-content">
+            <div class="modal-header blk-gdn-btn">
+                <h4 class="modal-title"><i class="fas fa-book"></i>View Documents</h4>
+                <div class="close" data-dismiss="modal">&times;</div>
+            </div>
+            <div class="modal-body p-0">
+                <div class="p-3 pb-3">
+                    <div id="targetViewDocument"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade pop-dgn" id="rjct2">
+	<div id="divreject" class="modal-dialog ">
+		<div class="modal-content">
+
+			<!-- Modal Header -->
+			<div class="modal-header blk-gdn-btn">
+				<h4 class="modal-title"><i class="fas fa-ban"></i> RFC </h4>
+				<div class="close" data-dismiss="modal">&times;</div>
+			</div>
+
+			<!-- Modal body -->
+			<div class="modal-body">
+				<form>
+					<div class="row">
+						<div class="col-sm-12 form-group">
+							<label>Reason<sup>*</sup></label>
+							<input type="hidden" value="0" id="TravelID" />
+							<textarea class="form-group h-100" id="txtRFCResion" placeholder="Enter"></textarea>
+						</div>
+						<div class="col-sm-12 mt-3 text-center">
+							<button type="submit" class="btn mtr-o-grn btn-l ripplelink SubmitRFC " name="Command" value="Add"> <i class="fa fa-paper-plane" aria-hidden="true"></i> Submit</button>
+							<button type="button" class="btn cnl-btn ripplelink  " data-dismiss="modal"><i class="fas fa-times"></i> Close</button>
+						</div>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+</div>
+
+<script src="~/assets/design/js/sweetalert2.js?v=@clsApplicationSetting.GetWebConfigValue("Version")"></script>
+@section scripts    {
+    @System.Web.Optimization.Scripts.Render("~/bundle/unobtrusivejs");
+<script>
+
+            $('.viewRequestExpense').on('click', function (e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    var TRI = $(this).closest("li").find("input:hidden[name=TRI]").val();
+                    ViewTravelRequestExpense(TRI);
+            });
+
+            $('.viewRequest').on('click', function (e) {
+                  e.preventDefault();
+                  e.stopPropagation();
+                var TRI = $(this).closest("li").find("input:hidden[name=TRI]").val();
+				var status = $(this).closest("li").find("input:hidden[name=Status]").val();
+				ViewTravelRequest(TRI, status);
+
+            });
+      //viewTravelAmendment
+
+    $('.viewTravelAmendment').on('click', function (e) {
+      
+			e.preventDefault();
+			e.stopPropagation();
+            var TRI = $(this).closest("li").find("input:hidden[name=TRI]").val();
+			var Approved = $(this).closest("li").find("input:hidden[name=Approved]").val();
+			ViewTravelAmendment(TRI, Approved);
+
+		});
+
+        $('.viewTravelDocument').on('click', function (e) {
+
+                   e.preventDefault();
+                   e.stopPropagation();
+                   var TRI = $(this).closest("li").find("input:hidden[name=TRI]").val();
+                ViewTravelDocument(TRI);
+
+            });
+
+
+
+        function ViewTravelRequestExpense(TravelRequestID) {
+
+        if (TravelRequestID == undefined)
+        {
+            TravelRequestID = 0;
+        }
+			$.ajax({
+                url: "/Travel/_ViewTravelRequest_Expense",
+				type: "Get",
+				data: { src: EncryptQueryStringJSON(@ViewBag.MenuID+"*" + "/Travel/_ViewTravelRequest_Expense" + "*" + TravelRequestID) },
+                success: function (data)
+                {
+					$("#UpdateModalTravelRequest").empty();
+                    $("#UpdateModalTravelRequest").html(data);
+                    $("#TravelRequestModal").modal("show");
+
+				},
+				error: function (er) {
+				  FailToaster(er);
+				}
+			});
+            }
+
+	function ViewTravelRequest(TravelRequestID, status) {
+       
+        if (TravelRequestID == undefined)
+        {
+            TravelRequestID = 0;
+        }
+			$.ajax({
+                url: "/Travel/_ViewTravelRequest",
+				type: "Get",
+				data: { src: EncryptQueryStringJSON(@ViewBag.MenuID+"*" + "/Travel/_ViewTravelRequest" + "*" + TravelRequestID + "*" + status) },
+                success: function (data)
+                {
+					$("#UpdateModalTravelRequest").empty();
+                    $("#UpdateModalTravelRequest").html(data);
+                    $("#TravelRequestModal").modal("show");
+
+				},
+				error: function (er) {
+				  FailToaster(er);
+				}
+			});
+            }
+
+	function ViewTravelAmendment(TravelRequestID, Approved) {
+       
+        if (TravelRequestID == undefined)
+        {
+            TravelRequestID = 0;
+        }
+			$.ajax({
+				url: "/Travel/ViewTravelAmendment",
+				type: "Get",
+				data: { src: EncryptQueryStringJSON(@ViewBag.MenuID+"*" + "/Travel/ViewTravelAmendment" + "*" + TravelRequestID + "*" + Approved) },
+                success: function (data)
+                {
+                   
+
+					window.location.href = data.RedirectURL
+				},
+				error: function (er) {
+				  FailToaster(er);
+				}
+			});
+            }
+
+       function ViewTravelDocument(TravelRequestID) {
+        if (TravelRequestID == undefined)
+        {
+            TravelRequestID = 0;
+        }
+			$.ajax({
+                url: "/Travel/_ViewTravelDocuments",
+				type: "Get",
+				data: { src: EncryptQueryStringJSON(@ViewBag.MenuID+"*" + "/Travel/_ViewTravelDocuments" + "*" + TravelRequestID+"*Y") },
+                success: function (data)
+                {
+					$("#targetViewDocument").empty();
+                    $("#targetViewDocument").html(data);
+                    $("#ViewTravelDocumentModal").modal("show");
+
+
+				},
+				error: function (er) {
+				  FailToaster(er);
+				}
+			});
+            }
+
+      $('.deleteRequest').on('click', function (e) {
+          e.preventDefault();
+          e.stopPropagation();
+          var TRI = $(this).closest("li").find("input:hidden[name=TRI]").val();
+          var TRNO = $(this).closest("li").find("input:hidden[name=TRNO]").val();
+          DeleteRequest(this,TRI,TRNO);
+      });
+
+    function DeleteRequest(obj,ID, TRNO) {
+            ConfirmMsgBox('Are You Sure want to delete ' + TRNO + '', '', function () {
+                $.ajax({
+                    url: "/CommonAjax/DeleteTravelRequestJson",
+                    type: "Get",
+                    async: true,
+                    data: { ID: ID },
+                    success: function (data) {
+                        if (data == 1) {
+                            $(obj).closest("li").remove();
+							SuccessToaster('Travel Request No ' + TRNO + 'deleted successfully');
+                        }
+                        else {
+                            FailToaster('Can not delete.')
+                        }
+                    },
+                    error: function (er) {
+                        alert(er);
+                    }
+                });
+
+            })
+            }
+
+		//$('.RFCRequest').on('click', function (e) {
+		//	e.preventDefault();
+		//	e.stopPropagation();
+		//	var TRI = $(this).closest("li").find("input:hidden[name=TRI]").val();
+		//	var TRNO = $(this).closest("li").find("input:hidden[name=TRNO]").val();
+		//	RFCRequest(this, TRI, TRNO);
+		//});
+
+     $('.ApproveRequest').on('click', function (e) {
+         e.preventDefault();
+         e.stopPropagation();
+         var TRI = $(this).closest("li").find("input:hidden[name=TRI]").val();
+         var TRNO = $(this).closest("li").find("input:hidden[name=TRNO]").val();
+         ApproveRequest(this,TRI,TRNO);
+     });
+
+    function ApproveRequest(obj,ID, TRNO) {
+    //Are you sure, pl reconfirm
+           // ConfirmMsgBox('Are You Sure want to Approve ' + TRNO + '', '', function () {
+           ConfirmMsgBox('Are you sure, pl reconfirm', '', function () {
+                $.ajax({
+                    url: "/CommonAjax/ApprovedTravelRequestJson",
+                    type: "Get",
+                    async: true,
+                    data: { ID: ID },
+                    success: function (data) {
+                        if (data == 1) {
+                            SuccessToaster('Travel Request No ' + TRNO + ' Approve successfully');
+                            window.location.reload();
+                        }
+                        else {
+                            FailToaster('Can not Approve.')
+                        }
+                    },
+                    error: function (er) {
+                        alert(er);
+                    }
+                });
+
+            })
+        }
+
+        // RFC
+		$('.RFCRequest').on('click', function (e) {
+			e.preventDefault();
+			e.stopPropagation();
+			var TRNO = $(this).closest("li").find("input:hidden[name=TRI]").val();
+			RFC(TRNO);
+		});
+		function RFC(TRNO) {
+		
+			$("#TravelID").val(TRNO);
+			$("#txtResion").val('');
+			$("#rjct2").modal("show");
+
+        }
+        $('.SubmitRFC').on('click', function (e) {
+            
+			e.preventDefault();
+			e.stopPropagation();
+			var TravelId = $("#TravelID").val();
+			var Cancelreason = $("#txtRFCResion").val();
+			if (parseInt(TravelId) > 0 && Cancelreason != '') {
+				$.ajax({
+					url: "/CommonAjax/RFCTravelRequestSend",
+					type: "Get",
+					async: true,
+					data: { ID: TravelId, Reason: Cancelreason },
+					success: function (data) {
+						if (data == 1) {
+							SuccessToaster('RFC submit successfully');
+							window.location.reload();
+						}
+						else {
+							FailToaster('Can not RFC.')
+						}
+					},
+					error: function (er) {
+						alert(er);
+					}
+				});
+			}
+
+
+		});
+		$('.RejectRequest').on('click', function (e) {
+			e.preventDefault();
+			e.stopPropagation();
+			var Id = $("#hdfadvanceId").val();
+			var Cancelreason = $("#txtResion").val();
+			if (parseInt(Id) > 0 && Cancelreason != '') {
+				$.ajax({
+					url: "/CommonAjax/CancelAdvanceTravelRequestJson",
+					type: "Get",
+					async: true,
+					data: { ID: Id, Reason: Cancelreason },
+					success: function (data) {
+						if (data == 1) {
+							SuccessToaster('RFC submit successfully');
+							window.location.reload();
+						}
+						else {
+							FailToaster('Can not RFC.')
+						}
+					},
+					error: function (er) {
+						alert(er);
+					}
+				});
+			}
+
+
+		});
+
+</script>
+}

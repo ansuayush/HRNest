@@ -1,0 +1,63 @@
+﻿@using System.Data
+@model DataSet
+
+<div class="x_content table-currency mt-0">
+    <div class="table-responsive">
+        <table id="tableRecrutment" class="table table-striped table-bordered dt-responsive nowrap tbltick new_width" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
+            <thead>
+                <tr>
+                    <th>S.no.</th>
+                    <th>Project No</th>
+                    <th>Project Name</th>
+                    <th>Activity</th>
+                    <th>Sub Activity</th>
+                    <th>Sub Sub Activity</th>
+                    <th>Budget</th>
+                    @*@if (ViewBag.Approve == 0)
+                    {*@
+                    <th>Action</th>
+                    @*}*@
+                </tr>
+                <tr class="searchbar">
+                    <th class="searchhide"> </th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    @*@if (ViewBag.Approve == 0)
+                    {*@
+                        <th class="searchhide"> </th>
+                    @*}*@
+                    </tr>
+            </thead>
+            <tbody>
+                @{ int Count = 0;}
+                @foreach (DataRow item in Model.Tables[0].Rows)
+                {
+                    Count++;
+                <tr>
+                    <td>@Count</td>
+
+                    <td> @item["projref_no"]</td>
+                    <td> @item["proj_name"]</td>
+                    <td> @item["Activity"]</td>
+                    <td> @item["SubActivity"]</td>
+                    <td> @item["subSubActivity"]</td>
+                    <td>
+                        <input type="hidden" name="PDI" value="@item["ID"]" />
+                        <a class=" anchorpopup">View Budget</a>
+                    </td>
+                    @*@if (ViewBag.Approve == 0)
+                    {*@
+
+                        <td> <a title="Edit" href="@Url.Action("InitiateRecruitment", new { src = clsApplicationSetting.EncryptQueryString(ViewBag.MenuID.ToString() + "*/Recruitment/InitiateRecruitment*" + @item["ID"]) })" data-toggle='tooltip'>Initiate </a></td>
+                    @*}*@
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+

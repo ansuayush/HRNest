@@ -1,0 +1,225 @@
+﻿
+@{
+	ViewBag.Title = "ViewTrainingRequest";
+	Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<input type="hidden" id="hdnLoggedInUser" />
+
+<!-- Start -->
+<div class="inner-main defult-height" id="mainpnl">
+	<h1 class="heading-one mb-3">New Training Request</h1>
+
+	<div class="row">
+		<div class="col-sm-8">
+			<div class="row">
+				<div class="col-md-4 col-sm-4  form-group">
+					<label>Req.No</label>
+					<p id="lblReqNo"></p>
+
+				</div>
+				<div class="col-md-4 col-sm-4  form-group">
+					<label>Req.Date</label>
+					<p id="lblReqDate"></p>
+
+				</div>
+				<div class="col-md-4 col-sm-4  form-group">
+					<label> Req.By</label>
+					<p id="lblReqBy"></p>
+
+				</div>
+
+				<div class="col-md-4 col-md-4 form-group">
+					<label>Skill to be Earned  <sup>*</sup></label>
+					<select id="ddlSkills" class="form-control dpselect Mandatory" disabled onchange="OnChangeSkills(this); HideErrorMessage(this)">
+					</select>
+					<span id="spddlSkills" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+				</div>
+				<div class="col-md-4 col-md-4 form-group">
+					<label>Training Type <sup>*</sup></label>
+					<select id="ddlTrainingType" class="form-control dpselect Mandatory" disabled onchange="OnChangeTrainingType(this);HideErrorMessage(this)"></select>
+					<span id="spddlTrainingType" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+				</div>
+
+				<div id="other" style="display: none;" class="col-md-4 col-sm-4 form-group">
+					<label>Please specify (Other)<sup>*</sup> </label>
+					<textarea id="TrainingTypeOther" class="form-control maxSize[200]" onchange="HideErrorMessage(this)" value="" placeholder="Enter" spellcheck="false"></textarea>
+					<span id="spTrainingTypeOther" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+				</div>
+
+				<div class="col-md-4 col-md-4 form-group" id="resulttm">
+					<label>Training Name <sup>*</sup></label>
+					<select class="form-control dpselect Mandatory" disabled onchange="HideErrorMessage(this)" id="ddltrainingName">
+					</select>
+					<span id="spddltrainingName" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+
+				</div>
+				<div class="col-sm-4 form-group " data-popover-content="#comment1" data-toggle="popover" data-placement="right" data-original-title="" title="">
+					<label>Training Description</label>
+					<p class="d-flex justify-content-between" ><a id="lblTrainingDesc" class="ellipsis"></a><a href=""> View</a></p>
+					<div id="comment1" style="display: none">
+						<div class="popover-body">
+							<p id="lblToolTipTrainingDesc"></p>
+							@*<button type="button" class="popover-close close"> <i class="fas fa-times"></i> </button>*@
+						</div>
+					</div>
+				</div>
+				@*<div class="col-sm-4 form-group " data-popover-content="#comment1" data-toggle="popover" data-placement="right">
+			<label>Training Description</label>
+			<p id="lblTrainingDesc"> </p>
+			<div id="comment1" style="display: none">
+				<div class="popover-body">
+					<button type="button" class="popover-close close"> <i class="fas fa-times"></i> </button>
+
+				</div>
+			</div>
+		</div>*@
+				<div class="col-md-12 form-group">
+					<label>Request Description @*<sup>*</sup>*@</label>
+					<textarea id="ReqDesc" class="form-control maxSize[200] Mandatory" disabled onchange="HideErrorMessage(this)" placeholder="Enter"></textarea>
+					<span id="spReqDesc" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+				</div>
+
+				<div class="col-md-4 col-md-4 form-group">
+					<label>Requested for <sup>*</sup></label>
+					<select id="ddlRequestedFor" class="form-control dpselect Mandatory" disabled onchange="OnChangeddlRequestedFor(this); HideErrorMessage(this)">
+						<option value="0">Select </option>
+					</select>
+					<span id="spresult" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+				</div>
+
+				<div id="fail" style="display:none" class="col-md-8 col-md-4 form-group">
+					<label>Select Employee <sup>*</sup></label>
+					<select multiple="" class="form-control dpselect" onchange="HideErrorMessage(this)" id="ddlEmployeeList" disabled></select>
+					<span id="spddlEmployeeList" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+				</div>
+				<div class="text-center col-md-12 mt-2">
+					@*<button type="submit" class="btn mtr-o-grn" name="Command" value="Add" onclick="SaveTrainingRequest();"><i class="fas fa-paper-plane"></i>Submit</button>*@
+					<button type="button" class="btn cnl-btn" id="btncancel" data-dismiss="modal" onclick="CloseModal();"><i class="fas fa-times"></i> Cancel</button>
+
+				</div>
+			</div>
+		</div>
+	</div>
+
+</div>
+
+
+@section scripts    {
+	@System.Web.Optimization.Scripts.Render("~/bundle/unobtrusivejs")
+	@System.Web.Optimization.Scripts.Render("~/bundle/dataTablesjs")
+	<script src="~/assets/design/Scripts/AddInit.js?v=@clsApplicationSetting.GetWebConfigValue("Version")"></script>
+	
+}
+<script>
+	 var IsEDUser = '@ViewBag.IsED';
+   var loggedinUserid = '@ViewBag.UserId';
+	var loggedinUserName = '@ViewBag.UserName';
+	var UserGrade = '@ViewBag.Grade';
+    var IsPM = '@ViewBag.IsPM';
+    var TraingReqID =   '@ViewBag.ID';
+
+</script>
+<script>
+	$(document).ready(function () {
+		LoadMasterDropdown('ddlSkills',
+			{
+				ParentId: 0,
+				masterTableType: 0,
+				isMasterTableType: false,
+				isManualTable: true,
+				manualTable: 25,
+				manualTableId: 0
+			}, 'Select', false);
+		LoadRequestedFor();
+		GetTrainingRequest();
+	});
+	function GetTrainingRequest() {
+		CommonAjaxMethod(virtualPath + 'HRRequest/GetAllUsersTrainingRequest', { id: TraingReqID, inputData: 1 }, 'GET', function (response) {
+			var dataTrainingRequest = response.data.data.Table;
+
+			if (dataTrainingRequest.length > 0) {
+				document.getElementById('lblReqNo').innerHTML = response.data.data.Table[0].ReqNo;
+				document.getElementById('lblReqDate').innerHTML = ChangeDateFormatToddMMYYY(response.data.data.Table[0].ReqDate)
+				document.getElementById('lblReqBy').innerHTML = response.data.data.Table[0].RequestedByName;
+				//document.getElementById('lblTrainingDesc').innerText = response.data.data.Table[0].TrainingDescription;
+				var strVal = response.data.data.Table[0].TrainingDescription;
+				if (strVal != null) {
+					document.getElementById('lblTrainingDesc').innerText = strVal.substr(0, strVal.lastIndexOf(' ', 40));
+				}
+				
+				document.getElementById('lblToolTipTrainingDesc').innerText = response.data.data.Table[0].TrainingDescription;
+				$('#ddlSkills').val(response.data.data.Table[0].SkillToBeEarned).trigger('change');
+				$('#ddlTrainingType').val(response.data.data.Table[0].TypeOfTraining).trigger('change');
+				$('#ddltrainingName').val(response.data.data.Table[0].NameOfTrainingID);
+				document.getElementById('ReqDesc').innerText = response.data.data.Table[0].RequestDescription;
+				$('#ddlRequestedFor').val(response.data.data.Table[0].RequestedFor).trigger('change');
+				let pdPlaceOfOriginArray = response.data.data.Table[0].EmployeeID.split(',');
+				$("#ddlEmployeeList").select2({
+					multiple: true,
+				});
+				$('#ddlEmployeeList').val(pdPlaceOfOriginArray).trigger('change');
+			}
+		}); 
+	}
+	function OnChangeTrainingType(ctrl) {
+		LoadTrainingName(ctrl)
+	}
+	function OnChangeddlRequestedFor(ctrl) {
+		if ($(ctrl).val() === '160') {
+			LoadEmployees();
+			$('#fail').css('display', 'block');
+		}
+	}
+	function OnChangeSkills(ctrl) {
+		LoadTrainingType(ctrl);
+	}
+	function LoadEmployees() {
+		LoadMasterDropdown('ddlEmployeeList',
+			{
+				ParentId: 0,
+				masterTableType: 0,
+				isMasterTableType: false,
+				isManualTable: true,
+				manualTable: 12,
+				manualTableId: 0
+			}, 'Select', false);
+	}
+	function LoadRequestedFor() {
+		LoadMasterDropdown('ddlRequestedFor',
+			{
+				ParentId: 0,
+				masterTableType: 0,
+				isMasterTableType: false,
+				isManualTable: true,
+				manualTable: 52,
+				manualTableId: 0
+			}, 'Select', false);
+	}
+
+	function LoadTrainingType(ctrl) {
+		LoadMasterDropdown('ddlTrainingType',
+			{
+				ParentId: ctrl.value,
+				masterTableType: 0,
+				isMasterTableType: false,
+				isManualTable: true,
+				manualTable: 50,
+				manualTableId: 0
+			}, 'Select', false);
+	}
+	function LoadTrainingName(ctrl) {
+		LoadMasterDropdownValueCode('ddltrainingName',
+			{
+				ParentId: ctrl.value,
+				masterTableType: 0,
+				isMasterTableType: false,
+				isManualTable: true,
+				manualTable: 51,
+				manualTableId: 0
+			}, 'Select', true);
+	}
+	function CloseModal() {
+		//$("#ViewAppModal").modal('hide');
+		window.location.href = virtualPath + 'Capacity/TrainingRequest?id=' + 1;
+	}
+</script>

@@ -1,0 +1,686 @@
+﻿@model Mitr.Models.BudgetMaster.SetBudget
+@{
+	ViewBag.Title = "AddbudgetSubActivity";
+	Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@using (Ajax.BeginForm("AddbudgetSubActivity", "Budget", new { src = ViewBag.src }, new AjaxOptions { HttpMethod = "POST", OnSuccess = "OnSuccess", OnBegin = "ShowLoadingDialog()" }, new { @id = "AddbudgetSubActivity" }))
+{
+	@Html.ValidationSummary(false, "", new { @class = "text-danger" })
+	if (Model.Id > 0)
+	{
+		@Html.Hidden("budgetactivityid", Model.Id)
+	}
+	else
+	{
+		@Html.HiddenFor(model => model.Id, new { @id = "budgetactivityid" })
+	}
+
+	@Html.HiddenFor(model => model.Budgetid)
+	<div class="inner-main defult-height" role="main">
+		@Html.Partial("HeaderMsg_Partial")
+		<div class="row">
+			<div class="col-sm-12"><h1 class="heading-one ">Budget Subline Activity</h1></div>
+			@if (Model.Projectid > 0)
+			{
+				<div class="col-sm-2 form-group">
+					<label>Project</label>
+					@Html.HiddenFor(model => model.Projectid)
+					@Html.DropDownListFor(model => model.Projectid, new SelectList(Model.listProjectBudget, "Id", "Name"), "Select", new { @class = "form-control applyselect", @id = "ddlProjectid", @disabled = "disabled" })
+
+				</div>
+			}
+			else
+			{
+				<div class="col-sm-2 form-group">
+					<label>Project</label>
+					@Html.DropDownListFor(model => model.Projectid, new SelectList(Model.listProjectBudget, "Id", "Name"), "Select", new { @class = "form-control applyselect", @id = "ddlProjectid" })
+
+				</div>
+			}
+
+
+			<div class="col-sm-2 form-group">
+				<label>Year</label>
+				@Html.DropDownListFor(model => model.Finyearid, new SelectList(Model.listProjectBudgetYear, "Id", "Name"), "Select", new { @class = "form-control applyselect" })
+				@*@Html.ValidationMessageFor(model => model.Finyearid, "", new { @class = "text-danger" })*@
+
+			</div>
+
+			<div class="col-sm-2 form-group">
+				<label>Ledger</label>
+				@Html.HiddenFor(model => model.LedgerName)
+				@if (Model.Id > 0)
+				{
+					@Html.DropDownListFor(model => model.Ledgerid, new SelectList(Model.listProjectBudgetLedger, "Id", "Name", Model.Ledgerid), "Select", new { @class = "form-control applyselect" })
+					@Html.ValidationMessageFor(model => model.Ledgerid, "", new { @class = "text-danger" })
+
+					@Html.Hidden("hdfledgerno", Model.listProjectBudgetLedger.Where(x => x.ID == Model.Ledgerid).Select(x => x.RowNum).FirstOrDefault())
+				}
+				else
+				{
+					<select class="form-control applyselect" id="Ledgerid" name="Ledgerid">
+						<option value="">Select</option>
+						<option value="1001">All</option>
+						@if (Model.listProjectBudgetLedger != null)
+						{
+
+							foreach (var item in Model.listProjectBudgetLedger)
+							{
+								if (Model.Ledgerid == 0)
+								{
+									<option value="@item.ID" code="@item.Code" Type="@item.Type">@item.Name </option>
+								}
+								else
+								{
+									<option @((Model.Ledgerid + "@").Contains("@" + item.ID.ToString() + "@") ? "Selected" : "") value="@item.ID">@item.Name</option>
+								}
+
+							}
+						}
+
+					</select>
+				}
+
+
+
+			</div>
+
+			<div class="col-sm-2 form-group">
+				<label>Delegation Authority</label>
+				@Html.DropDownListFor(model => model.DelegationAuthority, new SelectList(Model.listProjectBudgetEmployee, "Id", "Name"), new { @class = "form-control applyselect" })
+				@Html.ValidationMessageFor(model => model.DelegationAuthority, "", new { @class = "text-danger" })
+
+			</div>
+			<div class="col-sm-2 form-group align-self-end">
+				<a onclick="Showlist()" class="btn mtr-g-grn mb-0" id="anchshow"><i class="fas fa-eye"></i>Show List</a>
+
+			</div>
+
+			<div class="col-md-4 col-sm-12 col-xs-12">
+				<input type="file" id="FileAttachment" name="UploadedFile" class="file-inp" accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet/.xls" />
+
+			</div>
+			<div class="col-md-4 col-sm-12 col-xs-12 align-self-center">
+				<button type="button" class="btn mtr-g-grn mb-0" onclick="saveAttachment()"><i class="fas fa-file-alt"></i>Import</button>
+				@*<button type="submit" class="btn clsbtn"><i class="fas fa-file-alt"></i>Export All</button>*@
+			</div>
+			<div class="col-sm-12">
+				<div id="Divactivitydata"></div>
+			</div>
+
+			<div class="col-sm-12 text-center">
+				<button type="submit" class="btn mtr-o-grn" id="btnsubmit" name="Command" onclick="return Validate()" value="Add"><i class="fas fa-paper-plane"></i>Submit</button>
+
+				<button type="button" class="btn cnl-btn" onclick="ShowLoadingDialog();window.location='@Url.Action("CreateBudget", new { src = clsApplicationSetting.EncryptQueryString(ViewBag.MenuID.ToString() + "*/Budget/CreateBudget*0*2")  })';"><i class="fas fa-times"></i> Close</button>
+			</div>
+		</div>
+
+
+
+
+
+	</div>
+}
+
+@section scripts    {
+	@System.Web.Optimization.Scripts.Render("~/bundle/dataTablesjs")
+	@System.Web.Optimization.Scripts.Render("~/bundle/unobtrusivejs")
+	@Html.IncludeVersionedJs(Url.Content("~/assets/design/Scripts/AddInit.js"))
+	@Html.IncludeVersionedJs(Url.Content("~/assets/design/Scripts/ToolTip.js"))
+	@Html.IncludeVersionedJs(Url.Content("~/assets/design/scripts/CustomValidate.js"))
+
+	<script type="text/javascript">
+	$(document).ready(function () {
+
+		$("#Finyearid option[value='24']").attr('selected', 'selected');
+			$("#btnsubmit").hide();
+			$(".applyselect").select2();
+			$("#divMaster").hide();
+			$("#divText").hide();
+		    var Id = parseInt('@ViewBag.Id');
+		    if (Id > 0) {
+		    	var ledgerid = ('@ViewBag.LedgerId');
+				$('#Ledgerid option[value="' +ledgerid+'"]').attr("selected", "selected");
+				Showlist();
+		}
+
+
+	});
+
+
+
+		$("#Ledgerid").change(function () {
+
+		var Type = $("#Ledgerid option:selected").attr("Type");
+		var code = $("#Ledgerid option:selected").attr("code");
+		$("#hdfledgerno").val(code);
+			if (Type == "MASTER") {
+				$("#divMaster").show();
+				$("#divText").hide();
+			}
+			else if (Type == "TEXT") {
+				$("#divMaster").hide();
+				$("#divText").show();
+			}
+
+
+		});
+		function Showlist() {
+
+			var ddlledgerName = $("#Ledgerid option:selected").text();
+
+			var ledger = ddlledgerName.substring(0, ddlledgerName.length - 5);
+			$("#LedgerName").val(ledger);
+		    var ddlprojectName = $("#ddlProjectid option:selected").text();
+		    var Code = parseInt($("#hdfledgerno").val());
+			var ddlprojectid = parseInt($("#ddlProjectid option:selected").val());
+			var ddlledgerid = parseInt($("#Ledgerid option:selected").val());
+			var finyearid = parseInt($("#Finyearid option:selected").val());
+			if (isNaN(finyearid)) {
+				finyearid = 0;
+			}
+	     	var typedata = "MASTER";
+		    var Type = $("#Ledgerid option:selected").attr("Type")
+		    var Id = parseInt($("#budgetactivityid").val());
+		  //  var Id = parseInt($("#hdfId").val());
+		     debugger;
+		   if (ddlprojectid > 0 && ddlledgerid > 0)
+			{
+
+				$.ajax({
+					url: "/Budget/_BudgetSublineActivity",
+				    type: "Get",
+				    async: true,
+					data: { src: EncryptQueryStringJSON(@ViewBag.MenuID+"*" + "/Budget/_BudgetSublineActivity" + "*" + ddlprojectid + "*" + ddlledgerid + "*" + typedata + "*" + finyearid + "*" + Id + "*" + ddlprojectName + "*" + Code + "*" + ledger) },
+					success: function (data) {
+					    $("#Divactivitydata").empty();
+						$("#Divactivitydata").html(data);
+						//var testid = parseInt($("#Id").val());
+                        $("#budgetactivityid").val(Id);
+						var ddlledgerid = parseInt($("#Ledgerid option:selected").val());
+						if (ddlledgerid == 1001) {
+							$("#divbuttonrow").hide();
+							$("#btnsubmit").hide();
+						}
+						else {
+							$("#divbuttonrow").show();
+							$("#btnsubmit").show();
+						}
+
+				},
+				error: function (er) {
+					alert(er);
+
+				}
+			});
+		}
+	}
+
+
+	//function create Sub ActivityCode
+		function n(n) {
+			return n > 9 ? "" + n : "0" + n;
+		}
+	//	function fnSubactivityCode(obj) {
+
+	//		if (obj == 0) {
+	//			$("#listBudgetSublineActivity_" + obj + "__ActivityCode").val(n(1));
+	//		$("#listBudgetSublineActivity_" + obj + "__SubActivityCode").val(n(1));;
+	//	}
+	//	else {
+	//		var ddlactnew = $("#listBudgetSublineActivity_" + obj + "__Activityid :selected").val();
+	//		var ddlactold;
+	//		var status = false;
+	//		for (let i = 0; i < obj; i++) {
+
+	//			ddlactold = $("#listBudgetSublineActivity_" + i + "__Activityid").val();
+	//			if (ddlactnew == ddlactold) {
+	//				var subact = $("#listBudgetSublineActivity_" + i + "__SubActivityCode").val();
+	//				$("#listBudgetSublineActivity_" + (parseInt(obj)) + "__SubActivityCode").val(n(parseInt(subact)));
+	//				status = true;
+	//				break;
+	//			}
+
+	//		}
+	//		if (status == false) {
+	//			var subact=0;
+	//			for (let j = 0; j < obj; j++) {
+
+	//				if ($("#listBudgetSublineActivity_" + j + "__SubActivityCode").val() > subact) {
+	//					subact = $("#listBudgetSublineActivity_" + j + "__SubActivityCode").val();
+	//				}
+	//			}
+
+
+
+	//				$("#listBudgetSublineActivity_" + (parseInt(obj)) + "__SubActivityCode").val(n(parseInt(subact)+1));
+
+	//		}
+
+	//	}
+
+
+
+	//}
+		function ddlsubcatchange(obj) {
+
+			var end = obj.id;
+			var myArray = end.split('_');
+			var niewid = parseInt(myArray[1]);
+			var ddlactold = $("#listBudgetSublineActivity_" + (parseInt(niewid) - 1) + "__Activityid :selected").val();
+			var ddlsubactold = $("#listBudgetSublineActivity_" + (parseInt(niewid) - 1) + "__SubActivityid :selected").val();
+
+			var ddlactnew = $("#listBudgetSublineActivity_" + niewid + "__Activityid :selected").val();
+			var ddlsubactnew = $("#listBudgetSublineActivity_" + niewid + "__SubActivityid :selected").val();
+			var subactcode = $("#listBudgetSublineActivity_" + (parseInt(niewid) - 1) + "__SubActivityCode").val();
+			var actcode = $("#listBudgetSublineActivity_" + (parseInt(niewid) - 1) + "__ActivityCode").val();
+
+			if (niewid == "0") {
+				$("#listBudgetSublineActivity_" + niewid + "__ActivityCode").val(n(1));
+				$("#listBudgetSublineActivity_" + niewid + "__SubActivityCode").val(n(1));
+
+			}
+				else {
+
+				if ((ddlactold == ddlactnew) && (ddlsubactold == ddlsubactnew)) {
+
+					if (ddlactold == ddlactnew) {
+						if (ddlsubactold == ddlsubactnew) {
+							$("#listBudgetSublineActivity_" + niewid + "__SubActivityCode").val(subactcode);
+							$("#listBudgetSublineActivity_" + niewid + "__ActivityCode").val(n(parseInt(actcode) + 1));
+						}
+					}
+				}
+				else {
+					var status = false;
+					var ddlactold;
+					var ddlsubactold;
+					var count = 0;
+					for (let i = 0; i < niewid; i++) {
+
+					    ddlactold = $("#listBudgetSublineActivity_" + i + "__Activityid").val();
+						ddlsubactold = $("#listBudgetSublineActivity_" + i + "__SubActivityid :selected").val();
+
+						if ((ddlactnew == ddlactold) && (ddlsubactold == ddlsubactnew)) {
+
+							count = i;
+							//var subact = $("#listBudgetSublineActivity_" + i + "__SubActivityCode").val();
+							//var act = $("#listBudgetSublineActivity_" + i + "__ActivityCode").val();
+							//$("#listBudgetSublineActivity_" + (parseInt(niewid)) + "__SubActivityCode").val(n(parseInt(subact)));
+							//$("#listBudgetSublineActivity_" + (parseInt(niewid)) + "__ActivityCode").val(n(parseInt(act) + 1));
+							status = true;
+							//break;
+						}
+
+
+					}
+
+
+				}
+				if (status == false) {
+					ddlactold = $("#listBudgetSublineActivity_" + i + "__Activityid").val();
+					if (ddlactnew == ddlactold) {
+						$("#listBudgetSublineActivity_" + niewid + "__SubActivityCode").val(n(parseInt(subactcode) + 1));
+						$("#listBudgetSublineActivity_" + niewid + "__ActivityCode").val(n(1));
+					}
+					else {
+						var subact = 0;
+
+						for (let j = 0; j < niewid; j++) {
+
+					 if ($("#listBudgetSublineActivity_" + j + "__SubActivityCode").val() > subact) {
+						 subact = $("#listBudgetSublineActivity_" + j + "__SubActivityCode").val();
+
+					       }
+				          }
+						$("#listBudgetSublineActivity_" + niewid + "__SubActivityCode").val(n(parseInt(subact) + 1));
+						$("#listBudgetSublineActivity_" + niewid + "__ActivityCode").val(n(1));
+					}
+
+				}
+				else if (status == true) {
+					var subact = $("#listBudgetSublineActivity_" + count + "__SubActivityCode").val();
+					var act = $("#listBudgetSublineActivity_" + count + "__ActivityCode").val();
+					$("#listBudgetSublineActivity_" + (parseInt(niewid)) + "__SubActivityCode").val(n(parseInt(subact)));
+					$("#listBudgetSublineActivity_" + (parseInt(niewid)) + "__ActivityCode").val(n(parseInt(act) + 1));
+				}
+
+
+
+				}
+
+
+
+
+
+		}
+		function clearlist(obj) {
+			$("#listBudgetSublineActivity_" + obj + "__SubActivityid").empty();
+			$("#listBudgetSublineActivity_" + obj + "__SubActivityid").append($("<option />").val("").text("Select"));
+
+		}
+
+		function ddlchange(obj) {
+
+			var end = obj.id;
+			var myArray = end.split('_');
+			var niewid = parseInt(myArray[1]);
+			var ddlact = $("#listBudgetSublineActivity_" + niewid+"__Activityid :selected").val();
+			if (ddlact != "") {
+				$("#listBudgetSublineActivity_" + niewid + "__SubActivityid").empty();
+				$("#listBudgetSublineActivity_" + niewid + "__SubActivityid").append($("<option />").val("").text("Select"));
+				ShowLoadingDialog();
+				$.ajax({
+					url: "/CommonAjax/GetBudgetSubcat_DropdownJson",
+					type: "Get",
+					async: true,
+					data: { ActivityId: ddlact },
+					success: function (subactivity) {
+						$(subactivity).each(function () {
+							$("#listBudgetSublineActivity_" + niewid+"__SubActivityid").append($("<option />").val(this.ID).text(this.Name));
+						});
+
+						CloseLoadingDialog();
+					},
+					error: function (er) {
+						CloseLoadingDialog();
+					}
+				});
+				//fnSubactivityCode(niewid);
+			}
+			else {
+				$("#ddlsubcat").empty();
+				$("#ddlsubcat").append($("<option/>").val("").text("Select"));
+			}
+
+		}
+
+
+		$('.btnAddRowTravelFare').on('click', function (e) {
+			e.preventDefault();
+			e.stopPropagation();
+			btnrowactivity();
+		});
+
+		function btnrowactivity() {
+			var LastTRCount = parseInt($('#tableActiveLogApprove').find("tbody tr").length) - 1;
+			$('.applyselect').select2("destroy");
+			$("#listBudgetSublineActivity_" + (parseInt(LastTRCount) + 1)  + "__SubActivityid").empty();
+			var $tableBody = $('#tableActiveLogApprove').find("tbody"),
+				$trLast = $tableBody.find("tr:last"),
+				$trNew = $trLast.clone();
+			$trNew.find("td:last").html('<a onclick="DeleteRow(this)" class="remove"><i class="fas fa-window-close red-clr" aria-hidden="true"></i></a>')
+			$trNew.find("label").each(function () {
+				$(this).attr({
+					'id': function (_, id) { var arr = id.split('_'); return id.replace(arr[1], LastTRCount + 1); },
+				});
+				$(this).html(parseInt($('#tableActiveLogApprove').find("tbody tr").length) + 1)
+			});
+
+			$trNew.find("select").each(function (i) {
+				$(this).attr({
+					'id': function (_, name) { return name.replace('_' + LastTRCount + '_', '_' + (parseInt(LastTRCount) + 1) + '_'); },
+					'name': function (_, name) { return name.replace('[' + LastTRCount + ']', '[' + (parseInt(LastTRCount) + 1) + ']'); },
+				});
+
+			});
+			$trNew.find("input").each(function (i) {
+				$(this).attr({
+					'id': function (_, name) { return name.replace('_' + LastTRCount + '_', '_' + (parseInt(LastTRCount) + 1) + '_'); },
+					'name': function (_, name) { return name.replace('[' + LastTRCount + ']', '[' + (parseInt(LastTRCount) + 1) + ']'); },
+				});
+				$(this).val('')
+			});
+			$trNew.find("textarea").each(function (i) {
+				$(this).attr({
+					'id': function (_, name) { return name.replace('_' + LastTRCount + '_', '_' + (parseInt(LastTRCount) + 1) + '_'); },
+					'name': function (_, name) { return name.replace('[' + LastTRCount + ']', '[' + (parseInt(LastTRCount) + 1) + ']'); },
+				});
+				$(this).val('')
+			});
+
+			$trNew.find("span").each(function (i) {
+				if ($(this).attr("data-valmsg-for")) {
+					$(this).attr({
+						'data-valmsg-for': function (_, name) { return name.replace('[' + LastTRCount + ']', '[' + (parseInt(LastTRCount) + 1) + ']'); }
+					});
+				}
+				if ($(this).attr("for")) {
+					$(this).attr({
+						'for': function (_, name) { return name.replace('_' + LastTRCount + '_', '_' + (parseInt(LastTRCount) + 1) + '_'); }
+					});
+				}
+			});
+			$trLast.after($trNew);
+			clearlist(parseInt(LastTRCount) + 1);
+			var form = $("form");
+			form.removeData('validator');
+			form.removeData('unobtrusiveValidation');
+			$.validator.unobtrusive.parse(form);
+			$('[data-toggle="tooltip"]').tooltip();
+			$(".applyselect").select2();
+
+		}
+		//ActivityAmount
+		function ActivityAmount() {
+
+			//var amount = obj.val();
+			var Total = 0
+			$(".AAmount").each(function () {
+				var current = Number($(this).val());
+				Total += parseFloat(current);
+			});
+			$("#total").val(Total.toFixed(0));
+		}
+
+		function ActivityCode(obj) {
+			var Id = obj.id;
+			const myArray = Id.split("_");
+			ProjectCodeFill(myArray[1]);
+
+		}
+		function SubactivityCode(obj) {
+			var Id = obj.id;
+			const myArray = Id.split("_");
+			ProjectCodeFill(myArray[1]);
+
+		}
+		function ProjectCodeFill(obj) {
+
+			var ddlprojectName = $("#ddlProjectid option:selected").text();
+			var ActivityCode = $("#listBudgetSublineActivity_" + obj + "__ActivityCode").val();
+			var SubActivityCode = $("#listBudgetSublineActivity_" + obj + "__SubActivityCode").val();
+			// set deafult value 0 in amount
+			$("#listBudgetSublineActivity_" + obj+"__Amount").val(0);
+			var code = $("#Ledgerid option:selected").attr("code");
+			if (typeof code === "undefined") {
+				// code = parseInt($("#hdfledgerno").val());
+				var ddlledgerName = $("#Ledgerid option:selected").text();
+				 code = ddlledgerName.split('(').pop().split(')')[0];
+			   //  if (ddlledgerName == "Human Resource") {
+				//	code = 1;
+				//}
+				//else if (ddlledgerName == "Travel and Transportation") {
+				//	code =2;
+				//}
+				//else if (ddlledgerName == "Training") {
+				//	code = 3;
+				//}
+				//else if (ddlledgerName == "Meeting, Workshop and Seminars etc") {
+				//	code = 4;
+				//}
+				//else if (ddlledgerName == "Consultant") {
+				//	code = 5;
+				//}
+				//else if (ddlledgerName == "Sub-grants") {
+				//	code =6;
+				//}
+				//else if (ddlledgerName == "Information and Dissemination") {
+				//	code =7;
+				//}
+				//else if (ddlledgerName == "Project Consumer") {
+				//	code = 8;
+				//}
+				//else if (ddlledgerName == "Other Direct Cost") {
+				//	code = 9;
+				//}
+				//else if (ddlledgerName == "Equipment") {
+				//	code = 10;
+				//}
+			}
+			$("#listBudgetSublineActivity_" + parseInt(obj) + "__Code").val(ddlprojectName + "." + (code) + "." + SubActivityCode +"." + ActivityCode) ;
+
+		}
+		function calculateTotal() {
+			var Total = 0
+			$(".AAmount").each(function () {
+				var current = Number($(this).val());
+				Total += parseFloat(current);
+
+			});
+			$("#total").val(Total.toFixed(0));
+		}
+
+		function DeleteRow(obj) {
+			var count = 0;
+			var ID = parseInt($(obj).closest('tr').find("td.hdftableid input[type='hidden']").val());
+			var TotalRowCount = $('#tableActiveLogApprove').find("tbody tr").length;
+			var srno = TotalRowCount;
+			if (isNaN(ID)) {
+				ConfirmMsgBox("Are you sure want to delete this row", '', function () {
+					$(obj).closest('tr').remove();
+					$("#tableActiveLogApprove TBODY TR").each(function (i) {
+						srno = srno - 1;
+						$(this).closest("tr").find("label").each(function () {
+							$(this).attr({
+								'id': function (_, id) { var arr = id.split('_'); return id.replace(arr[1], i); },
+							});
+							$(this).html(i + 1)
+						});
+
+						$(this).closest("tr").find("input").each(function () {
+							$(this).attr({
+								'id': function (_, id) { return id.replace('_' + (parseInt(i) + 1) + '_', '_' + i + '_'); },
+								'name': function (_, name) { return name.replace('[' + (parseInt(i) + 1) + ']', '[' + i + ']'); },
+							});
+						});
+						$(this).closest("tr").find("select").each(function () {
+							$(this).attr({
+								'id': function (_, id) { return id.replace('_' + (parseInt(i) + 1) + '_', '_' + i + '_'); },
+								'name': function (_, name) { return name.replace('[' + (parseInt(i) + 1) + ']', '[' + i + ']'); },
+							});
+						});
+						$(this).closest("tr").find("label").each(function () {
+							if ($(this).attr("data-valmsg-for")) {
+								$(this).attr({
+									'data-valmsg-for': function (_, name) { return name.replace('[' + (parseInt(i) + 1) + ']', '[' + i + ']'); },
+								});
+							}
+							if ($(this).attr("for")) {
+								$(this).attr({
+									'for': function (_, id) { return id.replace('_' + (parseInt(i) + 1) + '_', '_' + i + '_'); },
+								});
+							}
+						});
+					});
+					calculateTotal();
+				})
+
+			}
+			else {
+				ConfirmMsgBox("Are you sure want to delete this row", '', function () {
+					$(obj).closest('tr').remove();
+					$("#tableActiveLogApprove TBODY TR").each(function (i) {
+						srno = srno - 1;
+						$(this).closest("tr").find("label").each(function () {
+							$(this).attr({
+								'id': function (_, id) { var arr = id.split('_'); return id.replace(arr[1], i); },
+							});
+							$(this).html(i + 1)
+						});
+
+						$(this).closest("tr").find("input").each(function () {
+							$(this).attr({
+								'id': function (_, id) { return id.replace('_' + (parseInt(i) + 1) + '_', '_' + i + '_'); },
+								'name': function (_, name) { return name.replace('[' + (parseInt(i) + 1) + ']', '[' + i + ']'); },
+							});
+						});
+						$(this).closest("tr").find("select").each(function () {
+							$(this).attr({
+								'id': function (_, id) { return id.replace('_' + (parseInt(i) + 1) + '_', '_' + i + '_'); },
+								'name': function (_, name) { return name.replace('[' + (parseInt(i) + 1) + ']', '[' + i + ']'); },
+							});
+						});
+						$(this).closest("tr").find("label").each(function () {
+
+							if ($(this).attr("data-valmsg-for")) {
+								$(this).attr({
+									'data-valmsg-for': function (_, name) { return name.replace('[' + (parseInt(i) + 1) + ']', '[' + i + ']'); },
+								});
+							}
+							if ($(this).attr("for")) {
+								$(this).attr({
+									'for': function (_, id) { return id.replace('_' + (parseInt(i) + 1) + '_', '_' + i + '_'); },
+								});
+							}
+						});
+					});
+					calculateTotal();
+					var dataObject = JSON.stringify({
+						'ID': ID,
+						'Doctype': 'BudgetSublineActivity',
+					});
+					var data = $.parseJSON($.ajax({
+						url: '/CommonAjax/DelRecord_CommonJson',
+						type: "post",
+						data: dataObject,
+						contentType: 'application/json',
+						async: false
+					}).responseText);
+					return data;
+				});
+
+			}
+
+		}
+		function OnSuccess(obj) {
+			if (obj.Status) {
+				SuccessToaster(obj.SuccessMessage);
+				window.location.href = obj.RedirectURL
+
+			}
+			else {
+				CloseLoadingDialog();
+				FailToaster(obj.SuccessMessage);
+
+			}
+		}
+
+        function saveAttachment() {
+            var fileUpload = $("#FileAttachment").get(0);
+            var files = fileUpload.files;
+            // Create FormData object
+            if (files.length == 0) {
+                // showAndDismissAlert("danger","Please Choose File First.")
+                $("#FileAttachment").focus();
+                return
+            }
+            var fileData = new FormData();
+            if (files.length > 0) {
+                fileData.append("FileAttachment", files[0]);
+                ShowLoadingDialog();
+                $.ajax({
+                    url: "/Budget/UploadBudgetData",
+                    type: "POST",
+                    processData: false,
+                    contentType: false,
+                    data: fileData,
+                    success: function (response) {
+                        $("#FileAttachment").val(null);
+                        window.location.reload();
+                    }
+                });
+            }
+        }
+	</script>
+}

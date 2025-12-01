@@ -1,0 +1,111 @@
+﻿
+@model Mitr.Models.LeaveReport
+@{
+	Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+<div class="inner-main defult-height">
+	<div class="row">
+		<div class="col-sm-12 mb-0">
+			<h1 class="heading-one mb-0"></h1>
+		</div>
+		<div class="col-md-2  form-group">
+			<label>Financial Year</label>
+			@Html.DropDownListFor(model => model.FinYear, new SelectList(Model.FinYear, "ID", "Name"), new { @class = "form-control applyselect ddapplyaction" })
+
+		</div>
+
+		<div class="col-md-2  form-group">
+			<label > Leave Type </label>
+			@Html.DropDownListFor(model => model.leaveType, new SelectList(ViewBag.leaveList, "Id", "LeaveName"), "All", new { @class = "form-control applyselect " })
+		</div>
+		<div class="col-md-2  form-group">
+			<label > Employee Type </label>
+			@Html.EnumDropDownListFor(model => model.MitrUser, "", htmlAttributes: new { @class = "form-control applyselect" })
+		</div>
+
+		<div class="col-md-2  form-group">
+			<label>Employee List</label>
+			@Html.DropDownListFor(model => model.Empid, new SelectList(ViewBag.emplist, "Id", "Name"), "All", new { @class = "form-control applyselect " })
+
+		</div>
+		<div class="col-md-4  form-group align-self-center">
+			<button type="submit" class="btn mtr-g-grn btn-l ripplelink m-0 mb-0" id="btnSearch" name="Command" value="Search"><i class="fas fa-search"></i>Search</button>
+		</div>
+
+	</div>
+
+</div>
+@section scripts    {
+	@System.Web.Optimization.Scripts.Render("~/bundle/dataTablesjs")
+	@System.Web.Optimization.Scripts.Render("~/bundle/unobtrusivejs")
+	@Html.IncludeVersionedJs(Url.Content("~/assets/design/Scripts/AddInit.js"))
+	@Html.IncludeVersionedJs(Url.Content("~/assets/design/Scripts/ToolTip.js"))
+	@Html.IncludeVersionedJs(Url.Content("~/assets/tableToExcel.js"))
+	<script>
+		 $('#MitrUser').change(function () {
+		  var EMPType = $("#MitrUser option:selected").text();
+	    	var Id=0;
+		   if(EMPType=="Mitr"){
+		      Id=1;
+		    }
+		    else if(EMPType=="Non Mitr"){
+		    Id=2;
+		    } 
+		   else{
+		      Id=0;
+		    }
+
+            var data = GetDropDownData(Id,"LeaveReport");
+            if (data) {
+                ShowLoadingDialog();
+                  
+                    $("#Empid").empty();
+                    $("#Empid").append($("<option  />").val(0).text("All"));
+                    $(data).each(function () {
+                        $("#Empid").append($("<option />").val(this.ID).text(this.Name));
+                        $("#Empid").select2();
+                    });
+                }
+                
+            CloseLoadingDialog();
+
+		});
+		
+
+
+
+		$("#btnSearch").click(function () {
+		
+			var EmpId = parseInt($("#Empid").val());
+			var FinYear = parseInt($("#FinYear").val());
+	    	var EMPType = $("#MitrUser option:selected").text();
+		    var LeaveId = parseInt($("#leaveType").val());
+		        if(isNaN(LeaveId)) {
+                    LeaveId = 0;
+           }
+			if ( FinYear >0 && EMPType !="All") {
+				showtable(EmpId, FinYear,EMPType,LeaveId);
+			}
+		   else if(FinYear >0 && EMPType =="All"){
+		    SuccessToaster('Please select Employee Type');
+		    }
+			else {
+				SuccessToaster('Please select Financial Year');
+			}
+
+		});
+
+
+		function showtable(EmpId, FinYear,EMPType,LeaveId) {
+			ShowLoadingDialog();
+			var url = "/Activity/LeaveReportYearlyReport?src=" + EncryptQueryStringJSON(341 + "*" + "/Activity/LeaveReportYearlyReport"  + "*" + EmpId + "*" + FinYear+ "*" + EMPType+"*"+LeaveId);
+			window.location.href = url;
+
+
+
+		}
+
+	</script>
+}

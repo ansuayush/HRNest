@@ -1,0 +1,70 @@
+﻿
+@model Mitr.Models.PMS.TrainingSkills
+
+<div class="row">
+	<div class="col-md-12 col-sm-12 col-xs-12">
+		<div class="card p-0">
+			<div class="card-body p-0">
+				<div class="x_content table-currency mt-0">
+					<div class="table-responsive">
+						<table id="tablePMSStatus" class="table mt-0" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
+							<thead>
+								<tr>
+									
+									<th width="100">Employee Code</th>
+									<th>Employee Name</th>
+									<th  width="100">Training Type</th>
+									<th>Training Remarks</th>
+								
+								</tr>
+								<tr class="searchbar">
+									<th class="searchhide"></th>
+									<th></th>
+									<th></th>
+									<th></th>
+									
+									
+								</tr>
+							</thead>
+							<tbody>
+
+								@if (Model.trainingSkills != null)
+								{
+
+									foreach (var item in Model.trainingSkills)
+									{
+
+										<tr>
+											<td>
+												@item.EmpCode
+
+											</td>
+											<td>
+												@item.EmpName
+
+											</td>
+											<td>@item.TrainingType</td>
+											<td>@item.TrainingRemarks</td>
+											
+										</tr>
+									}
+								}
+							</tbody>
+						</table>
+					</div>
+				</div>
+			</div>
+		</div>
+
+	</div>
+</div>
+<!--- -->
+
+@section scripts    {
+
+	@System.Web.Optimization.Scripts.Render("~/bundle/dataTablesjs")
+	@System.Web.Optimization.Scripts.Render("~/bundle/unobtrusivejs")
+
+	<script src="~/assets/design/Scripts/AddInit.js?v=@clsApplicationSetting.GetWebConfigValue("Version")"></script>
+
+}

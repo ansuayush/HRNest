@@ -1,0 +1,91 @@
+﻿@model  FundRaising.Reports
+@{
+    string MenuID = ViewBag.MenuID.ToString();
+}
+@{
+    string PageName = "Report", IsHideDiv = "", DateType = "Date";
+    switch (Model.Doctype.ToUpper())
+    {
+        case "PROSPECT":
+            PageName = "Prospect Master";
+            break;
+        case "LEAD":
+
+            PageName = "Lead Report";
+            break;
+        case "EmployeeFilter":
+            DateType = "";
+            PageName = "Employee Filter";
+            break;
+        default:
+            break;
+    }
+}
+<div class="mb-100">
+
+    @using (Ajax.BeginForm("_Reports", "FundRaising",
+            new { src = ViewBag.src },
+            new AjaxOptions { HttpMethod = "POST", OnSuccess = "OnSuccess", OnBegin = "ShowLoadingDialog()", OnFailure = "OnPostFailure()" },
+        new { @id = "_ReportsForm", @autocomplete = "Off" })
+        )
+    {
+        <div class="inner-main mb-2">
+            <h1 class="heading-one mb-3">@PageName</h1>
+            <div class="row">
+                <!---->
+
+                <div class="col-md-3 col-sm-4 form-group">
+                    <label style="display:@(DateType==""?"none":"")">From</label>
+                    @if (DateType == "Date")
+                    {
+                        @Html.TextBoxFor(model => model.StartDate, new { @class = "form-control", @type = "date" })
+                    }                   
+                    @Html.ValidationMessageFor(model => model.StartDate, "", new { @class = "text-danger" })
+                </div>
+                <div class="col-md-3 col-sm-4 form-group">
+                    <label style="display:@(DateType==""?"none":"")">To </label>
+                    @if (DateType == "Date")
+                    {
+                        @Html.TextBoxFor(model => model.EndDate, new { @class = "form-control", @type = "date" })
+                    }
+                    @Html.ValidationMessageFor(model => model.EndDate, "", new { @class = "text-danger" })
+                </div>
+                <div class="col-md-3 col-sm-4 form-group">
+                    <button id="btnSearch" type="submit" style="display:@(DateType==""?"none":"")" name="Command" value="Search" class="btn addbtn label-top"><i class="fas fa-search"></i>Search</button>
+                </div>
+            </div>
+        </div>
+        <div id="TargetDiv"></div>
+
+
+    }
+</div>
+
+
+@section scripts    {
+    @System.Web.Optimization.Scripts.Render("~/bundle/unobtrusivejs")
+    @Html.IncludeVersionedJs(Url.Content("~/assets/design/scripts/AddInit.js"))
+    
+    <script>
+        $(document).ready(function () {
+            $("#btnSearch").click();
+        });
+        function BindTarget(args) {
+            CloseLoadingDialog();
+            $("#TargetDiv").empty();
+            $("#TargetDiv").html(args);           
+        }
+        function OnSuccess(obj) {
+            if (obj.Status) {
+                SuccessToaster(obj.SuccessMessage);
+                window.location.href = obj.RedirectURL;
+            }
+            else {
+                CloseLoadingDialog();
+                FailToaster(obj.SuccessMessage);
+
+            }
+        }
+        
+    </script>
+}

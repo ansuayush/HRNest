@@ -1,0 +1,283 @@
+﻿
+@{
+	ViewBag.Title = "ContentDetail";
+}
+<link href="~/Areas/DigitalLibrary/assets/css/tagsinput.css" rel="stylesheet" />
+<script src="~/Areas/DigitalLibrary/assets/js/tagsinput.js"></script>
+
+
+
+<div class="inner-main defult-height p-0">
+    <input type="hidden" id="hdnLoggedInUser" />
+    <input type="hidden" value="0" id="hdnContentId" />
+    <input type="hidden" id="hdnApprovar" />
+     
+    <div class="serbox ">
+        <div class="row">
+
+            <div class="col-sm-4 mx-auto form-group">
+                <label>Add Content</label>
+                <select id="ddlCategory" class="form-control applyselect " onchange="FillSubCategory(this)">
+                </select>
+            </div>
+            <!---- <div class="col-sm-3 form-group align-self-end"> <a id="AnchorAddButton" class="btn mtr-g-grn btn-l  ripplelink "><i class="fas fa-cogs"></i>Process</a> </div>--->
+        </div>
+    </div>
+    <div class="pl-3 pr-3 pt-2">
+        <div class="h-done" id="mainContentDiv">
+            <div class="row">
+                <div class="col-sm-3 form-group">
+                    <label>Req. No.</label>
+                    <input type="text" disabled="" placeholder="Enter" name="" id="pdReqNo">
+                </div>
+                <div class="col-sm-3 form-group">
+                    <label>Req. Date.</label>
+                    <input disabled="" placeholder="Enter" name="" id="pdReqDate">
+                </div>
+                <div class="col-sm-3 form-group">
+                    <label>Req. By</label>
+                    <input type="text" disabled="" placeholder="Enter" name="" id="pdReqBy">
+                </div>
+                <div class="col-sm-3 form-group">
+                    <label>Category</label>
+                    <input type="text" disabled="" placeholder="Enter" name="" id="pdCategory">
+                </div>
+
+                <div class="col-md-12 form-group">
+                    <hr>
+                    <span class="hr-aps"><i class="fas fa-info-circle"></i>Details</span>
+                </div>
+                <div class="col-sm-3 form-group">
+                    <label>Sub Category <sup>*</sup></label>
+                    @*<span id="error" class="error-pr" style="color:red;border:1px red solid;">Hey,You missed this field! </span>*@
+                    <select class="form-control applyselect Mandatorypld" id="pdSubCategory" onchange="SetSubCategoryName(this)">
+                    </select>
+                    <span id="sppdSubCategory" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+                </div>
+
+                <div class="col-sm-3 form-group">
+                    <label>Project Code <sup>*</sup></label>
+                    <select class="form-control applyselect Mandatorypld" id="pdProjectCode" onchange="FillProjectDetails(this)">
+                    </select>
+                    <span id="sppdProjectCode" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+                </div>
+                <div class="col-sm-6 form-group">
+                    <label>Project Name <sup>*</sup></label>
+                    <input type="text" disabled="" placeholder="Enter" name="" id="pdProjectName">
+                </div>
+                <div class="col-sm-6 form-group">
+                    <label>Thematic Area<sup>*</sup></label>
+                    <input type="text" disabled="" placeholder="Enter" name="" id="pdThematicArea">
+                </div>
+                <div class="col-sm-3 form-group">
+                    <label>Funded By</label>
+
+                    <input type="text" disabled="" placeholder="Enter" name="" id="pdFundedBy">
+                </div>
+                <div class="col-sm-3 form-group">
+                    <label>Content Origin<sup>*</sup></label>
+                    <select class="form-control applyselect Mandatorypld" multiple="" id="pdPlaceOfOrigin" onchange="HideErrorMessage(this)">
+                    </select>
+                    <span id="sppdPlaceOfOrigin" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+                </div>
+                <div class="col-sm-3 form-group pd" style="display:none;">
+                    <label>Report No</label>
+                    <input type="text" value="" placeholder="Enter" name="" id="pdReportNo">
+                </div>
+                <div class="col-sm-3 form-group pld" style="display:none;">
+                    <label>Proposal No</label>
+                    <input type="text" value="" placeholder="Enter" name="" id="pldProposalNo">
+                </div>
+
+                <div class="col-sm-3 form-group cnts" style="display:none;" id="dvcntsContactNo">
+                    <label>Contract No</label>
+                    <input type="text" class="form-control Mandatorypld" placeholder="Enter" id="cntsContactNo" onchange="HideErrorMessage(this)">
+                    <span id="spcntsContactNo" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+                </div>
+
+                <div class="col-sm-3 form-group cnts" style="display:none;" id="dvcntsPartyName">
+                    <label>Party Name<sup>*</sup></label>
+                    <input type="text" class="form-control Mandatorypld" placeholder="Enter" id="cntsPartyName">
+                </div>
+
+                <div class="col-sm-3 form-group cnts" style="display:none;" id="dvcntsEffectiveDate">
+                    <label>Effective Date<sup>*</sup></label>
+                    <input class="form-control Mandatorypld datepicker" autocomplete="off" placeholder="dd-mm-yyyy" id="cntsEffectiveDate" onchange="HideErrorMessage(this)">
+
+
+                    <span id="spcntsEffectiveDate" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+                </div>
+
+                <div class="col-sm-3 form-group cnts" style="display:none;" id="dvcntsExperiDate">
+                    <label>Expiry/Renewable Date<sup>*</sup></label>
+                    <input class="form-control Mandatorypld datepicker" autocomplete="off" placeholder="dd-mm-yyyy" id="cntsExperiDate" onchange="HideErrorMessage(this)">
+                    <span id="spcntsExperiDate" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+                </div>
+                <div class="col-sm-3 form-group eb" style="display:none;" id="dvebProjectLead">
+                    <label>Project Lead</label>
+                    <select class="form-control applyselect" id="pdProjectLead">
+                    </select>
+                </div>
+                <div class="col-sm-3 form-group tm" style="display:none;" id="dvtmCopyRights">
+                    <label>Copyright</label>
+                    <textarea placeholder="Enter" class="form-control" id="tmCopyRights"></textarea>
+                </div>
+                <div class="col-md-12 form-group">
+                    <hr>
+                    <span class="hr-aps"><i class="fas fa-info-circle"></i>Content Detail</span>
+                </div>
+
+                <div class="col-sm-12 form-group">
+                    <label>Title <sup>*</sup></label>
+                    <input type="text" value="" placeholder="Enter" class="Mandatorypld" name="" id="pdTitle" onchange="HideErrorMessage(this)">
+                    <span id="sppdTitle" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+                </div>
+                <div class="col-sm-6 form-group">
+                    <label>Sub Title</label>
+                    <input type="text" value="" placeholder="Enter" name="" id="pdSubTitle">
+                </div>
+                <div class="col-sm-6 form-group">
+                    <label>Tag <sup>*</sup></label>
+                    <select class="form-control applyselect Mandatorypld" multiple="" id="pdTag" onchange="HideErrorMessage(this)">
+                    </select>
+                    <span id="sppdTag" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+                </div>
+
+                <div class="col-sm-6 form-group">
+                    <label>Abstract/Summary <sup>*</sup></label>
+                    <textarea class="form-control Mandatorypld" placeholder="Enter" id="pdSummary" onchange="HideErrorMessage(this)"></textarea>
+                    <span id="sppdSummary" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+                </div>
+                <div class="col-sm-6 form-group">
+                    <label>Remarks</label>
+                    <textarea class="form-control" placeholder="Enter" id="pdRemarks"></textarea>
+                </div>
+                <div class="col-sm-3 form-group">
+                    <label>Document(Confidential/Critical) <sup>*</sup></label>
+                    <select class="form-control applyselect Mandatorypld" id="pdDocument" onchange="HideErrorMessage(this); SetApprover(this);">
+                        
+                    </select>
+                    <span id="sppdDocument" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+                </div>
+
+                <div class="col-sm-3 form-group">
+                    <label>Author</label>
+                    <select class="form-control applyselect" onchange="SetAuther(this);" id="pdAuther">
+                    </select>
+                    <div id="dvAutherList"></div>
+                   
+                </div>
+                <div class="col-sm-3 form-group pld" style="display:none;" id="dvpldAccepted">
+                    <label>Accepted <sup>*</sup></label>
+                    <select class="form-control applyselect Mandatorypld" id="pldAccepted" onchange="HideErrorMessage(this)">
+                        <option>Select</option>
+                        <option>Yes</option>
+                        <option>No</option>
+                    </select>
+                    <span id="sppldAccepted" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+                </div>
+                <div class="col-sm-3 form-group pbn" style="display:none;">
+                    <label>Source</label>
+                    <select class="form-control applyselect" id="pbnSource">
+                        <option>Journal name</option>
+                        <option>Vol/Issues</option>
+                    </select>
+                </div>
+
+            </div>
+            <div id="FileAttachmentContent">
+                <div class="row">
+                    <div class="col-md-12 form-group">
+                        <hr>
+                        <span class="hr-aps"><i class="fas fa-paperclip"></i>Attach Content</span>
+                    </div>
+
+                    @*<div class="col-sm-3 form-group">
+                        <label>Document Uploaded By <sup>*</sup></label>
+                        <input type="text" disabled="" placeholder="Enter" name="" id="emUploadedBy">
+                    </div>*@
+                    <div class="col-sm-2 form-group">
+                        <label>File Name <sup>*</sup></label>
+                        <input type="text" placeholder="Enter" class="MandatoryEMAttachemnt" maxlength="100" name="" id="emFileName" onchange="HideErrorMessage(this)">
+                        <span id="spemFileName" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+                    </div>
+
+                    <div class="col-sm-2 form-group">
+                        <label>Attachment Type <sup>*</sup></label>
+                        <select class="form-control applyselect MandatoryEMAttachemnt" id="emAttachementType" onchange="AttachmentTypeChange(this);">
+                            <option>Select</option>
+                            <option>Photo</option>
+                            <option>Document</option>
+                            <option>Video</option>
+
+                        </select>
+                        <span id="spemAttachementType" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+                    </div>
+                    <div class="col-sm-2 form-group" id="dvVedioFileName" style="display:none;">
+                        <label>Video  File Url <sup>*</sup></label>
+                        <input type="text" placeholder="Enter" maxlength="500" name="" id="VedioFileName" class="MandatoryEMAttachemnt" onchange="HideErrorMessage(this)">
+                        <span id="spVedioFileName" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+                    </div>
+                    <div class="col-sm-2 form-group" id="dvFileUpload">
+                        <label>Attachment <sup>*</sup></label>
+                        <input type="file" class="form-control" name="" id="emFileUpload" multiple>
+                    </div>
+                    <div class="col-md-3 col-sm-3 form-group wh-575 align-self-end text-left">
+                        <button type="button" class="btn green-clr m-0 ripplelink mb-2 mt-0" onclick="UploadDocument('MandatoryEMAttachemnt')"> <i class="fas fa-plus"></i> Add </button>
+                    </div>
+                    <div class="col-sm-9">
+                        <table class="table table-striped tblwobdr" id="emDocumentList">
+                            <thead>
+                                <tr>
+                                    <th>Name</th>                                   
+                                    <th>Attachment Type</th>
+                                    <th>File Size</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+
+                        </table>
+                    </div>
+
+
+                </div>
+                <div>
+                    <div class="mt-0 text-center">
+                        <button type="submit" class="btn mtr-o-grn btn-l ripplelink pull-right" data-toggle="modal" data-target="#ss" name="Command" value="Add" onclick="SaveData(1)">
+                            <i class="fa fa-paper-plane" aria-hidden="true"></i> Save
+                        </button>
+                        <button type="submit" class="btn mtr-o-grn btn-l ripplelink pull-right" data-toggle="modal" data-target="#ss" name="Command" value="Add" onclick="SaveData(2)">
+                            <i class="fa fa-paper-plane" aria-hidden="true"></i> Submit
+                        </button>
+                        @*<button type="submit" data-toggle="modal" data-target="#mailer" class="btn mtr-o-grn btn-l ripplelink pull-right" name="Command" value="Add">
+            <i class="fa-solid fa-envelope"></i> Mailer
+        </button>*@
+                        <a href="DigitalLib" class="btn cnl-btn ripplelink"><i class="fas fa-times"></i>Close</a>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@section scripts    {
+	@System.Web.Optimization.Scripts.Render("~/bundle/unobtrusivejs")
+	@System.Web.Optimization.Scripts.Render("~/bundle/dataTablesjs")
+	<script src="~/assets/design/Scripts/AddInit.js?v=@clsApplicationSetting.GetWebConfigValue("Version")"></script>
+	<script src="~/Areas/DigitalLibrary/DevScript/ContentTag.js"></script>
+
+    <script>
+        var IsEDUser = '@ViewBag.IsED';
+       var loggedinUserid = '@ViewBag.UserId';
+		var loggedinUserName = '@ViewBag.UserName';
+		var UserGrade = '@ViewBag.Grade';
+		var IsPM = '@ViewBag.IsPM';
+		var HODID = '@ViewBag.HODID';
+		var EDID = '@ViewBag.EDIDToUpload';
+        var ContentManagerID = '@ViewBag.ManagerID';
+
+
+
+
+    </script>
+}

@@ -1,0 +1,66 @@
+﻿@using System.Data
+@model DataSet
+
+<div class="x_content table-currency mt-0">
+    <div class="table-responsive">
+        <table id="tableLeave" class="table table-striped table-bordered dt-responsive nowrap tbltick new_width" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
+            <thead>
+                <tr>
+                    <th>S.no.</th>
+                    <th>Request No</th>
+                    <th>Employee Code</th>
+                    <th>Employee Name</th>
+                    <th>Request Date</th>
+                    <th>Leave Type</th>
+
+                    <th>Start Date</th>
+                    <th>End Date</th>
+                    <th>Leave Hours</th>
+                    <th>Status</th>
+                </tr>
+                <tr class="searchbar">
+                    <th class="searchhide"> </th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    <th class="searchhide"> </th>
+                </tr>
+            </thead>
+            <tbody>
+                @{ int Count = 0;}
+                @foreach (DataRow item in Model.Tables[0].Rows)
+                {
+                    Count++;
+                <tr>
+                    <td>
+                        @Count
+                    </td>
+                    <td> @item["Doc_No"]</td>
+                    <td> @item["Emp_Code"]</td>
+                    <td> @item["Emp_name"]</td>
+                    <td> @Convert.ToDateTime(item["Request_Date"]).ToString("dd-MMM-yyyy")</td>
+                    <td> @item["leave_name"]</td>
+
+                    <td> @Convert.ToDateTime(item["Start_Date"]).ToString("dd-MMM-yyyy")</td>
+                    <td> @Convert.ToDateTime(item["End_Date"]).ToString("dd-MMM-yyyy")</td>
+
+                    <td> @item["hoursDayWise"]</td>
+                    <td>
+
+                        <input type="hidden" name="L" value="@item["ID"]" />
+                        <input type="hidden" name="E" value="@item["Emp_id"]" />
+                        <input type="hidden" name="D" value="@item["start_date"]" />
+                        <a class=" anchorpopup">@item["Status"]</a>
+
+                    </td>
+                </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

@@ -1,0 +1,1379 @@
+﻿
+@{
+	ViewBag.Title = "TrainingRequest";
+	Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<script>
+	function ViewApplication(obj) {
+		if (str != "" || str != undefined) {
+			var str = obj.split('-')
+			var ReqID = str[0];
+			var Status = str[1];
+			var Source = str[2];
+			if (Source == "HR") {
+				if (Status == "Draft") {
+					window.location.href = virtualPath + 'HR/ViewTrainingRequest?id=' + ReqID;
+				}
+				if (Status == "Pending") {
+					window.location.href = virtualPath + 'HR/PendingHRViewTrainingRequest?id=' + ReqID;
+				}
+			}
+			if (Source == "Self") {
+				window.location.href = virtualPath + 'HR/PendingUserViewTrainingRequest?id=' + ReqID;
+			}
+			if (Source == "PMS") {
+				alert("PMS");
+			}
+			//if (Status == "Draft") {
+			//	window.location.href = virtualPath + 'HR/ViewTrainingRequest?id=' + ReqID;
+			//}
+			//else if (Status == "Pending") {
+			//	window.location.href = virtualPath + 'HR/PendingUserViewTrainingRequest?id=' + ReqID;
+			//}
+		}
+		else {
+			console.log(obj);
+		}
+	}
+</script>
+
+<input type="hidden" id="hdnLoggedInUser" />
+<!-- Start -->
+<div class="container-fluid">
+	<!-- Start -->
+	<div class="inner-main defult-height">
+
+		<h1 class="heading-one mb-3">Training List</h1>
+
+		<!-- tab--->
+		<div class="tab-main mb-3">
+			<ul id="tabs" class="nav nav-tabs " role="tablist">
+				<li class="nav-item"> <a id="tab-A" href="#TabEnrolledTrainings" onclick="GetAllEnrolledList();" class="nav-link active ripplelink" data-toggle="tab" role="tab"><i class="fas fa-envelope-open"></i>Enrolled Trainings </a> </li>
+				<li class="nav-item"> <a id="tab-B" href="#TabConfirmedTraining" onclick="GetAllConfirmedList();" class="nav-link ripplelink" data-toggle="tab" role="tab"><i class="fas fa-check"></i>Confirmed Training</a> </li>
+				<li class="nav-item"> <a id="tab-c" href="#TabFeedback" onclick="GetAllFeedbackList();" class="nav-link ripplelink" data-toggle="tab" role="tab"><i class="fas fa-comments"></i>Feedback</a> </li>
+				<li class="nav-item"> <a id="tab-c" href="#TabFeedbackCompleted" onclick="GetAllCompletedList();" class="nav-link ripplelink" data-toggle="tab" role="tab"><i class="fas fa-comments"></i>Completed</a> </li>
+				<li class="nav-item"> <a id="tab-c" href="#TabRejected" onclick="GetAllRejectedList();" class="nav-link ripplelink" data-toggle="tab" role="tab"><i class="fas fa-ban"></i>Rejected</a> </li>
+
+			</ul>
+			<div id="content" class="tab-content shadow-box p-0" role="tablist">
+				<div id="TabEnrolledTrainings" class="card tab-pane fade show active" role="tabpanel" aria-labelledby="tab-A">
+					<div class="card-header" role="tab" id="heading-A">
+						<h5 class="mb-0">
+							<!-- Note: `data-parent` removed from here -->
+							<a data-toggle="collapse" href="#collapse-A" aria-expanded="true" aria-controls="collapse-A">Enrolled Trainings</a>
+						</h5>
+					</div>
+
+					<!-- Note: New place of `data-parent` -->
+					<div id="collapse-A" class="collapse show" data-parent="#content" role="tabpanel" aria-labelledby="heading-A">
+						<div class="card-body p-0">
+							<!-- Start -->
+							<div class="card-body p-0 pt-2">
+								<div class="table-responsive">
+									<div id="tblTrainingEnrolledList">
+
+									</div>
+								</div>
+								<div class="col-sm-6 mx-auto form-group" id="divres" style="display: none;">
+									<strong>Reason for Rejection <sup>*</sup> </strong>
+									<hr class="mb-2 mt-1">
+									<textarea id="txtReasonForRejection" onchange="HideErrorMessage(this);" class="form-control maxSize[200] h-100 Mandatory" placeholder="Enter "></textarea>
+									<span id="sptxtReasonForRejection" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+									<div class="text-right">
+										<button type="submit" onclick="ShowandCloseLoader();EnrolledReject();" name="Command" value="Resubmit" class="btn mt-2 mtr-o-grn ripplelink"><i class="fas fa-paper-plane"></i> Submit</button>
+									</div>
+								</div>
+								<div class="text-center mt-2">
+									<button type="submit" id="btnEnrolledConfirm" onclick="ShowandCloseLoader();EnrolledConfirm();" class="btn mtr-o-grn" name="Command" value="Add" fdprocessedid="81np39"><i class="fas fa-check"></i>Confirm</button>
+									<button type="submit" class="btn red-clr-bg" name="Command" value="Add" id="btnreject" fdprocessedid="kadjxt"><i class="fas fa-ban"></i>Reject</button>
+								</div>
+							</div>
+							<!-- End -->
+						</div>
+					</div>
+				</div>
+				<div id="TabConfirmedTraining" class="card tab-pane fade" role="tabpanel" aria-labelledby="tab-B">
+					<div class="card-header" role="tab" id="heading-B">
+						<h5 class="mb-0"> <a class="collapsed" data-toggle="collapse" href="#collapse-B" aria-expanded="false" aria-controls="collapse-B">Confirmed Training </a> </h5>
+					</div>
+					<div id="collapse-B" class="collapse" data-parent="#content" role="tabpanel" aria-labelledby="heading-B">
+						<!-- Start -->
+						<div class="card-body p-0 pt-2">
+							<div class="table-responsive">
+								<table id="tblTrainingConfirmedList" class="table mt-0">
+									<thead>
+										<tr>
+											<th width='30'>S.No </th>
+											<th width='300'>Training Name</th>
+											<th width='200'>Requested By</th>
+											<th>From Date</th>
+											<th>To Date</th>
+											<th>From Time</th>
+											<th>To Time</th>
+											<th>Training Mode</th>
+											<th>Action</th>
+											<th style='display:none'>ReqID</th>
+										</tr>
+									</thead>
+								</table>
+							</div>
+							<!-- End -->
+						</div>
+					</div>
+				</div>
+				<div id="TabFeedback" class="card tab-pane fade" role="tabpanel" aria-labelledby="tab-c">
+					<div class="card-header" role="tab" id="heading-c">
+						<h5 class="mb-0"> <a class="collapsed" data-toggle="collapse" href="#collapse-c" aria-expanded="false" aria-controls="collapse-c">Feedback </a> </h5>
+					</div>
+					<div id="collapse-c" class="collapse" data-parent="#content" role="tabpanel" aria-labelledby="heading-c">
+						<!-- Start -->
+						<div class="card-body p-0 pt-2">
+							<div class="table-responsive">
+								<table id="tblTrainingFeedbackList" class="table mt-0">
+									<thead>
+										<tr>
+											<th width='30'>S.No </th>
+											<th width='300'>Training Name</th>
+											<th width='200'>Requested By</th>
+											<th>From Date</th>
+											<th>To Date</th>
+											<th>From Time</th>
+											<th>To Time</th>
+											<th>Training Mode</th>
+											<th>Action</th>
+											<th width='30' style='display:none'>ReqID</th>
+										</tr>
+									</thead>
+								</table>
+							</div>
+						</div>
+						<!-- End -->.
+					</div>
+				</div>
+				<div id="TabFeedbackCompleted" class="card tab-pane fade" role="tabpanel" aria-labelledby="tab-c">
+					<div class="card-header" role="tab" id="heading-c">
+						<h5 class="mb-0"> <a class="collapsed" data-toggle="collapse" href="#collapse-c" aria-expanded="false" aria-controls="collapse-c">Feedback </a> </h5>
+					</div>
+					<div id="collapse-c" class="collapse" data-parent="#content" role="tabpanel" aria-labelledby="heading-c">
+						<!-- Start -->
+						<div class="card-body p-0 pt-2">
+							<div class="table-responsive">
+								<table id="tblTrainingFeedbackCompletedList" class="table mt-0">
+									<thead>
+										<tr>
+											<th width='30'>S.No </th>
+											<th width='300'>Training Name</th>
+											<th width='200'>Requested By</th>
+											<th>From Date</th>
+											<th>To Date</th>
+											<th>From Time</th>
+											<th>To Time</th>
+											<th>Training Mode</th>
+											<th>Action</th>
+											<th width='30' style='display:none'>ReqID</th>
+										</tr>
+									</thead>
+								</table>
+							</div>
+						</div>
+						<!-- End -->.
+					</div>
+				</div>
+				<div id="TabRejected" class="card tab-pane fade" role="tabpanel" aria-labelledby="tab-c">
+					<div class="card-header" role="tab" id="heading-c">
+						<h5 class="mb-0"> <a class="collapsed" data-toggle="collapse" href="#collapse-c" aria-expanded="false" aria-controls="collapse-c">Rejected</a> </h5>
+					</div>
+					<div id="collapse-c" class="collapse" data-parent="#content" role="tabpanel" aria-labelledby="heading-c">
+						<!-- Start -->
+						<div class="card-body p-0 pt-2">
+							<div class="table-responsive">
+								<div id="tblTrainingRejectedList"></div>
+							</div>
+
+							<div class="text-center mt-2">
+								<button type="submit" onclick="ShowandCloseLoader();ReconfirmTrainingRequest();" class="btn mtr-o-grn" name="Command" value="Add" data-toggle="modal"><i class="fas fa-check"></i>Reconfirm</button>
+
+							</div>
+						</div>
+						<!-- End -->
+					</div>
+				</div>
+			</div>
+		</div>
+		<!--- close tab --->
+
+	</div>
+	<div class="modal fade confirmmsg" id="confirmmsg">
+		<div class="modal-dialog modal-md ">
+			<div class="modal-content">
+				<!-- Modal Header -->
+				<div class="swal-icon swal-icon--warning">
+					<span class="swal-icon--warning__body">
+						<span class="swal-icon--warning__dot"></span>
+					</span>
+				</div>
+
+				<div class="modal-body ">
+					<div class="swal-title text-center">Are you sure you want to reconfirm the request?</div>
+				</div>
+				<div class="modal-footer">
+					<button type="button" data-dismiss="modal" data-toggle="modal" class="btn cnl-btn">No</button>
+					<button type="button" class="btn mtr-o-grn">Yes</button>
+
+				</div>
+
+			</div>
+
+
+
+		</div>
+
+	</div>
+
+	<!-- TASK Modal -->
+	<div class="modal fade pop-dgn" id="rjd">
+		<div class="modal-dialog mdl-lg">
+			<div class="modal-content">
+
+				<!-- Modal Header -->
+				<div class="modal-header blk-gdn-btn">
+					<h4 class="modal-title">Training  Request</h4>
+					<div class="close" data-dismiss="modal">×</div>
+				</div>
+
+				<!-- Modal body -->
+				<div class="modal-body p-2">
+					<div class="row">
+						<div class="col-md-4 form-group">
+							<label>Req. No</label>
+							<p>CC-0086</p>
+						</div>
+
+						<div class="col-md-4 form-group">
+							<label>Req. Date</label>
+							<p>15/2/2012</p>
+						</div>
+
+						<div class="col-md-4 form-group">
+							<label>Tag Request</label>
+							<p><a href="" data-toggle="modal" data-target="#tg">Req 101</a>, <a href="" data-toggle="modal" data-target="#tg">Req 102</a></p>
+						</div>
+
+						<div class="col-md-4 form-group">
+							<label>Training Type</label>
+							<p>Training Type 1</p>
+						</div>
+
+						<div class="col-md-8 form-group">
+							<label>Training Descritpion</label>
+							<p>Maecenas in imperdiet risus, a blandit eros. Ut quis est lorem. Duis libero tellus, eleifend eu egestas nec.</p>
+						</div>
+						<div class="col-sm-12 form-group">
+							<hr><span class="hr-aps lgt-text font-sm">Training Schedule</span>
+						</div>
+						<div class="col-md-4 form-group">
+							<label>From Date</label>
+							<p>23/10/2023</p>
+						</div>
+
+						<div class="col-md-4 form-group">
+							<label>To Date</label>
+							<p>23/10/2023</p>
+						</div>
+
+						<div class="col-md-4 form-group">
+							<label>From Time</label>
+							<p>11:00 AM</p>
+						</div>
+						<div class="col-md-4 form-group">
+							<label>To Time</label>
+							<p>1:00 PM</p>
+						</div>
+						<div class="col-md-4 form-group">
+							<label>Training Mode</label>
+							<p>Physical</p>
+						</div>
+
+						<div class="col-md-4 form-group">
+							<label>Location</label>
+							<p>Delhi</p>
+						</div>
+
+
+
+						<div class="col-sm-12 form-group">
+							<hr>
+							<span class="hr-aps lgt-text font-sm">Mentor List</span>
+						</div>
+
+						<div class="col-sm-12 form-group ">
+							<div class="table-responsive">
+								<table class="table mt-0">
+									<thead>
+										<tr>
+											<th>Mentor Name </th>
+											<th width="100">Mentor Type</th>
+											<th>Email</th>
+
+
+										</tr>
+									</thead>
+									<tbody>
+										<tr>
+											<td>Deepak</td>
+											<td>External</td>
+											<td>demo@gmail.com</td>
+
+										</tr>
+
+									</tbody>
+								</table>
+							</div>
+						</div>
+						<div class="col-sm-12 form-group">
+							<hr>
+							<span class="hr-aps lgt-text font-sm">Attachment</span>
+						</div>
+
+						<div class="col-sm-12 form-group ">
+							<div class="table-responsive">
+								<table class="table mt-0">
+									<thead>
+										<tr>
+											<th>Attachment Type </th>
+											<th>Attachment</th>
+											<th>Remark</th>
+											<th width="10"></th>
+
+										</tr>
+									</thead>
+									<tbody>
+										<tr>
+											<td>Type</td>
+											<td>File Name</td>
+											<td>Text</td>
+											<td class="text-center"><a href="" data-toggle="tooltip" title="" data-original-title="Download"><i class="fas fa-download"></i></a></td>
+										</tr>
+										<tr>
+											<td>Type</td>
+											<td>File Name</td>
+											<td>Text</td>
+											<td class="text-center"><a href="" data-toggle="tooltip" title="" data-original-title="Download"><i class="fas fa-download"></i></a></td>
+										</tr>
+									</tbody>
+								</table>
+							</div>
+						</div>
+						<div class="col-md-12 form-group">
+							<label>Instructed by Hr</label>
+							<p>Maecenas in imperdiet risus, a blandit eros. Ut quis est lorem. Duis libero tellus, eleifend eu egestas nec.</p>
+						</div>
+
+						<div class="col-sm-12 form-group">
+							<hr>
+							<span class="hr-aps lgt-text font-sm">Rejected</span>
+						</div>
+
+						<div class="col-sm-12 form-group">
+							<label for="">Reason</label>
+							<p>Text</p>
+						</div>
+
+
+						<div class="col-sm-12  text-center mt-2">
+							<button type="submit" class="btn mtr-o-grn" name="Command" value="Add" data-dismiss="modal" data-toggle="modal" data-target="#confirmmsg "><i class="fas fa-check"></i>Reconfirm</button>
+							<button type="button" class="btn cnl-btn ripplelink  pull-right" data-dismiss="modal"><i class="fas fa-times"></i> Close</button>
+						</div>
+
+					</div>
+
+
+
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!-- TASK Modal -->
+	<div class="modal fade pop-dgn" id="fd">
+		<div class="modal-dialog mdl-lg">
+			<div class="modal-content">
+
+				<!-- Modal Header -->
+				<div class="modal-header blk-gdn-btn">
+					<h4 class="modal-title"><i class="fas fa-comments"></i>Feedback </h4>
+					<div class="close" data-dismiss="modal">×</div>
+				</div>
+
+				<!-- Modal body -->
+				<div class="modal-body p-2">
+					<div class="row">
+						<div class="col-md-4 col-sm-4 form-group">
+							<label>Training Name</label>
+							<p>Behavioural Training</p>
+						</div>
+						<div class="col-md-4 col-sm-4 form-group">
+							<label>Date</label>
+							<p>24/1/2020</p>
+						</div>
+						<div class="col-md-4 col-sm-4 form-group">
+							<label>Mentor</label>
+							<p>Mr. Vijay</p>
+						</div>
+						<div class="col-md-12 form-group">
+							<label>Feedback for mentors <sup>*</sup></label>
+							<textarea placeholder="Enter" class="form-control h-100"></textarea>
+						</div>
+
+						<div class="col-sm-12  text-center mt-2">
+							<button type="button" class="btn cnl-btn ripplelink  pull-right" data-dismiss="modal"><i class="fas fa-times"></i> Close</button>
+							<button type="button" class="btn mtr-o-grn"><i class="fa fa-paper-plane" aria-hidden="true"></i> Submit</button>
+						</div>
+
+					</div>
+
+
+
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!----- add slot ---->
+	<!-- TASK Modal -->
+	<div class="modal fade pop-dgn" id="view">
+		<div class="modal-dialog mdl-lg">
+			<div class="modal-content">
+
+				<!-- Modal Header -->
+				<div class="modal-header blk-gdn-btn">
+					<h4 class="modal-title">Attendees Confirmation  </h4>
+					<div class="close" data-dismiss="modal">×</div>
+				</div>
+
+				<!-- Modal body -->
+				<div class="modal-body p-2">
+					<div class="row">
+						<div class="col-md-4 form-group">
+							<label>Req. No</label>
+							<p>CC-0086</p>
+						</div>
+
+						<div class="col-md-4 form-group">
+							<label>Req. Date</label>
+							<p>15/2/2012</p>
+						</div>
+
+						<div class="col-md-4 form-group">
+							<label>Tag Request</label>
+							<p><a href="" data-toggle="modal" data-target="#tg">Req 101</a>, <a href="" data-toggle="modal" data-target="#tg">Req 102</a></p>
+						</div>
+
+						<div class="col-md-4 form-group">
+							<label>Training Type</label>
+							<p>Training Type 1</p>
+						</div>
+
+						<div class="col-md-8 form-group">
+							<label>Training Descritpion</label>
+							<p>Maecenas in imperdiet risus, a blandit eros. Ut quis est lorem. Duis libero tellus, eleifend eu egestas nec.</p>
+						</div>
+						<div class="col-sm-12 form-group">
+							<hr><span class="hr-aps lgt-text font-sm">Training Schedule</span>
+						</div>
+						<div class="col-md-4 form-group">
+							<label>From Date</label>
+							<p>23/10/2023</p>
+						</div>
+
+						<div class="col-md-4 form-group">
+							<label>To Date</label>
+							<p>23/10/2023</p>
+						</div>
+
+						<div class="col-md-4 form-group">
+							<label>From Time</label>
+							<p>11:00 AM</p>
+						</div>
+						<div class="col-md-4 form-group">
+							<label>To Time</label>
+							<p>1:00 PM</p>
+						</div>
+						<div class="col-md-4 form-group">
+							<label>Training Mode</label>
+							<p>Physical</p>
+						</div>
+
+						<div class="col-md-4 form-group">
+							<label>Location</label>
+							<p>Delhi</p>
+						</div>
+
+
+
+						<div class="col-sm-12 form-group">
+							<hr>
+							<span class="hr-aps lgt-text font-sm">Mentor List</span>
+						</div>
+
+						<div class="col-sm-12 form-group ">
+							<div class="table-responsive">
+								<table class="table mt-0">
+									<thead>
+										<tr>
+											<th>Mentor Name </th>
+											<th width="100">Mentor Type</th>
+											<th>Email</th>
+
+
+										</tr>
+									</thead>
+									<tbody>
+										<tr>
+											<td>Deepak</td>
+											<td>External</td>
+											<td>demo@gmail.com</td>
+
+										</tr>
+
+									</tbody>
+								</table>
+							</div>
+						</div>
+						<div class="col-sm-12 form-group">
+							<hr>
+							<span class="hr-aps lgt-text font-sm">Attachment</span>
+						</div>
+
+						<div class="col-sm-12 form-group ">
+							<div class="table-responsive">
+								<table class="table mt-0">
+									<thead>
+										<tr>
+											<th>Attachment Type </th>
+											<th>Attachment</th>
+											<th>Remark</th>
+											<th width="10"></th>
+
+										</tr>
+									</thead>
+									<tbody>
+										<tr>
+											<td>Type</td>
+											<td>File Name</td>
+											<td>Text</td>
+											<td class="text-center"><a href="" data-toggle="tooltip" title="" data-original-title="Download"><i class="fas fa-download"></i></a></td>
+										</tr>
+										<tr>
+											<td>Type</td>
+											<td>File Name</td>
+											<td>Text</td>
+											<td class="text-center"><a href="" data-toggle="tooltip" title="" data-original-title="Download"><i class="fas fa-download"></i></a></td>
+										</tr>
+									</tbody>
+								</table>
+							</div>
+						</div>
+						<div class="col-md-12 form-group">
+							<label>Instructed by Hr</label>
+							<p>Maecenas in imperdiet risus, a blandit eros. Ut quis est lorem. Duis libero tellus, eleifend eu egestas nec.</p>
+						</div>
+
+						<div class="col-sm-12  text-center mt-2">
+							<button type="button" class="btn cnl-btn ripplelink  pull-right" data-dismiss="modal"><i class="fas fa-times"></i> Close</button>
+						</div>
+
+					</div>
+
+
+
+				</div>
+			</div>
+		</div>
+	</div>
+	<!----- add slot ---->
+	<!-- TASK Modal -->
+	
+
+	
+	<script>
+		$(function () {
+			$("#datepicker").datepicker({
+				autoclose: true,
+				todayHighlight: true
+			}).datepicker('update', new Date());
+		});
+
+	</script>
+	<script>
+		// JavaScript Document
+		$(function () {
+			$('#js-nav-toggle').click(function (e) {
+				e.preventDefault();
+				$("html").toggleClass("is-sideopen");
+				$("#js-nav-toggle").toggleClass("is-active");
+			});
+
+			var $content = $('.l-contents');
+			var $header = $('.l-header');
+
+
+			$content.click(function () {
+				$("html").removeClass("is-sideopen");
+			});
+
+
+			$header.click(function () {
+				$("html").removeClass("is-sideopen");
+			});
+
+
+		});
+
+
+		$(function () {
+
+			var $dropdown = $('.js-dropdown');
+			var $content = $('.l-contents');
+			var $toggle = $('#js-nav-toggle');
+
+
+			$('.js-dropdown-menu').hide();
+			$dropdown.click(function () {
+				$('i').removeClass('is-rotate');
+				$('.js-dropdown-menu').slideUp(200);
+				if ($('+.js-dropdown-menu', this).css('display') == 'none') {
+					$('i', this).addClass('is-rotate');
+					$('+.js-dropdown-menu', this).slideDown(200);
+				}
+			});
+
+
+			$content.click(function () {
+				$('i').removeClass('is-rotate');
+				$('.js-dropdown-menu').slideUp(200);
+				if ($('+.js-dropdown-menu', this).css('display') == 'none') {
+					$('i', this).addClass('is-rotate');
+					$('+.js-dropdown-menu', this).slideDown(200);
+				}
+			});
+
+
+			$toggle.click(function () {
+				$('i').removeClass('is-rotate');
+				$('.js-dropdown-menu').slideUp(200);
+				if ($('+.js-dropdown-menu', this).css('display') == 'none') {
+					$('i', this).addClass('is-rotate');
+					$('+.js-dropdown-menu', this).slideDown(200);
+				}
+			});
+
+		});
+
+		$(function () {
+			$('.is-ac-close').hide();
+			$(".is-ac-click").on("click", function () {
+				if ($(this).children('i').is('.fa-angle-right')) {
+					$(this).children('i')
+						.removeClass('fa-angle-right')
+						.addClass('fa-angle-down');
+				} else {
+					$(this).children('i')
+						.removeClass('fa-angle-down')
+						.addClass('fa-angle-right');
+				}
+				$(this).next().slideToggle(200);
+			});
+
+			$('.is-ac-close').hide();
+			$(".is-ac-bar").on("click", function () {
+
+				if ($(this).find('i').is('.fa-caret-down')) {
+
+					$(this).find('i')
+						.removeClass()
+						.addClass('fa fa-caret-up');
+				} else {
+					$(this).find('i')
+						.removeClass()
+						.addClass('fa fa-caret-down');
+				}
+				$(this).next().slideToggle(200);
+			});
+		});
+
+
+
+
+		//---------------------------------------------------
+		// ▼　tab
+		//---------------------------------------------------
+		$(function () {
+			var rwdTab = $('.c-tab'),
+				switchPoint = 768,
+				fadeSpeed = 300,
+				slideSpeed = 300;
+
+			var tabBtn = rwdTab.children('.c-tab-panel').children('.c-tab-heading'),
+				contentsArea = rwdTab.children('.c-tab-panel').children('.c-tab-body');
+
+			tabBtn.on('click', function () {
+				if (!$(this).hasClass('c-tab-active')) {
+					tabBtn.removeClass('c-tab-active');
+					$(this).addClass('c-tab-active');
+
+					if (window.innerWidth > switchPoint) {
+						contentsArea.fadeOut(fadeSpeed);
+						$(this).next().fadeIn(fadeSpeed);
+					} else {
+						contentsArea.slideUp(slideSpeed);
+						$(this).next().slideDown(slideSpeed);
+					}
+				}
+			});
+
+			tabBtn.first().click();
+		});
+
+
+
+	</script>
+	<!-- required -->
+
+	@*<script type="text/javascript" src="https://mitr2.c3india.org/assets/design/js/stellarnav.min.js"></script>*@
+	<script type="text/javascript">
+		jQuery(document).ready(function ($) {
+			jQuery('.stellarnav').stellarNav({
+				theme: 'dark',
+				breakpoint: 960,
+				position: 'right',
+
+			});
+		});
+	</script>
+	<!-- required -->
+	<script>
+		$("document").ready(function () {
+
+			$('.dropdown-menu').on('click', function (e) {
+				if ($(this).hasClass('dropdown-menu-form')) {
+					e.stopPropagation();
+				}
+			});
+		});
+
+
+	</script>
+	<script>
+
+		var links = document.querySelectorAll('.ripplelink');
+
+		for (var i = 0, len = links.length; i < len; i++) {
+			links[i].addEventListener('click', function (e) {
+				var targetEl = e.target;
+				var inkEl = targetEl.querySelector('.ink');
+
+				if (inkEl) {
+					inkEl.classList.remove('animate');
+				}
+				else {
+					inkEl = document.createElement('span');
+					inkEl.classList.add('ink');
+					inkEl.style.width = inkEl.style.height = Math.max(targetEl.offsetWidth, targetEl.offsetHeight) + 'px';
+					targetEl.appendChild(inkEl);
+				}
+
+				inkEl.style.left = (e.offsetX - inkEl.offsetWidth / 2) + 'px';
+				inkEl.style.top = (e.offsetY - inkEl.offsetHeight / 2) + 'px';
+				inkEl.classList.add('animate');
+			}, false);
+		}
+	</script>
+	<script type="text/javascript">
+		$(document).ready(function () {
+			$(".dpselect").select2();
+
+		});
+	</script>
+	<script type="text/javascript">
+		$(window).scroll(function () {
+			if ($(this).scrollTop() > 50) {
+				$('.scrolltop:hidden').stop(true, true).fadeIn();
+			} else {
+				$('.scrolltop').stop(true, true).fadeOut();
+			}
+		});
+		$(function () { $(".scroll-btm").click(function () { $("html,body").animate({ scrollTop: $(".thetop").offset().top }, ""); return false }) })
+	</script>
+	<script>
+		//$(document).ready(function () {
+		//	$('[data-toggle="tooltip"]').tooltip();
+		//});
+
+		$(function () {
+			$('#finselector').change(function () {
+				$('.finyear').hide();
+				$('#' + $(this).val()).show();
+			});
+		});
+
+	</script>
+	<script type="text/javascript">
+		function formChoice(x) {
+			if (x == 0) {
+				$('#field1').css('display', 'block');
+				$('#field2').css('display', 'none');
+			} else {
+				$('#field1').css('display', 'none');
+				$('#field2').css('display', 'block');
+			}
+		}
+
+	</script>
+	
+	
+
+	<script>
+		/* .on() used in case there is ajax loaded content. */
+		$("#btnreject").on("click", function () {
+			$('#txtReasonForRejection').val('')
+			$("#divres").toggle(); /*shows or hides #box*/
+			$("#btnEdit").hide();
+			/*$(this) refers to the targeted element: #toggleMessage*/
+			var text = $(this).text();
+
+			if (text == "Back") { /*if text inside #toggleMessage is Show...*/
+				document.getElementById("btnreject").innerHTML = "<i class='fas fa-ban'></i>Reject"; /*Change button text to Hide*/
+				$("#btnreject").removeClass("cnl-btn")
+				$("#btnreject").addClass("mtr-o-grn")
+				$('#btnEnrolledConfirm').show();
+			}
+			else {
+				document.getElementById("btnreject").innerHTML = "<i class='fas fa-long-arrow-alt-left'></i>Back"; /*Change button text to Show*/
+				$("#btnreject").addClass("btn cnl-btn")
+				$("#btnreject").removeClass("mtr-o-grn")
+				$('#btnEnrolledConfirm').hide();
+			}
+		});
+	</script>
+
+	<script>
+		/* .on() used in case there is ajax loaded content. */
+		$(document).ready(function () {
+			$("#btnrejectpop").on("click", function () {
+				$('#txtPopupReasonRejection').val('');
+				$("#divrespop").toggle(); /*shows or hides #box*/
+				$("#btnEdit").hide();
+				/*$(this) refers to the targeted element: #toggleMessage*/
+				var text = $(this).text();
+
+				if (text == "Back") { /*if text inside #toggleMessage is Show...*/
+					document.getElementById("btnrejectpop").innerHTML = "<i class='fas fa-ban'></i>Reject"; /*Change button text to Hide*/
+					$("#btnrejectpop").removeClass("cnl-btn")
+					$("#btnrejectpop").addClass("mtr-o-grn")
+					$('#btnPopupEnrolledConfirm').show();
+				}
+				else {
+					document.getElementById("btnrejectpop").innerHTML = "<i class='fas fa-long-arrow-alt-left'></i>Back"; /*Change button text to Show*/
+					$("#btnrejectpop").addClass("btn cnl-btn")
+					$("#btnrejectpop").removeClass("mtr-o-grn")
+					$('#btnPopupEnrolledConfirm').hide();
+				}
+			});
+		});
+	</script>
+
+</div>
+
+@section scripts    {
+	@System.Web.Optimization.Scripts.Render("~/bundle/unobtrusivejs")
+	@System.Web.Optimization.Scripts.Render("~/bundle/dataTablesjs")
+	<script src="~/assets/design/Scripts/AddInit.js?v=@clsApplicationSetting.GetWebConfigValue("Version")"></script>
+
+	<script src="~/Areas/Capacity/DevScript/TrainingRequestList.js"></script>
+	<script>
+		 var IsEDUser = '@ViewBag.IsED';
+       var loggedinUserid = '@ViewBag.UserId';
+		var loggedinUserName = '@ViewBag.UserName';
+		var UserGrade = '@ViewBag.Grade';
+        var IsPM = '@ViewBag.IsPM';
+		var ReqId = "";
+	</script>
+}
+<!----- add slot ---->
+<!-- TASK Modal -->
+<div class="modal fade pop-dgn" id="ViewAppModal">
+	<div class="modal-dialog modal-lg">
+		<div class="modal-content">
+
+			<div class="modal-header blk-gdn-btn">
+				<h4 class="modal-title">Training Request</h4>
+				<div class="close" data-dismiss="modal">&times;</div>
+			</div>
+			<div class="modal-body">
+				<div id="DivViewApp"></div>
+			</div>
+		</div>
+	</div>
+</div>
+<div class="modal fade pop-dgn" id="tc">
+	<div class="modal-dialog mdl-lg">
+		<div class="modal-content">
+
+			<!-- Modal Header -->
+			<div class="modal-header blk-gdn-btn">
+				<h4 class="modal-title">Add Training Calendar </h4>
+				<div class="close" data-dismiss="modal">&times;</div>
+			</div>
+
+			<!-- Modal body -->
+			<div class="modal-body p-2">
+				<div class="row">
+					<div class="col-md-4 col-sm-4 form-group">
+						<label>Training Type</label>
+						<select class="form-control dpselect">
+							<option>Select </option>
+							<option>Training Type 1</option>
+							<option>Training Type 2</option>
+							<option>Training Type 3</option>
+							<option>Training Type 4</option>
+						</select>
+					</div>
+					<div class="col-md-4 col-sm-4 form-group">
+						<label>Training Name  </label>
+						<input type="text" class="form-control" placeholder="Enter Title" value="Enter Name">
+					</div>
+					<div class="col-md-4 col-sm-4 form-group">
+						<label>Month</label>
+						<select class="form-control dpselect">
+							<option>Select </option>
+							<option>January</option>
+							<option>February  </option>
+							<option>March</option>
+							<option>April</option>
+						</select>
+					</div>
+					<div class="col-md-4 col-sm-4 form-group">
+						<label>Project  </label>
+						<select class="form-control dpselect">
+							<option>Select </option>
+							<option>Project 1</option>
+							<option>Project 2 </option>
+							<option>Project 3</option>
+							<option>Project 4</option>
+						</select>
+					</div>
+					<div class="col-md-4 col-sm-4 form-group">
+						<label>Project Line </label>
+						<input type="text" class="form-control" placeholder="Enter Title" value="Enter ">
+					</div>
+					<div class="col-md-4 col-sm-4 form-group">
+						<label>Budget</label>
+						<input type="text" class="form-control" placeholder="Enter Title" value="Enter ">
+					</div>
+
+					<div class="col-sm-12  text-center mt-2">
+						<button type="button" class="btn cnl-btn ripplelink  pull-right" data-dismiss="modal"><i class="fas fa-times"></i> Close</button>
+						<button type="button" class="btn mtr-o-grn"><i class="fa fa-paper-plane" aria-hidden="true"></i> Submit</button>
+					</div>
+
+				</div>
+
+
+
+			</div>
+		</div>
+	</div>
+</div>
+<div class="modal fade pop-dgn show" id="ModalAttendeesConfirmation" style="padding-right: 8px; display: none;" aria-modal="true">
+	<div class="modal-dialog mdl-lg">
+		<div class="modal-content">
+
+			<!-- Modal Header -->
+			<div class="modal-header blk-gdn-btn">
+				<h4 class="modal-title">Attendees Confirmation  </h4>
+				<div class="close" data-dismiss="modal">×</div>
+			</div>
+
+			<!-- Modal body -->
+			<div class="modal-body p-2">
+				<div class="row">
+					<div class="col-md-4 form-group">
+						<label>Req. No</label>
+						<p id="lblConfirmationReqNo"></p>
+					</div>
+
+					<div class="col-md-4 form-group">
+						<label>Req. Date</label>
+						<p id="lblConfirmationReqDate"></p>
+					</div>
+
+					<div class="col-md-4 form-group">
+						<label>Tag Request</label>
+						<p id="lblConfirmationTagRequest">
+							@*<a href="" data-toggle="modal" data-target="#tg">Req 101</a>, <a href="" data-toggle="modal" data-target="#tg">Req 102</a>*@
+						</p>
+					</div>
+
+					<div class="col-md-4 form-group">
+						<label>Training Type</label>
+						<p id="lblConfirmationTrainingType"></p>
+					</div>
+
+					<div class="col-md-8 form-group">
+						<label>Training Descritpion</label>
+						<p id="lblConfirmationTrainingDescritpion"></p>
+					</div>
+					<div class="col-sm-12 form-group">
+						<hr><span class="hr-aps lgt-text font-sm">Training Schedule</span>
+					</div>
+					<div class="col-md-4 form-group">
+						<label>From Date</label>
+						<p id="lblConfirmationFromDate"></p>
+					</div>
+
+					<div class="col-md-4 form-group">
+						<label>To Date</label>
+						<p id="lblConfirmationToDate"></p>
+					</div>
+
+					<div class="col-md-4 form-group">
+						<label>From Time</label>
+						<p id="lblConfirmationFromTime"></p>
+					</div>
+					<div class="col-md-4 form-group">
+						<label>To Time</label>
+						<p id="lblConfirmationToTime"></p>
+					</div>
+					<div class="col-md-4 form-group">
+						<label>Training Mode</label>
+						<p id="lblConfirmationTrainingMode"></p>
+					</div>
+					<div class="col-md-4 form-group" id="divConfirmationPhysical" style="display:none">
+						<label>Location</label>
+						<p id="lblConfirmationLocation"></p>
+					</div>
+					<div class="col-md-4 form-group" id="divConfirmationVirtual" style="display:none">
+						<label>Link</label>
+						<p><a target='_blank' id="aConfirmationlink" href="#"><i class="fas fa-trash-alt"></i></a></p>
+					</div>
+					<div class="col-sm-12 form-group">
+						<hr>
+						<span class="hr-aps lgt-text font-sm">Mentor List</span>
+					</div>
+					<div class="col-sm-12 form-group ">
+						<div class="table-responsive">
+							<div id="tblConfirmationMentorList">
+							</div>
+						</div>
+					</div>
+					<div class="col-sm-12 form-group">
+						<hr>
+						<span class="hr-aps lgt-text font-sm">Attachment</span>
+					</div>
+					<div class="col-sm-12 form-group ">
+						<div class="table-responsive">
+							<div id="tblConfirmationAttachmentsList"></div>
+						</div>
+					</div>
+					<div class="col-md-12 form-group">
+						<label>Instructed by Hr</label>
+						<p id="lblConfirmationInstructedByHr"></p>
+					</div>
+					<div class="col-sm-12 form-group">
+						<hr>
+						<span class="hr-aps lgt-text font-sm">Rejected</span>
+					</div>
+
+					<div class="col-sm-12 form-group">
+						<label for="">Reason</label>
+						<p id="lblConfirmationReason"></p>
+					</div>
+					<div class="col-sm-12  text-center mt-2">
+						<button type="button" class="btn cnl-btn ripplelink  pull-right" data-dismiss="modal"><i class="fas fa-times"></i> Close</button>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<div class="modal fade pop-dgn" id="ModalAttendeesEnrolled" style="display: none;" aria-hidden="true">
+	<div class="modal-dialog mdl-lg">
+		<div class="modal-content">
+
+			<!-- Modal Header -->
+			<div class="modal-header blk-gdn-btn">
+				<h4 class="modal-title">Attendees Confirmation  </h4>
+				<div class="close" data-dismiss="modal">×</div>
+			</div>
+
+			<!-- Modal body -->
+			<div class="modal-body p-2">
+				<div class="row">
+					<div class="col-md-4 form-group">
+						<label>Req. No</label>
+						<p id="lblReqNo"></p>
+					</div>
+					<div class="col-md-4 form-group">
+						<label>Req. Date</label>
+						<p id="lblReqDate"></p>
+					</div>
+					<div class="col-md-4 form-group">
+						<label>Tag Request</label>
+						<p id="lblReqBy"></p>
+					</div>
+					<div class="col-md-4 form-group">
+						<label>Training Type</label>
+						<p id="lblTrainingType"></p>
+					</div>
+					<div class="col-md-8 form-group">
+						<label>Training Descritpion</label>
+						<p id="lblTrainingDescritpion"></p>
+					</div>
+					<div class="col-sm-12 form-group">
+						<hr><span class="hr-aps lgt-text font-sm">Training Schedule</span>
+					</div>
+					<div class="col-md-4 form-group">
+						<label>From Date</label>
+						<p id="lblFromDate"></p>
+					</div>
+					<div class="col-md-4 form-group">
+						<label>To Date</label>
+						<p id="lblToDate"></p>
+					</div>
+					<div class="col-md-4 form-group">
+						<label>From Time</label>
+						<p id="lblFromTime"></p>
+					</div>
+					<div class="col-md-4 form-group">
+						<label>To Time</label>
+						<p id="lblToTime"></p>
+					</div>
+					<div class="col-md-4 form-group">
+						<label>Training Mode</label>
+						<p id="lblTrainingMode"></p>
+					</div>
+					<div class="col-md-4 form-group" id="divPhysical" style="display:none">
+						<label>Location</label>
+						<p id="lblLocation"></p>
+					</div>
+					<div class="col-md-4 form-group" id="divVirtual" style="display:none">
+						<label>Link</label>
+						<p><a target='_blank' id="alink" href="#"><i class="fas fa-trash-alt"></i></a></p>
+					</div>
+					<div class="col-sm-12 form-group">
+						<hr>
+						<span class="hr-aps lgt-text font-sm">Mentor List</span>
+					</div>
+					<div class="col-sm-12 form-group ">
+						<div class="table-responsive">
+							<div id="tblMentorList">
+							</div>
+						</div>
+					</div>
+					<div class="col-sm-12 form-group">
+						<hr>
+						<span class="hr-aps lgt-text font-sm">Attachment</span>
+					</div>
+					<div class="col-sm-12 form-group ">
+						<div class="table-responsive">
+							<div id="tblAttachmentsList"></div>
+						</div>
+					</div>
+					<div class="col-md-12 form-group">
+						<label>Instructed by Hr</label>
+						<p id="lblInstructedByHr"></p>
+					</div>
+					<div class="col-sm-8 mx-auto form-group" id="divrespop" style="display: none;">
+						<strong>Reason for Rejection <sup>*</sup> </strong>
+						<hr class="mb-2 mt-1">
+						<textarea id="txtPopupReasonRejection" onchange="HideErrorMessage(this);" class="form-control maxSize[200] h-100 MandatoryPopup" placeholder="Enter "></textarea>
+						<span id="sptxtPopupReasonRejection" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+						<div class="text-right">
+							<button type="submit" onclick="PopupReject();" name="Command" value="Resubmit" class="btn mt-2 mtr-o-grn ripplelink"><i class="fas fa-paper-plane"></i> Submit</button>
+						</div>
+					</div>
+					<div class="col-sm-12  text-center mt-2">
+						<button type="submit" id="btnPopupEnrolledConfirm" onclick="PopupConfirm();" class="btn mtr-o-grn" name="Command" value="Add"><i class="fas fa-check"></i>Confirm</button>
+						<button type="submit" class="btn red-clr-bg" name="Command" value="Add" id="btnrejectpop"><i class="fas fa-ban"></i>Reject</button>
+						<button type="button" class="btn cnl-btn ripplelink  pull-right" data-dismiss="modal"><i class="fas fa-times"></i> Close</button>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<div class="modal fade pop-dgn" id="ModalAttendeesFeedback" style="display: none;" aria-hidden="true">
+	<div class="modal-dialog mdl-lg">
+		<div class="modal-content">
+
+			<!-- Modal Header -->
+			<div class="modal-header blk-gdn-btn">
+				<h4 class="modal-title"><i class="fas fa-comments"></i>Feedback </h4>
+				<div class="close" data-dismiss="modal">×</div>
+			</div>
+
+			<!-- Modal body -->
+			<div class="modal-body p-2">
+				<div class="row">
+					<div class="col-md-4 col-sm-4 form-group">
+						<label>Training Name</label>
+						<p id="lblFeedbackTrainingName"></p>
+					</div>
+					<div class="col-md-4 col-sm-4 form-group">
+						<label>From Date</label>
+						<p id="lblFeedbackFromDate"></p>
+					</div>
+					<div class="col-md-4 col-sm-4 form-group">
+						<label>To Date</label>
+						<p id="lblFeedbackToDate"></p>
+					</div>
+					<div class="col-md-4 col-sm-4 form-group">
+						<label>Mentor</label>
+						<p id="lblFeedbackMentorName"></p>
+					</div>
+					<div class="col-md-12 form-group">
+						<label>Feedback for mentors <sup>*</sup></label>
+						<textarea id="txtFeedbackForMentors" onchange="HideErrorMessage(this);" placeholder="Enter" class="form-control maxSize[200] h-100 MandatoryFeedback"></textarea>
+						<span id="sptxtFeedbackForMentors" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+					</div>
+
+
+
+				</div>
+				<div class="row">
+					<div class="col-sm-6  text-right mt-2">
+						<button id="btnFeedbackClosed" type="button" class="btn cnl-btn ripplelink  pull-right" data-dismiss="modal"><i class="fas fa-times"></i> Close</button>
+					</div>
+					<div class="col-sm-6  text-left mt-2">
+						<button id="btnSaveFeedback" onclick="SaveTraningFeedback();" type="button" class="btn mtr-o-grn"><i class="fa fa-paper-plane" aria-hidden="true"></i> Submit</button>
+					</div>
+				</div>
+
+
+
+			</div>
+		</div>
+	</div>
+</div>
+<div class="modal fade pop-dgn" id="ModalAttendeesRejected" style="display: none;" aria-hidden="true">
+	<div class="modal-dialog mdl-lg">
+		<div class="modal-content">
+
+			<!-- Modal Header -->
+			<div class="modal-header blk-gdn-btn">
+				<h4 class="modal-title">Training Request</h4>
+				<div class="close" data-dismiss="modal">×</div>
+			</div>
+
+			<!-- Modal body -->
+			<div class="modal-body p-2">
+				<div class="row">
+					<div class="col-md-4 form-group">
+						<label>Req. No</label>
+						<p id="lblRejectedReqNo"></p>
+					</div>
+
+					<div class="col-md-4 form-group">
+						<label>Req. Date</label>
+						<p id="lblRejectedReqDate"></p>
+					</div>
+
+					<div class="col-md-4 form-group">
+						<label>Tag Request</label>
+						<p id="lblRejectedTagRequest">
+							@*<a href="" data-toggle="modal" data-target="#tg">Req 101</a>, <a href="" data-toggle="modal" data-target="#tg">Req 102</a>*@
+						</p>
+					</div>
+
+					<div class="col-md-4 form-group">
+						<label>Training Type</label>
+						<p id="lblRejectedTrainingType"></p>
+					</div>
+
+					<div class="col-md-8 form-group">
+						<label>Training Descritpion</label>
+						<p id="lblRejectedTrainingDescritpion"></p>
+					</div>
+					<div class="col-sm-12 form-group">
+						<hr><span class="hr-aps lgt-text font-sm">Training Schedule</span>
+					</div>
+					<div class="col-md-4 form-group">
+						<label>From Date</label>
+						<p id="lblRejectedFromDate"></p>
+					</div>
+
+					<div class="col-md-4 form-group">
+						<label>To Date</label>
+						<p id="lblRejectedToDate"></p>
+					</div>
+
+					<div class="col-md-4 form-group">
+						<label>From Time</label>
+						<p id="lblRejectedFromTime"></p>
+					</div>
+					<div class="col-md-4 form-group">
+						<label>To Time</label>
+						<p id="lblRejectedToTime"></p>
+					</div>
+					<div class="col-md-4 form-group">
+						<label>Training Mode</label>
+						<p id="lblRejectedTrainingMode"></p>
+					</div>
+					<div class="col-md-4 form-group" id="divRejectedPhysical" style="display:none">
+						<label>Location</label>
+						<p id="lblRejectedLocation"></p>
+					</div>
+					<div class="col-md-4 form-group" id="divRejectedVirtual" style="display:none">
+						<label>Link</label>
+						<p><a target='_blank' id="aRejectedlink" href="#"><i class="fas fa-trash-alt"></i></a></p>
+					</div>
+
+
+					<div class="col-sm-12 form-group">
+						<hr>
+						<span class="hr-aps lgt-text font-sm">Mentor List</span>
+					</div>
+
+					<div class="col-sm-12 form-group ">
+						<div class="table-responsive">
+							<div id="tblRejectedMentorList"></div>
+						</div>
+					</div>
+					<div class="col-sm-12 form-group">
+						<hr>
+						<span class="hr-aps lgt-text font-sm">Attachment</span>
+					</div>
+
+					<div class="col-sm-12 form-group ">
+						<div class="table-responsive">
+							<div id="tblRejectedAttachmentsList"></div>
+						</div>
+					</div>
+					<div class="col-md-12 form-group">
+						<label>Instructed by Hr</label>
+						<p id="lblRejectedInstructedByHr"></p>
+					</div>
+
+					<div class="col-sm-12 form-group">
+						<hr>
+						<span class="hr-aps lgt-text font-sm">Rejected</span>
+					</div>
+
+					<div class="col-sm-12 form-group">
+						<label for="">Reason</label>
+						<p id="lblRejectedReason"></p>
+					</div>
+
+
+					<div class="col-sm-12  text-center mt-2">
+						<button type="submit" onclick="ReconfirmTrainingRequestPopup();" class="btn mtr-o-grn" name="Command" value="Add"  data-toggle="modal"><i class="fas fa-check"></i>Reconfirm</button>
+						<button type="button" class="btn cnl-btn ripplelink  pull-right" data-dismiss="modal"><i class="fas fa-times"></i> Close</button>
+					</div>
+
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+

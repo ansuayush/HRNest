@@ -1,0 +1,67 @@
+﻿@using System.Data
+@using Mitr.Models
+@model IList<ActiveLog>
+@{ 
+    int AddRowcount = 0;
+    double MonthlyLogTotal = 0;
+    DateTime SelectedDate = ViewBag.SelectedDate;
+    DateTime StartDate = new DateTime(SelectedDate.Year, SelectedDate.Month, 1);
+    DateTime EndDate = StartDate.AddMonths(1).AddDays(-1);
+
+}
+
+    <div class="table-responsive">
+        <table  class="table m-0">
+            <thead>
+                <tr>
+                    <th>S.No</th>
+                    <th><div class="td-150"> Project</div></th>
+                    <th><div class="td-150"> Activity Name</div></th>
+                    <th><div class="td-150"> Description</div></th>
+                    @for (DateTime date = StartDate; date <= EndDate; date = date.AddDays(1))
+                    {
+                        <th class="text-center hasdays">@Convert.ToInt32(date.ToString("dd")) <span> @date.ToString("ddd") </span></th>
+                    }
+                    <th><div class="td-150">Total</div></th>
+                </tr>
+
+            </thead>
+            <tbody>
+                @if (Model.Count > 0)
+                {
+                    foreach (Mitr.Models.ActiveLog Dailyitem in Model)
+                    {
+                        AddRowcount++;
+                        MonthlyLogTotal += Dailyitem.Total;
+
+                <tr>
+                    <td class="text-left">  <label id="spnCount_@AddRowcount" name="spnCount_@AddRowcount">@AddRowcount</label>  </td>
+                    <td>
+                        <input type="hidden" id="ddProject_@AddRowcount" required name="ddProject_@AddRowcount" value="@Dailyitem.proj_id" />
+                        @Dailyitem.proj_name
+                    </td>
+                    <td>@Dailyitem.ActivityName</td>
+                    <td>@Dailyitem.description</td>
+                   
+                    @for (DateTime date = StartDate; date <= EndDate; date = date.AddDays(1))
+                    {
+                        string COlor = "", HolidayType = "", Description = "", DaysValue = "0";
+
+                        if (Dailyitem.DaysKeyValue.ContainsKey(Convert.ToInt32(date.ToString("dd"))))
+                        {
+                            DaysValue = Dailyitem.DaysKeyValue[Convert.ToInt32(date.ToString("dd"))].ToString();
+                        }
+                        <td class="hasdays">
+
+                            @DaysValue
+                        </td>
+                    }
+                    <td> @Dailyitem.Total </td>
+                </tr>
+                    }
+
+                }
+            </tbody>
+
+        </table>
+        </div>

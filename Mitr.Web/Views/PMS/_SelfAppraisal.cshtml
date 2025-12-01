@@ -1,0 +1,806 @@
+﻿@model PMS.SelfAppraisal
+@{
+    int AppraisalKPACount = 0;
+    if (Model.KPAL != null)
+    {
+        AppraisalKPACount = Model.KPAL.Count();
+    }
+}
+@if (!Model.Status)
+{
+    <div class="row">
+        <div class="col-md-12 mb-3">
+            <div class="successmgs-dgn text-center">
+                <i class="fas fa-file-alt msgicon"></i>
+                @Model.StatusMessage
+            </div>
+        </div>
+    </div>
+}
+else
+{
+
+    using (Ajax.BeginForm("SetSelfAppraisal", "PMS",
+                new { src = clsApplicationSetting.EncryptQueryString(ViewBag.MenuID.ToString() + "*/PMS/SetSelfAppraisal") },
+              new AjaxOptions { HttpMethod = "POST", OnSuccess = "SelfAppraisalSuccess", OnBegin = "ShowLoadingDialog()" },
+        new { @id = "_SetSelfAppraisalFrom", enctype = "multipart/form-data" })
+        )
+    {
+        @Html.HiddenFor(x => Model.PMS_AID)
+        @Html.HiddenFor(x => Model.FYID)
+        @Html.HiddenFor(x => Model.EMPID)
+        @Html.HiddenFor(x => Model.Approved)
+        @Html.HiddenFor(x => Model.IsBtnVisible)
+        @Html.HiddenFor(x => Model.isdeleted)
+
+
+        <div class="page-ctn">
+            <div class="x_content table-currency mt-0">
+                <div class="table-responsive">
+
+                    <table id="tableKPA" class="table table-scroll tv-top mb-3 act-table table-striped">
+                        <thead>
+                            <tr>
+                                <th width="5">S.No</th>
+                                <th width="320">Key Performance Area</th>
+                                <th width="320">Key Performance Indicator</th>
+                                <th width="320" class="text-left">Achievements</th>
+                                <th width="30">UOM</th>
+                                <th class="text-left" width="30">Weightage</th>
+                                <th class="text-left" width="30">Target</th>
+                                <th class="text-left" width="30">Target Achieved</th>
+
+                                @if (Model.Approved > 0 && Model.Approved != 2)
+                                {
+                                    <th class="text-left" width="50">Appraiser’s Score</th>
+                                }
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (Model.KPAL.Count > 0)
+                            {
+                                int KPCount = 0;
+                                decimal TotalWeight = 0;
+                                foreach (var item in Model.KPAL)
+                                {
+                                    KPCount++;
+                                    decimal sum = 0;
+                                    decimal.TryParse(item.KPA_Weight, out sum);
+                                    TotalWeight += sum;
+                                    <tr>
+                                        <td class="text-center">@KPCount</td>
+
+
+                                        <td>@item.KPA_Area </td>
+
+
+                                        <td>@item.KPA_PIndicator </td>
+                                        <td><span id="spnAch_@KPCount"> @item.Self_Achievement </span></td>
+
+
+                                        <td>@item.UOM_Name</td>
+
+
+                                        <td class="text-right">@item.KPA_Weight</td>
+                                        <td class="text-right">@item.kPA_Target</td>
+                                        <td class="text-right">
+                                            <span id="spnTargetAch_@KPCount"> @item.KPA_TargetAchieved </span>
+
+                                        </td>
+
+                                        @if (Model.Approved > 0 && Model.Approved != 2)
+                                        {
+                                            <td class="text-right">@item.HOD_Score</td>
+                                        }
+
+                                    </tr>
+                                }
+
+
+                                <tr>
+                                    <td colspan="5" class="text-right"><strong>Total</strong></td>
+                                    <td class="text-right">
+
+                                        <strong> @TotalWeight</strong>
+
+                                    </td>
+                                    <td></td>
+
+                                </tr>
+                            }
+                            else
+                            {
+                                <tr>
+                                    <td colspan="8" class="td-nodata">
+                                        @Html.Partial("_NoRecordsFound")
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    @if (Model.Approved == 0 || Model.Approved == 2)
+                    {
+                        <table class="table table-scroll tv-top act-table mb-3  table-striped">
+                            <thead>
+                                <tr>
+                                    <th class="td-10">S.No</th>
+                                    <th width="50%">Additional Questions</th>
+                                    <th width="50%">Response <small>[1200 Characters max]</small></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @if (Model.QAL.Count > 0)
+                                {
+                                    int Qcount = 0;
+
+                                    for (int i = 0; i < Model.QAL.Count; i++)
+                                    {
+                                        Qcount++;
+
+                                        <tr>
+                                            <td class="text-center">
+                                                @Qcount
+                                                @Html.HiddenFor(model => model.QAL[i].PMS_QAID)
+                                                @Html.HiddenFor(model => model.QAL[i].Question)
+                                                @Html.HiddenFor(model => model.QAL[i].FinalComment)
+                                                @Html.HiddenFor(model => model.QAL[i].QuestionFor)
+                                            </td>
+                                            <td>
+                                                @Model.QAL[i].Question
+                                            </td>
+                                            <td>
+                                                @Html.TextAreaFor(model => model.QAL[i].Answer, new { @class = "form-control h-100 maxSize[1200]", @maxlength = "1200", @placeholder = "Enter Comment" })
+                                                @Html.ValidationMessageFor(model => model.QAL[i].Answer, "", new { @class = "text-danger" })
+                                                <div class="countshow"></div>
+                                            </td>
+                                        </tr>
+
+                                    }
+
+                                }
+                            </tbody>
+                        </table>
+                    }
+                    else
+                    {
+
+                        //Model.QALEmp = Model.QAL.Where(n => n.QuestionFor.Contains("Confirmed") || n.QuestionFor == "").ToList();
+                        //Model.QAL = Model.QAL.Where(n => n.QuestionFor.Contains("Appraiser")).ToList();
+
+                        Model.QALEmp = Model.QAL.Where(n => n.QuestionFor.Contains("Confirmed") || n.QuestionFor == "" || n.QuestionFor == "Confirmed,Appraiser" || n.QuestionFor == "Appraiser,Confirmed").ToList();
+                        Model.QAL = Model.QAL.Where(n => n.QuestionFor == "Appraiser,Commenter" || n.QuestionFor == "Appraiser").ToList();
+                        <table class="table table-scroll tv-top act-table mb-3  table-striped">
+                            <thead>
+                                <tr>
+                                    <th width="10">S.No</th>
+                                    <th width="500">Question</th>
+                                    <th width="500">Employee's Response</th>
+                                    <th width="500">Appraiser's Response</th>
+
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @if (Model.QALEmp.Count > 0)
+                                {
+                                    int Qcount = 0;
+
+                                    for (int i = 0; i < Model.QALEmp.Count; i++)
+                                    {
+                                        Qcount++;
+
+                                        <tr>
+                                            <td class="text-center">
+                                                @Qcount
+                                                @Html.HiddenFor(model => model.QALEmp[i].PMS_QAID)
+                                                @Html.HiddenFor(model => model.QALEmp[i].Question)
+                                                @Html.HiddenFor(model => model.QALEmp[i].QuestionFor)
+                                                @Html.HiddenFor(model => model.QALEmp[i].FinalComment)
+                                                @Html.HiddenFor(model => model.QALEmp[i].Answer)
+                                            </td>
+                                            <td>
+                                                @Model.QALEmp[i].Question
+                                            </td>
+                                            <td>
+                                                @Model.QALEmp[i].Answer
+                                            </td>
+                                            <td>
+                                                @if (Model.QALEmp[i].QuestionFor.ToLower().Contains("appraiser"))
+                                                {
+                                                    @Model.QALEmp[i].FinalComment
+                                                }
+                                            </td>
+                                        </tr>
+                                    }
+                                }
+                            </tbody>
+                        </table>
+
+
+
+                    }
+
+                </div>
+                @if (Model.Approved == 2)
+                {
+                    <tr>
+                        <th>
+                            <strong> Reason for Resubmission</strong>
+                        </th>
+                        <td>
+                            @Html.TextAreaFor(model => model.Reason, new { @class = "form-control txtfix", @readonly = "readonly" })
+                        </td>
+                    </tr>
+                }
+
+                <div class="col-sm-8 mx-auto">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <h3 class="subheading">Upload Attachment, if any</h3>
+                        </div>
+
+                        <div class="col-md-12">
+                            <table id="tableAttachment" class="table table-scroll mb-2 act-table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th class="td-10">S.No</th>
+                                        <th style="display:none" class="w-200">Attachment Type</th>
+                                        <th class="w-200">Upload</th>
+                                        <th>Description of Document</th>
+                                        <th class="td-33 text-center"></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @if (Model.AttachmentsL.Count > 0)
+                                    {
+                                        int AttachCount = 0;
+                                        for (int i = 0; i < Model.AttachmentsL.Count; i++)
+                                        {
+                                            AttachCount++;
+                                            <tr>
+                                                <td class="text-center hfNewId">
+                                                    <label id="span_@AttachCount" name="span_@AttachCount">@AttachCount </label>
+                                                    @Html.HiddenFor(model => model.AttachmentsL[i].AttachmentID)
+                                                </td>
+                                                <td style="display:none">
+                                                    @Html.TextBoxFor(model => model.AttachmentsL[i].FileName, new { @class = "form-control txtfix", @placeholder = "Enter Attachment Type", @readonly = "readonly" })
+                                                    @Html.ValidationMessageFor(model => model.AttachmentsL[i].FileName, "", new { @class = "text-danger" })
+                                                </td>
+                                                <td>
+                                                    <div id="divAttachmentShow" style="@(Model.AttachmentsL[i].AttachmentID > 0 ? "" : "display:none")">
+                                                        <a class="achor-link" target="_blank" href="~/Attachments/@Model.AttachmentsL[i].URL">@Model.AttachmentsL[i].FileName</a>
+                                                        @*@if (Model.IsBtnVisible)
+                                                            {
+                                                                <a style="color:red;cursor:pointer;" onclick="DeleteAttachFile(@Model.AttachmentsL[i].AttachmentID)"><i class="fa fa-times" aria-hidden="true"></i></a>
+                                                            }*@
+                                                    </div>
+                                                    <div id="divAttachmentUpload" style="@(Model.AttachmentsL[i].AttachmentID > 0 ? "display:none" : "")">
+                                                        @Html.TextBoxFor(model => model.AttachmentsL[i].UploadFile, new { @class = "form-control", @type = "file" })
+                                                        @Html.ValidationMessageFor(model => model.AttachmentsL[i].UploadFile, "", new { @class = "text-danger" })
+                                                    </div>
+                                                </td>
+                                                <td>
+                                                    @Html.TextAreaFor(model => model.AttachmentsL[i].Descrip, new { @class = "form-control", @placeholder = "Enter Description" })
+                                                    @Html.ValidationMessageFor(model => model.AttachmentsL[i].Descrip, "", new { @class = "text-danger" })
+                                                </td>
+                                                <td class="text-center">
+
+                                                    @if (Model.IsBtnVisible && (Model.Approved == 0 || Model.Approved == 2))
+                                                    {
+                                                        <a onclick="DeleteNewAttachmentRowTest(this)" data-original-title="Remove" aria-describedby="tooltip594398" data-toggle="tooltip"><i class="fas fa-window-close m-0 red-clr"></i></a>
+                                                    }
+                                                    else
+                                                    {
+                                                        <a class="disabled"><i class="fas fa-window-close" aria-hidden="true"></i></a>
+                                                    }
+
+                                                </td>
+
+
+
+                                            </tr>
+                                        }
+                                    }
+                                    else
+                                    {
+                                        <tr>
+                                            <td colspan="5" class="td-nodata">
+                                                @Html.Partial("_NoRecordsFound")
+                                            </td>
+                                        </tr>
+                                    }
+
+                                </tbody>
+                            </table>
+
+
+                        </div>
+                        @*(Model.IsBtnVisible && Model.Approved == 0) code comment by shailendra*@
+                        @if (Model.IsBtnVisible && (Model.Approved == 0 || Model.Approved == 2))
+                        {
+                            <div class="col-sm-12 text-right">
+                                <a id="AAttachmentAdd" class="btn mtr-g-grn bbtn mtr-g-grn btn-l ripplelink "><i class="fas fa-plus"></i>Add Row</a>
+                            </div>
+                        }
+
+                        <div class="col-md-12">
+                            <h3 class="subheading">Training Desired, if any</h3>
+                        </div>
+
+
+
+                        <div class="col-md-12">
+                            <table id="tblTraining" class="table table-scroll mb-2 act-table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th class="td-10">S.No</th>
+                                        <th class="w-200">Training Name</th>
+                                        <th>Description</th>
+                                        <th class="td-33"></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @if (Model.TrainingL.Count > 0)
+                                    {
+
+
+                                        if (Model.TrainingL.Count == 1)
+                                        {
+                                            int TCount = 0;
+                                            for (int i = 0; i < Model.TrainingL.Count; i++)
+                                            {
+                                                TCount++;
+
+                                                <tr>
+                                                    <td class="text-center">
+
+                                                        <label id="span_@TCount" name="span_@TCount">@TCount </label>
+
+                                                        @Html.HiddenFor(model => model.TrainingL[i].PMS_ADID)
+                                                        @Html.HiddenFor(model => model.TrainingL[i].TrainingType, new { @class = "hdnTrainingType" })
+
+                                                    </td>
+                                                    <td>
+                                                        @Html.DropDownListFor(x => Model.TrainingL[i].TrainingTypeID, new SelectList(Model.TrainingType, "ID", "Type", Model.TrainingL[i].TrainingTypeID), "Select",
+                                                        new { @class = "form-control  applyselect", onchange = "FillTrainingType(this)" })
+                                                        @Html.ValidationMessageFor(model => model.TrainingL[i].TrainingTypeID, "", new { @class = "text-danger" })
+                                                    </td>
+
+                                                    <td>
+
+                                                        @Html.TextAreaFor(model => model.TrainingL[i].TrainingRemarks, new { @class = "form-control ", @placeholder = "Enter Description" })
+                                                        @Html.ValidationMessageFor(model => model.TrainingL[i].TrainingRemarks, "", new { @class = "text-danger" })
+
+
+                                                    </td>
+                                                    <td class="text-center">
+                                                        @if (Model.TrainingL[i].Isdeleted == 0)
+                                                        {
+                                                            <a class="disabled"><i class="fas fa-window-close" aria-hidden="true"></i></a>
+                                                        }
+                                                        else
+                                                        {
+                                                            <span><i class='fa fa-times red-clr'></i> deleted</span>
+                                                        }
+
+
+                                                    </td>
+                                                </tr>
+
+                                            }
+                                        }
+                                        else
+                                        {
+                                            int TCount = 0;
+                                            for (int i = 0; i < Model.TrainingL.Count; i++)
+                                            {
+                                                if (Model.TrainingL[i].PMS_ADID > 0)
+                                                {
+                                                    TCount++;
+
+                                                    <tr>
+                                                        <td class="text-center">
+
+                                                            <label id="span_@TCount" name="span_@TCount">@TCount </label>
+
+                                                            @Html.HiddenFor(model => model.TrainingL[i].PMS_ADID)
+                                                            @Html.HiddenFor(model => model.TrainingL[i].TrainingType, new { @class = "hdnTrainingType" })
+
+                                                        </td>
+                                                        <td>
+                                                            @Html.DropDownListFor(x => Model.TrainingL[i].TrainingTypeID, new SelectList(Model.TrainingType, "ID", "Type", Model.TrainingL[i].TrainingTypeID), "Select",
+                                                            new { @class = "form-control  applyselect", onchange = "FillTrainingType(this)" })
+                                                            @Html.ValidationMessageFor(model => model.TrainingL[i].TrainingTypeID, "", new { @class = "text-danger" })
+                                                        </td>
+
+                                                        <td>
+
+                                                            @Html.TextAreaFor(model => model.TrainingL[i].TrainingRemarks, new { @class = "form-control ", @placeholder = "Enter Description" })
+                                                            @Html.ValidationMessageFor(model => model.TrainingL[i].TrainingRemarks, "", new { @class = "text-danger" })
+
+
+                                                        </td>
+                                                        <td class="text-center">
+                                                            @if (Model.TrainingL[i].Isdeleted == 0)
+                                                            {
+                                                                <a class="disabled"><i class="fas fa-window-close" aria-hidden="true"></i></a>
+                                                            }
+                                                            else
+                                                            {
+                                                                <span><i class='fa fa-times red-clr'></i> deleted</span>
+                                                            }
+
+
+                                                        </td>
+                                                    </tr>
+                                                }
+
+
+                                            }
+                                        }
+
+                                    }
+                                    else
+                                    {
+                                        <tr>
+                                            <td colspan="4" class="td-nodata">
+                                                @Html.Partial("_NoRecordsFound")
+                                            </td>
+                                        </tr>
+                                    }
+
+                                </tbody>
+                            </table>
+                        </div>
+                        @*(Model.TrainingL.Count < 5 && Model.IsBtnVisible && Model.Approved == 0) code comment by shailendra*@
+                        @if (Model.TrainingL.Count < 5 && Model.IsBtnVisible && (Model.Approved == 0 || Model.Approved == 2))
+                        {
+                            <div class="col-sm-12 text-right">
+                                <a id="ATrainingAdd" class="btn mtr-g-grn bbtn mtr-g-grn btn-l ripplelink"><i class="fas fa-plus"></i>Add Row</a>
+                            </div>
+                        }
+                        @if (Model.CommentsL.Count > 0)
+                        {
+                            for (int i = 0; i < Model.CommentsL.Count; i++)
+                            {
+                                if (Model.CommentsL[i].Doctype.ToLower() == "self" || Model.CommentsL[i].Doctype.ToLower() == "self comment 1")
+                                {
+                                    @Html.HiddenFor(model => model.CommentsL[i].PMS_CommentID)
+                                    @Html.HiddenFor(model => model.CommentsL[i].Doctype)
+                                    @Html.HiddenFor(model => model.CommentsL[i].TableName)
+                                    <div class="col-md-12">
+                                        <h3 class="subheading">
+                                            Anything else  you want to share with your Appraiser [1200 Characters max]
+                                        </h3>
+                                    </div>
+                                    <div class="col-sm-12 form-group">
+
+                                        @Html.TextAreaFor(model => model.CommentsL[i].Comment, new { @class = "form-control maxSize[1200]", @maxlength = "1200", @placeholder = "Type Here " })
+                                        @Html.ValidationMessageFor(model => model.CommentsL[i].Comment, "", new { @class = "text-danger" })
+                                        <div class="countshow"></div>
+                                    </div>
+                                }
+
+                            }
+
+                        }
+                        @if (Model.Approved > 0 && Model.Approved != 2)
+                        {
+
+                            <div class="col-md-12 form-group">
+                                <hr>
+                                <span class="hr-aps"><i class="fas fa-hand-holding-usd"></i> Appraiser </span>
+                            </div>
+                            <div class="col-md-12">
+                                <h3 class="subheading">Organisational Question Response</h3>
+                            </div>
+                            <div class="col-md-12">
+                                <table class="table table-scroll tv-top act-table mb-3  table-striped">
+                                    <thead>
+                                        <tr>
+                                            <th width="20">S.No</th>
+                                            <th width="400">Question</th>
+                                            <th width="400">Response</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @if (Model.QAL.Count > 0)
+                                        {
+                                            int Qcount = 0;
+
+                                            for (int i = 0; i < Model.QAL.Count; i++)
+                                            {
+                                                Qcount++;
+
+                                                <tr>
+                                                    <td class="text-center">
+                                                        @Qcount
+                                                        @Html.HiddenFor(model => model.QAL[i].PMS_QAID)
+                                                        @Html.HiddenFor(model => model.QAL[i].Question)
+                                                        @Html.HiddenFor(model => model.QAL[i].QuestionFor)
+                                                        @Html.HiddenFor(model => model.QAL[i].FinalComment)
+                                                        @Html.HiddenFor(model => model.QAL[i].Answer)
+                                                    </td>
+                                                    <td>
+                                                        @Model.QAL[i].Question
+                                                    </td>
+
+                                                    <td>
+                                                        @Model.QAL[i].FinalComment
+
+                                                    </td>
+                                                </tr>
+                                            }
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        }
+
+                        @if (Model.CommentsL.Count > 0)
+                        {
+                            for (int i = 0; i < Model.CommentsL.Count; i++)
+                            {
+                                <div class="col-md-12">
+                                    @if (Model.CommentsL[i].Doctype.ToLower() == "self")
+                                    {
+                                        @*<h3 class="subheading">
+                                            Anything else  you want to share with your Appraiser
+                                            </h3>*@
+                                    }
+                                    else if (Model.CommentsL[i].Doctype.ToLower() == "team")
+                                    {
+                                        <h3 class="subheading">
+                                            Assessment
+                                        </h3>
+                                    }
+                                    else if (Model.CommentsL[i].Doctype.ToLower() == "group")
+                                    {
+                                        <h3 class="subheading">
+                                            Confirmer's Overall Comment
+                                        </h3>
+                                    }
+                                    else if (Model.CommentsL[i].Doctype.ToLower() == "self comment 2")
+                                    {
+                                        <div class=" form-group mb-4">
+                                            <hr>
+                                            <span class="hr-aps"><i class="fas fa-user-tie"></i> Employee </span>
+                                        </div>
+                                        <h3 class="subheading">Final Response [1200 Characters max]<sup class="red-clr">*</sup></h3>
+                                    }
+
+                                </div>
+                                if (Model.CommentsL[i].Doctype.ToLower() != "self" && Model.CommentsL[i].Doctype.ToLower() != "self comment 1")
+                                {
+                                    @Html.HiddenFor(model => model.CommentsL[i].PMS_CommentID)
+                                    @Html.HiddenFor(model => model.CommentsL[i].Doctype)
+                                    @Html.HiddenFor(model => model.CommentsL[i].TableName)
+                                    <div class="col-sm-12 form-group">
+                                        @if (Model.CommentsL[i].Doctype.ToLower() == "team" || Model.CommentsL[i].Doctype.ToLower() == "group")
+                                        {
+                                            @Html.HiddenFor(model => model.CommentsL[i].Comment)
+                                            @Model.CommentsL[i].Comment
+                                        }
+                                        else
+                                        {
+                                            @Html.TextAreaFor(model => model.CommentsL[i].Comment, new { @class = "form-control maxSize[1200]", @maxlength = "1200", @placeholder = "Type Here " })
+                                            @Html.ValidationMessageFor(model => model.CommentsL[i].Comment, "", new { @class = "text-danger" })
+                                            <div class="countshow"></div>
+                                        }
+                                    </div>
+                                }
+
+                            }
+
+                        }
+
+                        <div class="col-sm-6 form-group"> </div>
+                        <div class="col-md-12">
+                            <div class="col-sm-12 text-center">
+                                @if (Model.IsBtnVisible)
+                                {
+                                    if (Model.Approved == 1 || Model.Approved == 2)
+                                    {
+
+                                        <button type="submit" name="Command" value="Approved" class="btn mtr-o-grn btn-l ripplelink Btnsubmit "><i class="fa fa-paper-plane" aria-hidden="true"></i>Submit</button>
+                                        <button type="submit" name="Command" value="Save" class="btn mtr-o-grn btn-l ripplelink "> <i class="fas fa-save"></i>Save</button>
+                                    }
+                                    else
+                                    {
+                                        <button type="submit" name="Command" value="Save" class="btn mtr-o-grn btn-l ripplelink "> <i class="fas fa-save"></i>Save</button>
+                                        <button type="submit" name="Command" value="Submit" class="btn  mtr-o-grn btn-l ripplelink Btnsubmit "><i class="fa fa-paper-plane" aria-hidden="true"></i>Submit</button>
+                                    }
+                                }
+                                <button type="button" class="btn cnl-btn btn-l ripplelink"><i class="fas fa-times"></i>Close</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="achievement" class="modal fade" role="dialog">
+            <div class="modal-dialog modal-xl">
+                <!-- Modal content-->
+                <div class="modal-content">
+                    <div class="modal-body vert-tab p-0">
+                        <div class="row">
+                            <div class="col-md-3">
+                                <ul class="nav nav-tabs vrt-tab-leftside m-0 p-0 " id="myTab" role="tablist">
+                                    @if (Model.KPAL.Count > 0)
+                                    {
+                                        int AKPCount = 0;
+                                        foreach (var item in Model.KPAL)
+                                        {
+                                            AKPCount++;
+                                            <li class="nav-item">
+                                                <a class="nav-link @(AKPCount==1?"active":"")" id="home-tab" data-toggle="tab" href="#tab_@(AKPCount)" role="tab" aria-controls="home" aria-selected="true">
+                                                    <h2>
+                                                        <div class="blockellipsis">@item.KPA_Area </div>
+                                                        <!--<small> @item.KPA_PIndicator</small>-->
+                                                    </h2>
+                                                </a>
+                                            </li>
+                                        }
+                                    }
+                                </ul>
+                            </div>
+                            <div class="col-md-9">
+                                <button type="button" class="clse-rgt" data-dismiss="modal">×</button>
+                                <div class="vrt-tab-rightside">
+                                    <div class="tab-content" id="myTabContent">
+
+                                        @if (Model.KPAL.Count > 0)
+                                        {
+
+                                            int MKPACount = 0;
+                                            for (int i = 0; i < Model.KPAL.Count; i++)
+                                            {
+                                                MKPACount++;
+                                                @Html.HiddenFor(model => model.KPAL[i].KPAID)
+                                                @Html.HiddenFor(model => model.KPAL[i].UOMID)
+                                                @Html.HiddenFor(model => model.KPAL[i].kPA_Target)
+                                                @Html.HiddenFor(model => model.KPAL[i].KPA_Area)
+                                                @Html.HiddenFor(model => model.KPAL[i].KPA_AutoRating)
+                                                @Html.HiddenFor(model => model.KPAL[i].KPA_IncType)
+                                                @Html.HiddenFor(model => model.KPAL[i].GoalSheetID)
+                                                @Html.HiddenFor(model => model.KPAL[i].GoalSheet_DetID)
+                                                @Html.HiddenFor(model => model.KPAL[i].KPA_PIndicator)
+                                                @Html.HiddenFor(model => model.KPAL[i].KPA_Weight)
+                                                @Html.HiddenFor(model => model.KPAL[i].PMS_ADID)
+                                                @Html.HiddenFor(model => model.KPAL[i].PMS_AID)
+                                                @Html.HiddenFor(model => model.KPAL[i].KPA_IsMonitoring)
+                                                @Html.HiddenFor(model => model.KPAL[i].KPA_IsMandatory)
+                                                @Html.HiddenFor(model => model.KPAL[i].UOM_Name)
+
+                                                <div class="tab-pane fade show @(MKPACount==1?"active":"")" id="tab_@MKPACount" role="tabpanel" aria-labelledby="home-tab">
+                                                    <div class="row">
+                                                        <div class="col-sm-12 form-group">
+                                                            <label>Key Performance Area</label>
+                                                            <p>@Model.KPAL[i].KPA_Area </p>
+                                                        </div>
+                                                        <div class="col-sm-12 form-group">
+                                                            <label>Key Performance Indicator</label>
+                                                            <p>@Model.KPAL[i].KPA_PIndicator </p>
+                                                        </div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col-sm-3 form-group">
+                                                            <label>UOM</label>
+                                                            <p>@Model.KPAL[i].UOM_Name </p>
+                                                        </div>
+                                                        <div class="col-sm-3 form-group">
+                                                            <label>Target </label>
+                                                            <p>@Model.KPAL[i].kPA_Target</p>
+                                                        </div>
+                                                        <div class="col-sm-3 form-group">
+                                                            <label>Weightage</label>
+                                                            <p>@Model.KPAL[i].KPA_Weight</p>
+                                                        </div>
+                                                        @if (Model.KPAL[i].UOM_Name.ToLower() == "Number".ToLower() || Model.KPAL[i].UOM_Name.ToLower() == "Percentage".ToLower())
+                                                        {
+                                                            <div class="col-sm-3 form-group">
+                                                                <label>Target Achieved</label>
+                                                                <input type="hidden" name="hdnTargetAchieved" value="@MKPACount" />
+                                                                @Html.TextBoxFor(model => model.KPAL[i].KPA_TargetAchieved, new { @class = "form-control txtAchievement", @maxlength = "10", @type = "Number", onkeypress = "return blockSpecialChar(event)" })
+                                                                @Html.ValidationMessageFor(model => model.KPAL[i].KPA_TargetAchieved, "", new { @class = "text-danger" })
+
+                                                            </div>
+                                                        }
+                                                    </div>
+
+
+                                                    @*Rakesh*@
+
+                                                    <div class="row">
+                                                        <div class="col-sm-6 form-group">
+                                                            <label>Achievement [1200 Characters max] <sup>*</sup></label>
+                                                            <input type="hidden" name="hdnC" value="@MKPACount" />
+                                                            @Html.TextAreaFor(model => model.KPAL[i].Self_Achievement, new { @class = "form-control h-100 txtAchievement maxSize[1200]", @maxlength = "1200", onkeypress = "return blockSpecialChar(event)" })
+                                                            @Html.ValidationMessageFor(model => model.KPAL[i].Self_Achievement, "", new { @class = "text-danger" })
+                                                            <div class="countshow"></div>
+                                                        </div>
+                                                        <div class="col-sm-6 form-group">
+                                                            <label>Remark, if any [1200 Characters max]</label>
+                                                            @Html.TextAreaFor(model => model.KPAL[i].Self_Comment, new { @class = "form-control h-100 maxSize[1200]", @maxlength = "1200", onkeypress = "return blockSpecialChar(event)" })
+                                                            @Html.ValidationMessageFor(model => model.KPAL[i].Self_Comment, "", new { @class = "text-danger" })
+                                                            <div class="countshow"></div>
+
+                                                        </div>
+                                                    </div>
+
+                                                    @if (Model.Approved > 0 && Model.Approved != 2)
+                                                    {
+                                                        <div class="col-md-12 form-group">
+                                                            <hr>
+                                                            <span class="hr-aps"><i class="fas fa-hand-holding-usd"></i> Appraiser </span>
+                                                        </div>
+
+                                                        <div class="col-sm-10 form-group">
+                                                            <label>	Appraiser's Assessment</label>
+                                                            <p>@Model.KPAL[i].HOD_Comment</p>
+
+                                                        </div>
+                                                        <div class="col-sm-2 form-group">
+                                                            <label>	Appraiser’s Score</label>
+                                                            <div class="input-group">
+
+
+                                                                @Html.TextBoxFor(model => model.KPAL[i].HOD_Score, new { @class = "form-control", @readonly = "readonly" })
+                                                                @Html.ValidationMessageFor(model => model.KPAL[i].HOD_Score, "", new { @class = "text-danger" })
+                                                                <div class="input-group-prepend">
+                                                                    <span class="input-group-text" id="basic-addon1">100</span>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+
+                                                    }
+                                                    <div class="col-sm-12 text-right">
+                                                        <a class="btn  cnl-btn ripplelink" data-dismiss="modal"><i class="fas fa-times"></i>Close</a>
+                                                        @if (MKPACount > 1)
+                                                        {
+                                                            <a class="btn blk-gdn-btn  btnPrevious"><i class="fas fa-angle-double-left"></i>Previous</a>
+                                                        }
+                                                        @if (MKPACount != Model.KPAL.Count)
+                                                        {
+                                                            <a class="btn blk-gdn-btn  btnNext">Next <i class="fas fa-angle-double-right m-0"></i></a>
+                                                        }
+                                                    </div>
+
+                                                </div>
+
+                                            }
+
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+}
+<script>
+	var count = Number(@AppraisalKPACount)
+
+
+	if (count == 0) {$("#btnFillAppraisal").hide();}
+	else {$("#btnFillAppraisal").show();}
+
+
+	function DeleteAttachFile() {
+		   ConfirmMsgBox('Do you really Want to Change Attachemnt?', '', function () {
+			$("#divAttachmentUpload").show();
+			$("#divAttachmentShow").hide();
+			$("#AttachmentID").val('0');
+		});
+	}
+
+
+
+
+</script>

@@ -1,0 +1,47 @@
+﻿@model IList<Mitr.Models.BudgetMaster.TrainingWorkshopSeminarTypes>
+@{
+    ViewBag.Title = "TrainingWorkshopSeminar";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="inner-main mb-5">
+
+    @Html.Partial("ListHeader_Partial", "Add Training and Workshop Seminar Types")
+    <input type="hidden" id="hdnAddUrl" name="hdnAddUrl" value="@Url.Action("AddTrainingWorkshop",new { src = clsApplicationSetting.EncryptFriendly(ViewBag.MenuID+"*"+"/Budget/AddTrainingWorkshop*0") })" />
+
+
+
+    <div class="table-responsive">
+        <div class="table-responsive">
+            <table class="table mt-0">
+                <thead>
+                    <tr>
+                        <th class="w-33">S.No </th>
+                        <th>Module</th>
+                        <th>Training Name</th>
+                        <th class="tw-100">Action</th>
+
+                    </tr>
+                </thead>
+                @{ int Count = 0;}
+                @foreach (Mitr.Models.BudgetMaster.TrainingWorkshopSeminarTypes item in Model)
+                {
+                    Count++;
+                    <tbody>
+
+                        <tr>
+                            <td>@Count</td>
+                            <td>@item.Module</td>
+                            <td>@item.TrainingName</td>
+
+
+                            <td><a href="@Url.Action("AddTrainingWorkshop",new { src = clsApplicationSetting.EncryptFriendly(ViewBag.MenuID+"*"+"/Budget/AddTrainingWorkshop*"+@item.Id+"") })"><i class="fas fa-eye"></i> View</a></td>
+                        </tr>
+
+                    </tbody>
+                }
+                </table>
+        </div>
+    </div>
+
+</div>

@@ -1,0 +1,83 @@
+﻿@model Mitr.Models.MasterAll.Add
+@using (Ajax.BeginForm("SaveMasterAll", "SalaryStructure",
+		new { src = clsApplicationSetting.EncryptQueryString(ViewBag.MenuID + "*" + "/SalaryStructure/SaveMasterAll*" + ViewBag.ID) },
+		 new AjaxOptions { HttpMethod = "POST", OnSuccess = "OnSuccess", OnBegin = "ShowLoadingDialog()" },
+			new { @id = "SaveMasterAllForm" })
+	)
+{
+	@Html.HiddenFor(x => Model.ID)
+	@Html.HiddenFor(x => Model.field_name2)
+	@Html.HiddenFor(x => Model.table_name)
+	@Html.HiddenFor(x => Model.srno)
+	<div class="row">
+		<div class="col-lg-12 col-md-6 col-sm-6 form-group">
+			<label>Name<sup>*</sup></label>
+			@Html.TextAreaFor(model => model.field_name, new { @class = "form-control", @placeholder = "Enter" })
+			@Html.ValidationMessageFor(model => model.field_name, "", new { @class = "text-danger" })
+		</div>
+		<div class="col-lg-6 col-md-6 col-sm-6 form-group">
+			<label>Component Group<sup>*</sup></label>
+			@Html.DropDownListFor(model => model.group_id, new SelectList(ViewBag.List, "ID", "Name", Model.field_value), "Select", new { @class = "form-control applyselect" })
+			@Html.ValidationMessageFor(model => model.group_id, "", new { @class = "text-danger" })
+
+		</div>
+		<div class="col-lg-6 col-md-6 col-sm-6 form-group">
+			<label>Type<sup>*</sup></label>
+			<select class="form-control applyselect" id="field_value" name="field_value">
+				<option @(Model.field_value != null ? Model.field_value == "" ? "Selected" : "" : "") value="Select">Select</option>
+				<option @(Model.field_value != null ? Model.field_value == "Earning" ? "Selected" : "" : "") value="Earning">Earning</option>
+				<option @(Model.field_value != null ? Model.field_value == "Benefit" ? "Selected" : "" : "") value="Benefit">Benefit</option>
+				<option @(Model.field_value != null ? Model.field_value == "Deduction" ? "Selected" : "" : "") value="Deduction">Deduction</option>
+				<option @(Model.field_value != null ? Model.field_value == "Other Earning" ? "Selected" : "" : "") value="Other Earning">Other Earning</option>
+			</select>
+		</div>
+		<div class="col-lg-6 col-md-6 col-sm-6 form-group">
+			<label>Taxable/Tax Free<sup>*</sup></label>
+			<select class="form-control applyselect" id="field_name1" name="field_name1">
+				<option @(Model.field_name1 != null ? Model.field_name1 == "Tax Free" ? "Selected" : "" : "") value="Tax Free">Tax Free</option>
+				<option @(Model.field_name1 != null ? Model.field_name1 == "Taxable" ? "Selected" : "" : "") value="Taxable">Taxable</option>
+			</select>
+		</div>
+		<div class="col-lg-6 col-md-6 col-sm-6 form-group">
+			<label>Fixed Benefit</label>
+			<input type="checkbox" class="newwidth ChkFixed" id="ChkFixed" name="ChkFixed" @(Model.field_name2 == "" || Model.field_name2 == null ? "" : "checked") />
+			<label for="ChkFixed"></label>
+		</div>
+		<div class="col-lg-6 col-md-6 col-sm-6 form-group">
+			<label>Reimbursement</label>
+			<input type="checkbox" class="newwidth ChkReimb" id="ChkReimb" name="ChkReimb" @(Model.srno == 0 || Model.srno == null ? "" : "checked") />
+			<label for="ChkReimb"></label>
+		</div>
+	</div>
+	<div class="text-center">
+		@if (Model.ID > 0)
+		{
+			<button type="submit" class="btn mtr-g-grn btn-l ripplelink pull-right" name="Command" value="Add"><i class="fa fa-paper-plane" aria-hidden="true"></i> Update</button>
+		}
+		else
+		{
+			<button type="submit" class="btn mtr-o-grn btn-l ripplelink pull-right" name="Command" value="Add"><i class="fa fa-paper-plane" aria-hidden="true"></i> Submit</button>
+		}
+		<button type="button" class="btn cnl-btn ripplelink" data-dismiss="modal"><i class="fas fa-times"></i>Close</button>
+	</div>
+}
+<script>
+	$(document).ready(function () {
+		$(".ChkFixed").change(function () {
+			if ($(this).is(":checked")) {
+				$("#field_name2").val("FIXED");
+			}
+			else {
+				$("#field_name2").val("");
+			}
+		});
+		$(".ChkReimb").change(function () {
+			if ($(this).is(":checked")) {
+				$("#srno").val(1);
+			}
+			else {
+				$("#srno").val(0);
+			}
+		});
+	});
+</script>

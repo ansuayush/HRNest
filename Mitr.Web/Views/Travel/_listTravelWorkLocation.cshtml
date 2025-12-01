@@ -1,0 +1,85 @@
+﻿@model Mitr.Models.TravelDesk
+<div class="form-group ">
+	<hr>
+	<span class="hr-aps"><i class="fas fa-map-marker-alt"></i>@Model.LocationCount Travel Desk Location</span>
+
+</div>
+<ul class="list-unstyled mt-4 lctlistdtl scroll tdl-540">
+	@for (int i = 0; i < Model.travellocations.Count; i++)
+	{
+
+		<li class="lctlist">
+			<div class="plans">
+
+				<label class="plan boxeffect fulleffect basic-plan " for="l_@Model.travellocations[i].LocationId">
+					@Html.HiddenFor(model => model.travellocations[i].Id)
+					@Html.HiddenFor(model => model.travellocations[i].LocationId)
+					@Html.HiddenFor(model => model.travellocations[i].LoctionName)
+					@Html.HiddenFor(model => model.travellocations[i].EmployeeId)
+					<input type="hidden" value="@Model.travellocations[i].Checkbox" name="@Html.NameFor(x => Model.travellocations[i].Checkbox)" id="[@i].isSelect" class="isSelect " />
+					@if (Model.travellocations[i].EmployeeId > 0)
+					{
+						<input type="checkbox" checked class="newwidth selectedId sltchk" id="l_@Model.travellocations[i].LocationId" name="l_@i">
+					}
+					else
+					{
+						<input type="checkbox" class="newwidth selectedId sltchk" id="l_@Model.travellocations[i].LocationId" name="l_@i">
+					}
+
+					<div class="plan-content d-flex align-items-center">
+						<i class="fas fa-map-marker-alt"></i>
+						<div class="plan-details">@Model.travellocations[i].LoctionName	</div>
+					</div>
+				</label>
+			</div>
+		</li>
+	}
+
+
+</ul>
+<div class="ftrnte">
+	<ul class="list-unstyled inline-li">
+		<li>
+			@Html.HiddenFor(modal => modal.AirTicketBooking)
+			@if (Model.AirTicketCount>0)
+			{
+				<input type="checkbox" id="tbp" value="0" disabled checked><label for="tbp" class="selectall"> Air Ticket Booking Permission</label>
+			}
+			else
+			{
+				<input type="checkbox" id="tbp" value="1"><label for="tbp" class="selectall"> Air Ticket Booking Permission</label>
+			}
+
+
+
+		</li>
+	</ul>
+</div>
+
+<script type="text/javascript">
+	$(document).ready(function () {
+		$('.selectedId').change(function () {
+			var ischecked = 0;
+			if (this.checked) {
+				ischecked = 1;
+			}
+			$(this).closest("li").find(".isSelect").val(ischecked);
+
+		});
+		$("#tbp").change(function () {
+			if (this.checked) {
+				var data = $(this).val();
+				$("#AirTicketBooking").val(parseInt(data));
+			}
+			else {
+				$("#AirTicketBooking").val(parseInt(0));
+
+			}
+		});
+
+	});
+
+
+</script>
+
+

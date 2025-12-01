@@ -1,0 +1,72 @@
+﻿
+
+@model IList<Mitr.Models.Helpdesk.TicketSetting_Assignment>
+
+<div class="x_content table-currency">
+    <div class="table-responsive">
+
+        <table id="Table1" class="table table-striped table-bordered dt-responsive nowrap tbltick new_width" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
+            <thead>
+                <tr>
+                    <th>S.no.</th>
+                    <th>Location</th>
+                    <th>Primary Assignee</th>
+                    <th>Supervisor Name</th>
+                    <th>Escalation to</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                @{ int count = 0;}
+                @foreach (Mitr.Models.Helpdesk.TicketSetting_Assignment item in Model)
+                {
+                    count++;
+                <tr>
+                    <td>
+                        <input type="hidden" name="L" value="@item.SubSettingID" />
+                        @count
+
+                    </td>
+                    <td>@item.LocationGroupName</td>
+                    <td>@item.PrimaryAssigneeName</td>
+                    <td>@item.SupervisorName</td>
+                    <td>@item.EscalationName</td>
+                    
+                    <td><a class="btn-c deleteSetting  mr-2" data-toggle="tooltip" data-original-title="Cancel"><b><i class="fa fa-times"></i></b></a></td>
+                </tr>
+                }
+
+            </tbody>
+        </table>
+    </div>
+</div>
+<script>
+     $('.deleteSetting').on('click', function (e) {
+                e.preventDefault();
+                e.stopPropagation();
+                var L = $(this).closest("tr").find("input:hidden[name=L]").val();
+                DeleteSetting(this,L);
+     });
+
+    function DeleteSetting(obj,SubSettingID) {
+            ConfirmMsgBox('Are you sure want to delete request', '', function () {
+                $.ajax({
+                    url: "/CommonAjax/DeleteTicketSettingJSON",
+                    type: "Post",
+                    async: true,
+                    data: { SubSettingID: SubSettingID },
+                    success: function (data) {
+                        if (data) {
+                            $(obj).closest("tr").remove();
+                        }
+                        else {
+                            FailToaster('Can not delete this request');
+                        }
+                    },
+                    error: function (er) {
+                        alert(er);
+                    }
+                });
+            });
+        }
+</script>

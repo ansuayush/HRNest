@@ -1,0 +1,45 @@
+﻿@model Mitr.Models.BudgetMaster.AddInflationRate
+@{
+    ViewBag.Title = "InflationRateMaster";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="inner-main mb-5">
+
+    @Html.Partial("ListHeader_Partial", "Add Inflation Rate")
+    <input type="hidden" id="hdnAddUrl" name="hdnAddUrl" value="@Url.Action("AddInflationRate",new { src = clsApplicationSetting.EncryptFriendly(ViewBag.MenuID+"*"+"/Budget/AddInflationRate*0") })" />
+    <div class="table-responsive">
+        <div class="table-responsive">
+            <table class="table mt-0">
+                <thead>
+                    <tr>
+                        <th class="w-33">S.No </th>
+                        <th>Year</th>
+                        <th class="tw-100">Action</th>
+
+                    </tr>
+                </thead>
+
+                <tbody>
+                   
+                    @if (Model.InfMainList.Count > 0)
+                    {
+                        int Count = 0;
+
+                        for (int i = 0; i < Model.InfMainList.Count; i++)
+                        {
+                            Count++;
+                        <tr>
+                            <td>@Count</td>
+                            <td>@Model.InfMainList[i].Year </td>
+                            <td><a href="@Url.Action("AddInflationRate",new { src = clsApplicationSetting.EncryptFriendly(ViewBag.MenuID+"*"+"/Budget/AddInflationRate*"+@Model.InfMainList[i].Id+"") })"><i class="fas fa-eye"></i> View</a></td>
+                        </tr>
+                    }
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</div>
+

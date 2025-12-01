@@ -1,0 +1,631 @@
+﻿
+@model IList<Mitr.Models.SubCategory>
+
+@section style{
+    @System.Web.Optimization.Styles.Render("~/bundle/dataTablecss")
+}
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="inner-main mb-5 pb-0">
+	@Html.Partial("ListHeader_Partial", "Sub-Category List")
+	
+	@*<div class="col-lg-3 col-md-3 col-sm-3  form-group" id="divLegecy" style="display:none">
+		<button type="button" class="btn blk-gdn-btn btn-l ripplelink" onclick="exportReportToExcelAllLegecy()"><i class="fas fa-file-excel"></i>Export</button>
+	</div>*@
+
+	
+	<div class="row">
+
+		<div class="col-md-8 col-sm-12 col-xs-12">
+			<div class="input-group">
+				<div class="input-group-prepend">
+					<input type="file" id="FileAttachment" name="UploadedFile" class="file-inp" accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet/.xls" />
+				</div>
+				<button type="button" class="btn mtr-g-grn" onclick="saveAttachment()"><i class="fas fa-file-alt"></i>Import</button>
+				<a href="/Attachments/Templates/Gr_Subcategory.xlsx" download="Subcategory_Format" class="btn mtr-g-grn"><i class="fas fa-download"></i>Download Import Template</a>
+				<button type="button" class="btn blk-gdn-btn btn-l ripplelink" onclick="exportReportToExcelAll()"><i class="fas fa-file-excel"></i>Export</button>
+			</div>
+		</div>
+		<div class="col-md-12 col-sm-12 col-xs-12">
+			<!---open---->
+			<div class="tab-main mb-5">
+				<ul id="tabs" class="nav nav-tabs " role="tablist">
+					<li class="nav-item"> <a id="tab-A" href="#active-log" class="nav-link active ripplelink" data-toggle="tab" role="tab"><i class="fas fa-list"></i>Live</a> </li>
+					<li class="nav-item"> <a id="tab-B" href="#leaves" class="nav-link ripplelink" data-toggle="tab" role="tab"><i class="fa fa-times-circle"></i>Legacy</a></li>
+				</ul>
+				<div id="content" class="tab-content p-0" role="tablist">
+					<div id="active-log" class="card tab-pane fade show active" role="tabpanel" aria-labelledby="tab-A">
+						<div class="card-header" role="tab" id="heading-A">
+							<h5 class="mb-0">
+								<!-- Note: `data-parent` removed from here -->
+								<a data-toggle="collapse" href="#collapse-A" aria-expanded="true" aria-controls="collapse-A"> <i class="fas fa-ticket-alt"></i> Pending</a>
+							</h5>
+						</div>
+
+						<!-- Note: New place of `data-parent` -->
+						<div id="collapse-A" class="collapse show" data-parent="#content" role="tabpanel" aria-labelledby="heading-A">
+							<!--- -->
+							<div class="card-body p-0">
+								<div class="table-responsive">
+									<table id="datatable-buttons" class="table table-striped table-bordered m-table dt-responsive nowrap tbltick new_width" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
+										<thead>
+											<tr>
+												<th>S.no.</th>
+												<th>Category Name</th>
+												<th>Sub Category</th>
+												<th>Description</th>
+												@*<th>Location</th>
+											<th>Primary Assignee/Secretary</th>
+											<th>Level 1</th>
+											<th>Inserted Date</th>
+											<th>Updated Date</th>
+											<th>IP Address</th>*@
+												<th>Action</th>
+											</tr>
+											<tr class="searchbar">
+												<th class="searchhide"></th>
+												<th></th>
+												<th></th>
+												<th></th>
+												@*<th> </th>
+		<th> </th>
+		<th></th>
+		<th></th>
+		<th> </th>
+		<th> </th>
+		<th> </th>*@
+												<th class="searchhide"></th>
+											</tr>
+										</thead>
+										<tbody>
+											@{ int Count = 0;}
+											@foreach (Mitr.Models.SubCategory item in Model)
+											{
+
+												if (item.IsActive == true)
+												{
+													Count++;
+													<tr class="@(item.IsActive == true?"": "trrowred")">
+														<td>@Count</td>
+														<td>@item.CategoryName</td>
+														<td>
+															<a title=@item.SubCategoryName onclick="ListSubCategoryDetailsAdd(@item.SubCategoryID,@item.CategoryID);" data-toggle='tooltip'><i aria-hidden="true"></i>@item.SubCategoryName </a>
+														</td>
+														<td>@item.Description</td>
+														@*<td>@item.Location</td>*@
+														@*<td>@item.Assignee</td>
+													<td>@item.Level1</td>
+													<td>@item.CreateDat</td>
+													<td>@item.ModifieDat</td>
+													<td>@item.IPAddress</td>*@
+														<td>
+															<input type="hidden" name="I" value="@item.SubCategoryID" />
+															<input type="hidden" name="N" value="@item.SubCategoryName" />
+															@if (clsApplicationSetting.GetSessionValue("Modify") == "True")
+															{
+																@Html.Raw(item.IsActive == true
+															   ? "<a  data-toggle='tooltip' data-original-title='Click to DeActivate' list='Subcategory' OP='0' class='AIsActive' > <i class='fa fa-check-circle checkgreen' aria-hidden='true'></i></a>"
+															   : "<a data-toggle='tooltip' data-original-title='Click to Activate' list='Subcategory' OP='1'  class='AIsActive' > <i class='fa fa-times-circle crossred' aria-hidden='true'></i></a>")
+
+																<a title="Edit" onclick="ListHeaderAdd(@item.SubCategoryID);" data-toggle='tooltip'><i class="fas fa-edit checkgreen" aria-hidden="true"></i> </a>
+															}
+														</td>
+													</tr>
+												}
+											}
+										</tbody>
+									</table>
+								</div>
+							</div>
+							<!--- -->
+						</div>
+					</div>
+					<div id="leaves" class="card tab-pane fade" role="tabpanel" aria-labelledby="tab-B">
+						<div class="card-header" role="tab" id="heading-B">
+							<h5 class="mb-0"> <a class="collapsed" data-toggle="collapse" href="#collapse-B" aria-expanded="false" aria-controls="collapse-B"><i class="fa fa-check" aria-hidden="true"></i> Resolved</a> </h5>
+						</div>
+						<div id="collapse-B" class="collapse" data-parent="#content" role="tabpanel" aria-labelledby="heading-B">
+							<div class="card-body p-0">
+								<div class="table-responsive">
+									<table id="datatable-buttons1" class="table table-striped table-bordered m-table dt-responsive nowrap tbltick new_width" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
+										<thead>
+											<tr>
+												<th>S.no.</th>
+												<th>Category Name</th>
+												<th>Sub Category</th>
+												<th>Description</th>
+												@*<th>Location</th>
+											<th>Primary Assignee/Secretary</th>
+											<th>Level 1</th>
+											<th>Inserted Date</th>
+											<th>Updated Date</th>
+											<th>IP Address</th>*@
+												<th>Action</th>
+											</tr>
+											<tr class="searchbar">
+												<th class="searchhide"></th>
+												<th></th>
+												<th></th>
+												<th> </th>
+
+												@*<th> </th>
+											<th></th>
+											<th></th>
+											<th> </th>
+											<th> </th>
+											<th> </th>*@
+												<th class="searchhide"></th>
+											</tr>
+										</thead>
+										<tbody>
+											@{ int Count1 = 0;}
+											@foreach (Mitr.Models.SubCategory item in Model)
+											{
+
+												if (item.IsActive == false)
+												{
+													Count1++;
+													<tr class="@(item.IsActive == true?"": "trrowred")">
+														<td>@Count1</td>
+														<td>@item.CategoryName</td>
+														<td>
+															<a title=@item.SubCategoryName onclick="ListSubCategoryDetailsAdd(@item.SubCategoryID,@item.CategoryID);" data-toggle='tooltip'><i aria-hidden="true"></i>@item.SubCategoryName </a>
+														</td>
+														<td>@item.Description</td>
+														@*<td>@item.Location</td>
+													<td>@item.Assignee</td>
+													<td>@item.Level1</td>
+													<td>@item.CreateDat</td>
+													<td>@item.ModifieDat</td>
+													<td>@item.IPAddress</td>*@
+														<td>
+															<input type="hidden" name="I" value="@item.SubCategoryID" />
+															<input type="hidden" name="N" value="@item.SubCategoryName" />
+															@if (clsApplicationSetting.GetSessionValue("Modify") == "True")
+															{
+																@Html.Raw(item.IsActive == true
+															   ? "<a  data-toggle='' data-original-title='Click to DeActivate' list='Subcategory' OP='0' class='AIsActive' > <i class='fa fa-check-circle checkgreen' aria-hidden='true'></i></a>"
+															   : "<a data-toggle='' data-original-title='Click to Activate' list='Subcategory' OP='1'  class='AIsActive' > <i class='fa fa-times-circle crossred' aria-hidden='true'></i></a>")
+
+																<a title="Edit" onclick="ListHeaderAdd(@item.SubCategoryID);" data-toggle=''><i class="fas fa-edit checkgreen" aria-hidden="true"></i> </a>
+															}
+														</td>
+													</tr>
+												}
+											}
+										</tbody>
+									</table>
+
+
+								</div>
+							</div>
+						</div>
+					</div>
+
+
+				</div>
+			</div>
+			<!---Close---->
+
+			<table class="table table-striped table-bordered dt-responsive nowrap tbltick new_width" id="datatable-buttonsExport" style="display:none">
+				<thead>
+					<tr>
+						
+						<th >Category Name</th>
+						<th width="200">Sub Category</th>
+						<th width="150">Location</th>
+						<th width="150">Primary Assign/Secretary</th>
+						<th width="80">Level 1</th>
+						<th width="80">Level 2</th>
+						<th width="80">Level 3</th>
+					</tr>
+
+				</thead>
+				<tbody>
+                    <tr></tr>
+					@foreach (var item in ViewBag.ExportList)
+					{
+					<tr>
+
+						<td>@item.CATEGORYNAME</td>
+						<td>@item.SUBCATEGORYNAME</td>
+						<td>@item.location_name</td>
+						<td>@item.Assigneeid</td>
+						<td>@item.Level1id</td>
+						<td>@item.Level2id</td>
+						<td>@item.Level3id</td>
+
+					</tr>
+					}
+
+
+					</tbody>
+			</table>
+
+		</div>
+	</div>
+</div>
+
+<!-- The Modal upload image-->
+<div class="modal fade pop-dgn" id="addsub">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div id="SubcatDetails">
+
+
+
+
+
+            </div>
+        </div>
+    </div>
+</div>
+<!-- The Modal upload image-->
+<div class="modal fade pop-dgn" id="ViewModal">
+    <div class="modal-dialog modal-md">
+        <div class="modal-content">
+
+            <div class="modal-header blk-gdn-btn">
+                <h4 class="modal-title"><i class="fa fa-plus"></i>Add Sub-Category</h4>
+                <div class="close" data-dismiss="modal">&times;</div>
+            </div>
+            <!-- Modal body -->
+            <div class="modal-body">
+                <div id="TagetDiv"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@section scripts    {
+    @System.Web.Optimization.Scripts.Render("~/bundle/dataTablesjs")
+    @System.Web.Optimization.Scripts.Render("~/bundle/unobtrusivejs")
+
+    <script src="~/assets/design/Scripts/AddInit.js?v=@clsApplicationSetting.GetWebConfigValue("Version")"></script>
+    <script src="~/assets/design/scripts/AddInit.js"></script>
+    <script>
+        
+     
+                function exportReportToExcelAll() {
+    
+                 exportToExcelSahaj('datatable-buttonsExport', 'SubCategoryList');
+                }
+
+                function exportReportSubcategory() {
+    
+                 exportToExcelSahaj('TableSubcategory', 'SubCategoryDetailsList');
+                }
+     
+    </script>
+    <script>
+
+
+    $('table').each(
+      function() {
+        var titles;
+     
+        titles = [];
+
+        $('thead th', this).each(
+        function() {
+          titles.push($(this).text());
+        });
+
+        
+        $('tbody tr', this).each(
+        function() {
+          
+          $('td', this).each(
+          function(index) {
+            $(this).attr('data-label', titles[index]);
+            $(this).wrapInner('<span></span>')
+          });
+        });
+      });
+</script>
+    <script>
+
+        function chkFreezed(obj) {
+           
+            var chkFreezed = $(obj).is(":checked");
+            $('.chkFreezed').each(function () {
+
+                $(this).prop('checked', false)
+            });
+                $(obj).prop('checked', true);
+
+            if (chkFreezed) {
+                $('.chkDefault').each(function () {
+                    $(this).prop('checked', false)
+                });
+                $(obj).closest("tr").find(".chkDefault").prop('checked', true);
+                $(obj).prop('checked', true);
+            } else {
+                $('.chkDefault').each(function () {
+                    $(this).prop('checked', false)
+                });
+                $(obj).prop('checked', false);
+
+
+            }
+        }
+        function chkDefault(obj) {
+           
+            $('.chkDefault').each(function () {
+                $(this).prop('checked', false)
+            });
+            $('.chkFreezed').each(function () {
+
+                $(this).prop('checked', false)
+            });
+
+            var chkDefault = $(obj).is(":checked");
+            if (chkDefault) {
+                $('.chkDefault').each(function () {
+                    $(this).prop('checked', false)
+                });
+            }
+            else { $(obj).prop('checked', true); }
+        }
+
+
+        function ListHeaderAdd(CMSID) {
+           
+        if (CMSID == undefined)
+        {
+            CMSID = 0;
+        }
+			$.ajax({
+                url: "/Grievance/_SubCategoryAdd",
+				type: "Get",
+                data: { src: EncryptQueryStringJSON(@ViewBag.MenuID+"*" + "/Grievance/_SubCategoryAdd" + "*" + CMSID) },
+
+                success: function (data)
+                {
+                   
+					$("#TagetDiv").empty();
+					$("#TagetDiv").html(data);
+                    $("#ViewModal").modal("show");
+                     var form = $("form")
+                .removeData("validator")
+                .removeData("unobtrusiveValidation");
+                    $.validator.unobtrusive.parse(form);
+                    $("#CategoryID").select2();
+				},
+                error: function (er) {
+                   
+					alert(er);
+				}
+			});
+            }
+
+        function OnSuccess(obj) {
+           
+            if (obj.Status) {
+                SuccessToaster(obj.SuccessMessage);
+                window.location.reload();
+
+            }
+            else {
+                CloseLoadingDialog();
+                FailToaster(obj.SuccessMessage);
+            }
+        }
+
+        function ListSubCategoryDetailsAdd(CMSID, CATID) {
+            if (CMSID == undefined) {
+                CMSID = 0;
+            }
+            if ( CATID == undefined) {
+                 CATID = 0;
+            }
+			$.ajax({
+                url: "/Grievance/_SubCategoryDetailsAdd",
+				type: "Get",
+                data: { src: EncryptQueryStringJSON(@ViewBag.MenuID+"*" + "/Grievance/_SubCategoryDetailsAdd" + "*" + CMSID+"*"+CATID) },
+                success: function (data)
+                {
+                    $("#SubcatDetails").empty();
+                    $("#SubcatDetails").html(data);
+                    $("#addsub").modal("show");
+                    $("#addsub").show();
+                    CloseLoadingDialog();
+                     var form = $("form")
+                .removeData("validator")
+                .removeData("unobtrusiveValidation");
+                    $.validator.unobtrusive.parse(form);
+                    $("#LocationID").select2();
+                    $("#AssigneeId").select2();
+                    $("#Level1Id").select2();
+                    $("#Level2Id").select2();
+                    $("#Level3Id").select2();
+				},
+				error: function (er) {
+					alert(er);
+				}
+            });
+
+
+            //$('table tr').each(function () {
+            //    var $row = $(this).closest('tr');
+
+            //    $('td:not(:first-child)', $row).each(function (i) {
+            //        var abc = $(this).text();
+            //        var val = $(this).val();
+            //        if (abc = 0) { $(this).text(''); }
+            //        chkbox.not(this).prop('checked', false)
+            //    })
+            //});
+            //var value = $('.sla').text(this.FirstResponse);
+            //var value1 = $('.sla').val();
+            // ;
+            //var inputString = $("#SubCategorySLAPolicy_0__FirstResponse").val();
+            // ;
+            //if (value==0)
+            //$('#SubCategorySLAPolicy_0__FirstResponse').text('');
+            // ;
+            //$("#Slapolicy").each(function () {
+            //   
+            //    //$("#Subcatid").append($("<option />").val(this.ID).text(this.Name));
+            //    //$("#Subcatid").select2();
+
+            //    var value = $('.sla').text(this.FirstResponse);
+            //    var value1 = $('.sla').val();
+            //   
+            //    var inputString = $("#SubCategorySLAPolicy_0__FirstResponse").val();
+            //});
+            }
+
+        function Deleted(CMSID, Categoryid, SubCategoryid) {
+            ConfirmMsgBox("Are you sure want to delete", '', function () {
+                if (CMSID == undefined) {
+                    CMSID = 0;
+                }
+                if (Categoryid == undefined) {
+                    Categoryid = 0;
+                }
+                if (SubCategoryid == undefined) {
+                    SubCategoryid = 0;
+                }
+                $.ajax({
+                    url: "/Grievance/_DeleteSubCategoryAssignee",
+                    type: "Get",
+                    data: { src: EncryptQueryStringJSON(@ViewBag.MenuID+"*" + "/Grievance/_DeleteSubCategoryAssignee" + "*" + CMSID + "*" + SubCategoryid + "*" + Categoryid) },
+                    success: function (data) {
+                        $("#SubcatDetails").empty();
+                        $("#SubcatDetails").html(data);
+                        $("#addsub").modal("show");
+                        $("#addsub").show();
+                        CloseLoadingDialog();
+                        data.ID = SubCategoryid;
+                        OnSuccess2(data);
+                    },
+                    error: function (er) {
+                        alert(er);
+                    }
+                });
+            });
+    }
+
+        function OnSuccess2(obj) {
+           
+            if (obj.Status) {
+                SuccessToaster(obj.SuccessMessage);
+                ListSubCategoryDetailsAdd(obj.ID, obj.OtherID)
+
+                /* window.location.reload();*/
+
+            }
+            else {
+                CloseLoadingDialog();
+                FailToaster(obj.SuccessMessage);
+
+            }
+        }
+
+        function ValidateSlatxt(obj) {
+            var status = false;
+            $(obj).closest("tr").find(".sla").rules("add", "required");
+            if (status) {
+                alert('Please Enter hours');
+            }
+
+        }
+        
+        function BindDropDownLevel(obj) {
+         
+            var selectedID = "";
+            $(obj).find("option:selected").each(function () {
+               
+                if (selectedID != "") {
+                    selectedID += "," + this.value
+                }
+                else {
+                    selectedID += this.value
+                }
+            });
+            var ddlid = obj.id;
+
+            $.ajax({
+                type: "Post",
+                data: { id: selectedID },
+                url: '/CommonAjax/GetDropDownLevel',
+                dataType: "json",
+                async: false,
+                success: function (data) {
+                   
+
+                    if (data) {
+                        ShowLoadingDialog();
+                        if (ddlid == "AssigneeId") {
+                            $("#Level1Id").empty();
+                            $(data.Level1List).each(function () {
+                                $("#Level1Id").append($("<option />").val(this.ID).text(this.Name));
+                                $("#Level1Id").select2();
+                            });
+                        }
+
+                        if (ddlid == "Level1Id") {
+                            $("#Level2Id").empty();
+                            $(data.Level2List).each(function () {
+                                $("#Level2Id").append($("<option />").val(this.ID).text(this.Name));
+                                $("#Level2Id").select2();
+                            });
+                        }
+                        if (ddlid == "Level2Id") {
+                            $("#Level3Id").empty();
+                            $(data.Level3List).each(function () {
+
+                                $("#Level3Id").append($("<option />").val(this.ID).text(this.Name));
+                                $("#Level3Id").select2();
+                            });
+                        }
+                        CloseLoadingDialog();
+                    }
+                },
+                error:
+                    function (data) {
+                       
+                        alert("Error: " + data.ID);
+                    }
+            });
+        }
+            function saveAttachment() {
+            var fileUpload = $("#FileAttachment").get(0);
+            var files = fileUpload.files;
+            // Create FormData object
+            if (files.length == 0) {
+                // showAndDismissAlert("danger","Please Choose File First.")
+                $("#FileAttachment").focus();
+                return
+            }
+            var fileData = new FormData();
+            if (files.length > 0) {
+                fileData.append("FileAttachment", files[0]);
+                ShowLoadingDialog();
+                $.ajax({
+                    url: "/CommonAjax/UploadSubCategoryList",
+                    type: "POST",
+                    processData: false,
+                    contentType: false,
+                    data: fileData,
+                    success: function (response) {
+                        $("#FileAttachment").val(null);
+                        //  window.location.reload();
+                        //alert(response.SuccessMessage);
+                        CloseLoadingDialog();
+                        swal('', response.SuccessMessage);
+                        if (response.ID != "0") {
+                            $("#FileAttachment").val(null);
+                            window.location.reload();
+                        }
+                    }
+                });
+            }
+		}
+    </script>
+}
+

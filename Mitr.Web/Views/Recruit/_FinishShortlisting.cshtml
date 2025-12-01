@@ -1,0 +1,133 @@
+﻿@using System.Data
+@model DataSet
+@{
+	string MenuID = "0";
+	if (ViewBag.MenuID != null)
+	{
+		MenuID = ViewBag.MenuID;
+	}
+}
+<div>
+	@if (ViewBag.Approve == 0)
+	{
+		@Html.EJS().Grid("FlatGrid").DataSource(Model.Tables[0]).RowSelected("rowSelected").RowDeselected("rowSelected").SelectionSettings(ss => ss.EnableToggle(true)).GridLines(Syncfusion.EJ2.Grids.GridLine.Both).Columns(col =>
+   {
+	   col.Field("CVPath").Visible(false).Add();
+	   col.Field("Approved").Visible(false).Add();
+	   col.Field("REC_AppID").Visible(false).Add();
+	   col.Field("REC_ReqID").Visible(false).Add();
+	   col.Field("REC_EVacancyID").Visible(false).Add();
+	   col.Field("RowNum").HeaderText("SNo").Width("50").Add();
+	   col.Field("Name").HeaderText("Candidate").Width("").Add();
+	   col.Field("ApplyDate").HeaderText("Date of Application").Width("120").Add();
+	   col.Field("Nationality").HeaderText("Nationality").Width("100").Add();
+	   col.Field("TotalExperience").HeaderText("Total Experience").Width("120").Add();
+	   col.HeaderText("Action").TextAlign(Syncfusion.EJ2.Grids.TextAlign.Center).Template("#tmpViewApplication").Width("80").Add();
+	   col.HeaderText("CV").TextAlign(Syncfusion.EJ2.Grids.TextAlign.Center).Template("#tmpDownloadCV").Width("120").Add();
+	   col.Type("checkbox").HeaderText("").Field("").Width("30").AllowFiltering(false).AllowSorting(false).Add();
+
+   }).AllowPaging().PageSettings(page => page.PageCount(10)).Toolbar(new List<string>() { "Search" }).Render()
+
+		<div class="col-sm-12 text-center">
+			@using (Ajax.BeginForm("SetFinalShortlisting", "Recruit",
+							new { src = clsApplicationSetting.EncryptQueryString(ViewBag.MenuID.ToString() + "*/Recruit/SetFinalShortlisting*" + ViewBag.REC_ReqID) },
+							new AjaxOptions { HttpMethod = "POST", OnSuccess = "OnSuccessSetFinalShortlisting", OnBegin = "ShowLoadingDialog();", OnFailure = "CloseLoadingDialog();" },
+						new { @id = "SetFinalShortlistingFrom" })
+						)
+			{
+				<div class="col-sm-12 text-right">
+					<input type="hidden" id="HDNSelectedAPPID" name="HDNSelectedAPPID" value="" />
+
+						<div id="myModal" class="modal fade" role="dialog">
+							<div class="modal-dialog">
+								<div class="modal-content">
+									<div class="modal-header">
+										<h4 class="modal-title"><i class="fas fa-ban"></i>Reason for Rejection</h4>
+										<button type="button" class="close" data-dismiss="modal">&times;</button>
+										
+									</div>
+									<div class="modal-body text-left">
+										<label>Reason</label>
+										<textarea name="Comment" id="Comment" class="form-control"  placeholder="Enter" ></textarea>
+									</div>
+									<div class="modal-footer col-lg-12 text-center mt-3">
+										<button type="button" class="btn cnl-btn" data-dismiss="modal"><i class="fas fa-times"></i>Close</button>
+										<button type="submit" name="Command" value="Reject" class="btn mtr-o-grn btnSubmit"><i class="fas fa-paper-plane"></i>Submit</button>
+									</div>
+								</div>
+							</div>
+						</div>
+						<div class="btn-group w-auto" role="group" aria-label="Basic example">
+							<button type="button" class="btn btn-secondary btn-lg" data-toggle="modal" data-target="#myModal">Reject</button>
+							<button type="submit" name="Command" value="Selected" class="btn btn-secondary btnSubmit">Select</button>
+						</div>
+				</div>
+			}
+		</div>
+	}
+	else
+	{
+		@Html.EJS().Grid("FlatGrid").DataSource(Model.Tables[0]).GridLines(Syncfusion.EJ2.Grids.GridLine.Both).Columns(col =>
+   {
+	   col.Field("CVPath").Visible(false).Add();
+	   col.Field("Approved").Visible(false).Add();
+	   col.Field("REC_AppID").Visible(false).Add();
+	   col.Field("REC_ReqID").Visible(false).Add();
+	   col.Field("Name").Visible(false).Add();
+	   col.Field("REC_EVacancyID").Visible(false).Add();
+	   col.Field("RowNum").HeaderText("SNo").Width("33").Add();
+	   col.Field("Name").HeaderText("Candidate").Width("").Add();
+	   col.Field("ApplyDate").HeaderText("Date of Application").Width("120").Add();
+	   col.Field("Nationality").HeaderText("Nationality").Width("120").Add();
+	   col.Field("TotalExperience").HeaderText("Total Experience").Width("120").Add();
+	   col.HeaderText("Action").TextAlign(Syncfusion.EJ2.Grids.TextAlign.Center).Template("#tmpViewApplication").Width("80").Add();
+	   col.HeaderText("CV").TextAlign(Syncfusion.EJ2.Grids.TextAlign.Center).Template("#tmpDownloadCV").Width("120").Add();
+
+   }).AllowPaging().PageSettings(page => page.PageCount(10)).Toolbar(new List<string>() { "Search" }).Render()
+	}
+
+</div>
+
+<script id="tmpDownloadCV" type="text/x-template">
+	<a href="${CVPath}" target="_blank" class="green-clr mr-2"><i class="fas fa-download"></i>Download CV</a>
+
+</script>
+
+
+<script id="tmpViewApplication" type="text/x-template">
+	<input type="hidden" name="AppIID" value="${REC_AppID}" />
+	<input type="hidden" name="AppName" value="${Name}" />
+	<a data-toggle="tooltip" data-original-title="View" onclick="ViewApplication(this)" class="blk-clr mr-2"><i class="fas fa-eye"></i>View</a>
+
+</script>
+<script>
+
+	function rowSelected(args) {
+		var grid = document.getElementById("FlatGrid").ej2_instances[0];
+		var selectedrowindex = grid.getSelectedRowIndexes();  // get the selected row indexes.
+		var selectedrecords = grid.getSelectedRecords();  // get the selected records.
+		$("#HDNSelectedAPPID").val('');
+		for (var i = 0; i < selectedrecords.length; i++) {
+			var ID = selectedrecords[i]['REC_AppID'];
+			var resultObj = $("#HDNSelectedAPPID");
+			var stringToAppend = resultObj.val().length > 0 ? resultObj.val() + "," : "";
+			resultObj.val(stringToAppend + ID);
+		}
+	}
+
+
+	$(".btnSubmit").click(function (e) {
+		var b = false;
+		var a = $("#HDNSelectedAPPID").val();
+		if (a) {
+			b = true;
+		}
+		else {
+			FailToaster('Select atlest one Checkbox');
+		}
+		return b;
+	});
+
+</script>
+@(Html.EJS().ScriptManager())
+

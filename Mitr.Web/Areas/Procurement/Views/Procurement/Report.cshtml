@@ -1,0 +1,129 @@
+﻿
+@{
+    ViewBag.Title = "Report";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="inner-main mb-2">
+    <div class="row">
+        <div class="col-sm-6 form-group mb-0 align-self-center ">
+            <h1 class="heading-one mb-0">Reports</h1>
+        </div>
+        <div class="col-sm-6 form-group mb-0 align-self-center text-right "><button onclick="Export()" type="button" id="btnCollate" class="btn mtr-g-grn btn-l m-0 ripplelink" name="Command" value="Collate"><i class="fas fa-file-excel"></i>Export to Excel</button></div>
+
+
+        <div class="col-sm-2  align-self-end   form-group ">
+            <label>Project Code</label>
+            <select class="form-control multiple-checkboxesP" multiple="multiple" id="ddlProjectCode">
+            </select>
+        </div>
+        <div class="col-sm-2 align-self-end  form-group wf-575">
+            <label>From Date</label>
+            <input autocomplete="off" class="form-control Mandatory datepicker" placeholder="Enter" id="tbFromDate">
+        </div>
+
+        <div class="col-sm-2 align-self-end  form-group wf-575">
+            <label>To Date</label>
+            <input autocomplete="off" class="form-control Mandatory datepicker" placeholder="Enter" id="tbToDate">
+        </div>
+
+        <div class="col-sm-2 align-self-end  form-group wf-575">
+            <label>Name of Vendor/Consultant</label>
+            <select class="form-control multiple-checkboxesV" multiple="multiple" id="ddlVendor">
+            </select>
+        </div>
+
+        <div class="col-sm-2 align-self-end   form-group wf-575">
+            <label>Status</label>
+            <select class="form-control multiple-checkboxes" multiple="multiple" id="ddlStatus">
+                
+                <option value="28">Live</option>
+                <option value="33">Closed</option>
+                <option value="40">Cancelled</option>
+            </select>
+        </div>
+        <div class="col-sm-2 align-self-end">
+            <button onclick="ProcurementReport()" type="button" id="btnCollate" class="btn mtr-g-grn btn-l ripplelink" name="Command" value="Collate"><i class="fas fa-search"></i>Search</button>
+        </div>
+    </div>
+</div>
+<div class="inner-main defult-height pb-0 reprotheight">
+    <div class="row">
+        <div class="col-sm-12">
+
+            <!--  -->
+            <div class="table-responsive ">
+                <table cellspacing="0" class="table table-bordered m-0" id="tblReport">
+                    <thead>
+                        <tr>
+                            <th>SNo.</th>
+                            <th><div class="w-200">Agreement Number</div></th>
+                            <th colspan="2" class="text-center"><div class="w-300">Vendor/ Consultant Details</div></th>
+                            <th><div class="w-100">Start Date</div></th>
+                            <th><div class="w-100">Final End Date</div></th>
+                            <th>Project No</th>
+
+                            <th><div class="w-250">POC</div></th>
+
+                            <th colspan="2" class="text-center">Contract Amount (with gst)</th>
+                            <th colspan="2" class="text-center">Paid Amount</th>
+                            <th colspan="2" class="text-center">Balance Amount</th>
+                            <th><div class="w-150">Status</div></th>
+                            <th>Rating</th>
+                            <th>Empanelled (Y/N)</th>
+                            <th><div class="w-100">Signed PO/ Agreement</div></th>
+
+                        </tr>
+                        <tr class=" top">
+                            <th></th>
+                            <th></th>
+                            <th>Name</th>
+                            <th><div class="w-100">Vendor Number</div></th>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                            <th>Fixed/PO</th>
+                            <th>Reimb</th>
+                            <th>Fixed/PO</th>
+                            <th>Reimb</th>
+                            <th>Fixed/PO</th>
+                            <th>Reimb</th>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                </table>
+            </div>
+            <!--  -->
+        </div>
+    </div>
+</div>
+
+
+@section scripts    {
+    @System.Web.Optimization.Scripts.Render("~/bundle/unobtrusivejs")
+    @System.Web.Optimization.Scripts.Render("~/bundle/dataTablesjs")
+    <script src="~/assets/design/Scripts/AddInit.js?v=@clsApplicationSetting.GetWebConfigValue("Version")"></script>
+
+    <script src="~/Areas/Procurement/DevScript/ProcurementReport.js"></script>
+    
+
+}
+<script>
+    $(document).ready(function ()
+    {
+        $('.multiple-checkboxes').multiselect({
+            includeSelectAllOption: true,
+            nSelectedText: 'selected',
+            nonSelectedText: 'Select',
+            enableFiltering: true,
+            includeFilterClearBtn: false,
+            enableCaseInsensitiveFiltering: false
+
+        });
+    });
+</script>
+

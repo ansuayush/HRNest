@@ -1,0 +1,66 @@
+﻿
+@model Mitr.Models.MasterAll.Add
+@using System.Data
+
+
+@using (Ajax.BeginForm("SaveMasterAll", "Master",
+        new { src = clsApplicationSetting.EncryptQueryString(ViewBag.MenuID + "*" + "/Master/SaveMasterAll*" + ViewBag.ID) },
+         new AjaxOptions { HttpMethod = "POST", OnSuccess = "OnSuccess", OnBegin = "ShowLoadingDialog()" },
+            new { @id = "SaveMasterAllForm" })
+    )
+{
+
+
+    @Html.HiddenFor(x => Model.ID)
+    @Html.HiddenFor(x => Model.table_name)
+
+        <div class="row">
+            <div class="col-lg-6 col-md-6 col-sm-6 form-group">
+                <label>Car Name<sup>*</sup></label>
+                @Html.TextBoxFor(model => model.field_name, new { @class = "form-control" })
+                @Html.ValidationMessageFor(model => model.field_name, "", new { @class = "text-danger" })
+            </div>
+            <div class="col-lg-6 col-md-6 col-sm-6 form-group">
+                <label>
+                    Car No   <sup>*</sup>
+                </label>
+                @Html.TextBoxFor(model => model.field_value, new { @class = "form-control" })
+                @Html.ValidationMessageFor(model => model.field_value, "", new { @class = "text-danger" })
+            </div>
+            <div class="col-lg-6 col-md-6 col-sm-6 form-group">
+                <label>Driver Name  <sup>*</sup></label>
+                @Html.HiddenFor(model => model.field_value)
+                <select class="form-control applyselect" id="@Html.IdFor(model => model.group_id )" name="@Html.NameFor(model => model.group_id)">
+                    @if (ViewBag.List != null)
+                    {
+                        foreach (var item in ViewBag.List)
+                        {
+                            <option @(Model.group_id == item.ID ? "selected" : "") Location_name=@item.Name value="@item.ID">@item.Name</option>
+                        }
+                    }
+                </select>
+                @Html.ValidationMessageFor(model => model.group_id, "", new { @class = "text-danger" })
+            </div>
+            <div class="col-lg-6 col-md-6 col-sm-6 form-group">
+                <label>Priority </label>
+                @Html.TextBoxFor(model => model.Priority, new { @class = "form-control" })
+                @Html.ValidationMessageFor(model => model.Priority, "", new { @class = "text-danger" })
+            </div>
+
+
+
+        </div>
+
+        <div class="row">
+
+            @if (Model.ID > 0)
+            {
+                <button type="submit" class="btn mtr-o-grn btn-l ripplelink pull-right" name="Command" value="Add"><i class="fa fa-paper-plane" aria-hidden="true"></i> Update</button>
+            }
+            else
+            {
+                <button type="submit" class="btn mtr-o-grn btn-l ripplelink pull-right" name="Command" value="Add"><i class="fa fa-paper-plane" aria-hidden="true"></i> Submit</button>
+            }
+        </div>
+
+    }

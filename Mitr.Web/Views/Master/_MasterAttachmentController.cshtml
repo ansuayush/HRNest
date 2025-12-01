@@ -1,0 +1,101 @@
+﻿@model Mitr.Models.Attachments
+
+@if (Model.VisibleAdd)
+{
+
+    using (Ajax.BeginForm("_AddMasterAttachment", "Master",
+             new { src = clsApplicationSetting.EncryptQueryString(ViewBag.MenuID.ToString() + "*/Master/_AddMasterAttachment*" + Model.TableID + "*" + Model.TableName+"*"+ Model.ViewFileName + "*"+Model.VisibleDelete+"*"+Model.FileType) },
+            new AjaxOptions { HttpMethod = "POST", OnSuccess = "OnAttachmentSuccess", OnFailure = "OnAttachmentSuccess" },
+        new { @id = "AddAttachmentFrom", enctype = "multipart/form-data" })
+        )
+    {
+        <div class="row">
+            @if (Model.AttachmentType != null)
+            {
+                <div class="col-lg-4 form-group">
+                    <label>Attachment Type</label>
+                    <select class="applyselect" id="@Html.IdFor(x=>Model.FileName)" name="@Html.NameFor(x=>Model.FileName)">
+                        @foreach (var item in Model.AttachmentType)
+                        {
+                            <option value="@item">@item</option>
+                        }
+                    </select>
+                </div>
+            }
+            <div class="col-lg-8 form-group">
+                <label>Upload Attachment</label>
+                @Html.TextBoxFor(model => model.UploadFile, new { @class = "form-control", @type = "file" })
+                @Html.ValidationMessageFor(model => model.UploadFile, "", new { @class = "text-danger" })
+            </div>
+
+            <div class="col-lg-12 form-group">
+                <label>Description</label>
+                @Html.TextAreaFor(model => model.Description, new { @class = "form-control", @placeholder="Enter" })
+                @Html.ValidationMessageFor(model => model.Description, "", new { @class = "text-danger" })
+            </div>
+            <div class="col-lg-12 form-group">
+                <button type="submit" name="Command" value="Add" class="btn mtr-g-grn btn-l ripplelink"><i class="fa fa-plus"></i>Add</button>
+            </div>
+        </div>
+    }
+
+}
+
+
+<div id="DivAttachmentList">
+    @{ Html.RenderAction("_ViewMasterAttachments", "Master", new { src = clsApplicationSetting.EncryptQueryString(ViewBag.MenuID.ToString() + "*/Master/_ViewMasterAttachments*"+ Model.TableID+"*"+ Model.TableName + "*"+ Model.ViewFileName + "*" +Model.VisibleDelete) }); }
+</div>
+
+<script>
+
+    function OnAttachmentSuccess(objsss) {
+        if (objsss.Status) {
+            SuccessToaster(objsss.SuccessMessage);
+            if (objsss.ViewAsString != "") {
+                $("#Description").val('');
+                $("#UploadFile").val('');
+                $("#DivAttachmentList").empty();
+                $("#DivAttachmentList").html(objsss.ViewAsString);
+                $('.deletedoc').on('click', function (e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    var L = $(this).closest("tr").find("input:hidden[name=TDID]").val();
+                    DeleteAttachment(L, this);
+                });
+            }
+        }
+        else {
+            FailToaster(objsss.SuccessMessage);
+        }
+
+    }
+
+    $('.deletedoc').on('click', function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+        var L = $(this).closest("tr").find("input:hidden[name=TDID]").val();
+        DeleteAttachment(L, this);
+    });
+
+    function DeleteAttachment(AttachmentID, obj) {
+        ConfirmMsgBox('Are you sure want to delete Document', '', function () {
+            $.ajax({
+                url: "/CommonAjax/DeleteAttachmentJSON",
+                type: "Post",
+                async: true,
+                data: { AttachmentID: AttachmentID },
+                success: function (data) {
+                    if (data > 0) {
+                        $(obj).closest("tr").remove();
+                    }
+                    else {
+                        FailToaster('Can not delete this request');
+                    }
+                },
+                error: function (er) {
+                    alert(er);
+                }
+            });
+        });
+    }
+</script>

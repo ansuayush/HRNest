@@ -1,0 +1,135 @@
+﻿@model IList<Mitr.Models.MyTravelRequest>
+
+<h2 class="heading-grd heading-btn  blk-gdn-btn m-0">My Expense Request</h2>
+
+<!-- tab--->
+<div class="tab-main">
+	<ul id="tabs" class="nav nav-tabs " role="tablist">
+		<li class="nav-item"> <a id="tab-A" href="#active-log" class="nav-link active ripplelink" data-toggle="tab" role="tab"><i class="fas fa-envelope-open"></i>Open Requests</a> </li>
+		<li class="nav-item"> <a id="tab-B" href="#leaves" class="nav-link ripplelink" data-toggle="tab" role="tab"><i class="fas fa-database"></i>Legacy Data</a> </li>
+	</ul>
+	<div id="content" class="tab-content p-0" role="tablist">
+		<!-- --->
+		<div id="active-log" class="card tab-pane fade show active" role="tabpanel" aria-labelledby="tab-A">
+			<div class="card-header" role="tab" id="heading-A">
+				<h5 class="mb-0"> <a data-toggle="collapse" href="#collapse-A" aria-expanded="true" aria-controls="collapse-A">Open Request <i class="fas fa-envelope-open"></i></a> </h5>
+			</div>
+			<div id="collapse-A" class="collapse show" data-parent="#content" role="tabpanel" aria-labelledby="heading-A">
+
+
+				<ul class="list-unstyled rqt-list list-rsp trldsklst surrqts fourrclm scroll mrhght">
+					@{ int copunt = 0;}
+					@*@foreach (var item in Model.Where(x => Convert.ToDateTime(x.RequestDate) <= DateTime.Now.AddDays(15) && (x.Status != "Print TER/Attachment and Submit to Finance" )).OrderByDescending(x => x.ID).ToList())*@
+					@foreach (var item in Model.Where(x => x.TerApproved != 2 && x.PrintCount==0).OrderByDescending(x => x.ID).ToList())
+					{
+						copunt++;
+						<li>
+							<div class="row d-flex">
+								<div class="col-sm-2 align-self-center">
+									<div class="left-dtl-r"> <small><strong>Req#@item.ReqNo</strong></small> </div>
+									<input type="hidden" name="TRI" value="@item.ID" />
+								</div>
+								<div class="col-sm-5 align-self-center">
+									<div class="cntr-dtl-r">
+										<!----<small class="trldte">@item.RequestDate</small><br>---->
+										<!----<strong>@item.PurposeOfVisit</strong> <br />---->
+										<strong>@Html.Raw(@item.TravelDetails)</strong>
+										<!----<strong class="dis-tbl">@item.TravelType </strong>---->
+
+									</div>
+								</div>
+								<div class="col-sm-2 align-self-center">
+									<div class="cntr-dtl-pst">
+										@if (item.Status == "Fill TER" || item.Status == "Partially Filled" || item.Status == "TER Re-Submited")
+										{
+											<a onclick="ShowLoadingDialog();window.location='@Url.Action("FillExpenseReport",new { src = clsApplicationSetting.EncryptQueryString(ViewBag.MenuID.ToString() + "*/Travel/FillExpenseReport*"+@item.ID+"*"+ViewBag.Type)})';">
+												<strong class=" mtr-o-clr"><u>@item.Status</u></strong>
+											</a>
+										}
+										else
+										{
+											<strong class=" mtr-o-clr"><u>@item.Status</u></strong>
+										}
+
+
+									</div>
+								</div>
+								<div class="col-sm-3 align-self-center">
+									<div class="right-dtl-r pt-0">
+										<!--<a class="btn-g viewTravelDocument"><i class="fas fa-book"></i></a>-->
+										<a class="btn-g @( ViewBag.Type==0?"viewRequest":"viewRequestExpense")" data-toggle="tooltip" data-original-title="View"><i class="fas fa-ellipsis-h"></i></a>
+									</div>
+								</div>
+							</div>
+						</li>
+					}
+				</ul>
+
+			</div>
+		</div>
+
+		<!-- --->
+		<!-- --->
+		<div id="leaves" class="card tab-pane fade" role="tabpanel" aria-labelledby="tab-B">
+			<div class="card-header" role="tab" id="heading-B">
+				<h5 class="mb-0"> <a class="collapsed" data-toggle="collapse" href="#collapse-B" aria-expanded="false" aria-controls="collapse-B">Legacy Data <i class="fas fa-database"></i></a> </h5>
+			</div>
+			<div id="collapse-B" class="collapse" data-parent="#content" role="tabpanel" aria-labelledby="heading-B">
+
+				<ul class="list-unstyled rqt-list list-rsp trldsklst surrqts fourrclm scroll mrhght">
+					@{ int copunst = 0;}
+
+					@*@foreach (var item in Model.Where(x => Convert.ToDateTime(x.RequestDate) > DateTime.Now.AddDays(15) && (x.Status == "Print TER/Attachment and Submit to Finance")).OrderByDescending(x => x.ID).ToList())*@
+					@*@foreach (var item in Model.Where(x => Convert.ToDateTime(x.RequestDate) > DateTime.Now.AddDays(15) || (x.Status == "Print TER/Attachment and Submit to Finance")).OrderByDescending(x => x.ID).ToList())*@
+					@foreach (var item in Model.Where(x => x.Approved > 0 && x.TerApproved > 0).OrderByDescending(x => x.ID).ToList())
+					{
+						copunst++;
+						<li>
+							<div class="row d-flex">
+								<div class="col-sm-2 align-self-center">
+
+									<div class="left-dtl-r"> <small><strong>Req#@item.ReqNo</strong></small> </div>
+									<input type="hidden" name="TRI" value="@item.ID" />
+								</div>
+								<div class="col-sm-5 align-self-center">
+									<div class="cntr-dtl-r">
+
+										<!----<small class="trldte">@item.RequestDate</small><br>---->
+										<!----<strong>@item.PurposeOfVisit</strong> <br>---->
+										<strong>
+											@Html.Raw(@item.TravelDetails)
+											<!----<strong class="dis-tbl">@item.TravelType @item.Status </strong>---->
+										</strong>
+
+									</div>
+								</div>
+
+								<div class="col-sm-2 align-self-center">
+
+									<div class="cntr-dtl-pst">
+										<strong class=" mtr-o-clr"><u>@item.Status</u> </strong>
+										@*<a onclick="ShowLoadingDialog();window.location='@Url.Action("FillExpenseReport",new { src = clsApplicationSetting.EncryptQueryString(ViewBag.MenuID.ToString() + "*/Travel/FillExpenseReport*"+@item.ID+"*"+ViewBag.Type)})';" class=" mtr-o-clr">
+												<strong><u>@item.Status</u> </strong>
+											</a>*@
+									</div>
+								</div>
+								<div class="col-sm-3">
+									<div class="right-dtl-r pt-0">
+										<!--<a class="btn-g viewTravelDocument"><i class="fas fa-book"></i></a>-->
+										<a class="btn-g @( ViewBag.Type==0?"viewRequest":"viewRequestExpense")" data-original-title="View"><i class="fas fa-ellipsis-h"></i></a>
+									</div>
+								</div>
+							</div>
+						</li>
+					}
+				</ul>
+
+
+
+			</div>
+		</div>
+	</div>
+</div>
+
+
+

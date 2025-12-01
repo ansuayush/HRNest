@@ -1,0 +1,184 @@
+﻿<div class="inner-main mb-5 pb-0 ">
+	<h1 class="heading-one ">Indicator</h1>
+	<div class="row">
+		<div class="col-lg-4 col-md-4 col-sm-12">
+			<div class="wtwo-575">
+				<h1 class="heading-one ">Add</h1>
+				<div class="SectionAdd">
+
+				</div>
+			</div>
+
+
+		</div>
+		<div class="col-lg-8">
+			<h1 class="heading-one ">Indicator List</h1>
+			<div class="SectionList">
+
+			</div>
+		</div>
+
+
+	</div>
+</div>
+
+
+@section scripts    {
+
+	@System.Web.Optimization.Scripts.Render("~/bundle/unobtrusivejs")
+
+	@Html.IncludeVersionedJs(Url.Content("~/assets/design/Scripts/SyncScripts.js"))
+
+	<script>
+
+
+
+        $(document).ready(function () {
+            GetList();
+            ListAdd(0);
+        });
+
+
+        function OnMPRIndicatorSuccess(obj) {
+            if (obj.Status) {
+                $(".SectionList").empty();
+                $(".SectionList").html(obj.ViewAsString);
+                CloseLoadingDialog();
+                SuccessToaster(obj.SuccessMessage);
+                ListAdd(0)
+            }
+            else {
+                CloseLoadingDialog();
+                FailToaster(obj.SuccessMessage);
+
+            }
+        }
+
+        function ListAdd(ID)
+        {
+           ShowLoadingDialog();
+                if (ID == undefined)
+                {
+                  ID = 0;
+                }
+		   $.ajax({
+                url: "/MPR/_IndicatorAdd",
+				type: "Get",
+               data: { src: EncryptQueryStringJSON(@ViewBag.MenuID+"*" + "/MPR/_IndicatorAdd" + "*" + ID) },
+                success: function (data)
+                {
+                    $(".SectionAdd").empty();
+                    $(".SectionAdd").html(data);
+                     var form = $("form")
+                .removeData("validator")
+                .removeData("unobtrusiveValidation");
+                    $.validator.unobtrusive.parse(form);
+                    $(".applyselect").select2();
+
+                    $("#btnClr").click(function () {
+                        ShowLoadingDialog();
+                        ListAdd(0);
+                    });
+                    GetSubSectionDetails();
+                    $('#MPRSubSecID').bind("change", function () {
+                        ShowLoadingDialog();
+                        GetSubSectionDetails();
+
+                    });
+                    CloseLoadingDialog();
+				},
+				error: function (er) {
+                    console.log(er);
+                    CloseLoadingDialog();
+
+				}
+			});
+        }
+
+
+        function GetList()
+        {
+                    ShowLoadingDialog();
+                    $.ajax({
+                        url: "/MPR/_IndicatorList",
+                        type: "Get",
+                        async: true,
+                        cache: false,
+                        data: { src: EncryptQueryStringJSON(@ViewBag.MenuID+"*" + "/MPR/_IndicatorList*") },
+                        success: function (data)
+                        {
+                            $(".SectionList").empty();
+                            $(".SectionList").html(data);
+                            CloseLoadingDialog();
+
+
+                         },
+                        error: function (er) {
+                            console.log(er);
+                            CloseLoadingDialog();
+
+                        }
+            });
+        }
+
+        function GetSubSectionDetails()
+        {
+            var a = Number($("#MPRSubSecID").find("option:selected").val());
+            $.ajax({
+                url: "/CommonAjax/GetSubSectionJSON",
+                        type: "Get",
+                        async: true,
+                        cache: false,
+                        data: { MPRSubSID: a },
+                        success: function (data)
+                        {
+                            $("#SecName").val(data.SecName);
+                            $("#NoOfCol").val(data.NoOfCol);
+
+                            $("#ColText1").val(data.ColText1);
+                            $("#ColSuffix1").val(data.ColSuffix1);
+                            $("#ColDataType1").val(data.ColDataType1);
+                            $('#ColDataType1').select2().trigger('change');
+
+                            $("#ColText2").val(data.ColText2);
+                            $("#ColSuffix2").val(data.ColSuffix2);
+                            $("#ColDataType2").val(data.ColDataType2);
+                            $('#ColDataType2').select2().trigger('change');
+
+                            $("#ColText3").val(data.ColText3);
+                            $("#ColSuffix3").val(data.ColSuffix3);
+                            $("#ColDataType3").val(data.ColDataType3);
+                            $('#ColDataType3').select2().trigger('change');
+                            CloseLoadingDialog();
+                            ShowHideCol();
+                         },
+                        error: function (er) {
+                            console.log(er);
+                            CloseLoadingDialog();
+
+                        }
+            });
+        }
+
+        function ShowHideCol() {
+            var a = Number($("#NoOfCol").val());
+            if (a == 1) {
+                $(".divcol1").show();
+                $(".divcol2").hide();
+                $(".divcol3").hide();
+            }
+            else if (a == 2) {
+                $(".divcol1").show();
+                $(".divcol2").show();
+                $(".divcol3").hide();
+            }
+            else if (a == 3) {
+                $(".divcol1").show();
+                $(".divcol2").show();
+                $(".divcol3").show();
+            }
+        }
+
+
+	</script>
+}

@@ -1,0 +1,193 @@
+﻿@model User_Task.Notes.Add
+@{
+	string MenuID = "0";
+	if (ViewBag.MenuID != null)
+	{
+		MenuID = ViewBag.MenuID;
+	}
+}
+<div class="inner-main mb-5 pb-0">
+	<div class="row">
+		<div class="col-md-12">
+			<h1 class="heading-one ">@Model.TaskDetails.Subject</h1>
+		</div>
+
+	</div>
+	<div class="card multicard mb-4 shadow-box">
+		<div class="card-header blk-gdn-btn ">
+			<div><i class="fas fa-ticket-alt"></i> Task Details</div>
+		</div>
+		<div class="card-body p-0">
+			<table class="table prfole-info-list table-striped mt-0">
+				<tbody>
+					<tr>
+						<td><strong><i class="fas fa-user"></i>Subject</strong></td>
+						<td>@Model.TaskDetails.Subject</td>
+					</tr>
+					<tr>
+						<td><strong><i class="fas fa-users"></i>Assigened To</strong></td>
+						<td>@Model.TaskDetails.AssigenedTo_Names</td>
+					</tr>
+					@if (!string.IsNullOrEmpty(Model.TaskDetails.Deferred_Names))
+					{
+						<tr>
+							<td><strong><i class="fas fa-users"></i>Deferred Persons</strong></td>
+							<td>@Model.TaskDetails.Deferred_Names</td>
+						</tr>
+					}
+					<tr>
+						<td><strong><i class="fas fa-users"></i>Priority</strong></td>
+						<td>@Model.TaskDetails.Priority</td>
+					</tr>
+
+					<tr>
+						<td><strong><i class="fas fa-users"></i>Message</strong></td>
+						<td>@Model.TaskDetails.Message</td>
+					</tr>
+
+					<tr>
+						<td><strong><i class="fas fa-map-marker-alt"></i>Current Status</strong></td>
+						<td style="color:@Model.TaskDetails.StatusColor">@Model.TaskDetails.DisplayName</td>
+					</tr>
+					<tr>
+						<td><strong><i class="fas fa-map-marker-alt"></i>Created On</strong></td>
+						<td>@Model.TaskDetails.createdat</td>
+					</tr>
+					<tr>
+						<td><strong><i class="fas fa-map-marker-alt"></i>Created By</strong></td>
+						<td>@Model.TaskDetails.createdby_Name</td>
+					</tr>
+					<tr>
+						<td><strong><i class="fas fa-map-marker-alt"></i>IP Address</strong></td>
+						<td>@Model.TaskDetails.IPAddress</td>
+					</tr>
+				</tbody>
+
+			</table>
+		</div>
+	</div>
+	<div class="row">
+
+		<div class="col-md-12 col-sm-12 col-xs-12">
+			<div class="card m-b-20 p-0">
+				<div class="card-body p-0">
+					<div>
+						@if (Model.TaskDetails.StatusName != "Completed" && !Model.TaskDetails.DeferredIDs.Contains(clsApplicationSetting.GetSessionValue("LoginID")))
+						{
+							<a  data-target="#MyNotesModal" data-toggle="modal" class="btn add-btn ripplelink ">Add Notes</a>
+						}
+					</div>
+					@{ Html.RenderAction("_UserTask_Tran_List", "Tools", new { src = clsApplicationSetting.EncryptQueryString(MenuID + " */Tools/_UserTask_Tran_List*" + Model.TaskDetails.TaskID) }); }
+
+				</div>
+			</div>
+		</div>
+		@Html.CreateAnchor(MenuID, "/Tools/UserTaskList", "Back", "btn cnl-btn btn-l ripplelink", "Click to go back", "fas fa-arrow-left", "")
+
+
+
+	</div>
+</div>
+
+<div class="modal fade pop-dgn" id="MyNotesModal">
+	<div class="modal-dialog mdl-lg">
+		<div class="modal-content">
+			<div class="modal-header blk-gdn-btn">
+				<h4 class="modal-title"><i class="fas fa-ticket-alt"></i> Add Notes</h4>
+				<div class="close" data-dismiss="modal">&times;</div>
+			</div>
+			<div class="modal-body">
+				@using (Ajax.BeginForm("_AddUserTask_Notes", "Tools",
+		new { src = clsApplicationSetting.EncryptQueryString(ViewBag.MenuID.ToString() + "*/Tools/_AddUserTask_Notes*"+ ViewBag.TaskID) },
+new AjaxOptions { HttpMethod = "POST", OnSuccess = "OnAddSuccess", OnBegin = "ShowLoadingDialog()" },
+new { @id = "_AddTask_Notes" })
+)
+				{
+					<div class="row">
+						<div class="col-sm-4 form-group">
+							<label>Status </label>
+							<input type="hidden" id="hdnAssigenedToIDs" name="@Html.NameFor(x=>x.NewAssigenedToIDs)" value="@Model.TaskDetails.AssigenedToIDs" />
+							<input type="hidden" id="hdnDeferredIDs" name="@Html.NameFor(x=>x.NewDeferredIDs)" value="@Model.TaskDetails.DeferredIDs" />
+
+							@Html.DropDownListFor(model => model.StatusID, new SelectList(ViewBag.StatusList, "StatusID", "DisplayName", Model.StatusID), "select", new { @class = "form-control applyselect" })
+							@Html.ValidationMessageFor(model => model.StatusID, "", new { @class = "text-danger" })
+
+
+						
+						</div>
+						<div class="col-sm-4 form-group deferred" style="display:none;">
+							<label>To User </label>
+							@Html.DropDownListFor(model => model.DeferredID, new SelectList(ViewBag.EmployeeList, "LoginID", "EMPName", Model.DeferredID), "select", new { @class = "form-control applyselect" })
+							@Html.ValidationMessageFor(model => model.DeferredID, "", new { @class = "text-danger" })
+
+						</div>
+						<div class="col-sm-4 form-group">
+							<label>Next Date</label>
+							@Html.TextBoxFor(model => model.NextDate, new { @class = "form-control", @type= "datetime-local" })
+							@Html.ValidationMessageFor(model => model.NextDate, "", new { @class = "text-danger" })
+
+						</div>
+
+						<div class="col-sm-12 form-group">
+							<label>Remarks/ Comment</label>
+							@Html.TextAreaFor(model => model.Remarks, new { @class = "form-control", @placeholder = "Enter Remarks" })
+							@Html.ValidationMessageFor(model => model.Remarks, "", new { @class = "text-danger" })
+						</div>
+
+						<div class="col-sm-4 align-self-center">
+
+							<button type="submit" class="btn mtr-g-grn btn-l ripplelink  " name="Command" value="Add">
+								<i class="fas fa-plus"></i> Save
+							</button>
+						</div>
+
+
+					</div>
+				}
+			</div>
+		</div>
+	</div>
+</div>
+
+
+@section scripts    {
+
+	@System.Web.Optimization.Scripts.Render("~/bundle/unobtrusivejs")
+	@Html.IncludeVersionedJs(Url.Content("~/assets/design/Scripts/AddInit.js"))
+	<script>
+
+		function OnAddSuccess(itemn) {
+			console.log(itemn)
+			if (itemn.Status) {
+				SuccessToaster(itemn.SuccessMessage);				
+				CloseLoadingDialog();
+				window.location.reload();
+			}
+			else {
+				CloseLoadingDialog()
+				FailToaster(itemn.SuccessMessage);
+			}
+		}
+
+		$("#StatusID").on("change", function (event) {
+			MakeDeferredVisible();
+		});
+
+		function MakeDeferredVisible() {
+			var ddStatus = $("#StatusID option:selected").val();
+			if (ddStatus == "4") {
+				$(".deferred").show();
+				$("#DeferredID").attr("required", "required");
+				$("#NextDate").removeAttr("required", "required")
+
+			}
+			else {
+				$(".deferred").hide();
+				$("#DeferredID").removeAttr("required", "required");
+
+				$("#NextDate").attr("required", "required");
+			}
+
+		}
+	</script>
+}

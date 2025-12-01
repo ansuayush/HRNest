@@ -1,0 +1,220 @@
+﻿@model  Project.ProjectDetails
+@{
+    string MenuID = ViewBag.MenuID.ToString();
+}
+@Html.Partial("_ProjectHeader")
+
+<div class="mb-100">
+
+    @using (Ajax.BeginForm("ProjectDetails", "Projects",
+            new { src = ViewBag.src },
+            new AjaxOptions { HttpMethod = "POST", OnSuccess = "OnSuccess", OnBegin = "ShowLoadingDialog()", OnFailure = "OnPostFailure()" },
+        new { @id = "ProjectDetailsFrom", @autocomplete = "Off" })
+        )
+    {
+        @Html.HiddenFor(x=>x.ID)
+        <div class="inner-main mb-3 pb-0">
+            <div class="row">
+                @if (Model.ID > 0)
+                {
+                    <div class="col-md-3 col-sm-4 form-group">
+                        <label>Project Serial Number</label>
+                        @Html.TextBoxFor(model => model.ID, new { @class = "form-control", @disabled = "disabled" })
+                        @Html.ValidationMessageFor(model => model.ID, "", new { @class = "text-danger" })
+                    </div>
+                }
+                <div class="col-md-3 col-sm-4 form-group">
+                    <label>Registration Date</label>
+                    @Html.TextBoxFor(model => model.doc_date, new { @class = "form-control", @disabled = "disabled" })
+                    @Html.ValidationMessageFor(model => model.doc_date, "", new { @class = "text-danger" })
+                </div>
+                <div class="col-md-3 col-sm-4 form-group">
+                    <label>RFP Ref</label>
+                    <input type="text" class="form-control" disabled="" value="Not availiable" name="">
+                </div>
+                <div class="col-md-3 col-sm-4 form-group">
+                    <label>Project Code</label>
+                    @Html.TextBoxFor(model => model.doc_no, new { @class = "form-control color-green", @readonly = "readonly" })
+                    @Html.ValidationMessageFor(model => model.doc_no, "", new { @class = "text-danger" })
+                </div>
+                <div class="col-md-3 col-sm-4 form-group">
+                    <div class="row">
+                        <div class="col-sm-7 form-group">
+                            <label>Project Ref No</label>
+                            @Html.TextBoxFor(model => model.projref_no, new { @class = "form-control", @placeholder="Enter" })
+                            @Html.ValidationMessageFor(model => model.projref_no, "", new { @class = "text-danger" })
+                        </div>
+                        <div class="col-md-5 form-group align-self-end ">
+                            <button type="button" class="btn mtr-g-grn  "><i class="fas fa-eye"></i>View RFP</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-3 col-sm-4 form-group">
+                    <label>Fund Type</label>
+                    @Html.DropDownListFor(n => n.FundTypeID, new SelectList(Model.FundTypeList, "ID", "Name", Model.FundTypeID), "Select",
+                      new { @class = "form-control  applyselect", @onchange = "GetProjectCode()" })
+                    @Html.ValidationMessageFor(model => model.FundTypeID, "", new { @class = "text-danger" })
+                </div>
+                <div class="col-md-3 col-sm-4 form-group">
+                    <label>Funding Type</label>
+                    @Html.DropDownListFor(n => n.FundingTypeID, new SelectList(Model.FundingTypeList, "ID", "Name", Model.FundingTypeID), "Select",
+                        new { @class = "form-control  applyselect", @onchange = "GetProjectCode()" })
+                    @Html.ValidationMessageFor(model => model.FundingTypeID, "", new { @class = "text-danger" })
+                </div>
+                
+                <div class="col-md-3 col-sm-4 form-group">
+                    <label>Project Short Name  <sup>*</sup></label>
+                    @Html.TextBoxFor(model => model.proj_name, new { @class = "form-control", @placeholder="Enter" })
+                    @Html.ValidationMessageFor(model => model.proj_name, "", new { @class = "text-danger" })
+                </div>
+                <div class="col-md-3 col-sm-4 form-group">
+                    <label>Thematic Area<sup>*</sup></label>
+                    @Html.DropDownListFor(n => n.ThemArea_ID, new SelectList(Model.ThematicareaList, "ID", "Name", Model.ThemArea_ID), "Select",
+                       new { @class = "form-control  applyselect" })
+                    @Html.ValidationMessageFor(model => model.ThemArea_ID, "", new { @class = "text-danger" })
+                </div>
+                <div class="col-md-12 form-group">
+                    <label>Project Description</label>
+                    @Html.TextAreaFor(model => model.Description, new { @class = "form-control h-80", @placeholder="Enter" })
+                    @Html.ValidationMessageFor(model => model.Description, "", new { @class = "text-danger" })
+                </div>
+                <div class="col-md-12 form-group">
+                    <label>Program  <sup>*</sup></label>
+                    @Html.HiddenFor(x => Model.ProgramIDs)
+                    <select class="applyselect" multiple="multiple" id="ddProgramIDs">
+
+                        @if (Model.ProgramList != null)
+                        {
+                            foreach (var item in Model.ProgramList)
+                            {
+                                if (string.IsNullOrEmpty(Model.ProgramIDs))
+                                {
+                                    <option value="@item.ID">@item.Name</option>
+                                }
+                                else
+                                {
+                                    <option @(("@" + Model.ProgramIDs.Replace(",", "@") + "@").Contains("@" + item.ID.ToString() + "@") ? "selected" : "") value="@item.ID">@item.Name</option>
+                                }
+
+                            }
+                        }
+                    </select>
+                    @Html.ValidationMessageFor(model => model.ProgramIDs, "", new { @class = "text-danger" })
+                </div>
+                <div class="col-md-3 col-sm-4 form-group">
+                    <label>Start Date <sup>*</sup></label>
+                    @Html.TextBoxFor(model => model.start_date, new { @class = "form-control", @type = "date" })
+                    @Html.ValidationMessageFor(model => model.start_date, "", new { @class = "text-danger" })
+                </div>
+                <div class="col-md-3 col-sm-4 form-group">
+                    <label>End Date  <sup>*</sup></label>
+                    @Html.TextBoxFor(model => model.end_date, new { @class = "form-control", @type = "date" })
+                    @Html.ValidationMessageFor(model => model.end_date, "", new { @class = "text-danger" })
+                </div>
+
+                <div class="col-md-3 col-sm-4 form-group">
+                    <label>Project Manager <sup>*</sup></label>
+                    @Html.DropDownListFor(n => n.ManagerID, new SelectList(Model.EMPList, "ID", "Name", Model.ManagerID), "Select",
+                        new { @class = "form-control  applyselect" })
+                    @Html.ValidationMessageFor(model => model.ManagerID, "", new { @class = "text-danger" })
+                </div>
+
+                <div class="col-md-3 col-sm-4 form-group">
+                    <label>Team Member</label>
+                    @Html.DropDownListFor(n => n.TeamMemberID, new SelectList(Model.EMPList, "ID", "Name", Model.TeamMemberID), "Select",
+                    new { @class = "form-control  applyselect" })
+                    @Html.ValidationMessageFor(model => model.TeamMemberID, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <!-- ENd -->
+
+        </div>
+
+
+		<div class="ftr-btn">
+			@if (clsApplicationSetting.GetSessionValue("RolesName") == "C3 Admin")
+			{
+				<button type="submit" class="btn mtr-o-grn " name="Command" value="Add"><i class="fas fa-paper-plane"></i>Submit</button>
+			}
+			else
+			{
+				<button type="submit" class="btn mtr-o-grn " disabled name="Command" value="Add"><i class="fas fa-paper-plane"></i>Submit</button>
+			}
+
+			@if (Model.Inactive == 0 && Model.ID > 0)
+			{
+				<button type="submit" class="btn mtr-o-grn " name="Command" value="Live"><i class="fas fa-paper-plane"></i>Make It Live</button>
+			}
+			@*<a class="btn blk-gdn-btn" data-toggle="tooltip" data-original-title="Go Next" href="@Url.Action("ClientsDetails",new { src = clsApplicationSetting.EncryptFriendly(ViewBag.MenuID+"*"+"/Projects/ClientsDetails*"+Model.ID) })">
+			Next <i class="fas fa-angle-double-right m-0"></i>
+		</a>*@
+			<a class="btn cnl-btn" href="@Url.Action("ProjectRegistrationList",new { src = clsApplicationSetting.EncryptFriendly(ViewBag.MenuID+"*"+"/Projects/ProjectRegistrationList") })">
+				<i class="fas fa-times"></i> Close
+			</a>
+
+		</div>
+
+
+    }
+
+</div>
+
+
+@section scripts    {
+    @System.Web.Optimization.Scripts.Render("~/bundle/unobtrusivejs")
+    @Html.IncludeVersionedJs(Url.Content("~/assets/design/scripts/AddInit.js"))
+    <script>
+        $('#ddProgramIDs').change(function () {
+            var IDs = $("#ddProgramIDs").val();
+            $("#ProgramIDs").val(IDs);
+        });
+       
+
+        function OnSuccess(obj) {
+            if (obj.Status) {
+                SuccessToaster(obj.SuccessMessage);
+                window.location.href = obj.RedirectURL;
+            }
+            else {
+                CloseLoadingDialog();
+                FailToaster(obj.SuccessMessage);
+
+            }
+        }
+
+        function GetProjectCode() {
+            var ID1 = $("#FundTypeID").find("option:selected").val();
+            var ID2 = $("#FundingTypeID").find("option:selected").val();
+            var ID3 = ($("#ID").val() ? $("#ID").val() :"0");
+            if (ID1 != "" && ID2 != "" && ID3!="")
+            {
+                var AllIDs = ID1 + "," + ID2 + "," + ID3;
+                var data = GetGenerateValues(AllIDs, "ProjectCode")
+                if (data) {
+                    $("#doc_no").val(data.SuccessMessage);
+                } else {
+                    $("#doc_no").val('');
+                }
+            }
+            else {
+                $("#doc_no").val('');
+            }
+        }        
+
+        $('#end_date').blur(function () {
+          
+            var a = $(this).val();
+            if (a != '') {
+                var end = new Date(a);
+                var start = new Date($("#start_date").val());
+                if (end < start) {
+                    $('#end_date').val('');
+                    FailToaster('End date should not be less than Start date');
+                }
+               
+            }
+
+        });
+    </script>
+}

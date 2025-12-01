@@ -1,0 +1,466 @@
+﻿@model IList<Mitr.Models.UserGrievance>
+
+@section style{
+    @System.Web.Optimization.Styles.Render("~/bundle/dataTablecss")
+}
+
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<div class="inner-main mb-5 pb-0">
+    @*@Html.Partial("ListHeader_Partial", "Grievance Committee")*@
+    <div class="col-sm-5"><h1 class="heading-one ">Grievance Committee</h1></div>
+    <div class="row">
+
+        <div class="col-sm-12">
+            <!---open---->
+            <div class="tab-main mb-5">
+                <ul id="tabs" class="nav nav-tabs " role="tablist">
+                    <li class="nav-item"> <a id="tab-A" href="#active-log" class="nav-link active ripplelink" data-toggle="tab" role="tab"><i class="fas fa-ticket-alt"></i>My Grievance</a> </li>
+                    <li class="nav-item"> <a id="tab-B" href="#leaves" class="nav-link ripplelink" data-toggle="tab" role="tab"><i class="fas fa-handshake"></i>Resolved</a></li>
+                    <li class="nav-item"> <a id="tab-C" href="#Completed" class="nav-link ripplelink" data-toggle="tab" role="tab"><i class="fa fa-check" aria-hidden="true"></i>Completed</a></li>
+                </ul>
+                <div id="content" class="tab-content p-0" role="tablist">
+                    <div id="active-log" class="card tab-pane fade show active" role="tabpanel" aria-labelledby="tab-A">
+                        <div class="card-header" role="tab" id="heading-A">
+                            <h5 class="mb-0">
+                                <!-- Note: `data-parent` removed from here -->
+                                <a data-toggle="collapse" href="#collapse-A" aria-expanded="true" aria-controls="collapse-A"> <i class="fas fa-ticket-alt"></i> Pending </a>
+                            </h5>
+                        </div>
+
+                        <!-- Note: New place of `data-parent` -->
+                        <div id="collapse-A" class="collapse show" data-parent="#content" role="tabpanel" aria-labelledby="heading-A">
+                            <!--- -->
+                            <div class="card-body p-0">
+                                <div class="table-responsive">
+
+                                    <table id="Table1" class="table m-table table-striped">
+                                        <thead>
+                                            <tr>
+                                                <th width="33">S.No.</th>
+                                                <th width="70">Ticket No</th>
+                                                <th width="80">Created On</th>
+                                                <th width="100">Category</th>
+                                                <th width="180">Sub Category</th>
+                                                <th width="170">Primary Assignee/Secretary</th>
+                                                <th>Level 1</th>
+                                                <th>Level 2</th>
+                                                <th>Level 3</th>
+                                                <th width="100">Last Updated By</th>
+                                                <th width="120">Last Updated</th>
+                                                <th>It can be anonymous?</th>
+                                                <th width="100"> Current Status	</th>
+
+                                            </tr>
+
+                                        </thead>
+                                        <tbody>
+                                            @{ int Count = 0; }
+                                            @foreach (Mitr.Models.UserGrievance item in Model)
+                                            {
+                                                Count++;
+                                                //TicketNo = "G-" + item.ID;
+                                                if (item.Statusid == 1)
+                                                {
+                                                    <tr class="@(item.Statusid == 1 ? " " : " trrowred")">
+
+                                                        <td>@Count</td>
+                                                        <td>
+                                                            <a title=@item.ID href="@Url.Action("GrievanceCommitteeEdit", new { src=clsApplicationSetting.EncryptQueryString(ViewBag.MenuID.ToString() + "*/Grievance/GrievanceCommitteeEdit*" + item.ID) })" ><i aria-hidden="true"></i>@item.TicketNo</a>
+                                                        </td>
+                                                        <td>@item.Createdat</td>
+                                                        <td>@item.CategoryName</td>
+                                                        <td>@item.SubCategoryName</td>
+                                                        <td>@item.PrimaryAssignee</td>
+                                                        <td>@item.Level1</td>
+                                                        <td>@item.Level2</td>
+                                                        <td>@item.Level3</td>
+                                                        <td>
+                                                            @{ string Username = string.Empty;
+                                                                if (item.IsAnonymous) { Username = "Anonymous"; } else { Username = item.ModifiedbyName; }
+                                                            }
+                                                            @Username
+                                                        </td>
+                                                        <td>@item.Modifiedat</td>
+                                                        <td>
+                                                            @{ string AnonymousValue = string.Empty;
+                                                                if (item.IsAnonymous) { AnonymousValue = "Yes"; } else { AnonymousValue = "No"; }
+                                                            }
+                                                            @AnonymousValue
+                                                        </td>
+                                                        <td>
+
+                                                            @item.Status
+                                                        </td>
+
+                                                    </tr>
+                                                }
+                                            }
+                                        </tbody>
+                                    </table>
+
+
+                                </div>
+                            </div>
+                            <!--- -->
+                        </div>
+                    </div>
+                    <div id="leaves" class="card tab-pane fade" role="tabpanel" aria-labelledby="tab-B">
+                        <div class="card-header" role="tab" id="heading-B">
+                            <h5 class="mb-0"> <a class="collapsed" data-toggle="collapse" href="#collapse-B" aria-expanded="false" aria-controls="collapse-B"><i class="fa fa-check" aria-hidden="true"></i> Resolved</a> </h5>
+                        </div>
+                        <div id="collapse-B" class="collapse" data-parent="#content" role="tabpanel" aria-labelledby="heading-B">
+                            <div class="card-body p-0">
+                                <div class="table-responsive">
+
+                                    <table id="Table1" class="table m-table table-striped">
+                                        <thead>
+                                            <tr>
+                                                <th width="33">S.No.</th>
+                                                <th width="70">Ticket No</th>
+                                                <th width="80">Created On</th>
+                                                <th width="100">Category</th>
+                                                <th width="180">Sub Category</th>
+                                                <th width="170">Primary Assignee/Secretary</th>
+                                                <th>Level 1</th>
+                                                <th>Level 2</th>
+                                                <th>Level 3</th>
+                                                <th width="100">Last Updated By</th>
+                                                <th width="120">Last Updated</th>
+                                                <th>It can be anonymous?</th>
+                                                <th width="100"> Current Status	</th>
+
+                                            </tr>
+
+                                        </thead>
+                                        <tbody>
+                                            @{ int Count1 = 0;}
+                                            @foreach (Mitr.Models.UserGrievance item in Model)
+                                            {
+                                                Count1++;
+                                                if (item.ActionId == 8 && item.Statusid==8)
+                                                {
+                                                    <tr class="@(item.Statusid == 1 ? " " : " trrowred")">
+
+
+                                                        <td>@Count1</td>
+                                                        <td>
+                                                            <a title=@item.ID href="@Url.Action("GrievanceCommitteeEdit", new { src=clsApplicationSetting.EncryptQueryString(ViewBag.MenuID.ToString() + "*/Grievance/GrievanceCommitteeEdit*" + item.ID) })"><i aria-hidden="true"></i>@item.TicketNo</a>
+                                                        </td>
+
+                                                        <td>@item.Createdat</td>
+                                                        <td>@item.CategoryName</td>
+                                                        <td>@item.SubCategoryName</td>
+                                                        <td>@item.PrimaryAssignee</td>
+                                                        <td>@item.Level1</td>
+                                                        <td>@item.Level2</td>
+                                                        <td>@item.Level3</td>
+                                                        <td>@item.ModifiedbyName</td>
+                                                        <td>@item.Modifiedat</td>
+                                                        <td>
+                                                            @{ string AnonymousValue = "";
+                                                                if (item.IsAnonymous) { AnonymousValue = "Yes"; } else { AnonymousValue = "No"; }
+                                                            }
+                                                            @AnonymousValue
+                                                        </td>
+                                                        <td>
+                                                            @{string statusname = string.Empty;
+                                                                if (item.ActionId == 8) { statusname = "Resolved"; }
+                                                            }
+                                                            @statusname
+                                                        </td>
+
+                                                    </tr>
+                                                }
+                                            }
+                                        </tbody>
+                                    </table>
+
+
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="Completed" class="card tab-pane fade" role="tabpanel" aria-labelledby="tab-C">
+                        <div class="card-header" role="tab" id="heading-C">
+                            <h5 class="mb-0"> <a class="collapsed" data-toggle="collapse" href="#collapse-C" aria-expanded="false" aria-controls="collapse-B"><i class="fa fa-check" aria-hidden="true"></i> Completed</a> </h5>
+                        </div>
+                        <div id="collapse-C" class="collapse" data-parent="#content" role="tabpanel" aria-labelledby="heading-C">
+                            <div class="card-body p-0">
+                                <div class="table-responsive">
+
+                                    <table id="Table1" class="table m-table table-striped">
+                                        <thead>
+                                            <tr>
+                                                <th width="33">S.No.</th>
+                                                <th width="70">Ticket No</th>
+                                                <th width="80">Created On</th>
+                                                <th width="100">Category</th>
+                                                <th width="180">Sub Category</th>
+                                                <th width="170">Primary Assignee/Secretary</th>
+                                                <th>Level 1</th>
+                                                <th>Level 2</th>
+                                                <th>Level 3</th>
+                                                <th width="100">Last Updated By</th>
+                                                <th width="120">Last Updated</th>
+                                                <th>It can be anonymous?</th>
+                                                <th width="100"> Current Status	</th>
+
+                                            </tr>
+
+                                        </thead>
+                                        <tbody>
+                                            @{ int Count2 = 0; }
+                                            @foreach (Mitr.Models.UserGrievance item in Model)
+                                            {
+                                                Count2++;
+                                                if (item.ActionId == 9 || item.ActionId == 14)
+                                                {
+                                                    <tr class="@(item.Statusid == 1 ? " " : " trrowred")">
+                                                        <td>@Count2</td>
+                                                        <td>
+                                                            <a title=@item.ID href="@Url.Action("GrievanceCommitteeEdit", new { src=clsApplicationSetting.EncryptQueryString(ViewBag.MenuID.ToString() + "*/Grievance/GrievanceCommitteeEdit*" + item.ID) })" ><i aria-hidden="true"></i>@item.TicketNo</a>
+                                                        </td>
+                                                        <td>@item.Createdat</td>
+                                                        <td>@item.CategoryName</td>
+                                                        <td>@item.SubCategoryName</td>
+                                                        <td>@item.PrimaryAssignee</td>
+                                                        <td>@item.Level1</td>
+                                                        <td>@item.Level2</td>
+                                                        <td>@item.Level3</td>
+                                                        <td>@item.ModifiedbyName</td>
+                                                        <td>
+                                                            @item.Modifiedat
+
+                                                            @item.SubcatAssingid
+                                                        </td>
+                                                        <td>
+                                                            @{ string AnonymousValue = "";
+                                                                if (item.IsAnonymous) { AnonymousValue = "Yes"; } else { AnonymousValue = "No"; }
+                                                            }
+                                                            @AnonymousValue
+                                                        </td>
+                                                        <td>
+                                                            @{string statusname = string.Empty;
+                                                                if (item.ActionId == 9 || item.Statusid == 8) { statusname = "Completed"; }
+                                                                if (item.ActionId == 14) { statusname = "Withdrawn"; }
+                                                            }
+                                                            @statusname
+
+                                                        </td>
+
+                                                    </tr>
+                                                }
+                                            }
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+            <!---Close---->
+        </div>
+    </div>
+</div>
+
+<!-- The Modal upload image-->
+<!--<div class="modal fade pop-dgn" id="addsub">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div id="SubcatDetails">
+
+
+
+
+
+            </div>
+        </div>
+    </div>
+</div>-->
+<!-- The Modal upload image-->
+<div class="modal fade pop-dgn" id="ViewModal">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+
+            <div class="modal-header blk-gdn-btn">
+                <h4 class="modal-title"><i class="fa fa-plus"></i>Add Ticket</h4>
+                <div class="close" data-dismiss="modal">&times;</div>
+            </div>
+            <!-- Modal body -->
+            <div class="modal-body">
+                <div id="TagetDiv"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section scripts    {
+<script>
+    $('table').each(
+      function() {
+        var titles;
+     
+        titles = [];
+
+        $('thead th', this).each(
+        function() {
+          titles.push($(this).text());
+        });
+
+        
+        $('tbody tr', this).each(
+        function() {
+          
+          $('td', this).each(
+          function(index) {
+            $(this).attr('data-label', titles[index]);
+            $(this).wrapInner('<span></span>')
+          });
+        });
+      });
+</script>
+}
+@*@section scripts    {
+    @System.Web.Optimization.Scripts.Render("~/bundle/dataTablesjs")
+    @System.Web.Optimization.Scripts.Render("~/bundle/unobtrusivejs")
+    @Html.IncludeVersionedJs(Url.Content("~/assets/design/Scripts/AddInit.js"))
+    @Html.IncludeVersionedJs(Url.Content("~/assets/design/Scripts/ToolTip.js"))
+
+    
+    <script>
+
+        function ListHeaderAdd(CMSID) {
+
+           
+            if (CMSID == undefined) {
+                CMSID = 0;
+            }
+            $.ajax({
+                url: "/Grievance/_UserGrievanceAdd",
+                type: "Get",
+                data: { src: EncryptQueryStringJSON(@ViewBag.MenuID+"*" + "/Grievance/_UserGrievanceAdd" + "*" + CMSID)
+        },
+        success: function (data) {
+           
+            $("#TagetDiv").empty();
+            $("#TagetDiv").html(data);
+            $("#ViewModal").modal("show");
+            var form = $("form")
+                .removeData("validator")
+                .removeData("unobtrusiveValidation");
+            $.validator.unobtrusive.parse(form);
+            $("#Categoryid").select2();
+            $("#Subcatid").select2();
+            $("#Priorityid").select2();
+            $("#SlaPriorityid").select2();
+
+        },
+        error: function (er) {
+           
+            alert(er);
+
+        }
+                });
+                }
+
+
+        function OnSuccess(obj) {
+           
+            if (obj.Status) {
+                SuccessToaster(obj.SuccessMessage);
+                window.location.reload();
+            }
+            else {
+                CloseLoadingDialog();
+                FailToaster(obj.SuccessMessage);
+
+            }
+        }
+
+
+        $(document).ready(function () {
+
+            var Categoryid = $("#Categoryid").find('option:selected').val();
+            if (Categoryid) {
+                BindDropDown($("#Categoryid"));
+            }
+            var Subcatid = $("#Subcatid").find('option:selected').val();
+            if (Subcatid) {
+                BindDropDown($("#Subcatid"));
+            }
+
+        });
+
+        function BindDropDown(obj) {
+            $('#CategoryDescription').empty();
+            $('#SubcategoryDescription').empty();
+            $("#chkAnonymous").hide();
+            $("#IsAnonymous").removeAttr("checked");
+            $("#Subcatid").empty();
+
+            var selectedID = $(obj).find("option:selected").val();
+            var data = GetDropDownData(selectedID, "Gr_CategoryDesc");
+            $("#Subcatid").append($("<option />").val("").text("Select"));
+            if (data) {
+                $('#CategoryDescription').append(data[0].ExtraValue);
+            }
+
+            var data = GetDropDownData(selectedID, "Gr_SubCategory");
+            if (data) {
+                ShowLoadingDialog();
+                $(data).each(function () {
+                    $("#Subcatid").append($("<option />").val(this.ID).text(this.Name));
+                    $("#Subcatid").select2();
+                });
+            }
+            CloseLoadingDialog();
+        }
+        function BindDropDownPriority(obj) {
+
+            $('#SubcategoryDescription').empty();
+            //$("#IsAnonymous").removeAttr("checked");
+            $("#chkAnonymous").hide();
+
+            var selectedID = $(obj).find("option:selected").val();
+            if (selectedID != "") {
+                var data = GetDropDownData(selectedID, "Gr_SubCategory");
+                if (data) {
+                    $('#SubcategoryDescription').append(data[0].ExtraValue);
+                    if (data[0].ExtraValue2) {
+                        $("#IsAnonymous").attr("checked", true);
+                        $("#chkAnonymous").show();
+                    }
+                    else { $("#chkAnonymous").hide(); }
+                }
+            }
+            else { $("#Priorityid").prop('disabled', false); }
+
+
+            var data = GetDropDownData(selectedID, "Gr_sla");
+            if (data.Lenth > 0) {
+               
+                /*$("#Priorityid").prop('disabled', true);*/
+                $("#Priorityid").val(data[0].ID);
+
+
+                //$("#Priorityid").find("option:selected").val(data.ID);
+                //$("#Priorityid").attr("selected", data[0].ExtraValue2);
+                //$("#Priorityid option[value=" + 103 + "]").prop("selected", true);
+                $('#Priorityid').val('103');
+                if (data[0].ExtraValue2) {
+                    $("#Priorityid").prop('disabled', true);
+                }
+                else { $("#Priorityid").prop('disabled', false); }
+            }
+            else { $("#Priorityid").prop('disabled', false); }
+        }
+
+
+    </script>
+    }*@
+

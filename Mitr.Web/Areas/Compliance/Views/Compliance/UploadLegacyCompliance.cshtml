@@ -1,0 +1,549 @@
+﻿
+@{
+    ViewBag.Title = "UploadLegacyCompliance";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<style>
+    .datepicker-container {
+        display: flex;
+        align-items: center;
+    }
+
+
+
+
+    .ui-datepicker-trigger {
+        position: absolute;
+        top: 50%;
+        right: 10px;
+        transform: translateY(-50%);
+        cursor: pointer;
+    }
+
+    .datepicker-icon img {
+        width: 16px;
+        height: 16px;
+    }
+</style>
+
+@using (Ajax.BeginForm("UploadLegacyCompliance", "Compliance",
+     new { src = clsApplicationSetting.EncryptQueryString(ViewBag.MenuID.ToString() + "*/Compliance/UploadLegacyCompliance") },
+     new AjaxOptions { HttpMethod = "POST", OnSuccess = "BindTarget", OnFailure = "CloseLoadingDialog()", OnBegin = "ShowLoadingDialog();" },
+ new { @id = "UploadLegacyComplianceFrom" })
+ )
+{
+    <div class="inner-main defult-height defult-height-scd pb-0">
+
+        <div class="row">
+            <div class="col-sm-12 align-self-center"><h1 class="heading-one mb-0">Upload Legacy Compliances </h1></div>
+            <div class="col-sm-6 col-md-2 wh-575 form-group slt-dgn slt-45">
+                <label class="lbl-abs">Financial Year <sup>*</sup></label>
+                <select class="form-control applyselect Mandatory " id="ddlFinanceYear" onchange="LoadData(this); HideErrorMessage(this);">
+                </select>
+                <span id="spddlFinanceYear" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+
+                <input type="hidden" id="hdnLegacyId" value="0" />
+            </div>
+            <div class="col-sm-12">
+
+                <div class="table-responsive">
+                    <table class="table table-striped table-bordered dt-responsive nowrap tbltick new_width" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
+                        <thead>
+                            <tr>
+                                <th width="20">S.No.</th>
+                                <th><div style="width:200px">Sub Category</div><sup>*</sup></th>
+                                <th><div style="width:200px">Category<sup>*</sup></div> </th>
+                                <th>Compliance<sup>*</sup></th>
+                                <th>Details<sup>*</sup></th>
+                                <th><div style="width:200px">Primary User<sup>*</sup></div> </th>
+                                <th width="100" colspan="3" class="text-center"><label id="m1t">Apr-</label></th>
+                                <th width="100" colspan="3" class="text-center"><label id="m2t">May-</label></th>
+                                <th width="100" colspan="3" class="text-center"><label id="m3t">Jun-</label></th>
+                                <th width="100" colspan="3" class="text-center"><label id="m4t">Jul-</label></th>
+                                <th width="100" colspan="3" class="text-center"><label id="m5t">Aug-</label></th>
+                                <th width="100" colspan="3" class="text-center"><label id="m6t">Sep-</label></th>
+                                <th width="100" colspan="3" class="text-center"><label id="m7t">Oct-</label></th>
+                                <th width="100" colspan="3" class="text-center"><label id="m8t">Nov-</label></th>
+                                <th width="100" colspan="3" class="text-center"><label id="m9t">Dec-</label>	</th>
+                                <th width="100" colspan="3" class="text-center"><label id="m10t">Jan-</label>	</th>
+                                <th width="100" colspan="3" class="text-center"><label id="m11t">Feb-</label>	</th>
+                                <th width="100" colspan="3" class="text-center"><label id="m12t">Mar-</label></th>
+
+                            </tr>
+                            <tr>
+                                <th colspan="6"></th>
+                                <th class="text-center lgt-mtr-o-bg">Due</th>
+                                <th class="text-center lgt-mtr-g-bg">Actual </th>
+                                <th class="text-center">Attachment</th>
+                                <th class="text-center lgt-mtr-o-bg">Due</th>
+                                <th class="text-center lgt-mtr-g-bg">Actual </th>
+                                <th class="text-center">Attachment</th>
+                                <th class="text-center lgt-mtr-o-bg">Due</th>
+                                <th class="text-center lgt-mtr-g-bg">Actual </th>
+                                <th class="text-center">Attachment</th>
+                                <th class="text-center lgt-mtr-o-bg">Due</th>
+                                <th class="text-center lgt-mtr-g-bg">Actual </th>
+                                <th class="text-center">Attachment</th>
+                                <th class="text-center lgt-mtr-o-bg">Due</th>
+                                <th class="text-center lgt-mtr-g-bg">Actual </th>
+                                <th class="text-center">Attachment</th>
+                                <th class="text-center lgt-mtr-o-bg">Due</th>
+                                <th class="text-center lgt-mtr-g-bg">Actual </th>
+                                <th class="text-center">Attachment</th>
+
+                                <th class="text-center lgt-mtr-o-bg">Due</th>
+                                <th class="text-center lgt-mtr-g-bg">Actual </th>
+                                <th class="text-center">Attachment</th>
+                                <th class="text-center lgt-mtr-o-bg">Due</th>
+                                <th class="text-center lgt-mtr-g-bg">Actual </th>
+                                <th class="text-center">Attachment</th>
+                                <th class="text-center lgt-mtr-o-bg">Due</th>
+                                <th class="text-center lgt-mtr-g-bg">Actual </th>
+                                <th class="text-center">Attachment</th>
+                                <th class="text-center lgt-mtr-o-bg">Due</th>
+                                <th class="text-center lgt-mtr-g-bg">Actual </th>
+                                <th class="text-center">Attachment</th>
+                                <th class="text-center lgt-mtr-o-bg">Due</th>
+                                <th class="text-center lgt-mtr-g-bg">Actual </th>
+                                <th class="text-center">Attachment</th>
+                                <th class="text-center lgt-mtr-o-bg">Due</th>
+                                <th class="text-center lgt-mtr-g-bg">Actual </th>
+                                <th class="text-center">Attachment</th>
+                            </tr>
+
+                        </thead>
+                        <tbody>
+
+                            <tr>
+                                <td>1</td>
+                                <td>
+                                    <select class="form-control applyselect Mandatory" id="ddlSubCategory" onchange="ChangeCategory(this)">
+                                    </select>
+                                    <span id="spddlSubCategory" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+                                </td>
+                                <td>
+                                    <input type="hidden" id="Category" />
+                                    <p id="cate">Select</p>
+                                </td>
+
+                                <td>
+                                    <select class="form-control applyselect Mandatory " id="ddlCompliance" onchange="HideErrorMessage(this);">
+                                    </select>
+                                    <span id="spddlCompliance" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+                                </td>
+                                <td>
+                                    <textarea class="form-control w-200 Mandatory" id="txtDetails" placeholder="Enter"></textarea>
+                                    <span id="sptxtDetails" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+                                </td>
+                                <td>
+                                    <input type="text" class="form-control Mandatory" id="ddlDoer" onchange="HideErrorMessage(this);" />
+
+
+                                    <span id="spddlDoer" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+
+                                </td>
+
+                                <td class="lgt-mtr-o-bg" style="z-index:999;">
+
+                                    <input autocomplete="off" style="width:180px" class="form-control  datepicker" id="txtDueDate1" />
+
+
+
+                                </td>
+                                <td class="lgt-mtr-o-bg" style="z-index:999">
+                                    <input autocomplete="off" style="width:180px" class="form-control  datepicker" id="txtActualDate1" />
+
+                                </td>
+                                <td>
+                                    <input type="file" class="form-control w-200" id="Attach1" onchange="UploadocumentLegacyDoc(this,1)" />
+
+                                    <input type="hidden" value="" id="hdnUploadFileUrl1" />
+                                    <input type="hidden" id="hdnUploadActualFileName1" />
+                                    <input type="hidden" id="hdnUploadNewFileName1" />
+                                </td>
+
+
+                                <td class="lgt-mtr-o-bg" style="z-index:999">
+                                    <input autocomplete="off" style="width:180px" class="form-control  datepicker" id="txtDueDate2" />
+
+                                </td>
+                                <td class="lgt-mtr-o-bg" style="z-index:999">
+                                    <input autocomplete="off" style="width:180px" class="form-control  datepicker" id="txtActualDate2" />
+
+                                </td>
+                                <td>
+                                    <input type="file" class="form-control w-200" id="Attach2" onchange="UploadocumentLegacyDoc(this,2)" />
+
+                                    <input type="hidden" value="" id="hdnUploadFileUrl2" />
+                                    <input type="hidden" id="hdnUploadActualFileName2" />
+                                    <input type="hidden" id="hdnUploadNewFileName2" />
+                                </td>
+
+
+                                <td class="lgt-mtr-o-bg" style="z-index:999">
+                                    <input autocomplete="off" style="width:180px" class="form-control  datepicker" id="txtDueDate3" />
+
+                                </td>
+                                <td class="lgt-mtr-o-bg" style="z-index:999">
+                                    <input autocomplete="off" style="width:180px" class="form-control  datepicker" id="txtActualDate3" />
+
+                                </td>
+                                <td>
+                                    <input type="file" class="form-control w-200" id="Attach3" onchange="UploadocumentLegacyDoc(this,3)" />
+
+                                    <input type="hidden" value="" id="hdnUploadFileUrl3" />
+                                    <input type="hidden" id="hdnUploadActualFileName3" />
+                                    <input type="hidden" id="hdnUploadNewFileName3" />
+                                </td>
+
+
+
+                                <td class="lgt-mtr-o-bg" style="z-index:999">
+                                    <input autocomplete="off" style="width:180px" class="form-control  datepicker" id="txtDueDate4" />
+
+                                </td>
+                                <td class="lgt-mtr-o-bg" style="z-index:999">
+                                    <input autocomplete="off" style="width:180px" class="form-control  datepicker" id="txtActualDate4" />
+
+                                </td>
+                                <td>
+                                    <input type="file" class="form-control w-200" id="Attach4" onchange="UploadocumentLegacyDoc(this,4)" />
+
+                                    <input type="hidden" value="" id="hdnUploadFileUrl4" />
+                                    <input type="hidden" id="hdnUploadActualFileName4" />
+                                    <input type="hidden" id="hdnUploadNewFileName4" />
+                                </td>
+
+
+                                <td class="lgt-mtr-o-bg" style="z-index:999">
+                                    <input autocomplete="off" style="width:180px" class="form-control  datepicker" id="txtDueDate5" />
+
+                                </td>
+                                <td class="lgt-mtr-o-bg" style="z-index:999">
+                                    <input autocomplete="off" style="width:180px" class="form-control  datepicker" id="txtActualDate5" />
+
+                                </td>
+                                <td>
+                                    <input type="file" class="form-control w-200" id="Attach5" onchange="UploadocumentLegacyDoc(this,5)" />
+
+                                    <input type="hidden" value="" id="hdnUploadFileUrl5" />
+                                    <input type="hidden" id="hdnUploadActualFileName5" />
+                                    <input type="hidden" id="hdnUploadNewFileName5" />
+                                </td>
+
+
+                                <td class="lgt-mtr-o-bg" style="z-index:999">
+                                    <input autocomplete="off" style="width:180px" class="form-control  datepicker" id="txtDueDate6" />
+
+                                </td>
+                                <td class="lgt-mtr-o-bg" style="z-index:999">
+                                    <input autocomplete="off" style="width:180px" class="form-control  datepicker" id="txtActualDate6" />
+
+                                </td>
+                                <td>
+                                    <input type="file" class="form-control w-200" id="Attach6" onchange="UploadocumentLegacyDoc(this,6)" />
+
+                                    <input type="hidden" value="" id="hdnUploadFileUrl6" />
+                                    <input type="hidden" id="hdnUploadActualFileName6" />
+                                    <input type="hidden" id="hdnUploadNewFileName6" />
+                                </td>
+
+                                <td class="lgt-mtr-o-bg" style="z-index:999">
+                                    <input autocomplete="off" style="width:180px" class="form-control  datepicker" id="txtDueDate7" />
+
+                                </td>
+                                <td class="lgt-mtr-o-bg" style="z-index:999">
+                                    <input autocomplete="off" style="width:180px" class="form-control  datepicker" id="txtActualDate7" />
+
+                                </td>
+                                <td>
+                                    <input type="file" class="form-control w-200" id="Attach7" onchange="UploadocumentLegacyDoc(this,7)" />
+
+                                    <input type="hidden" value="" id="hdnUploadFileUrl7" />
+                                    <input type="hidden" id="hdnUploadActualFileName7" />
+                                    <input type="hidden" id="hdnUploadNewFileName7" />
+                                </td>
+
+                                <td class="lgt-mtr-o-bg" style="z-index:999">
+                                    <input autocomplete="off" style="width:180px" class="form-control  datepicker" id="txtDueDate8" />
+
+                                </td>
+                                <td class="lgt-mtr-o-bg" style="z-index:999">
+                                    <input autocomplete="off" style="width:180px" class="form-control  datepicker" id="txtActualDate8" />
+
+                                </td>
+                                <td>
+                                    <input type="file" class="form-control w-200" id="Attach8" onchange="UploadocumentLegacyDoc(this,8)" />
+
+                                    <input type="hidden" value="" id="hdnUploadFileUrl8" />
+                                    <input type="hidden" id="hdnUploadActualFileName8" />
+                                    <input type="hidden" id="hdnUploadNewFileName8" />
+                                </td>
+
+                                <td class="lgt-mtr-o-bg" style="z-index:999">
+                                    <input autocomplete="off" style="width:180px" class="form-control  datepicker" id="txtDueDate9" />
+
+                                </td>
+                                <td class="lgt-mtr-o-bg" style="z-index:999">
+                                    <input autocomplete="off" style="width:180px" class="form-control  datepicker" id="txtActualDate9" />
+
+                                </td>
+                                <td>
+                                    <input type="file" class="form-control w-200" id="Attach9" onchange="UploadocumentLegacyDoc(this,9)" />
+
+                                    <input type="hidden" value="" id="hdnUploadFileUrl9" />
+                                    <input type="hidden" id="hdnUploadActualFileName9" />
+                                    <input type="hidden" id="hdnUploadNewFileName9" />
+                                </td>
+
+                                <td class="lgt-mtr-o-bg" style="z-index:999">
+                                    <input autocomplete="off" style="width:180px" class="form-control  datepicker" id="txtDueDate10" />
+
+                                </td>
+                                <td class="lgt-mtr-o-bg" style="z-index:999">
+                                    <input autocomplete="off" style="width:180px" class="form-control  datepicker" id="txtActualDate10" />
+
+                                </td>
+                                <td>
+                                    <input type="file" class="form-control w-200" id="Attach10" onchange="UploadocumentLegacyDoc(this,10)" />
+
+                                    <input type="hidden" value="" id="hdnUploadFileUrl10" />
+                                    <input type="hidden" id="hdnUploadActualFileName10" />
+                                    <input type="hidden" id="hdnUploadNewFileName10" />
+                                </td>
+
+                                <td class="lgt-mtr-o-bg" style="z-index:999">
+                                    <input autocomplete="off" style="width:180px" class="form-control  datepicker" id="txtDueDate11" />
+
+                                </td>
+                                <td class="lgt-mtr-o-bg" style="z-index:999">
+                                    <input autocomplete="off" style="width:180px" class="form-control  datepicker" id="txtActualDate11" />
+
+                                </td>
+                                <td>
+                                    <input type="file" class="form-control w-200" id="Attach11" onchange="UploadocumentLegacyDoc(this,11)" />
+
+                                    <input type="hidden" value="" id="hdnUploadFileUrl11" />
+                                    <input type="hidden" id="hdnUploadActualFileName11" />
+                                    <input type="hidden" id="hdnUploadNewFileName11" />
+                                </td>
+
+                                <td class="lgt-mtr-o-bg" style="z-index:999">
+                                    <input autocomplete="off" style="width:180px" class="form-control  datepicker" id="txtDueDate12" />
+
+                                </td>
+                                <td class="lgt-mtr-o-bg" style="z-index:999">
+                                    <input autocomplete="off" style="width:180px" class="form-control  datepicker" id="txtActualDate12" />
+
+                                </td>
+                                <td>
+                                    <input type="file" class="form-control w-200" id="Attach12" onchange="UploadocumentLegacyDoc(this,12)" />
+
+                                    <input type="hidden" value="" id="hdnUploadFileUrl12" />
+                                    <input type="hidden" id="hdnUploadActualFileName12" />
+                                    <input type="hidden" id="hdnUploadNewFileName12" />
+                                </td>
+
+                            </tr>
+
+                        </tbody>
+                    </table>
+
+                </div>
+                <div class="text-right mt-3">
+                    <button type="button" class="btn mtr-o-grn " onclick="SaveLegacy()" name="Command" value="Submit"><i class="fas fa-save"></i>Submit</button>
+                    <button type="button" class="btn mtr-o-grn " onclick="ClearLegacy()" name="Command" value="Submit"><i class="fas fa-times-circle"></i>Clear</button>
+                </div>
+            </div>
+
+            <div class="col-sm-12">
+
+                <div class="table-scrollable">
+                    <table id="tblLegacyBindData" class="table table-striped table-bordered dt-responsive nowrap tbltick new_width" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
+                        <thead>
+                            <tr>
+                                <th><div class="w-50"></div></th>
+                                <th width="20">S.No.</th>
+                                <th><div style="width:200px">Category<sup>*</sup></div></th>
+                                <th><div style="width:200px">Sub Category<sup>*</sup></div></th>
+                                <th><div style="width:200px">Compliance<sup>*</sup></div></th>
+                                <th><div style="width:200px">Details<sup>*</sup></div></th>
+                                <th><div style="width:200px">Primary User<sup>*</sup></div></th>
+
+
+                                <th width="100" colspan="3" class="text-center"><label id="m1">Apr-</label></th>
+                                <th width="100" colspan="3" class="text-center"><label id="m2">May-</label></th>
+                                <th width="100" colspan="3" class="text-center"><label id="m3">Jun-</label></th>
+                                <th width="100" colspan="3" class="text-center"><label id="m4">Jul-</label></th>
+                                <th width="100" colspan="3" class="text-center"><label id="m5">Aug-</label></th>
+                                <th width="100" colspan="3" class="text-center"><label id="m6">Sep-</label></th>
+                                <th width="100" colspan="3" class="text-center"><label id="m7">Oct-</label></th>
+                                <th width="100" colspan="3" class="text-center"><label id="m8">Nov-</label></th>
+                                <th width="100" colspan="3" class="text-center"><label id="m9">Dec-</label>	</th>
+                                <th width="100" colspan="3" class="text-center"><label id="m10">Jan-</label>	</th>
+                                <th width="100" colspan="3" class="text-center"><label id="m11">Feb-</label>	</th>
+                                <th width="100" colspan="3" class="text-center"><label id="m12">Mar-</label></th>
+                            </tr>
+                            <tr>
+                                <th></th>
+                                <th colspan="6"></th>
+                                <th class="text-center"><div style="width:100px">Due</div></th>
+                                <th class="text-center lgt-mtr-g-bg"><div style="width:100px">Actual </div></th>
+                                <th class="text-center"><div style="width:100px">Attachment</div></th>
+                                <th class="text-center lgt-mtr-o-bg"><div style="width:100px">Due</div></th>
+                                <th class="text-center lgt-mtr-g-bg"><div style="width:100px">Actual </div></th>
+                                <th class="text-center"><div style="width:100px">Attachment</div></th>
+                                <th class="text-center lgt-mtr-o-bg"><div style="width:100px">Due</div></th>
+                                <th class="text-center lgt-mtr-g-bg"><div style="width:100px">Actual </div></th>
+                                <th class="text-center"><div style="width:100px">Attachment</div></th>
+                                <th class="text-center lgt-mtr-o-bg"><div style="width:100px">Due</div></th>
+                                <th class="text-center lgt-mtr-g-bg"><div style="width:100px">Actual </div></th>
+                                <th class="text-center"><div style="width:100px">Attachment</div></th>
+                                <th class="text-center lgt-mtr-o-bg"><div style="width:100px">Due</div></th>
+                                <th class="text-center lgt-mtr-g-bg"><div style="width:100px">Actual </div></th>
+                                <th class="text-center"><div style="width:100px">Attachment</div></th>
+                                <th class="text-center lgt-mtr-o-bg"><div style="width:100px">Due</div></th>
+                                <th class="text-center lgt-mtr-g-bg"><div style="width:100px">Actual </div></th>
+                                <th class="text-center"><div style="width:100px">Attachment</div></th>
+                                <th class="text-center lgt-mtr-o-bg"><div style="width:100px">Due</div></th>
+                                <th class="text-center lgt-mtr-g-bg"><div style="width:100px">Actual </div></th>
+                                <th class="text-center"><div style="width:100px">Attachment</div></th>
+                                <th class="text-center lgt-mtr-o-bg"><div style="width:100px">Due</div></th>
+                                <th class="text-center lgt-mtr-g-bg"><div style="width:100px">Actual </div></th>
+                                <th class="text-center"><div style="width:100px">Attachment</div></th>
+                                <th class="text-center lgt-mtr-o-bg"><div style="width:100px">Due</div></th>
+                                <th class="text-center lgt-mtr-g-bg"><div style="width:100px">Actual </div></th>
+                                <th class="text-center"><div style="width:100px">Attachment</div></th>
+                                <th class="text-center lgt-mtr-o-bg"><div style="width:100px">Due</div></th>
+                                <th class="text-center lgt-mtr-g-bg"><div style="width:100px">Actual </div></th>
+                                <th class="text-center"><div style="width:100px">Attachment</div></th>
+                                <th class="text-center lgt-mtr-o-bg"><div style="width:100px">Due</div></th>
+                                <th class="text-center lgt-mtr-g-bg"><div style="width:100px">Actual </div></th>
+                                <th class="text-center"><div style="width:100px">Attachment</div></th>
+                                <th class="text-center lgt-mtr-o-bg"><div style="width:100px">Due</div></th>
+                                <th class="text-center lgt-mtr-g-bg"><div style="width:100px">Actual </div></th>
+                                <th class="text-center"><div style="width:100px">Attachment</div></th>
+                            </tr>
+
+                        </thead>
+
+                    </table>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <div class="col-sm-12 text-center" style="display:none;">
+
+        <input data-val="true" data-val-number="The field isdeleted must be a number." data-val-required="The isdeleted field is required." id="isdeleted" name="isdeleted" type="hidden" value="0">
+
+
+
+        <button type="button" onclick="RedirectToLegacy()" class="btn cnl-btn"><i class="fas fa-times"></i> Close</button>
+    </div>
+    <div class="modal fade pop-dgn" id="add">
+        <div class="modal-dialog modal-md">
+            <div class="modal-content">
+
+                <div class="modal-header blk-gdn-btn">
+                    <h4 class="modal-title"><i class="fa fa-plus"></i>Add Category Name</h4>
+                    <div class="close" data-dismiss="modal">&times;</div>
+                </div>
+                <!-- Modal body -->
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-sm-8 form-group">
+                            <label>Category Name <sup>*</sup></label>
+                            <input type="text" class="form-control" placeholder="Enter">
+                        </div>
+                        <div class="col-sm-12 form-group">
+                            <label>Description</label>
+                            <textarea placeholder="Enter" class="form-control h-100"></textarea>
+                        </div>
+
+
+
+                        <div class="col-sm-12 text-center">
+
+                            <button type="submit" class="btn mtr-o-grn btn-l ripplelink pull-right" name="Command" value="Add"><i class="fas fa-save"></i>Save</button>
+                            <button type="button" class="btn cnl-btn ripplelink" data-dismiss="modal"><i class="fas fa-times"></i>Close</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade pop-dgn" id="cancel">
+        <div class="modal-dialog modal-md">
+            <div class="modal-content">
+
+
+                <!-- Modal body -->
+                <div class="modal-body p-0">
+                    <div class="swal-icon swal-icon--warning text-center">
+                        <span class="swal-icon--warning__body">
+                            <span class="swal-icon--warning__dot"></span>
+                        </span>
+                    </div>
+                    <div class="swal-title">Are You Sure want to delete  </div>
+
+                    <div class="swal-footer">
+
+
+                        <button class="swal-button swal-button--cancel" tabindex="0" data-dismiss="modal">Cancel</button>
+
+                        <button class="swal-button swal-button--confirm swal-button--danger" onclick="ChangeDelete()">OK</button>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    @section scripts    {
+        @System.Web.Optimization.Scripts.Render("~/bundle/unobtrusivejs")
+        @System.Web.Optimization.Scripts.Render("~/bundle/dataTablesjs")
+        <script src="~/assets/design/Scripts/AddInit.js?v=@clsApplicationSetting.GetWebConfigValue("Version")"></script>
+        <script src="~/Areas/Compliance/DevScript/UploadLegacyCompliance.js"></script>
+
+        <script>
+            function ClearLegacy() {
+                ClearData(1);
+            }
+             var baseUrl;
+
+           function HrefCompliance() {
+            ShowLoadingDialog();
+
+                // Generate the base URL
+               baseUrl = '@Url.Action("Compliance", "UploadLegacyCompliance", new { src = clsApplicationSetting.EncryptQueryString(ViewBag.MenuID.ToString() + "*/Compliance/UploadLegacyCompliance") })';
+
+
+                // Redirect to the generated URL
+                window.location = baseUrl;
+
+                setTimeout(function () {
+                    CloseLoadingDialog();
+                    $("#cancel").hide();
+                }, 4000);
+            }
+
+             function HrefCompMaster() {
+                 ShowLoadingDialog();
+
+                // Redirect to the generated URL
+                  var comp = '@Url.Action("Compliance", "UploadLegacyCompliance", new { src = clsApplicationSetting.EncryptQueryString(ViewBag.MenuID.ToString() + "*/Compliance/UploadLegacyCompliance") })';
+
+                    window.location = comp;
+
+                    setTimeout(function () {
+                        CloseLoadingDialog();
+                        $("#cancel").hide();
+                    }, 4000);
+
+            }
+        </script>
+    }
+}
+
+

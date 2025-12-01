@@ -1,0 +1,379 @@
+﻿@model Employee.GeneralInfo
+@{
+	string MenuID = ViewBag.MenuID.ToString();
+	string src = ViewBag.src;
+	if (ViewBag.Mobile == "Mobile")
+	{
+		Layout = "~/Views/Shared/_MLayoutPage.cshtml";
+	}
+}
+@Html.Partial("_EmployeeHeader")
+
+
+
+<div class="mb-100" id="divMain">
+	@Html.Hidden("hdfsrc", src)
+	<div class="inner-main mb-2">
+		<h2 class="headingtwo"><i class="fas fa-user-tie"></i>Travel Preference</h2>
+
+
+		<div class="row">
+
+			<div class="col-md-9 col-sm-12 form-group" id="divAirline">
+				<table id="TableAirlinePreferencesList" class="table table-striped m-0">
+					<thead>
+						<tr>
+							<th class="w-50">S.No.</th>
+							<th class="w-150">Airline Name</th>
+							<th>Flyer Number </th>
+							<th class="w-33 text-center"></th>
+						</tr>
+					</thead>
+					<tbody>
+						@if (Model.AirlinePreferencesList != null)
+						{
+							int QCount = 0;
+							for (int i = 0; i < Model.AirlinePreferencesList.Count; i++)
+							{
+								QCount++;
+								<tr>
+									<td>
+										@Html.HiddenFor(model => Model.AirlinePreferencesList[i].AirID, new { @class = "hdnID" })
+										<label id="span_@QCount" name="span_@QCount">@QCount </label>
+									</td>
+									<td>
+										@Html.TextBoxFor(model => Model.AirlinePreferencesList[i].AirlineName, new { @class = "form-control AirlineName" })
+										@Html.ValidationMessageFor(model => Model.AirlinePreferencesList[i].AirlineName, "", new { @class = "text-danger" })
+									</td>
+									<td>
+										@Html.TextBoxFor(model => Model.AirlinePreferencesList[i].FlyerNumber, new { @class = "form-control FlyerNumber" })
+										@Html.ValidationMessageFor(model => Model.AirlinePreferencesList[i].FlyerNumber, "", new { @class = "text-danger" })
+									</td>
+									<td>
+										@if (QCount > 1)
+										{
+											<a onclick="DeleteRow(this)" class="remove"><i class="fas fa-window-close red-clr" aria-hidden="true"></i></a>
+										}
+										else
+										{
+											<a class="disabled"><i class="fas fa-window-close" aria-hidden="true"></i></a>
+										}
+									</td>
+								</tr>
+							}
+						}
+
+					</tbody>
+				</table>
+				<div class="text-right mt-2">
+					<a class="green-clr" onclick="AddNewRow(this)"><strong><i class="fas fa-plus"></i>Add</strong></a>
+				</div>
+				<div class="col-md-6 col-sm-8 form-group">
+					@if (Model.FlyerLockStatus == "Approved" || Model.FlyerLockStatus == "")
+					{
+						<button type="button" class="btn mtr-g-grn " id="btnupdateFlyer" onclick="UpdateFlyer_Update(this)"><i class="fas fa-edit"></i>Updated</button>
+					}
+					else
+					{
+						<button type="button" class="btn mtr-g-grn isDisabled" disabled data-toggle="tooltip" title="Your previous request is pending on HR, please obtain approval from HR" id="btnupdateMeal"><i class="fas fa-edit"></i>Updated</button>
+					}
+
+				</div>
+			</div>
+
+		</div>
+
+
+		<div class="row" id="divmeal">
+			<div class="col-md-3 col-sm-6 form-group hw-575">
+				<label>Seat Preference</label>
+				@Html.DropDownListFor(n => n.SeatPreferencesID, new SelectList(Model.SeatPreferencesList, "ID", "Name", Model.SeatPreferencesID), "Select",
+					 new { @class = "form-control  applyselect" })
+				@Html.ValidationMessageFor(model => model.SeatPreferencesID, "", new { @class = "text-danger" })
+				<input type="hidden" value="@Model.SeatPreferencesID" id="hdfSeatPreferencesID" />
+			</div>
+			<div class="col-md-3 col-sm-6 form-group hw-575">
+				<label>Meal Preference</label>
+				@Html.DropDownListFor(n => n.MealPreferenceID, new SelectList(Model.MealPreferencesList, "ID", "Name", Model.MealPreferenceID), "Select",
+					new { @class = "form-control  applyselect" })
+				@Html.ValidationMessageFor(model => model.MealPreferenceID, "", new { @class = "text-danger" })
+				<input type="hidden" value="@Model.MealPreferenceID" id="hdfMealPreferenceID" />
+			</div>
+			<div class="col-md-6 col-sm-8 form-group">
+				@if (Model.LockStatus == "Approved" || Model.LockStatus == "")
+				{
+					<button type="button" class="btn mtr-g-grn " id="btnupdateMeal" onclick="UpdateMeal_Update(this)"><i class="fas fa-edit"></i>Updated</button>
+				}
+				else
+				{
+					<button type="button" class="btn mtr-g-grn isDisabled" disabled data-toggle="tooltip" title="Your previous request is pending on HR, please obtain approval from HR" id="btnupdateMeal"><i class="fas fa-edit"></i>Updated</button>
+				}
+
+			</div>
+		</div>
+	</div>
+
+	<div class="inner-main mb-5">
+		<h2 class="headingtwo"><i class="fas fa-user-tie"></i>Last Employment Details</h2>
+		<div class="row">
+
+			<div class="col-md-3 col-sm-6 form-group">
+				<label> Employer Name </label>
+				@Html.TextBoxFor(model => model.employmentDetails.CompanyName, new { @class = "form-control" })
+				@Html.ValidationMessageFor(model => model.employmentDetails.CompanyName, "", new { @class = "text-danger" })
+			</div>
+			<div class="col-md-3 col-sm-6 form-group">
+				<label>Date of Joining </label>
+				@Html.TextBoxFor(model => model.employmentDetails.DOJ, new { @class = "form-control LastCODET", @type = "date" })
+				@Html.ValidationMessageFor(model => model.employmentDetails.DOJ, "", new { @class = "text-danger" })
+			</div>
+			<div class="col-md-3 col-sm-6 form-group">
+				<label>Date of Leaving </label>
+				@Html.TextBoxFor(model => model.employmentDetails.DOR, new { @class = "form-control LastCODET", @type = "date" })
+				@Html.ValidationMessageFor(model => model.employmentDetails.DOR, "", new { @class = "text-danger" })
+			</div>
+
+			<div class="col-md-3 col-sm-3  form-group align-self-end">
+				<label>Total Work Experience (In Years)</label>
+				@Html.TextBoxFor(model => model.employmentDetails.TotalExperence, new { @class = "form-control LastCODET" })
+				@Html.ValidationMessageFor(model => model.employmentDetails.TotalExperence, "", new { @class = "text-danger" })
+			</div>
+
+			<div class="col-md-3 col-sm-6 form-group ">
+				<label> Last Annual CTC <br> <small class="lgt-text">(Gross CTC and benefits details in any)</small> </label>
+				@Html.TextBoxFor(model => model.employmentDetails.AnnualCTC, new { @class = "form-control LastCODET" })
+				@Html.ValidationMessageFor(model => model.employmentDetails.AnnualCTC, "", new { @class = "text-danger" })
+			</div>
+
+			<div class="col-md-3 col-sm-6 form-group  align-self-end">
+				<label>Designation </label>
+				@Html.TextBoxFor(model => model.employmentDetails.Designation, new { @class = "form-control" })
+				@Html.ValidationMessageFor(model => model.employmentDetails.Designation, "", new { @class = "text-danger" })
+			</div>
+			<div class="col-md-3 col-sm-6 form-group align-self-end">
+				<label>Location </label>
+				@Html.TextBoxFor(model => model.employmentDetails.Location, new { @class = "form-control" })
+				@Html.ValidationMessageFor(model => model.employmentDetails.Designation, "", new { @class = "text-danger" })
+			</div>
+			<div class="col-md-3 col-sm-6 form-group align-self-end">
+				<label>Term of Employment (In Years)</label>
+				@Html.TextBoxFor(model => model.employmentDetails.EmploymentTerm, new { @class = "form-control" })
+				@Html.ValidationMessageFor(model => model.employmentDetails.EmploymentTerm, "", new { @class = "text-danger" })
+			</div>
+
+			<div class="col-md-6 col-sm-12 form-group align-self-end">
+				<label>In case of Gap in service, please provide reasons for the same</label>
+				@Html.TextAreaFor(model => model.employmentDetails.ShareSomething, new { @class = "form-control", @type = "date" })
+				@Html.ValidationMessageFor(model => model.employmentDetails.ShareSomething, "", new { @class = "text-danger" })
+			</div>
+
+			<div class="col-sm-12 form-group">
+				<ul class="list-unstyled inline-li m-0">
+					<li>
+						<label class="m-0">Do you want C3 to consider income of current financial year ?</label>
+					</li>
+					<li>
+						<div class="radio-button">
+							<input id="yes1" name="@Html.NameFor(x=>x.employmentDetails.IsConsiderIncome)" value="Yes" type="radio">
+							<label for="yes1" class="radio-label mb-0">Yes</label>
+						</div>
+					</li>
+					<li>
+						<div class="radio-button">
+							<input id="no1" name="@Html.NameFor(x=>x.employmentDetails.IsConsiderIncome)" value="No" type="radio">
+							<label for="no1" class="radio-label mb-0">No</label>
+						</div>
+					</li>
+					@Html.ValidationMessageFor(model => model.employmentDetails.IsConsiderIncome, "", new { @class = "text-danger" })
+				</ul>
+			</div>
+			<div class="col-md-3 col-sm-3 form-group">
+				<label>Amount of Income</label>
+				@Html.TextBoxFor(model => model.employmentDetails.IncomeAmount, new { @class = "form-control" })
+				@Html.ValidationMessageFor(model => model.employmentDetails.IncomeAmount, "", new { @class = "text-danger" })
+			</div>
+			<div class="col-md-3 col-sm-3 form-group">
+				<label>Amount of TDS deducted and deposited</label>
+				@Html.TextBoxFor(model => model.employmentDetails.TDSDeduction, new { @class = "form-control" })
+				@Html.ValidationMessageFor(model => model.employmentDetails.TDSDeduction, "", new { @class = "text-danger" })
+			</div>
+
+
+		</div>
+	</div>
+
+
+	@*<div class="ftr-btn">
+			<button type="submit" class="btn mtr-o-grn " name="Command" value="Add"><i class="fas fa-paper-plane"></i>Submit</button>
+
+			@Html.CreateAnchor(MenuID, "/Employee/GeneralInfo*" + Model.id, "Previous", "btn blk-gdn-btn", "Click to go back", "fas fa-angle-double-left m-0", "")
+			@Html.CreateAnchor(MenuID, "/Employee/IDInformation*" + Model.id, "Next", "btn blk-gdn-btn", "Click to Next", "fas fa-angle-double-right m-0", "")
+		</div>*@
+
+
+</div>
+
+@section scripts    {
+	@System.Web.Optimization.Scripts.Render("~/bundle/unobtrusivejs")
+	@Html.IncludeVersionedJs(Url.Content("~/assets/design/scripts/AddInit.js"))
+	@Html.IncludeVersionedJs(Url.Content("~/assets/design/scripts/PagesJS/EmployeeMasterUpdate.js"))
+	<script>
+		$(document).ready(function () {
+			$('#divMain :input').attr('disabled', true);
+			$('#divAirline :input').removeAttr('disabled');
+			$('#divmeal :input').removeAttr('disabled');
+		});
+		function AddNewRow(obj) {
+			var Table = $(obj).parent("div").parent('div').find('table');
+			var TableID = $(Table).attr('ID');
+			var LastTRCount = parseInt($('#' + TableID + '').find("tbody tr").length) - 1;
+			var $tableBody = $('#' + TableID + '').find("tbody"),
+				$trLast = $tableBody.find("tr:last"),
+				$trNew = $trLast.clone();
+			$trNew.find("td:last").html('<a onclick="DeleteRow(this)" class="remove"><i class="fas fa-window-close red-clr" aria-hidden="true"></i></a>')
+			$trNew.find("label").each(function () {
+				$(this).attr({
+					'id': function (_, id) { var arr = id.split('_'); return id.replace(arr[1], LastTRCount + 1); },
+				});
+				$(this).html(parseInt($('#' + TableID + '').find("tbody tr").length) + 1)
+			});
+
+			$trNew.find("input").each(function (i) {
+				$(this).attr({
+					'id': function (_, name) { return name.replace('_' + LastTRCount + '_', '_' + (parseInt(LastTRCount) + 1) + '_'); },
+					'name': function (_, name) { return name.replace('[' + LastTRCount + ']', '[' + (parseInt(LastTRCount) + 1) + ']'); },
+				});
+				$(this).val('')
+			});
+
+			$trNew.find("span").each(function (i) {
+				if ($(this).attr("data-valmsg-for")) {
+					$(this).attr({
+						'data-valmsg-for': function (_, name) { return name.replace('[' + LastTRCount + ']', '[' + (parseInt(LastTRCount) + 1) + ']'); }
+					});
+				}
+				if ($(this).attr("for")) {
+					$(this).attr({
+						'for': function (_, name) { return name.replace('_' + LastTRCount + '_', '_' + (parseInt(LastTRCount) + 1) + '_'); }
+					});
+				}
+			});
+
+			$trLast.after($trNew);
+			var form = $("#GeneralInfoFrom").closest("form");
+			form.removeData('validator');
+			form.removeData('unobtrusiveValidation');
+			$.validator.unobtrusive.parse(form);
+		}
+
+
+		function DeleteRow(obj) {
+			var Response = 0;
+			var ID = $(obj).closest('tr').find('.hdnID').val();
+			var Table = $(obj).closest('table');
+			var TableID = $(Table).attr('ID');
+
+			ConfirmMsgBox("Are you sure want to delete", '', function () {
+				if (ID) {
+					var data = DelRecord_Common(ID, '');
+					if (data.Status) {
+						Response = 1;
+					}
+					else {
+						FailToaster(data.SuccessMessage);
+
+					}
+				}
+				if (Response == 1 || !ID) {
+					var TotalRowCount = $('#' + TableID + '').find("tbody tr").length;
+
+					$(obj).closest('tr').remove();
+					$('#' + TableID + ' TBODY TR').each(function (i) {
+						$(this).closest("tr").find("label").each(function () {
+							$(this).attr({
+								'id': function (_, id) { var arr = id.split('_'); return id.replace(arr[1], i); },
+							});
+							$(this).html(i + 1)
+						});
+
+
+						$(this).closest("tr").find("input").each(function () {
+							$(this).attr({
+								'id': function (_, id) { return id.replace('_' + (parseInt(i) + 1) + '_', '_' + i + '_'); },
+								'name': function (_, name) { return name.replace('[' + (parseInt(i) + 1) + ']', '[' + i + ']'); },
+							});
+						});
+
+						$(this).closest("tr").find("span").each(function () {
+							if ($(this).attr("data-valmsg-for")) {
+								$(this).attr({
+									'data-valmsg-for': function (_, name) { return name.replace('[' + (parseInt(i) + 1) + ']', '[' + i + ']'); },
+								});
+							}
+							if ($(this).attr("for")) {
+								$(this).attr({
+									'for': function (_, id) { return id.replace('_' + (parseInt(i) + 1) + '_', '_' + i + '_'); },
+								});
+							}
+						});
+					});
+					var form = $("#GeneralInfoFrom").closest("form");
+					form.removeData('validator');
+					form.removeData('unobtrusiveValidation');
+					$.validator.unobtrusive.parse(form);
+
+
+				}
+			})
+		}
+
+
+		function OnSuccess(obj) {
+			if (obj.Status) {
+				SuccessToaster(obj.SuccessMessage);
+				window.location.href = obj.RedirectURL;
+			}
+			else {
+				CloseLoadingDialog();
+				FailToaster(obj.SuccessMessage);
+
+			}
+		}
+
+
+		$('#employmentDetails_CompanyName').blur(function () {
+			makeMandiatory();
+		});
+		$(document).ready(function () {
+			makeMandiatory();
+		});
+		function makeMandiatory() {
+			var value = $('#employmentDetails_CompanyName').val();
+			var $cells = $(".LastCODET");
+			if (value != "") {
+				$cells.each(function () {
+					$(this).prop('readonly', false);
+					$(this).rules('add', {
+						required: true,
+						messages: {
+							required: "Hey! You missed this field."
+						}
+					});
+				});
+			}
+			else {
+
+				$cells.each(function () {
+					$(this).prop('readonly', true);
+					$(this).val('');
+					$(this).rules('add', {
+						required: false,
+						messages: {
+							required: ""
+						}
+					});
+				});
+			}
+		}
+	</script>
+}

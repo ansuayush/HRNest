@@ -1,0 +1,62 @@
+﻿@using System.Data
+@model DataSet
+@{
+	string MenuID = "0";
+	if (ViewBag.MenuID != null)
+	{
+		MenuID = ViewBag.MenuID;
+	}
+}
+<div class="row">
+	<div class="control-section">
+		@if (ViewBag.Approve == 0)
+		{
+			@Html.EJS().Grid("FlatGrid").DataSource((DataTable)Model.Tables[0]).GridLines(Syncfusion.EJ2.Grids.GridLine.Both).Columns(col =>
+	   {
+		   col.Field("id").Visible(false).Add();
+		   col.Field("Projectid").Visible(false).Add();
+		   col.Field("RowNum").HeaderText("SNo").Width("50").Add();
+		   col.Field("projref_no").HeaderText("Project No").Width("80").Add();
+		   col.Field("proj_name").HeaderText("Project Name").Width("160").Add();
+		   col.Field("Activity").HeaderText("Activity").Width("160").Add();
+		   col.Field("SubActivity").HeaderText("Sub Activity").Width("160").Add();
+		   col.Field("Code").HeaderText("Sub Sub Activity").Width("160").Add();
+		   col.HeaderText("Budget").TextAlign(Syncfusion.EJ2.Grids.TextAlign.Center).Template("#tmpbudget").Width("100").Add();
+		   col.HeaderText("Action").TextAlign(Syncfusion.EJ2.Grids.TextAlign.Center).Template("#tmpAction").Width("100").Add();
+	   }).AllowPaging().PageSettings(page => page.PageCount(10)).Toolbar(new List<string>() { "Search" }).Render()
+		}
+		else
+		{
+			@Html.EJS().Grid("FlatGrid").DataSource((DataTable)Model.Tables[0]).GridLines(Syncfusion.EJ2.Grids.GridLine.Both).Columns(col =>
+	   {
+		   col.Field("id").Visible(false).Add();
+		   col.Field("projref_no").Visible(false).Add();
+		   col.Field("Projectid").Visible(false).Add();
+		   //col.Field("projref_no").HeaderText("Project No").Width("160").Add();
+		   col.Field("proj_name").HeaderText("Project Name").Width("160").Add();
+		   col.Field("Activity").HeaderText("Activity").Width("160").Add();
+		   col.Field("SubActivity").HeaderText("Sub Activity").Width("160").Add();
+		   col.Field("Code").HeaderText("Sub Sub Activity").Width("160").Add();
+		   col.HeaderText("Budget").TextAlign(Syncfusion.EJ2.Grids.TextAlign.Center).Template("#tmpbudget").Width("100").Add();
+	   }).AllowPaging().PageSettings(page => page.PageCount(10)).Toolbar(new List<string>() { "Search" }).Render()
+		}
+
+	</div>
+</div>
+
+<script id="tmpAction" type="text/x-template">	
+	<a onclick="BindEdit(this)"><i class="fas fa-rocket"></i>Initiate </a>
+</script>
+<script id="tmpbudget" type="text/x-template">
+	<input type="hidden" name="I" value="${id}" />
+	<input type="hidden" name="N" value="${projref_no}" />
+	<input type="hidden" id="hdnProjectId" name="ProjectId" value="${Projectid}" />
+	<a onclick="GetBudgetPartial(this)">View Budget </a>
+</script>
+
+@*@Html.IncludeVersionedJs(Url.Content("~/assets/design/Scripts/SyncScripts.js"))*@
+
+
+@(Html.EJS().ScriptManager())
+
+

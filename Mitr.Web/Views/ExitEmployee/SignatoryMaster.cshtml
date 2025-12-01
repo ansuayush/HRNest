@@ -1,0 +1,148 @@
+﻿
+@model IList<Mitr.Models.EmployeeExit.SignatoryMaster>
+
+@section style{
+	@System.Web.Optimization.Styles.Render("~/bundle/dataTablecss")
+}
+<div class="inner-main mb-5 pb-0">
+	@*@Html.Partial("ListHeader_Partial", "Authorized Signatory Master")*@
+	<div class="col-sm-4 align-self-center"><h1 class="heading-one mb-2">Authorized Signatory Master </h1></div>
+	<a id="AnchorAddButton" class="btn mtr-g-grn btn-l ripplelink " onclick="ListHeaderAdd();">
+		<i class="fa fa-plus"></i> <span class="sbAtext">Add</span>
+	</a>
+	<div class="row">
+		<div class="col-md-12 col-sm-12 col-xs-12">
+			<div class="card p-0">
+				<div class="card-body p-0">
+					<div class="x_content table-currency mt-0">
+						<div class="table-responsive">
+							<table id="datatable-buttons" class="table table-striped table-bordered dt-responsive nowrap tbltick new_width" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
+								<thead>
+									<tr>
+										<th>S.no.</th>
+										<th>Authorized Signatory</th>
+										<th>Start Date</th>
+										<th>Inserted Date</th>
+										<th>Updated Date</th>
+										<th>Action</th>
+									</tr>
+									<tr class="searchbar">
+										<th class="searchhide"></th>
+										<th> </th>
+										<th> </th>
+										<th class="searchhide"> </th>
+										<th class="searchhide"> </th>
+										<th class="searchhide"> </th>
+									</tr>
+								</thead>
+								<tbody>
+									@{ int Count = 0;}
+									@foreach (Mitr.Models.EmployeeExit.SignatoryMaster item in Model)
+									{
+										Count++;
+										<tr role="row" class="odd">
+											<td class="">
+												@Count
+												<input type="hidden" name="I" value="@item.Id" />
+												<input type="hidden" name="N" value="@item.EMPName" />
+
+											</td>
+											<td class="sorting_1">@item.EMPName</td>
+											<td>@item.StartDate</td>
+											<td>@item.createdat</td>
+											<td>@item.modifiedat</td>
+
+											<td>
+
+												@Html.Raw(item.IsActive == true
+											   ? "<a  data-toggle='tooltip' data-original-title='Click to DeActivate' list='SignatoryList' OP='0' class='AIsActive' > <i class='fa fa-check-circle checkgreen' aria-hidden='true'></i></a>"
+											   : "<a data-toggle='tooltip' data-original-title='Click to Activate' list='SignatoryList' OP='1'  class='AIsActive' > <i class='fa fa-times-circle crossred' aria-hidden='true'></i></a>")
+
+												<a title="Edit" onclick="ListHeaderAdd(@item.Id);" data-toggle='tooltip'><i class="fas fa-edit checkgreen" aria-hidden="true"></i> </a>
+											</td>
+
+										</tr>
+									}
+
+								</tbody>
+							</table>
+						</div>
+					</div>
+
+				</div>
+			</div>
+
+		</div>
+	</div>
+</div>
+<div class="modal fade pop-dgn" id="ViewModal">
+	<div class="modal-dialog modal-lg">
+		<div class="modal-content">
+
+			<div class="modal-header blk-gdn-btn">
+				<h4 class="modal-title"><i class="fas fa-print"></i>Authorized Signatory </h4>
+				<div class="close" data-dismiss="modal">&times;</div>
+			</div>
+			<!-- Modal body -->
+			<div class="modal-body">
+				<div id="TagetDiv"></div>
+			</div>
+		</div>
+	</div>
+</div>
+
+
+@section scripts    {
+	@System.Web.Optimization.Scripts.Render("~/bundle/dataTablesjs")
+	@System.Web.Optimization.Scripts.Render("~/bundle/unobtrusivejs")
+	@Html.IncludeVersionedJs(Url.Content("~/assets/design/Scripts/AddInit.js"))
+	@Html.IncludeVersionedJs(Url.Content("~/assets/design/Scripts/ToolTip.js"))
+	<script>
+
+
+
+    function ListHeaderAdd(CMSID) {
+        if (CMSID == undefined)
+        {
+            CMSID = 0;
+        }
+			$.ajax({
+                url: "/ExitEmployee/_AddAuthorized",
+				type: "Get",
+                data: { src: EncryptQueryStringJSON(@ViewBag.MenuID+"*" + "/ExitEmployee/_AddAuthorized" + "*" + CMSID) },
+                success: function (data)
+                {
+					$("#TagetDiv").empty();
+                    $("#TagetDiv").html(data);
+                    $("#ViewModal").modal("show");
+                     var form = $("form")
+                .removeData("validator")
+                .removeData("unobtrusiveValidation");
+                    $.validator.unobtrusive.parse(form);
+                    SetFieldValue();
+
+
+				},
+				error: function (er) {
+					alert(er);
+
+				}
+			});
+            }
+
+        function OnSuccess(obj) {
+            if (obj.Status) {
+                SuccessToaster(obj.SuccessMessage);
+                window.location.reload();
+            }
+            else {
+                CloseLoadingDialog();
+                FailToaster(obj.SuccessMessage);
+
+            }
+        }
+
+
+	</script>
+}
+

@@ -1,0 +1,220 @@
+﻿@model MPR.Targets.addTargetSetting
+@{
+	string MenuID = "0";
+	if (ViewBag.MenuID != null)
+	{
+		MenuID = ViewBag.MenuID;
+	}
+}
+<!-- Start -->
+<div class="inner-main mb-100 pb-0">
+	<h1 class="heading-one">MPR Targets</h1>
+
+
+
+	@using (Html.BeginForm("TargetsSetting", "MPR",
+	new { src = ViewBag.src },
+	FormMethod.Post,
+	new
+	{
+		name = "_TargetsSettingFrom",
+		id = "_TargetsSettingFrom",
+		enctype = "multipart/form-data"
+	}))
+	{
+
+		@Html.AntiForgeryToken()
+
+		<div class="row wtwo-575 text-clr">
+			<div class="col-sm-2 form-group ">
+				<label>From Year</label>
+				<p>@Model.Year</p>
+			</div>
+			@if (ViewBag.ProjectID != 0)
+			{
+				<div class="col-sm-2 form-group ">
+					<label>Project</label>
+					<p>@Model.ProjectName</p>
+				</div>
+			}
+
+			<div class="col-sm-2 form-group ">
+				<label>Quarter </label>
+				<select class="form-control applyselect" id="@Html.IdFor(x => x.Quarter)" name="@Html.NameFor(x => x.Quarter)">
+					<option value="1" @(Model.Quarter == "1" ? "selected" : "")>Quarter 1</option>
+					<option value="2" @(Model.Quarter == "2" ? "selected" : "")>Quarter 2</option>
+					<option value="3" @(Model.Quarter == "3" ? "selected" : "")>Quarter 3</option>
+					<option value="4" @(Model.Quarter == "4" ? "selected" : "")>Quarter 4</option>
+				</select>
+			</div>
+
+			<div class="col-md-12">
+				@if (Model.TargetSetting.Count > 0)
+				{
+					var Section = Model.TargetSetting.GroupBy(x => x.MPRSID)
+							 .Select(x => new
+							 {
+								 MPRSID = x.Key,
+								 SecName = x.Select(ex => ex.SecName).FirstOrDefault(),
+							 })
+							 .ToList();
+
+					var SubSection = Model.TargetSetting.GroupBy(x => x.MPRSubSecID)
+							 .Select(x => new
+							 {
+								 MPRSubSecID = x.Key,
+								 MPRSID = x.Select(ex => ex.MPRSID).FirstOrDefault(),
+								 SecName = x.Select(ex => ex.SecName).FirstOrDefault(),
+								 SubSecName = x.Select(ex => ex.SubSecName).FirstOrDefault()
+
+							 })
+							 .ToList();
+
+					foreach (var Sitem in Section)
+					{
+						<div class="header-two">@Sitem.SecName</div>
+						
+						foreach (var Subitem in SubSection.Where(x => x.MPRSID == Sitem.MPRSID).ToList())
+						{
+								<div class="row">
+						<div class="col-sm-8">
+
+							<table class="table table-scroll mt-1 mb-3">
+								@{ int Count = 0;}
+								@for (int i = 0; i < Model.TargetSetting.Count; i++)
+								{
+									if (Model.TargetSetting[i].MPRSID == Sitem.MPRSID && Model.TargetSetting[i].MPRSubSecID == Subitem.MPRSubSecID)
+									{
+										Count++;
+										if (Count == 1)
+										{
+											<thead>
+												<tr>
+													<th class="w-33">S No.</th>
+													<th class="w-300 ">@Model.TargetSetting[i].SubSecName</th>
+													@if (Model.TargetSetting[i].NoOfCol == 1)
+													{
+														<th class="w-100 ">@Model.TargetSetting[i].ColText1 </th>
+													}
+													else if (Model.TargetSetting[i].NoOfCol == 2)
+													{
+														<th class="w-100 ">@Model.TargetSetting[i].ColText1 </th>
+														<th class="w-100 ">@Model.TargetSetting[i].ColText2 </th>
+													}
+													else if (Model.TargetSetting[i].NoOfCol == 3)
+													{
+														<th class="w-100 ">@Model.TargetSetting[i].ColText1 </th>
+														<th class="w-100 ">@Model.TargetSetting[i].ColText2 </th>
+														<th class="w-100 ">@Model.TargetSetting[i].ColText3 </th>
+													}
+												</tr>
+											</thead>
+										}
+										<tr>
+											<td>@Count</td>
+											<td >
+												@Model.TargetSetting[i].IndicatorName
+												@Html.HiddenFor(x => Model.TargetSetting[i].IndicatorID)
+												@Html.HiddenFor(x => Model.TargetSetting[i].IndicatorName)
+											</td>
+											@if (Model.TargetSetting[i].NoOfCol == 1)
+											{
+												<td>
+
+													@Html.TextBoxFor(model => Model.TargetSetting[i].ColVal1, new { @class = "form-control" })
+												</td>
+											}
+											else if (Model.TargetSetting[i].NoOfCol == 2)
+											{
+												<td>
+													@Html.TextBoxFor(model => Model.TargetSetting[i].ColVal1, new { @class = "form-control" })
+												</td>
+												<td>
+													@Html.TextBoxFor(model => Model.TargetSetting[i].ColVal2, new { @class = "form-control" })
+												</td>
+											}
+											else if (Model.TargetSetting[i].NoOfCol == 3)
+											{
+												<td>
+													@Html.TextBoxFor(model => Model.TargetSetting[i].ColVal1, new { @class = "form-control txtval1", @onblur = "CalculateSum(this)" })
+												</td>
+												<td>
+													@Html.TextBoxFor(model => Model.TargetSetting[i].ColVal2, new { @class = "form-control txtval2", @onblur = "CalculateSum(this)" })
+												</td>
+												<td>
+													@Html.TextBoxFor(model => Model.TargetSetting[i].ColVal3, new { @class = "form-control txtTotal" })
+												</td>
+											}
+										</tr>
+									}
+
+								}
+							</table>
+							</div></div>
+						}
+						
+					}
+				}
+				
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-md-12">
+				<div class="btn-ftb">
+					@if (Model.IsButtonShow)
+					{
+					<button type="submit" class="btn  mtr-o-grn btn-l ripplelink pull-right" name="Command" value="Save"><i class="fa fa-paper-plane" aria-hidden="true"></i> Submit</button>
+					}
+					@if (ViewBag.ProjectID == 0)
+					{
+						@Html.CreateAnchor(MenuID, "/MPR/OrganisationalTargets", "Back", "btn cnl-btn btn-l ripplelink", "", "fas fa-angle-double-left", "")
+					}
+					else
+					{
+						@Html.CreateAnchor(MenuID, "/MPR/ProjectTargets", "Back", "btn cnl-btn btn-l ripplelink", "", "fas fa-angle-double-left", "")
+					}
+				</div>
+			</div>
+
+		</div>
+
+	}
+</div>
+<!-- ENd -->
+
+
+@section scripts    {
+
+	@System.Web.Optimization.Scripts.Render("~/bundle/unobtrusivejs")
+
+	@Html.IncludeVersionedJs(Url.Content("~/assets/design/Scripts/ToolTip.js"))
+	@Html.IncludeVersionedJs(Url.Content("~/assets/design/scripts/AddInit.js"))
+
+	<script>
+		function CalculateSum(obj) {
+			var a = Number($(obj).closest("tr").find(".txtval1").val());
+			var b = Number($(obj).closest("tr").find(".txtval2").val());
+			if (a > 0 && b > 0) {
+				$(obj).closest("tr").find(".txtTotal").val(a + b);
+			}
+			else {
+				$(obj).closest("tr").find(".txtTotal").val('');
+			}
+		}
+
+		function OnMPRTargetSuccess(obj) {
+			if (obj.Status) {
+				CloseLoadingDialog();
+				SuccessToaster(obj.SuccessMessage);
+			}
+			else {
+				CloseLoadingDialog();
+				FailToaster(obj.SuccessMessage);
+
+			}
+		}
+
+
+
+	</script>
+}

@@ -1,0 +1,315 @@
+﻿@model IList<Mitr.Models.MyTravelRequest>
+
+<div class="shadow-box h-380">
+	<h2 class="heading-grd heading-btn  blk-gdn-btn m-0">Team Request</h2>
+
+	<!-- tab--->
+	<div class="tab-main ">
+		<ul id="tabs" class="nav nav-tabs " role="tablist">
+			<li class="nav-item"> <a id="tab-A1" href="#active-log1" class="nav-link active ripplelink" data-toggle="tab" role="tab"><i class="fas fa-envelope-open"></i>Pending Requests</a> </li>
+			@{
+				//var ExpCount = Model.Where(x => x.Approved != 0 && x.EdId == Convert.ToInt32(clsApplicationSetting.GetSessionValue("EMPID")) && (x.Expectional == 1 && x.ExpectApproved == 0)).ToList();
+				var ExpCount = Model.Where(x => x.Expectional == 1 && x.Approved == 1 && (x.ExpectApproved == 0)).ToList();
+
+			}
+			<li class="nav-item">
+				<a id="tab-C11" href="#leaves2" class="nav-link ripplelink" data-toggle="tab" role="tab">
+					<i class="fas fa-database"></i>Exceptional Approval@{if (ExpCount.Count > 0){ <div class="badge-num"></div>}}
+				</a>
+			</li>
+			@{
+				var RFCCount = Model.Where(x => x.Approved != 0 && x.HodId == Convert.ToInt32(clsApplicationSetting.GetSessionValue("EMPID")) && (x.Status == "Request forwarded for RFC")).ToList();
+
+			}
+			<li class="nav-item">
+				<a id="tab-B2" href="#leaves3" class="nav-link ripplelink" data-toggle="tab" role="tab">
+					<i class="fas fa-database"></i>Live Data @{if (RFCCount.Count > 0){ <div class="badge-num"></div>}}
+				</a>
+			</li>
+			<li class="nav-item"> <a id="tab-C1" href="#leaves1" class="nav-link ripplelink" data-toggle="tab" role="tab"><i class="fas fa-database"></i>Legacy Data</a> </li>
+
+		</ul>
+		<div id="content" class="tab-content p-0" role="tablist">
+			<!-- --->
+			<div id="active-log1" class="card tab-pane fade show active" role="tabpanel" aria-labelledby="tab-A1">
+				<div class="card-header" role="tab" id="heading-A1">
+					<h5 class="mb-0"> <a data-toggle="collapse" href="#collapse-A1" aria-expanded="true" aria-controls="collapse-A1">Pending Requests <i class="fas fa-envelope-open"></i></a> </h5>
+				</div>
+				<div id="collapse-A1" class="collapse show" data-parent="#content" role="tabpanel" aria-labelledby="heading-A1">
+
+
+					<ul class="list-unstyled rqt-list fvclmls scroll tvtrhgt">
+						@{ int copunt = 0;}
+						@if (Model != null)
+						{
+							foreach (var item in Model.Where(x => x.Approved == 0 && x.HodId == Convert.ToInt32(clsApplicationSetting.GetSessionValue("EMPID")) && (x.Status == "Pending for Supervisor's Approval" || x.Status == "Re-Submit")).OrderByDescending(x => x.ID).ToList())
+							{
+								copunt++;
+								<li>
+									<div class="row d-flex">
+										<div class="col-sm-4 align-self-center">
+											<div class="left-dtl-r">
+												@*<small class="lgt-text">C3-070</small><br />*@
+												<strong>@item.TravellerName</strong><br>
+												<small class="lgt-text">
+													Req#@item.ReqNo
+													<input type="hidden" name="TRI" value="@item.ID" />
+													<input type="hidden" name="TRNO" value="@item.ReqNo" />
+													<input type="hidden" name="Status" value="Pending" />
+													<span>|</span>
+													@item.RequestDate
+												</small>
+											</div>
+										</div>
+										<div class="col-sm-5 align-self-start">
+											<div class="cntr-dtl-r ">
+												<!----<strong>@item.PurposeOfVisit</strong> <br>---->
+												<div class="cntr-dtl-r w-177">
+													<strong>@Html.Raw(@item.TravelDetails)</strong>
+													<!----<br /><small><strong >@item.TravelType </strong></small>---->
+												</div>
+												@*@if (item.Status == "Pending for Supervisor's Approval")
+													{*@
+												<div class="cntr-dtl-pst">
+													<strong class="trvlstatusclr">@item.Status </strong>
+												</div>
+
+
+												@*}*@
+											</div>
+										</div>
+										<div class="col-sm-3 align-self-center mb-flwdt">
+											<div class="right-dtl-r pt-0">
+												@*<a class="btn-g viewTravelDocument"  data-toggle="tooltip" data-original-title="Travel Documents"><i class="btn-g fas fa-book"></i></a>*@
+												@if (item.Approved == 0 && item.TravelLineDetailsStatus == 1 && item.submited == 0)
+												{
+													<a class="btn-a ApproveRequest" data-toggle="tooltip" data-original-title="Approved"><i class="fa fa-check"></i></a>
+												}
+												else
+												{
+													<a class="btn-a isDisabled " data-toggle="tooltip" data-original-title="Approved"><i class="fa fa-check"></i></a>
+												}
+												<a class="btn-g @( ViewBag.Type==0?"viewRequest":"viewRequestExpense")" data-toggle="tooltip" data-original-title="View"><i class="fas fa-ellipsis-h"></i></a>
+											</div>
+										</div>
+									</div>
+								</li>
+							}
+						}
+					</ul>
+
+				</div>
+			</div>
+
+			<!-- --->
+			<!-- --->
+			<!-- add new tab live data tab list -->
+			<div id="leaves3" class="card tab-pane fade" role="tabpanel" aria-labelledby="tab-B2">
+
+				<div class="card-header" role="tab" id="heading-B2">
+
+					<h5 class="mb-0"> <a class="collapsed" data-toggle="collapse" href="#collapse-B2" aria-expanded="false" aria-controls="collapse-B2">Live Data <i class="fas fa-database"></i></a> </h5>
+				</div>
+				<div id="collapse-B2" class="collapse" data-parent="#content" role="tabpanel" aria-labelledby="heading-B2">
+
+					<ul class="list-unstyled rqt-list fvclmls scroll tvtrhgt">
+						@{ int newcopunst = 0;}
+						@if (Model != null)
+						{
+							string chkclass = "";
+							//foreach (var item in Model.Where(x => x.Approved != 0 && ((x.Expectional == 1 || x.Expectional == 0) && (x.ExpectApproved == 1 || x.ExpectApproved == 0)) && x.HodId == Convert.ToInt32(clsApplicationSetting.GetSessionValue("EMPID")) && (x.Status == "Travel Approved - Pending at Travel Desk" || x.Status == "Bookings Completed" || x.Status == "Advance Request Pending at Finance" || x.Status == "Advance Released by Finance" || x.Status == "Request forwarded for RFC" || x.Status == "Advance Released by Finance & Pending at Travel Desk" || x.Status == "Request Rejected" || x.Status == "RFC Approved")).OrderByDescending(x => x.ID).ToList())
+							foreach (var item in Model.Where(x => x.Approved != 0 &&(DateTime.Parse(x.ReturnDate)>= DateTime.Today) && ((x.Expectional == 1 || x.Expectional == 0) && (x.ExpectApproved == 1 || x.ExpectApproved == 0)) && x.HodId == Convert.ToInt32(clsApplicationSetting.GetSessionValue("EMPID")) && (x.Status == "Travel Approved - Pending at Travel Desk" || x.Status == "Bookings Completed" || x.Status == "Advance Request Pending at Finance" || x.Status == "Advance Released by Finance" || x.Status == "Request forwarded for RFC" || x.Status == "Advance Released by Finance & Pending at Travel Desk" || x.Status == "Request Rejected" || x.Status == "RFC Approved")).OrderByDescending(x => x.ID).ToList())
+							{
+								//var date = Convert.ToDateTime(item.ReturnDate);
+								//DateTime fromdate = DateTime.Parse(Convert.ToDateTime(item.ReturnDate).ToShortDateString());
+								//DateTime start = DateTime.Parse(item.ReturnDate);
+
+								//DateTime today = DateTime.Today;
+								newcopunst++;
+								if(item.Status== "Request forwarded for RFC") {
+									chkclass = "impactive";
+								} else {
+									chkclass = "";
+								}
+								<li class="@chkclass">
+									<div class="row d-flex ">
+										<div class="col-sm-4 align-self-center">
+
+											<div class="left-dtl-r">
+												@*<small class="lgt-text"></small><br />*@
+												<strong>@item.TravellerName</strong><br />
+												<small class="lgt-text">
+													Req#@item.ReqNo
+													<input type="hidden" name="TRI" value="@item.ID" />
+													<input type="hidden" name="TRNO" value="@item.ReqNo" />
+													<input type="hidden" name="Status" value="Live" />
+													<span>|</span>@item.RequestDate
+												</small>
+											</div>
+										</div>
+										<div class="col-sm-5 align-self-start">
+											<div class="cntr-dtl-r">
+												<!---<strong>@item.PurposeOfVisit</strong> <br>---->
+												<div class="cntr-dtl-r">
+													<strong>@Html.Raw(@item.TravelDetails)</strong>
+													<!--- <small><strong>@item.TravelType</strong></small>---->
+												</div>
+												@*<div class="cntr-dtl-pst">
+														<strong class="trvlstatusclr">@item.Status</strong>
+													</div>*@
+											</div>
+										</div>
+										<div class="col-sm-3">
+											<div class="right-dtl-r pt-0">
+												@*<a class="btn-g viewTravelDocument"  data-toggle="tooltip" data-original-title="Travel Documents"><i class="btn-g fas fa-book"></i></a>*@
+												@if (item.Approved == 0)
+												{
+													<a class="btn-a ApproveRequest" data-toggle="tooltip" data-original-title="Approved"><i class="fa fa-check"></i></a>
+												}
+												<a class="btn-g  @( ViewBag.Type==0?"viewRequest":"viewRequestExpense")" data-toggle="tooltip" data-original-title="View"><i class="fas fa-ellipsis-h"></i></a>
+
+											</div>
+										</div>
+									</div>
+								</li>
+							}
+						}
+					</ul>
+					
+
+
+				</div>
+			</div>
+			<div id="leaves1" class="card tab-pane fade" role="tabpanel" aria-labelledby="tab-C1">
+				<div class="card-header" role="tab" id="heading-C1">
+					<h5 class="mb-0"> <a class="collapsed" data-toggle="collapse" href="#collapse-C1" aria-expanded="false" aria-controls="collapse-C1">Legacy Data <i class="fas fa-database"></i></a> </h5>
+				</div>
+				<div id="collapse-C1" class="collapse" data-parent="#content" role="tabpanel" aria-labelledby="heading-C1">
+
+					<ul class="list-unstyled rqt-list fvclmls scroll tvtrhgt">
+						@{ int copunst = 0;}
+						@if (Model != null)
+						{
+							//foreach (var item in Model.Where(x => Convert.ToDateTime(x.ReturnDate) < DateTime.Now && x.Approved != 0 && x.HodId == Convert.ToInt32(clsApplicationSetting.GetSessionValue("EMPID"))).OrderByDescending(x => x.ID).ToList())
+							// comment code on 2082024	//foreach (var item in Model.Where(x => x.Approved != 0 && (DateTime.Parse(x.ReturnDate) < DateTime.Today) && (x.TerApproved > 0 || (x.ExpectApproved == 1 || x.ExpectApproved == 2)) && (x.HodId == Convert.ToInt32(clsApplicationSetting.GetSessionValue("EMPID")) || x.EdId == Convert.ToInt32(clsApplicationSetting.GetSessionValue("EMPID")))).OrderByDescending(x => x.ID).ToList())
+							foreach (var item in Model.Where(x => x.Approved != 0  && (  (DateTime.Parse(x.ReturnDate) < DateTime.Today) &&(x.ExpectApproved == 1 || x.ExpectApproved == 2 || x.ExpectApproved == 0)) && (x.HodId == Convert.ToInt32(clsApplicationSetting.GetSessionValue("EMPID")) || x.EdId == Convert.ToInt32(clsApplicationSetting.GetSessionValue("EMPID")))).OrderByDescending(x => x.ID).ToList())
+							{
+								copunst++;
+								<li>
+									<div class="row d-flex">
+										<div class="col-sm-4 align-self-center">
+
+											<div class="left-dtl-r">
+												@*<small class="lgt-text"></small><br />*@
+												<strong>@item.TravellerName</strong><br />
+												<small class="lgt-text">
+													Req#@item.ReqNo
+													<input type="hidden" name="TRI" value="@item.ID" />
+													<input type="hidden" name="TRNO" value="@item.ReqNo" />
+													<input type="hidden" name="Status" value="Legacy" />
+													<span>|</span>@item.RequestDate
+												</small>
+											</div>
+										</div>
+										<div class="col-sm-5 align-self-start">
+											<div class="cntr-dtl-r">
+												<!---<strong>@item.PurposeOfVisit</strong> <br>---->
+												<div class="cntr-dtl-r">
+													<strong>@Html.Raw(@item.TravelDetails)</strong>
+													<!--- <small><strong>@item.TravelType</strong></small>---->
+												</div>
+												@*<div class="cntr-dtl-pst">
+														<strong class="trvlstatusclr">@item.Status</strong>
+													</div>*@
+											</div>
+										</div>
+										<div class="col-sm-3">
+											<div class="right-dtl-r pt-0">
+												@*<a class="btn-g viewTravelDocument"  data-toggle="tooltip" data-original-title="Travel Documents"><i class="btn-g fas fa-book"></i></a>*@
+												@if (item.Approved == 0)
+												{
+													<a class="btn-a ApproveRequest" data-toggle="tooltip" data-original-title="Approved"><i class="fa fa-check"></i></a>
+												}
+												<a class="btn-g  @( ViewBag.Type==0?"viewRequest":"viewRequestExpense")" data-toggle="tooltip" data-original-title="View"><i class="fas fa-ellipsis-h"></i></a>
+											</div>
+										</div>
+									</div>
+								</li>
+							}
+						}
+					</ul>
+
+
+
+				</div>
+			</div>
+
+
+			<div id="leaves2" class="card tab-pane fade" role="tabpanel" aria-labelledby="tab-C11">
+				<div class="card-header" role="tab" id="heading-C1">
+					<h5 class="mb-0"> <a class="collapsed" data-toggle="collapse" href="#collapse-C1" aria-expanded="false" aria-controls="collapse-C1">Exceptional Approval <i class="fas fa-database"></i></a> </h5>
+				</div>
+				<div id="collapse-C1" class="collapse" data-parent="#content" role="tabpanel" aria-labelledby="heading-C1">
+
+					<ul class="list-unstyled rqt-list fvclmls scroll tvtrhgt">
+						@{ int copunstt = 0;}
+						@if (Model != null)
+						{
+							foreach (var item in Model.Where(x => x.Expectional == 1 && x.Approved == 1 && ( x.ExpectApproved == 0 )).OrderByDescending(x => x.ID).ToList())
+							{
+								copunstt++;
+								<li>
+									<div class="row d-flex">
+										<div class="col-sm-4 align-self-center">
+
+											<div class="left-dtl-r">
+												@*<small class="lgt-text"></small><br />*@
+												<strong>@item.TravellerName</strong><br />
+												<small class="lgt-text">
+													Req#@item.ReqNo
+													<input type="hidden" name="TRI" value="@item.ID" />
+													<input type="hidden" name="TRNO" value="@item.ReqNo" />
+													<input type="hidden" name="Status" value="Expect" />
+
+													<span>|</span>@item.RequestDate
+												</small>
+											</div>
+										</div>
+										<div class="col-sm-5 align-self-start">
+											<div class="cntr-dtl-r">
+												<!---<strong>@item.PurposeOfVisit</strong> <br>---->
+												<div class="cntr-dtl-r">
+													<strong>@Html.Raw(@item.TravelDetails)</strong>
+													<!--- <small><strong>@item.TravelType</strong></small>---->
+												</div>
+												<div class="cntr-dtl-pst">
+													<strong class="trvlstatusclr">@item.Status</strong>
+												</div>
+											</div>
+										</div>
+										<div class="col-sm-3">
+											<div class="right-dtl-r pt-0">
+												@*<a class="btn-g viewTravelDocument"  data-toggle="tooltip" data-original-title="Travel Documents"><i class="btn-g fas fa-book"></i></a>*@
+												@if (item.Approved == 0)
+												{
+													<a class="btn-a ApproveRequest" data-toggle="tooltip" data-original-title="Approved"><i class="fa fa-check"></i></a>
+												}
+												<a class="btn-g  @( ViewBag.Type==0?"viewRequest":"viewRequestExpense")" data-toggle="tooltip" data-original-title="View"><i class="fas fa-ellipsis-h"></i></a>
+											</div>
+										</div>
+									</div>
+								</li>
+							}
+						}
+					</ul>
+
+
+
+				</div>
+			</div>
+		</div>
+	</div>
+
+
+
+</div>

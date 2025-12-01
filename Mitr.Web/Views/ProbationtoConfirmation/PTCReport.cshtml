@@ -1,0 +1,99 @@
+﻿@model PTC
+@{
+	List<SelectListItem> TypeList = new List<SelectListItem>
+
+{
+									new SelectListItem{Text="Select",Value="0" },
+									new SelectListItem{Text="Goal Sheet",Value="1" },
+									new SelectListItem{Text="Appraisal",Value="2" }
+
+
+									};
+}
+
+<div class="inner-main mb-5 pb-0">
+	<div class="row">
+		<div class="col-sm-5"><h1 class="heading-one mb-3">Probation to Confirmation Status </h1></div>
+
+	</div>
+	<div class="row">
+
+		<div class="col-sm-2 form-group">
+			<label>Status Type</label>
+			@Html.DropDownListFor(model => model.TypeId, new SelectList(TypeList, "Value", "text",Model.TypeId), new { @class = "form-control applyselect" })
+		</div>
+		<div class="col-sm-3 form-group">
+			<label>Employee Name</label>
+			@Html.DropDownListFor(model => model.NEMPID, new SelectList(@ViewBag.EMPList, "Id", "Name"), "select", new { @class = "form-control applyselect" })
+		</div>
+
+		<div class="col-sm-3 form-group align-self-end">
+			<button type="button" class="btn mtr-g-grn btn-l ripplelink" onclick="exportReportToExcelAll()"><i class="fas fa-file-excel"></i>Export<span class="ink animate" style="height: 81px; width: 81px; left: 12.5px; top: -16.5px;"><span class="ink animate" style="height: 81px; width: 81px; left: -0.5px; top: -0.5px;"><span class="ink animate" style="height: 81px; width: 81px; left: 0.5px; top: 0.5px;"></span></span></span></button>
+		</div>
+
+	</div>
+	@using (Ajax.BeginForm("_PTCReport", "ProbationtoConfirmation",
+			new { src = clsApplicationSetting.EncryptQueryString(ViewBag.MenuID.ToString() + "*/ProbationtoConfirmation/_PTCReport") },
+			  new AjaxOptions { HttpMethod = "POST", OnSuccess = "BindTarget", OnBegin = "ShowLoadingDialog()" },
+		new { @id = "__PTCReportFrom" })
+		)
+	{
+		<div class="row">
+			@Html.HiddenFor(modal => modal.EMPID)
+			@Html.HiddenFor(modal => modal.Type)
+			<div class="col-sm-10 align-self-center text-right">
+
+			</div>
+			<div style="display:none">
+				<button type="submit" class="btn mtr-g-grn btn-l ripplelink" id="btnSearch" name="Command" value="Search"><i class="fas fa-search"></i>Search</button>
+			</div>
+		</div>
+	}
+
+	<div id="TargetDiv">@Html.Partial("_Loading")</div>
+</div>
+
+
+
+
+@section scripts    {
+	@System.Web.Optimization.Scripts.Render("~/bundle/unobtrusivejs")
+	@Html.IncludeVersionedJs(Url.Content("~/assets/design/Scripts/ToolTip.js"))
+	@Html.IncludeVersionedJs(Url.Content("~/assets/design/scripts/AddInit.js"))
+	<script src="~/assets/tableToExcel.js"></script>
+	<script>
+		    function exportReportToExcelAll() {
+            exportToExcelSahaj('tabelPTCReport', 'PTCReport');
+        }
+	</script>
+	<script>
+			$(document).ready(function () {
+			$("#btnSearch").click();
+		});
+			$("#TypeId").change(function() {
+			var type=$("#TypeId option:selected").text();
+		    $('#Type').val(type);
+	    	$("#btnSearch").click();
+
+		});
+		$("#NEMPID").change(function() {
+	      var eid=$("#NEMPID option:selected").val();
+		if (eid==""){
+		   eid=0;
+		}
+		    $('#EMPID').val(parseInt(eid));
+		   $("#btnSearch").click();
+
+		});
+		function BindTarget(args) {
+			CloseLoadingDialog();
+			$("#TargetDiv").empty();
+			$("#TargetDiv").html(args);
+			$('[data-toggle="tooltip"]').tooltip();
+			$(".applyselect").select2();
+		}
+
+
+	</script>
+
+}

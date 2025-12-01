@@ -1,0 +1,61 @@
+﻿
+@model IList<Mitr.Models.MyTravelRequest>
+
+@section style{
+	@System.Web.Optimization.Styles.Render("~/bundle/dataTablecss")
+}
+<div class="right_col" role="main">
+	<div class="inner-main mb-5 pb-0">
+		<h1 class="heading-one  mb-3">Travel Status</h1>
+		<div class="row">
+			<div class="col-md-12">
+				<div class="x_content table-currency m-0">
+					<div class="table-responsive">
+						<table id="datatable-buttons" class="table table-striped table-bordered dt-responsive nowrap tbltick new_width" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
+							<thead>
+								<tr>
+									<th>S.No.</th>
+									<th>TR No</th>
+									<th>TR Date</th>
+									<th>Traveller Name</th>
+									<th>Status</th>
+								</tr>
+								<tr class="searchbar">
+									<th></th>
+									<th></th>
+									<th></th>
+									<th></th>
+									<th></th>
+
+								</tr>
+							</thead>
+							<tbody>
+								@{ int Count = 0;}
+								@foreach (Mitr.Models.MyTravelRequest item in Model)
+								{
+									Count++;
+									<tr>
+										<td>@Count</td>
+										<td>@item.ReqNo</td>
+										<td>@Convert.ToDateTime(item.RequestDate).ToString("dd/MM/yyyy")</td>
+										<td>@item.TravellerName</td>
+										<td> @item.Status</td>
+									</tr>
+								}
+							</tbody>
+						</table>
+					</div>
+				</div>
+
+			</div>
+		</div>
+	</div>
+</div>
+
+
+@section scripts    {
+	@System.Web.Optimization.Scripts.Render("~/bundle/dataTablesjs")
+	@Html.IncludeVersionedJs(Url.Content("~/assets/design/Scripts/AddInit.js"))
+	@Html.IncludeVersionedJs(Url.Content("~/assets/design/Scripts/ToolTip.js"))
+}
+

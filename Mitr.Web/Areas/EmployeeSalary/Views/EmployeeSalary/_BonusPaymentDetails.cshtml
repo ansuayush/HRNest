@@ -1,0 +1,65 @@
+﻿@model Mitr.Model.BonusPaymentEntry
+
+<div class="modal-content">
+    <div class="modal-header blk-gdn-btn">
+        <h4 class="modal-title"><i class="fa fa-plus"></i>@ViewBag.EmpName</h4>
+        <div class="close" data-dismiss="modal">&times;</div>
+    </div>
+    <!-- Modal body -->
+    <div class="modal-body">
+        <div class="row">
+            <div class="col-sm-12 form-group">
+                <table class="table table-striped m-0">
+                    <thead>
+                        <tr>
+                            <th width="80"> Sr.No.</th>
+                            <th width="80"> Doc No</th>
+                            <th width="100"> Paid Date</th>
+                            <th width="100"> Paid Amount</th>
+                            <th width="100"> Project Code</th>
+                            <th>Project Name</th>
+                            <th>Remark</th>
+                            <th width="60" class="text-center">Action</th>
+
+                        </tr>
+                    </thead>
+                    <tbody>
+
+                        @{ int count = 0;
+                        }
+                        @foreach (Mitr.Model.BonusPaymentEntry item in Model.BonusPaymentEntryList)
+                        {
+                            count++;
+                            <tr>
+                                <td> @count </td>
+                                <td> @item.DocNo </td>
+                                <td> @item.PaidDate </td>
+                                <td> @item.PaidAmount </td>
+                                <td> @item.ProjectCode </td>
+                                <td> @item.ProjectName </td>
+                                <td> @item.Remark</td>
+                                <td class="text-center">
+                                    @using (Ajax.BeginForm("DeleteBonusPaidEntry", "EmployeeSalary",
+                                        new { src = clsApplicationSetting.EncryptQueryString(ViewBag.MenuID + "*" + "/EmployeeSalary/DeleteBonusPaidEntry*" + item.ID + "*" + item.EmpID) },
+                                        new AjaxOptions { HttpMethod = "POST", OnSuccess = "OnSuccess", OnBegin = "ShowLoadingDialog()" },
+                                        new { @id = "form" }))
+                                    {
+                                        @Html.HiddenFor(model => item.DocNo)
+                                        @Html.HiddenFor(model => item.ProjectID)
+                                        @Html.HiddenFor(model => item.EmpID)
+
+                                        <button type="submit" class="red-clr" id="btnsubmit" name="Command" onclick="return confirm('Are you sure you would to delete?');"><i class="fas fa-trash-alt"></i></button>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+            <div class="col-sm-12 text-center">
+                <button type="button" class="btn cnl-btn ripplelink" data-dismiss="modal"><i class="fas fa-times"></i>Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+

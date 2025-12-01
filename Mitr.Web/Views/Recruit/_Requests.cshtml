@@ -1,0 +1,53 @@
+﻿@using System.Data
+@model DataSet
+@{
+	string MenuID = "0";
+	if (ViewBag.MenuID != null)
+	{
+		MenuID = ViewBag.MenuID;
+	}
+}
+<div class="row">
+	<div class="control-section">
+	
+			@Html.EJS().Grid("FlatGrid").DataSource((DataTable)Model.Tables[0]).GridLines(Syncfusion.EJ2.Grids.GridLine.Both).Columns(col =>
+	   {
+		   col.Field("ProjectDetailID").Visible(false).Add();
+		   col.Field("REC_ReqID").Visible(false).Add();
+		   col.Field("IsPMInitiate").Visible(false).Add();
+		   col.Field("RequestUsed").Visible(false).Add();
+		   col.Field("RowNum").HeaderText("S.No").Width("50").Add();
+		   col.Field("REC_Code").HeaderText("Code").Width("100").Add();
+		   col.Field("projref_no").HeaderText("Project No").Width("100").Add();
+		   col.Field("proj_name").HeaderText("Project Name").Width("120").Add();
+		   col.Field("JobTitle").HeaderText("Job Title").Width("120").Add();
+		   col.Field("locationName").HeaderText("Location").Width("120").Add();
+		   col.Field("DueDate").HeaderText("Due Date").Width("120").Add();
+		   col.Field("Status").HeaderText("Status").Width("160").Add();
+		   col.HeaderText("Budget").TextAlign(Syncfusion.EJ2.Grids.TextAlign.Center).Template("#tmpbudget").Width("100").Add();
+		   col.HeaderText("Action").TextAlign(Syncfusion.EJ2.Grids.TextAlign.Center).Template("#tmpAction").Width("100").Add();
+	   }).AllowPaging().PageSettings(page => page.PageCount(10)).Toolbar(new List<string>() { "Search" }).Render()
+	
+	</div>
+</div>
+
+<script id="tmpAction" type="text/x-template">
+	${if(RequestUsed === 0)}
+	<a onclick="BindEdit(this)"><i class="fas fa-eye"></i>View </a>
+	${else}
+	<span class="red-clr"><i class="fas fa-tags"></i>Tagged</span>
+	${/if}	
+	
+</script>
+<script id="tmpbudget" type="text/x-template">
+	<input type="hidden" name="PID" value="${ProjectDetailID}" />
+	<input type="hidden" name="N" value="${projref_no}" />
+	<input type="hidden" name="I" value="${REC_ReqID}" />
+	<a onclick="GetBudgetPartial(this)">View Budget </a>
+</script>
+
+@Html.IncludeVersionedJs(Url.Content("~/assets/design/Scripts/SyncScripts.js"))
+
+
+@(Html.EJS().ScriptManager())
+

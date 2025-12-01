@@ -1,0 +1,154 @@
+﻿@model Mitr.Models.SalarySlipActivationEntry
+@{
+	int countD = 0;
+	int EmpCount = 0;
+}
+<div>
+	@Html.HiddenFor(x => Model.Month)
+	@Html.HiddenFor(x => Model.Emptype)
+	<div class="form-group float-right search-box">
+        <span class="counter pull-right"></span>
+        <input type="text" class="searchdgn form-control" id="search" placeholder="Search">
+    </div>
+	<div class="table-scrollable">
+		<table  id="datatable-buttons"  class="table table-scroll act-table table-striped results">
+		<thead>
+			<tr>
+				<th width="10">S.No</th>
+				<th width="40" class="text-center">
+					<input type="checkbox" id="selectall" class="selectall sltchk" name="AdvanceRequired" onchange="valueChanged()">
+					<label for="selectall" class="selectall  m-0"></label>
+				</th>
+				<th width="90">Employee Code</th>
+				<th>Employee Name</th>
+				<th >Designation</th>
+				<th width="120">Department</th>
+				<th width="100">Location</th>
+				<th width="80">Status</th>
+			</tr>
+			<tr class="searchbar">
+				<th class="searchhide"></th>
+				<th class="searchhide"></th>
+				<th></th>
+				<th></th>
+				<th> </th>
+				<th> </th>
+				<th> </th>
+				<th> </th>
+			</tr>
+		</thead>
+		<tbody>		
+
+			@for (int i = 0; i < Model.Emplist.Count; i++)
+			{
+				EmpCount++;
+			<tr>
+				<td>
+					@Html.HiddenFor(x => Model.Emplist[i].Empid)
+					@EmpCount
+				</td>
+				<td class="text-center top">
+					<input type="hidden" value="0" name="@Html.NameFor(x => Model.Emplist[i].Checkbox)" id="[@i].isSelect" class="isSelect " />
+					<input type="checkbox" id="l_@i" name="l_@i" class="selectedId sltchk" onchange="valueChanged()">
+					<label for="l_@i" class="m-0"></label>
+				</td>
+				<td>
+					@Model.Emplist[i].emp_code
+				</td>
+				<td>@Model.Emplist[i].emp_name</td>
+				<td>@Model.Emplist[i].Designation</td>
+				<td>@Model.Emplist[i].Department</td>
+				<td>@Model.Emplist[i].Location</td>
+				<td>@Model.Emplist[i].IsActive</td>
+			</tr>
+			}			
+			<tr class="warning no-result e-emptyrow bg-none">
+             <td colspan="8" class="btmbr-0  bg-none"><div class="no-result">No records to display</td>
+            </tr>
+		</tbody>
+		</table>
+	</div>
+
+</div>
+<div class="text-center mt-3 hide">
+	@if (EmpCount > 0)
+	{
+		<button  type="submit" id="btndelete"  name="Command" value="Activate" class="btn mtr-g-grn" ><i class="fas fa-check"></i>Activate</button>
+		<button  type="submit" id="btndelete" name="Command" value="DeActivate"   class="btn red-clr-bg"><i class="fas fa-times"></i>Deactivate</button>		
+		<a href="/Dashboard" class="btn cnl-btn ripplelink  "><i class="fas fa-times"></i>Close</a>
+	}
+</div>
+<script>
+	$(document).ready(function () {
+		$("#btnVerifyAndSave").click(function () {
+			if (ValidateAmt()) {
+				$("#btnsave").click();
+			}
+
+		});
+
+		$('.selectall').click(function () {
+			var ischecked = 0;
+			if (this.checked) {
+				ischecked = 1;
+			}
+			$('.isSelect').val(ischecked);
+			$('.selectedId').prop('checked', this.checked);
+		});
+
+		$('.selectedId').change(function () {
+			debugger;
+			var ischecked = 0;
+			var Empid = "rowselectsingle_" + $(this).closest("tr").find('.hfempid').val();
+			if (this.checked) {
+				ischecked = 1;
+			}
+			$(this).closest("tr").find(".isSelect").val(ischecked);
+			var check = ($('.selectedId').filter(":checked").length == $('.selectedId').length);
+			$('.selectall').prop("checked", check);
+		});
+	});
+	 function exportReportToExcelAll() {
+		 var MonthName = $("#Date").val();
+		 exportToExcelSahaj('tblExport', 'ConsolidateSalaryAllocation_' + MonthName + '');
+	}
+
+</script>
+
+<script>
+    $(document).ready(function() {
+  $(".searchdgn").keyup(function () {
+    var searchTerm = $(".searchdgn").val();
+    var listItem = $('.results tbody').children('tr');
+    var searchSplit = searchTerm.replace(/ /g, "'):containsi('")
+    
+  $.extend($.expr[':'], {'containsi': function(elem, i, match, array){
+        return (elem.textContent || elem.innerText || '').toLowerCase().indexOf((match[3] || "").toLowerCase()) >= 0;
+    }
+  });
+    
+  $(".results tbody tr").not(":containsi('" + searchSplit + "')").each(function(e){
+    $(this).attr('visible','false');
+  });
+
+  $(".results tbody tr:containsi('" + searchSplit + "')").each(function(e){
+    $(this).attr('visible','true');
+  });
+
+  var jobCount = $('.results tbody tr[visible="true"]').length;
+    $('.counter').text(jobCount + ' item');
+
+  if(jobCount == '0') {$('.no-result').show();}
+    else {$('.no-result').hide();}
+          });
+});
+</script>
+
+<script>
+  function valueChanged() {
+  if($('.sltchk').is(":checked"))   
+    $(".hide").show();
+  else
+    $(".hide").hide();
+};
+</script>

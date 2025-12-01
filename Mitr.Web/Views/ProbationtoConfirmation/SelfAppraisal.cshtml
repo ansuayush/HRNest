@@ -1,0 +1,1180 @@
+﻿
+@model PTC.Appraisal.SelfAppraisal
+
+<div class="inner-main mb-5 p-3 pb-0">
+	@if (Model.IsShow == -1)
+	{
+
+		<div class="row text-clr">
+			<div class="col-sm-4"><h1 class="heading-one mb-2">The Probation Appraisal window will start soon.</h1></div>
+
+		</div>
+
+	}
+	else
+	{
+		<div class="row text-clr">
+			<div class="col-sm-4"><h1 class="heading-one mb-2">My Probation Appraisal</h1></div>
+			<div class="col-sm-8 text-right"><a class="btn mtr-g-grn btn-l ripplelink " href="" data-toggle="modal" data-target="#achievement"><i class="fa fa-plus"><span class="ink animate" style="height: 12px; width: 12px; left: 3px; top: 4px;"></span></i>Fill Achievement</a></div>
+			<div class="col-sm-2 form-group">
+				<label>
+					Probation End Date
+				</label>
+				<p> @Model.ProbationDate</p>
+			</div>
+			<div class="col-sm-2 form-group">
+				<label>Supervisor </label>
+				<p>@Model.AppraiserName </p>
+			</div>
+			<div class="col-sm-2 form-group">
+				<label>Confimer Name</label>
+				<p>@Model.ConfirmerName </p>
+			</div>
+			<div class="col-sm-2 form-group">
+				<label>Status</label>
+				<p class="red-clr"><strong>@Model.Status</strong> </p>
+			</div>
+
+		</div>
+		using (Ajax.BeginForm("SelfAppraisal", "ProbationtoConfirmation",
+				new { src = clsApplicationSetting.EncryptQueryString(ViewBag.MenuID.ToString() + "*/ProbationtoConfirmation/SelfAppraisal") },
+				  new AjaxOptions { HttpMethod = "POST", OnFailure = "CloseLoadingDialog()", OnSuccess = "BindTarget", OnBegin = "ShowLoadingDialog()" },
+			new { @id = "_SelfAppraisalFrom", enctype = "multipart/form-data" })
+			)
+		{
+
+			@Html.AntiForgeryToken()
+			@Html.HiddenFor(model => model.ID)
+			@Html.HiddenFor(model => model.Approved)
+			@Html.HiddenFor(model => model.ResubmitComment)
+			<div class="row">
+				<div class="col-sm-12">
+					<div class="table-responsive">
+						<table class="table table-scroll tv-top mb-3 act-table table-striped">
+							<thead>
+								<tr>
+									<th class="w-10 text-left">S.No</th>
+									<th width="320">Key Performance Area	</th>
+									<th width="320">Probation Objective</th>
+									<th width="320">Achievement</th>
+									<th width="30">UOM</th>
+									<th width="30">Weightage	</th>
+									<th width="30">Target</th>
+									<th width="30">Target Achieved	</th>
+									@if (Model.Approved == 3 || Model.Approved == 5 || Model.Approved == 1)
+									{
+										<th width="30">Appraiser’s Score	</th>
+									}
+
+
+
+								</tr>
+							</thead>
+							<tbody>
+								@if (Model.KPAL.Count > 0)
+								{
+									int KPCount = 0;
+									decimal TotalWeight = 0;
+									foreach (var item in Model.KPAL)
+									{
+										KPCount++;
+										decimal sum = 0;
+										decimal.TryParse(item.Weights, out sum);
+										TotalWeight += sum;
+										<tr>
+											<td class="text-center">@KPCount</td>
+											<td>@item.KPAName </td>
+											<td>@item.ProbationObjective </td>
+											<td>
+												<span id="spnAch_@KPCount">
+													@item.Self_Achievement
+
+												</span>
+											</td>
+											<td> @item.UOMType</td>
+											<td class="text-right">@item.Weights</td>
+											<td class="text-right">@item.Target</td>
+											<td class="text-right">
+												<span id="spnTargetAch_@KPCount"> @item.TargetAchievement </span>
+											</td>
+
+											@if (Model.Approved == 3 || Model.Approved == 5 || Model.Approved == 1)
+											{
+												<td class="text-right">@item.HOD_Score </td>
+											}
+
+										</tr>
+									}
+
+
+
+								}
+								else
+								{
+									<tr>
+										<td colspan="8" class="td-nodata">
+											@Html.Partial("_NoRecordsFound")
+										</td>
+									</tr>
+								}
+
+							</tbody>
+						</table>
+					</div>
+				</div>
+
+				<div class="col-md-12">
+					<div class="table-responsive">
+						<table class="table table-scroll tv-top act-table mb-3 table-striped">
+							<thead>
+								<tr>
+									<th width="10">S.NO</th>
+									<th width="500"> Additional Question</th>
+									<th width="500">Employee's Response [1200 Characters max] <sup>*</sup>	</th>
+									@if (Model.Approved == 3 || Model.Approved == 1)
+									{
+										<th width="500">Appraiser's Response [1200 Characters max] * <sup>*</sup>	</th>
+
+									}
+
+								</tr>
+							</thead>
+							<tbody>
+								@if (Model.feedbackQuestions != null)
+								{
+									int QCount = 0;
+									for (int i = 0; i < Model.feedbackQuestions.Count; i++)
+									{
+										QCount++;
+										@Html.HiddenFor(model => model.feedbackQuestions[i].ID)
+										@Html.HiddenFor(model => model.feedbackQuestions[i].QID)
+										@Html.HiddenFor(model => model.feedbackQuestions[i].Question)
+										<tr>
+											<td>@QCount</td>
+											<td>@Model.feedbackQuestions[i].Question	</td>
+											<td>
+												@Html.TextAreaFor(model => model.feedbackQuestions[i].UserAnswer, new { @class = "form-control maxSize[1200]", @placeholder = "Enter", @maxlength = "1200", onkeypress = "return blockSpecialChar(event)" })
+											</td>
+											@if (Model.Approved == 3 || Model.Approved == 1)
+											{
+												<td>@Model.feedbackQuestions[i].SupervisiorAnswer	</td>
+											}
+										</tr>
+									}
+								}
+							</tbody>
+
+						</table>
+					</div>
+
+				</div>
+				<div class="col-sm-8 mx-auto">
+					<div class="row">
+						<div class="col-md-12"><h3 class="subheading">Upload Attachment, if any</h3></div>
+						<div class="col-md-12">
+							<div class="table-responsive">
+								<table id="tableAttachment" class="table table-scroll mb-2 act-table table-striped">
+									<thead>
+										<tr>
+											<th class="td-10">S.No</th>
+											<th style="display:none" class="w-200">Attachment Type</th>
+											<th class="w-200">Upload</th>
+											<th>Description of Document</th>
+											<th class="td-33 text-center"></th>
+										</tr>
+									</thead>
+									<tbody>
+										@if (Model.AttachmentsL != null)
+										{
+											int AttachCount = 0;
+											for (int i = 0; i < Model.AttachmentsL.Count; i++)
+											{
+												AttachCount++;
+												<tr>
+													<td class="text-center hfNewId">
+														<label id="span_@AttachCount" name="span_@AttachCount">@AttachCount </label>
+														@Html.HiddenFor(model => model.AttachmentsL[i].AttachmentID)
+													</td>
+													<td style="display:none">
+														@Html.TextBoxFor(model => model.AttachmentsL[i].FileName, new { @class = "form-control txtfix", @placeholder = "Enter Attachment Type", @readonly = "readonly" })
+														@Html.ValidationMessageFor(model => model.AttachmentsL[i].FileName, "", new { @class = "text-danger" })
+													</td>
+													<td>
+														<div id="divAttachmentShow" style="@(Model.AttachmentsL[i].AttachmentID > 0 ? "" : "display:none")">
+															<a class="achor-link" target="_blank" href="~/Attachments/@Model.AttachmentsL[i].URL">@Model.AttachmentsL[i].FileName</a>
+
+														</div>
+														<div id="divAttachmentUpload" style="@(Model.AttachmentsL[i].AttachmentID > 0 ? "display:none" : "")">
+															@Html.TextBoxFor(model => model.AttachmentsL[i].UploadFile, new { @class = "form-control", @type = "file" })
+															@Html.ValidationMessageFor(model => model.AttachmentsL[i].UploadFile, "", new { @class = "text-danger" })
+														</div>
+													</td>
+													<td>
+														@Html.TextAreaFor(model => model.AttachmentsL[i].Descrip, new { @class = "form-control", @placeholder = "Enter Description" })
+														@Html.ValidationMessageFor(model => model.AttachmentsL[i].Descrip, "", new { @class = "text-danger" })
+													</td>
+													<td class="text-center">
+
+														@if (Model.Approved == 0 || Model.Approved == 2 || Model.Approved == 4)
+														{
+															@*if (AttachCount == 1)
+																{
+																	<a data-original-title="Remove" aria-describedby="tooltip594398" data-toggle="tooltip" class="isDisabled"><i class="fas fa-window-close m-0 red-clr"></i></a>
+																}
+																else
+																{
+																	<a onclick="DeleteNewAttachmentRowTest(this)" data-original-title="Remove" aria-describedby="tooltip594398" data-toggle="tooltip"><i class="fas fa-window-close m-0 red-clr"></i></a>
+																}*@
+															<a onclick="DeleteNewAttachmentRowTest(this)" data-original-title="Remove" aria-describedby="tooltip594398" data-toggle="tooltip"><i class="fas fa-window-close m-0 red-clr"></i></a>
+														}
+
+
+													</td>
+
+
+
+												</tr>
+											}
+										}
+										else
+										{
+											<tr>
+												<td colspan="5" class="td-nodata">
+													@Html.Partial("_NoRecordsFound")
+												</td>
+											</tr>
+										}
+
+									</tbody>
+								</table>
+							</div>
+
+							@if (Model.Approved == 0 || Model.Approved == 2 || Model.Approved == 4)
+							{
+								<div class="col-sm-12 text-right">
+									<a id="AAttachmentAdd" class="btn  bbtn green-clr btn-l ripplelink "><i class="fas fa-plus"></i>Add </a>
+								</div>}
+						</div>
+						<div class="col-md-12"><h3 class="subheading">Training Desired, if any</h3></div>
+						<div class="col-md-12">
+							<div class="table-responsive">
+								<table id="tblTraining" class="table table-scroll mb-2 act-table table-striped">
+									<thead>
+										<tr>
+											<th class="td-10">S.No</th>
+											<th class="w-200">Training Name</th>
+											<th>Description</th>
+											@if (Model.Approved == 3)
+											{
+												<th>Reason for Declining</th>
+											}
+											<th class="td-33"></th>
+										</tr>
+									</thead>
+									<tbody>
+										@if (Model.TrainingL != null)
+										{
+											int TCount = 0;
+											for (int i = 0; i < Model.TrainingL.Count; i++)
+											{
+												TCount++;
+
+												<tr>
+													<td class="text-center hfTrnId">
+														<label id="span_@TCount" name="span_@TCount">@TCount </label>
+														@Html.HiddenFor(model => model.TrainingL[i].ID)
+													</td>
+													<td>
+														@Html.DropDownListFor(x => Model.TrainingL[i].TrainingTypeID, new SelectList(Model.TrainingType, "ID", "Type", Model.TrainingL[i].TrainingTypeID), "Select",
+																																		new { @class = "form-control  applyselect" })
+														@Html.ValidationMessageFor(model => model.TrainingL[i].TrainingTypeID, "", new { @class = "text-danger" })
+														@Html.HiddenFor(model => model.TrainingL[i].TrainingType, new { @class = "hdnTrainingType" })
+
+														@*, onchange = "FillTrainingType(this)"*@
+													</td>
+
+													<td>
+
+														@Html.TextAreaFor(model => model.TrainingL[i].TrainingRemarks, new { @class = "form-control ", @placeholder = "Enter Description" })
+														@Html.ValidationMessageFor(model => model.TrainingL[i].TrainingRemarks, "", new { @class = "text-danger" })
+
+
+													</td>
+													@if (Model.Approved == 3)
+													{
+														<td>
+															@Html.TextAreaFor(model => model.TrainingL[i].ReasonforDeclining, new { @class = "form-control ", @disabled = "true" })
+														</td>
+													}
+													<td class="text-center">
+														@if (Model.Approved == 0 || Model.Approved == 2 || Model.Approved == 4)
+														{
+															@*if (TCount == 1)
+																{
+																	<a class="remove isDisabled" data-toggle="tooltip" data-original-title="Remove"><i class="fas fa-window-close red-clr" aria-hidden="true"></i></a>
+																}
+
+																else
+																{
+																	<a onclick="DeleteTrainingRow(this)" class="remove" data-toggle="tooltip" data-original-title="Remove"><i class="fas fa-window-close red-clr" aria-hidden="true"></i></a>
+																}*@
+															<a onclick="DeleteTrainingRow(this)" class="remove" data-toggle="tooltip" data-original-title="Remove"><i class="fas fa-window-close red-clr" aria-hidden="true"></i></a>
+
+														}
+
+
+
+													</td>
+												</tr>
+											}
+										}
+										else
+										{
+											<tr>
+												<td colspan="4" class="td-nodata">
+													@Html.Partial("_NoRecordsFound")
+												</td>
+											</tr>
+										}
+
+									</tbody>
+								</table>
+							</div>
+
+							@if (Model.Approved == 0 || Model.Approved == 2 || Model.Approved == 4)
+							{
+								<div class="col-sm-12 text-right">
+									<a id="ATrainingAdd" class="btn bbtn green-clr btn-l ripplelink"><i class="fas fa-plus"></i> Add</a>
+								</div>
+							}
+
+						</div>
+
+						<div class="col-md-12 form-group"><h3 class="subheading"> Anything else you want to share with your Supervisor [1200 Characters max] </h3></div>
+						@if (Model.Approved == 0 || Model.Approved == 4 || Model.Approved == 1)
+						{
+							<div class="col-sm-12">
+								@Html.TextAreaFor(model => model.UserComment, new { @class = "form-control h-100 txtAchievement maxSize[1200]", @placeholder = "Enter", @maxlength = "1200", onkeypress = "return blockSpecialChar(event)" })
+							</div>
+						}
+						else
+						{
+							<p>@Model.UserComment</p>
+							@Html.HiddenFor(model => model.UserComment)
+						}
+
+						@if (Model.Approved == 3)
+						{
+							<div class="col-sm-12 form-group">
+								<hr>
+								<span class="hr-aps"><i class="fas fa-hand-holding-usd"></i>Appraiser </span>
+							</div>
+							<div class="col-md-12"><h3 class="subheading">Overall Comments</h3></div>
+							<div class="col-sm-12 form-group">
+								<p>@Model.HodComment</p>
+							</div>
+							<div class="col-sm-12 form-group">
+								<label>Final Response <sup>*</sup></label>
+								@Html.TextAreaFor(model => model.UserFinalComment, new { @class = "form-control h-100  maxSize[1200]", @placeholder = "Enter", @maxlength = "1200", onkeypress = "return blockSpecialChar(event)" })
+							</div>
+						}
+						@if (Model.Approved == 5 || Model.Approved == 1)
+						{
+							<div class="col-sm-12 form-group">
+								<label>Final Response</label>
+								<p>@Model.UserFinalComment</p>
+							</div>
+						}
+						@if (Model.Approved == 4)
+						{
+							<div class="col-md-12"><h3 class="subheading">Reason for Resubmission</h3></div>
+							<div class="col-sm-12 form-group">
+								<p>@Model.ResubmitComment</p>
+							</div>
+						}
+
+						<div class="col-sm-12 text-center">
+							@if (Model.Approved == 0 || Model.Approved == 4)
+							{
+								<button type="submit" name="Command" value="Save" class="btn mtr-o-grn btn-l ripplelink "> <i class="fas fa-save"></i>Save</button>
+								<button type="submit" name="Command" value="Submit" class="btn mtr-o-grn btn-l ripplelink Btnsubmit "><i class="fa fa-paper-plane" aria-hidden="true"></i>Submit</button>
+
+							}
+							else if (Model.Approved == 3)
+							{
+								<button type="submit" name="Command" value="FinalSubmit" class="btn mtr-o-grn btn-l ripplelink Btnsubmit "><i class="fa fa-paper-plane" aria-hidden="true"></i>Submit</button>
+							}
+
+							@*<button type="button" class="btn cnl-btn btn-l ripplelink"><i class="fas fa-times"></i>Close</button>*@
+						</div>
+					</div>
+				</div>
+				<div id="achievement" class="modal fade" role="dialog">
+					<div class="modal-dialog modal-xl">
+						<!-- Modal content-->
+						<div class="modal-content">
+							<div class="modal-body vert-tab p-0">
+								<div class="row">
+									<div class="col-md-3">
+										<ul class="nav nav-tabs vrt-tab-leftside m-0 p-0 " id="myTab" role="tablist">
+											@if (Model.KPAL.Count > 0)
+											{
+												int AKPCount = 0;
+												foreach (var item in Model.KPAL)
+												{
+													AKPCount++;
+													<li class="nav-item">
+														<a class="nav-link @(AKPCount==1?"active":"")" id="home-tab" data-toggle="tab" href="#tab_@(AKPCount)" role="tab" aria-controls="home" aria-selected="true">
+															<h2>
+																<div class="blockellipsis">@item.KPAName </div>
+
+															</h2>
+														</a>
+													</li>
+												}
+											}
+										</ul>
+									</div>
+									<div class="col-md-9">
+										<button type="button" class="clse-rgt" data-dismiss="modal">×</button>
+										<div class="vrt-tab-rightside">
+											<div class="tab-content" id="myTabContent">
+
+												@if (Model.KPAL.Count > 0)
+												{
+
+													int MKPACount = 0;
+													decimal AchScrore = 0;
+													for (int i = 0; i < Model.KPAL.Count; i++)
+													{
+														MKPACount++;
+														@Html.HiddenFor(model => model.KPAL[i].KPAID)
+														@Html.HiddenFor(model => model.KPAL[i].ID)
+														@Html.HiddenFor(model => model.KPAL[i].ProbationObjective)
+														@Html.HiddenFor(model => model.KPAL[i].UOMId)
+														@Html.HiddenFor(model => model.KPAL[i].UOMType)
+														@Html.HiddenFor(model => model.KPAL[i].Weights)
+														@Html.HiddenFor(model => model.KPAL[i].Target)
+
+
+														try
+														{
+
+															decimal TargetAchieved = 0, kPA_Target = 0;
+
+															decimal.TryParse(Convert.ToString(Model.KPAL[i].TargetAchievement), out TargetAchieved);
+															decimal.TryParse(Convert.ToString(Model.KPAL[i].Target), out kPA_Target);
+															if (Model.Approved > 0)
+															{
+																if (Model.KPAL[i].KPA_AutoRating != "No" && Convert.ToInt32(Model.KPAL[i].Target) > 0)
+																{
+																	if (Model.KPAL[i].KPA_IncType.ToLower() == "postive")
+																	{
+																		AchScrore = (TargetAchieved / kPA_Target) * 100;
+																	}
+																	else
+																	{
+
+																		AchScrore = (TargetAchieved / kPA_Target) * 100;
+																	}
+																}
+																else
+																{
+																	AchScrore = 0;
+																}
+															}
+
+														}
+
+														catch (Exception ex)
+														{
+
+														}
+
+														<div class="tab-pane fade show @(MKPACount == 1 ? "active" : "")" id="tab_@MKPACount" role="tabpanel" aria-labelledby="home-tab">
+															<div class="row">
+																<div class="col-sm-12 form-group">
+																	<label>Key Performance Area</label>
+																	<p>@Model.KPAL[i].KPAName </p>
+																</div>
+																<div class="col-sm-12 form-group">
+																	<label>Probation Objective</label>
+																	<p>@Model.KPAL[i].ProbationObjective </p>
+																</div>
+															</div>
+															<div class="row">
+																<div class="col-sm-3 form-group">
+																	<label>UOM</label>
+																	<p>@Model.KPAL[i].UOMType </p>
+																</div>
+																<div class="col-sm-3 form-group">
+																	<label>Target </label>
+																	<p>@Model.KPAL[i].Target</p>
+																</div>
+																<div class="col-sm-3 form-group">
+																	<label>Weightage</label>
+																	<p>@Model.KPAL[i].Weights</p>
+																</div>
+																@if (Model.KPAL[i].UOMType.ToLower() == "Number".ToLower() || Model.KPAL[i].UOMType.ToLower() == "Percentage".ToLower())
+																{
+																	<div class="col-sm-3 form-group">
+																		<label>Target Achieved <sup>*</sup> <i class="fas fa-info-circle" data-toggle="tooltip" data-original-title="System Generated @Decimal.Round(AchScrore) %"></i></label>
+																		<input type="hidden" name="hdnTargetAchieved" value="@MKPACount" />
+																		@Html.TextBoxFor(model => model.KPAL[i].TargetAchievement, new { @class = "form-control txtAchievement", @maxlength = "10" })
+																		@Html.ValidationMessageFor(model => model.KPAL[i].TargetAchievement, "", new { @class = "text-danger" })
+
+																	</div>}
+															</div>
+
+
+
+															@if (Model.Approved == 3)
+															{
+																<div class="row">
+																	<div class="col-sm-6 form-group">
+																		<label>Achievement [1200 Characters max] <sup>*</sup></label>
+																		<input type="hidden" name="hdnC" value="@MKPACount" />
+																		@Html.TextAreaFor(model => model.KPAL[i].Self_Achievement, new { @class = "form-control h-100 txtAchievement maxSize[1200]", @maxlength = "1200", onkeypress = "return blockSpecialChar(event)", @disabled = "true" })
+																		@Html.ValidationMessageFor(model => model.KPAL[i].Self_Achievement, "", new { @class = "text-danger" })
+																		<div class="countshow"></div>
+																	</div>
+																	<div class="col-sm-6 form-group">
+																		<label>Remark, if any [1200 Characters max]</label>
+																		@Html.TextAreaFor(model => model.KPAL[i].Self_Comment, new { @class = "form-control h-100 maxSize[1200]", @placeholder = "Enter", @maxlength = "1200", onkeypress = "return blockSpecialChar(event)", @disabled = "true" })
+																		@Html.ValidationMessageFor(model => model.KPAL[i].Self_Comment, "", new { @class = "text-danger" })
+																		<div class="countshow"></div>
+
+																	</div>
+																</div>
+															}
+															else
+															{
+																<div class="row">
+																	<div class="col-sm-6 form-group">
+																		<label>Achievement [1200 Characters max] <sup>*</sup></label>
+																		<input type="hidden" name="hdnC" value="@MKPACount" />
+																		@Html.TextAreaFor(model => model.KPAL[i].Self_Achievement, new { @class = "form-control h-100 txtAchievement maxSize[1200]", @placeholder = "Enter", @maxlength = "1200", onkeypress = "return blockSpecialChar(event)" })
+																		@Html.ValidationMessageFor(model => model.KPAL[i].Self_Achievement, "", new { @class = "text-danger" })
+																		<div class="countshow"></div>
+																	</div>
+																	<div class="col-sm-6 form-group">
+																		<label>Remark, if any [1200 Characters max]</label>
+																		@Html.TextAreaFor(model => model.KPAL[i].Self_Comment, new { @class = "form-control h-100 maxSize[1200]", @placeholder = "Enter", @maxlength = "1200", onkeypress = "return blockSpecialChar(event)" })
+																		@Html.ValidationMessageFor(model => model.KPAL[i].Self_Comment, "", new { @class = "text-danger" })
+																		<div class="countshow"></div>
+
+																	</div>
+																</div>
+															}
+
+															@if (Model.Approved == 3 || Model.Approved == 5)
+															{
+																<div class="row">
+																	<div class="col-md-12 form-group">
+																		<hr>
+																		<span class="hr-aps"><i class="fas fa-hand-holding-usd"></i> Appraiser </span>
+																	</div>
+																	<div class="col-sm-10 form-group">
+																		<label>Comment</label>
+
+																		@Html.TextAreaFor(model => model.KPAL[i].HOD_Comment, new { @class = "form-control h-100", @placeholder = "Enter Comment", onkeypress = "return blockSpecialChar(event)", @disabled = "true" })
+																		@Html.ValidationMessageFor(model => model.KPAL[i].HOD_Comment, "", new { @class = "text-danger" })
+
+																	</div>
+																	<div class="col-sm-2 align-self-top form-group">
+																		<label>Appraiser’s Score <i class="fas fa-info-circle" data-popover-content="#unique-id1" data-toggle="popover" data-placement="top"></i> </label>
+
+																		<!--- Popover--->
+																		<div id="unique-id1" style="display: none">
+																			<div class="popover-body">
+
+																				<button type="button" class="popover-close close"><i class="fas fa-times"></i></button>
+																				<h2>Score Card</h2>
+																				<div class="statulistpophvr ">
+																					<ul class="list-unstyled">
+																						<li><strong>96-100</strong></li>
+																						<li class="text-right">0</li>
+																						<li><strong>90-95	</strong></li>
+																						<li class="text-right">A+</li>
+																						<li><strong>85-90	</strong></li>
+																						<li class="text-right">A</li>
+																						<li><strong>70-84	</strong></li>
+																						<li class="text-right">B</li>
+																						<li><strong>60-70	</strong></li>
+																						<li class="text-right">C</li>
+																						<li><strong>50-60	</strong></li>
+																						<li class="text-right">D</li>
+																						<li><strong>0-50	</strong></li>
+																						<li class="text-right">E</li>
+																					</ul>
+																				</div>
+																			</div>
+																		</div>
+																		<!------>
+																		<div class="input-group">
+																			<input type="hidden" id="hdnC" name="hdnC" value="@MKPACount" />
+
+																			@Html.TextBoxFor(model => model.KPAL[i].HOD_Score, new { @class = "form-control h-50 txtScore", @disabled = "true" })
+																			@Html.ValidationMessageFor(model => model.KPAL[i].HOD_Score, "", new { @class = "text-danger" })
+
+																			<div class="input-group-prepend">
+																				<span class="input-group-text" id="basic-addon1">100</span>
+																			</div>
+																		</div>
+																	</div>
+																</div>
+															}
+															<div class="row">
+																<div class="col-sm-12 text-right">
+																	<a class="btn  cnl-btn ripplelink" data-dismiss="modal"><i class="fas fa-times"></i>Close</a>
+																	@if (MKPACount > 1)
+																	{
+																		<a class="btn blk-gdn-btn  btnPrevious"><i class="fas fa-angle-double-left"></i>Previous</a>}
+																	@if (MKPACount != Model.KPAL.Count)
+																	{
+																		<a class="btn blk-gdn-btn  btnNext">Next <i class="fas fa-angle-double-right m-0"></i></a>}
+																</div>
+															</div>
+
+
+
+														</div>}
+
+												}
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+
+			</div>}
+	}
+
+
+
+</div>
+
+
+
+
+@section scripts    {
+	@System.Web.Optimization.Scripts.Render("~/bundle/unobtrusivejs")
+	@Html.IncludeVersionedJs(Url.Content("~/assets/design/Scripts/ToolTip.js"))
+	@System.Web.Optimization.Scripts.Render("~/assets/design/Scripts/AddInit.js")
+	<script>
+
+		function BindTarget(obj) {
+			CloseLoadingDialog();
+			if (obj.Status) {
+				SuccessToaster(obj.SuccessMessage);
+	        	window.location.href = obj.RedirectURL
+			}
+			else {
+				FailToaster(obj.SuccessMessage);
+			}
+		}
+	$(".txtAchievement").on('keyup keypress', function (e) {
+					DisplayAchievement(this);
+				});
+
+		function DisplayAchievement(obj) {
+
+				var C = $(obj).closest("div").find("input:hidden[name=hdnC]").val();
+
+				$("#spnAch_" + C).html($(obj).val());
+                var TargetAchieved = $(obj).closest("div").find("input:hidden[name=hdnTargetAchieved]").val();
+            $("#spnTargetAch_"+ TargetAchieved).html($(obj).val());
+			}
+		$('.btnNext').click(function () {
+
+					$('.nav-tabs .active').parent().next('li').find('a').trigger('click');
+					$('.nav-tabs .active').parent().prev('li').find('a').addClass("prvactive");
+
+				});
+
+				$('.btnPrevious').click(function () {
+
+					$('.nav-tabs .active').parent().prev('li').find('a').trigger('click');
+				});
+		     $("#ATrainingAdd").click(function (e) {
+					e.preventDefault();
+					AddTrainingRow();
+				});
+				$("#AAttachmentAdd").click(function (e) {
+					e.preventDefault();
+					AddAttachmentRow();
+				});
+	     	function AddTrainingRow() {
+				var LastTRCount = parseInt($('#tblTraining').find("tbody tr").length) - 1;
+			    // $('.applyselect').select2("destroy");
+				if (LastTRCount >=4) {
+					FailToaster("5 training allowed");
+				}
+				else {
+					$('.applyselect').select2("destroy");
+					var $tableBody = $('#tblTraining').find("tbody"),
+						$trLast = $tableBody.find("tr:last"),
+						$trNew = $trLast.clone();
+					   $trNew.find("td:last").html('<a onclick="DeleteTrainingRow(this)" class="remove" data-toggle="tooltip" data-original-title="Remove"><i class="fas fa-window-close red-clr" aria-hidden="true"></i></a>');
+
+
+					$trNew.find("div").each(function () {
+						$(this).attr({
+							'id': function (_, id) { var arr = id.split('_'); return id.replace(arr[1], LastTRCount + 1); }
+						});
+
+					});
+
+					$trNew.find("label").each(function () {
+						$(this).attr({
+							'id': function (_, id) { var arr = id.split('_'); return id.replace(arr[1], LastTRCount + 1); },
+						});
+						$(this).html(parseInt($('#tblTraining').find("tbody tr").length) + 1);
+					});
+
+					$trNew.find("input").each(function (i) {
+						$(this).attr({
+							'id': function (_, name) { return name.replace('_' + LastTRCount + '_', '_' + (parseInt(LastTRCount) + 1) + '_'); },
+							'name': function (_, name) { return name.replace('[' + LastTRCount + ']', '[' + (parseInt(LastTRCount) + 1) + ']'); },
+						});
+						$(this).val('0');
+					});
+					$trNew.find("textarea").each(function (i) {
+						$(this).attr({
+							'id': function (_, name) { return name.replace('_' + LastTRCount + '_', '_' + (parseInt(LastTRCount) + 1) + '_'); },
+							'name': function (_, name) { return name.replace('[' + LastTRCount + ']', '[' + (parseInt(LastTRCount) + 1) + ']'); },
+						});
+						$(this).val('');
+					});
+					$trNew.find("select").each(function (i) {
+						$(this).attr({
+							'id': function (_, name) { return name.replace('_' + LastTRCount + '_', '_' + (parseInt(LastTRCount) + 1) + '_'); },
+							'name': function (_, name) { return name.replace('[' + LastTRCount + ']', '[' + (parseInt(LastTRCount) + 1) + ']'); },
+						});
+						$(this).val('');
+					});
+
+					$trNew.find("span").each(function (i) {
+						if ($(this).attr("data-valmsg-for")) {
+							$(this).attr({
+								'data-valmsg-for': function (_, name) { return name.replace('[' + LastTRCount + ']', '[' + (parseInt(LastTRCount) + 1) + ']'); }
+							});
+						}
+						if ($(this).attr("for")) {
+							$(this).attr({
+								'for': function (_, name) { return name.replace('_' + LastTRCount + '_', '_' + (parseInt(LastTRCount) + 1) + '_'); }
+							});
+						}
+					});
+
+					$trLast.after($trNew);
+					var form = $("#_SelfAppraisalFrom").closest("form");
+					form.removeData('validator');
+					form.removeData('unobtrusiveValidation');
+					$.validator.unobtrusive.parse(form);
+					$('[data-toggle="tooltip"]').tooltip();
+					$(".applyselect").select2();
+				}
+			}
+		function DeleteTrainingRow(obj) {
+				var count = 0;
+	debugger;
+			   var ID = parseInt($(obj).closest('tr').find("td.hfTrnId input[type='hidden']").val());
+				var TotalRowCount = $('#tblTraining').find("tbody tr").length;
+		      if (isNaN(ID) && TotalRowCount>1) {
+				ConfirmMsgBox("Are you sure you want to delete", '', function () {
+
+					$(obj).closest('tr').remove();
+					$("#tblTraining TBODY TR").each(function (i) {
+						$(this).closest("tr").find("label").each(function () {
+							$(this).attr({
+								'id': function (_, id) { var arr = id.split('_'); return id.replace(arr[1], i); },
+							});
+							$(this).html(i + 1)
+						});
+
+						$(this).closest("tr").find("div").each(function () {
+							$(this).attr({
+								'id': function (_, id) { var arr = id.split('_'); return id.replace(arr[1], i); },
+							});
+						});
+
+
+						$(this).closest("tr").find("input").each(function () {
+							$(this).attr({
+								'id': function (_, id) { return id.replace('_' + (parseInt(i) + 1) + '_', '_' + i + '_'); },
+								'name': function (_, name) { return name.replace('[' + (parseInt(i) + 1) + ']', '[' + i + ']'); },
+							});
+
+						});
+
+						$(this).closest("tr").find("select").each(function () {
+							$(this).attr({
+								'id': function (_, id) { return id.replace('_' + (parseInt(i) + 1) + '_', '_' + i + '_'); },
+								'name': function (_, name) { return name.replace('[' + (parseInt(i) + 1) + ']', '[' + i + ']'); },
+							});
+
+						});
+
+						$(this).closest("tr").find("textarea").each(function () {
+							$(this).attr({
+								'id': function (_, id) { return id.replace('_' + (parseInt(i) + 1) + '_', '_' + i + '_'); },
+								'name': function (_, name) { return name.replace('[' + (parseInt(i) + 1) + ']', '[' + i + ']'); },
+							});
+
+						});
+
+
+						$(this).closest("tr").find("span").each(function () {
+							if ($(this).attr("data-valmsg-for")) {
+								$(this).attr({
+									'data-valmsg-for': function (_, name) { return name.replace('[' + (parseInt(i) + 1) + ']', '[' + i + ']'); },
+								});
+							}
+							if ($(this).attr("for")) {
+								$(this).attr({
+									'for': function (_, id) { return id.replace('_' + (parseInt(i) + 1) + '_', '_' + i + '_'); },
+								});
+							}
+						});
+					});
+					var form = $("#_SetSelfAppraisalFrom").closest("form");
+					form.removeData('validator');
+					form.removeData('unobtrusiveValidation');
+					$.validator.unobtrusive.parse(form);
+
+				})
+		}
+		 else if(TotalRowCount>1){
+
+
+			ConfirmMsgBox("Are you sure you want to delete", '', function () {
+
+					$(obj).closest('tr').remove();
+					$("#tblTraining TBODY TR").each(function (i) {
+						$(this).closest("tr").find("label").each(function () {
+							$(this).attr({
+								'id': function (_, id) { var arr = id.split('_'); return id.replace(arr[1], i); },
+							});
+							$(this).html(i + 1)
+						});
+
+						$(this).closest("tr").find("div").each(function () {
+							$(this).attr({
+								'id': function (_, id) { var arr = id.split('_'); return id.replace(arr[1], i); },
+							});
+						});
+
+
+						$(this).closest("tr").find("input").each(function () {
+							$(this).attr({
+								'id': function (_, id) { return id.replace('_' + (parseInt(i) + 1) + '_', '_' + i + '_'); },
+								'name': function (_, name) { return name.replace('[' + (parseInt(i) + 1) + ']', '[' + i + ']'); },
+							});
+
+						});
+
+						$(this).closest("tr").find("select").each(function () {
+							$(this).attr({
+								'id': function (_, id) { return id.replace('_' + (parseInt(i) + 1) + '_', '_' + i + '_'); },
+								'name': function (_, name) { return name.replace('[' + (parseInt(i) + 1) + ']', '[' + i + ']'); },
+							});
+
+						});
+
+						$(this).closest("tr").find("textarea").each(function () {
+							$(this).attr({
+								'id': function (_, id) { return id.replace('_' + (parseInt(i) + 1) + '_', '_' + i + '_'); },
+								'name': function (_, name) { return name.replace('[' + (parseInt(i) + 1) + ']', '[' + i + ']'); },
+							});
+
+						});
+
+
+						$(this).closest("tr").find("span").each(function () {
+							if ($(this).attr("data-valmsg-for")) {
+								$(this).attr({
+									'data-valmsg-for': function (_, name) { return name.replace('[' + (parseInt(i) + 1) + ']', '[' + i + ']'); },
+								});
+							}
+							if ($(this).attr("for")) {
+								$(this).attr({
+									'for': function (_, id) { return id.replace('_' + (parseInt(i) + 1) + '_', '_' + i + '_'); },
+								});
+							}
+						});
+					});
+
+			var dataObject = JSON.stringify({
+						'ID': ID,
+						'Doctype': 'PTCTraining',
+					});
+					var data = $.parseJSON($.ajax({
+						url: '/CommonAjax/DelRecord_CommonJson',
+						type: "post",
+						data: dataObject,
+						contentType: 'application/json',
+						async: false
+					}).responseText);
+					return data;
+					var form = $("#_SetSelfAppraisalFrom").closest("form");
+					form.removeData('validator');
+					form.removeData('unobtrusiveValidation');
+					$.validator.unobtrusive.parse(form);
+
+
+				})
+		}
+
+
+			}
+			function AddAttachmentRow() {
+
+
+				var LastTRCount = parseInt($('#tableAttachment').find("tbody tr").length) - 1;
+
+				$('.applyselect').select2("destroy");
+				var $tableBody = $('#tableAttachment').find("tbody"),
+					$trLast = $tableBody.find("tr:last"),
+					$trNew = $trLast.clone();
+				$trNew.find("td:last").html('<a onclick="DeleteNewAttachmentRowTest(this)" class="remove" data-toggle="tooltip" data-original-title="Remove"><i class="fas fa-window-close red-clr" aria-hidden="true"></i></a>');
+
+
+				$trNew.find("div").each(function () {
+					$(this).attr({
+						'id': function (_, id) { var arr = id.split('_'); return id.replace(arr[1], LastTRCount + 1); }
+					});
+					$(this).closest("tr").find("#divAttachmentUpload").show();
+					$(this).closest("tr").find("#divAttachmentShow").hide();
+
+				});
+
+				$trNew.find("label").each(function () {
+					$(this).attr({
+						'id': function (_, id) { var arr = id.split('_'); return id.replace(arr[1], LastTRCount + 1); },
+					});
+					$(this).html(parseInt($('#tableAttachment').find("tbody tr").length) + 1);
+				});
+
+				$trNew.find("input").each(function (i) {
+					$(this).attr({
+						'id': function (_, name) { return name.replace('_' + LastTRCount + '_', '_' + (parseInt(LastTRCount) + 1) + '_'); },
+						'name': function (_, name) { return name.replace('[' + LastTRCount + ']', '[' + (parseInt(LastTRCount) + 1) + ']'); },
+					});
+					if ($(this).attr('type') == "hidden") {
+						$(this).val('0')
+					}
+					else if (!$(this).hasClass('txtfix')) {
+						$(this).val('')
+					}
+					//($(this).attr('type') == "hidden" ? $(this).val('0') : $(this).val(''));
+				});
+				$trNew.find("textarea").each(function (i) {
+					$(this).attr({
+						'id': function (_, name) { return name.replace('_' + LastTRCount + '_', '_' + (parseInt(LastTRCount) + 1) + '_'); },
+						'name': function (_, name) { return name.replace('[' + LastTRCount + ']', '[' + (parseInt(LastTRCount) + 1) + ']'); },
+					});
+					$(this).val('');
+				});
+				$trNew.find("select").each(function (i) {
+					$(this).attr({
+						'id': function (_, name) { return name.replace('_' + LastTRCount + '_', '_' + (parseInt(LastTRCount) + 1) + '_'); },
+						'name': function (_, name) { return name.replace('[' + LastTRCount + ']', '[' + (parseInt(LastTRCount) + 1) + ']'); },
+					});
+					$(this).val('');
+				});
+
+				$trNew.find("span").each(function (i) {
+					if ($(this).attr("data-valmsg-for")) {
+						$(this).attr({
+							'data-valmsg-for': function (_, name) { return name.replace('[' + LastTRCount + ']', '[' + (parseInt(LastTRCount) + 1) + ']'); }
+						});
+					}
+					if ($(this).attr("for")) {
+						$(this).attr({
+							'for': function (_, name) { return name.replace('_' + LastTRCount + '_', '_' + (parseInt(LastTRCount) + 1) + '_'); }
+						});
+					}
+				});
+
+				$trLast.after($trNew);
+				var form = $("#_SelfAppraisalFrom").closest("form");
+				form.removeData('validator');
+				form.removeData('unobtrusiveValidation');
+				$.validator.unobtrusive.parse(form);
+				$('[data-toggle="tooltip"]').tooltip();
+				$(".applyselect").select2();
+			}
+
+		function DeleteNewAttachmentRowTest(obj){
+
+		debugger;
+		   var count = 0;
+			var ID = parseInt($(obj).closest('tr').find("td.hfNewId input[type='hidden']").val());
+			var TotalRowCount = $('#tableAttachment').find("tbody tr").length;
+			var srno = TotalRowCount;
+			if (isNaN(ID) && srno>1) {
+
+			ConfirmMsgBox("Are you sure you want to delete", '', function () {
+
+					$(obj).closest('tr').remove();
+					$("#tableAttachment TBODY TR").each(function (i) {
+						$(this).closest("tr").find("label").each(function () {
+							$(this).attr({
+								'id': function (_, id) { var arr = id.split('_'); return id.replace(arr[1], i); },
+							});
+							$(this).html(i + 1)
+						});
+
+						$(this).closest("tr").find("div").each(function () {
+							$(this).attr({
+								'id': function (_, id) { var arr = id.split('_'); return id.replace(arr[1], i); },
+							});
+						});
+
+
+						$(this).closest("tr").find("input").each(function () {
+							$(this).attr({
+								'id': function (_, id) { return id.replace('_' + (parseInt(i) + 1) + '_', '_' + i + '_'); },
+								'name': function (_, name) { return name.replace('[' + (parseInt(i) + 1) + ']', '[' + i + ']'); },
+							});
+
+						});
+
+						$(this).closest("tr").find("select").each(function () {
+							$(this).attr({
+								'id': function (_, id) { return id.replace('_' + (parseInt(i) + 1) + '_', '_' + i + '_'); },
+								'name': function (_, name) { return name.replace('[' + (parseInt(i) + 1) + ']', '[' + i + ']'); },
+							});
+
+						});
+
+						$(this).closest("tr").find("textarea").each(function () {
+							$(this).attr({
+								'id': function (_, id) { return id.replace('_' + (parseInt(i) + 1) + '_', '_' + i + '_'); },
+								'name': function (_, name) { return name.replace('[' + (parseInt(i) + 1) + ']', '[' + i + ']'); },
+							});
+
+						});
+
+
+						$(this).closest("tr").find("span").each(function () {
+							if ($(this).attr("data-valmsg-for")) {
+								$(this).attr({
+									'data-valmsg-for': function (_, name) { return name.replace('[' + (parseInt(i) + 1) + ']', '[' + i + ']'); },
+								});
+							}
+							if ($(this).attr("for")) {
+								$(this).attr({
+									'for': function (_, id) { return id.replace('_' + (parseInt(i) + 1) + '_', '_' + i + '_'); },
+								});
+							}
+						});
+					});
+					var form = $("#_SelfAppraisalFrom").closest("form");
+					form.removeData('validator');
+					form.removeData('unobtrusiveValidation');
+					$.validator.unobtrusive.parse(form);
+
+				})
+
+		}
+		else if(srno>1){
+
+			ConfirmMsgBox("Are you sure you want to delete", '', function () {
+
+					$(obj).closest('tr').remove();
+					$("#tableAttachment TBODY TR").each(function (i) {
+						$(this).closest("tr").find("label").each(function () {
+							$(this).attr({
+								'id': function (_, id) { var arr = id.split('_'); return id.replace(arr[1], i); },
+							});
+							$(this).html(i + 1)
+						});
+
+						$(this).closest("tr").find("div").each(function () {
+							$(this).attr({
+								'id': function (_, id) { var arr = id.split('_'); return id.replace(arr[1], i); },
+							});
+						});
+
+
+						$(this).closest("tr").find("input").each(function () {
+							$(this).attr({
+								'id': function (_, id) { return id.replace('_' + (parseInt(i) + 1) + '_', '_' + i + '_'); },
+								'name': function (_, name) { return name.replace('[' + (parseInt(i) + 1) + ']', '[' + i + ']'); },
+							});
+
+						});
+
+						$(this).closest("tr").find("select").each(function () {
+							$(this).attr({
+								'id': function (_, id) { return id.replace('_' + (parseInt(i) + 1) + '_', '_' + i + '_'); },
+								'name': function (_, name) { return name.replace('[' + (parseInt(i) + 1) + ']', '[' + i + ']'); },
+							});
+
+						});
+
+						$(this).closest("tr").find("textarea").each(function () {
+							$(this).attr({
+								'id': function (_, id) { return id.replace('_' + (parseInt(i) + 1) + '_', '_' + i + '_'); },
+								'name': function (_, name) { return name.replace('[' + (parseInt(i) + 1) + ']', '[' + i + ']'); },
+							});
+
+						});
+
+
+						$(this).closest("tr").find("span").each(function () {
+							if ($(this).attr("data-valmsg-for")) {
+								$(this).attr({
+									'data-valmsg-for': function (_, name) { return name.replace('[' + (parseInt(i) + 1) + ']', '[' + i + ']'); },
+								});
+							}
+							if ($(this).attr("for")) {
+								$(this).attr({
+									'for': function (_, id) { return id.replace('_' + (parseInt(i) + 1) + '_', '_' + i + '_'); },
+								});
+							}
+						});
+					});
+
+		    	var dataObject = JSON.stringify({
+						'ID': ID,
+						'Doctype': 'PTCAppraisal',
+					});
+					var data = $.parseJSON($.ajax({
+						url: '/CommonAjax/DelRecord_CommonJson',
+						type: "post",
+						data: dataObject,
+						contentType: 'application/json',
+						async: false
+					}).responseText);
+					return data;
+					var form = $("#_SetSelfAppraisalFrom").closest("form");
+					form.removeData('validator');
+					form.removeData('unobtrusiveValidation');
+					$.validator.unobtrusive.parse(form);
+
+				})
+
+
+		}
+
+
+
+		}
+
+			function blockSpecialChar(e){
+
+        var k;
+        document.all ? k = e.keyCode : k = e.which;
+		if(k==39){
+		event.preventDefault();
+		}
+
+        }
+	</script>
+}

@@ -1,0 +1,53 @@
+﻿@model IList<PTC.Hierarchy>
+<div class="table-responsive">
+
+	<table class="table mt-0" id="tabelPTCReport">
+		<thead>
+            <tr>
+                <th class="w-10 text-center">S.No </th>
+                <th width="100">Employee Code	</th>
+                <th>Employee Name</th>
+                <th>Date of Joining </th>
+                <th>End Date of Probation</th>
+                <th width="200">Work Location</th>
+                <th>Department</th>
+                <th>Designation</th>
+                <th>Supervisor</th>
+                <th>Confirmer Name</th>
+                <th width="100">Status</th>
+
+
+
+            </tr>
+		</thead>
+		<tbody>
+
+			@if (Model.Count > 0)
+			{
+				int count = 1;
+				for (int i = 0; i < Model.Count; i++)
+				{
+                    <tr>
+                        <td class="text-center">@count</td>
+                        <td>@Model[i].EMPCode</td>
+                        <td>@Model[i].EMPName   </td>
+                        <td>@Model[i].doj</td>
+                        <td>@Model[i].Probation_EndDate       </td>
+                        <td>@Model[i].LocationName      </td>
+                        <td>@Model[i].DepartmentsName       </td>
+                        <td>@Model[i].Designation       </td>
+
+                        <td>@Model[i].AppraiserName     </td>
+                        <td>@Model[i].ConfirmerName </td>
+                        <td><strong class="red-clr">@Model[i].Status</strong></td>
+                    </tr>
+					count++;
+				}
+			}
+
+
+
+		</tbody>
+	</table>
+
+</div>

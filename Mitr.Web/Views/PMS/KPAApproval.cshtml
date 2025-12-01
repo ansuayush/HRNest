@@ -1,0 +1,115 @@
+﻿@model PMS
+
+<div class="inner-main">
+		<h1 class="heading-one ">Key Performance Area Approval</h1>	
+
+	@using (Ajax.BeginForm("_KPAApproval", "PMS",
+			new { src = clsApplicationSetting.EncryptQueryString(ViewBag.MenuID.ToString() + "*/PMS/_KPAApproval*"+ ViewBag.FYID) },
+			  new AjaxOptions { HttpMethod = "POST", OnSuccess = "BindTarget", OnBegin = "ShowLoadingDialog()" },
+		new { @id = "__KPAApprovalFrom" })
+		)
+	{
+	<div class="row">
+
+		<div class="col-lg-2 col-md-2 align-self-end slt-srh form-group">
+			<label class="lbl-abs">Select Year</label>
+			@Html.DropDownListFor(x => Model.FYID, new SelectList(ViewBag.FinYearList, "ID", "Year", Model.FYID), "Select Year",
+	new { @class = "form-control  applyselect ddapplyaction" })
+			@Html.ValidationMessageFor(model => Model.FYID, "", new { @class = "text-danger" })
+		</div>
+		<div style="display:none">
+			<button type="submit" class="btn mtr-g-grn btn-l ripplelink" id="btnSearch" name="Command" value="Search"><i class="fas fa-search"></i>Search</button>
+		</div>
+		<div class="col-sm-2 form-group" id="divStatus">
+			<label>Status</label>
+			<p><strong id="spnStatus"></strong></p>
+
+		</div>
+		<div class="col-sm-4 form-group divReason">
+			<label>Reason</label>
+			<p><span id="spnRemarks"></span></p>
+		</div>
+	</div>
+	}
+
+	<div id="TargetDiv">@Html.Partial("_Loading")</div>
+</div>
+
+
+
+
+@section scripts    {
+	@System.Web.Optimization.Scripts.Render("~/bundle/unobtrusivejs")
+	@Html.IncludeVersionedJs(Url.Content("~/assets/design/Scripts/ToolTip.js"))
+	@System.Web.Optimization.Scripts.Render("~/assets/design/Scripts/AddInit.js")
+
+	<script>
+		$(document).ready(function () {
+			$("#btnSearch").click();
+		});
+
+		$('.ddapplyaction').bind("change", function () {
+			$("#btnSearch").click();
+		});
+
+
+		function BindTarget(args) {
+			CloseLoadingDialog();
+			$("#TargetDiv").empty();
+			$("#TargetDiv").html(args);
+			$('[data-toggle="tooltip"]').tooltip();
+			$(".applyselect").select2();
+
+			$(".btnTeam").click(function (e) {
+				ConfirmMsgBox('Are you sure want to approve KPA ?', '', function () {
+					$("#btnApprove").click();
+				});
+			});
+			SHowHideSubmit();
+		}
+
+		function OnSuccessApproveKPA(obj) {
+			$(".modal").modal('hide');
+			CloseLoadingDialog();
+			if (obj.Status) {
+				SuccessToaster(obj.SuccessMessage);
+				$("#btnSearch").click();
+			
+			}
+			else {
+			
+				FailToaster(obj.SuccessMessage);
+			}
+		}
+
+		function SHowHideSubmit() {
+		
+			var hdnApproved = $("#hdnApproved").val();
+
+			if ($("#hdnApprovedStatus").val() == "") {
+				$("#divStatus").hide();
+			} else {
+				$("#spnStatus").html($("#hdnApprovedStatus").val());
+				$("#divStatus").show();
+			}
+			
+			if (hdnApproved == 0 || hdnApproved == 2) {
+				$("#spnStatus").addClass('red-clr');
+				$("#spnStatus").removeClass('green-clr');
+			}
+			else {
+				$("#spnStatus").removeClass('red-clr');
+				$("#spnStatus").addClass('green-clr');
+			}
+			if ($("#hdnRemarks").val() == "") {
+				$(".divReason").hide();
+			}
+			else {
+				$(".divReason").show();
+				$("#spnRemarks").html($("#hdnRemarks").val());
+			}
+		}
+
+	</script>
+
+}

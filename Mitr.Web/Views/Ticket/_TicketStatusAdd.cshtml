@@ -1,0 +1,74 @@
+﻿
+@model Mitr.Models.Helpdesk.Ticket_Status
+
+
+
+@using (Ajax.BeginForm("_TicketStatusAdd", "Ticket",
+        new { src = ViewBag.src },
+        new AjaxOptions { HttpMethod = "POST", OnSuccess = "OnSuccess" },
+    new { @id = "_TicketStatusAddFrom" })
+    )
+{
+
+    @Html.AntiForgeryToken()
+    @Html.HiddenFor(x => Model.TicketStatusID)
+    <div class="row">
+
+        <div class="col-lg-6 col-md-6 col-sm-6 form-group">
+            <label>Name<sup>*</sup></label>
+            @if (Model.Readonly)
+            {
+                @Html.HiddenFor(model => model.StatusName)
+        <label class = "form-control"> @Model.StatusName</label>
+            }
+            else
+            {
+                @Html.TextBoxFor(model => model.StatusName, new { @class = "form-control" })
+                @Html.ValidationMessageFor(model => model.StatusName, "", new { @class = "text-danger" })
+            }
+        </div>
+        <div class="col-lg-6 col-md-6 col-sm-6 form-group">
+            <label>Display Name<sup>*</sup></label>
+            @Html.TextBoxFor(model => model.DisplayName, new { @class = "form-control" })
+            @Html.ValidationMessageFor(model => model.DisplayName, "", new { @class = "text-danger" })
+        </div>
+        <div class="col-lg-6 col-md-6 col-sm-6 form-group">
+            <label>Type<sup>*</sup></label>
+            @if (Model.Readonly)
+            {
+                @Html.HiddenFor(model => model.Type)
+                <label class = "form-control"> @Model.Type</label>
+            }
+            else
+            {
+                @Html.TextBoxFor(model => model.Type, new { @class = "form-control" })
+                @Html.ValidationMessageFor(model => model.Type, "", new { @class = "text-danger" })
+            }
+        </div>
+        <div class="col-lg-6 col-md-6 col-sm-6 form-group">
+            <label>Color<sup>*</sup></label>
+            @Html.TextBoxFor(model => model.StatusColor, new { @class = "form-control" })
+            @Html.ValidationMessageFor(model => model.StatusColor, "", new { @class = "text-danger" })
+        </div>
+        <div class="col-lg-6 col-md-6 col-sm-6 form-group">
+            <label>Priority<sup>*</sup></label>
+            @Html.TextBoxFor(model => model.Priority, new { @class = "form-control" })
+            @Html.ValidationMessageFor(model => model.Priority, "", new { @class = "text-danger" })
+        </div>
+
+    </div>
+
+    <div class="row">
+
+        @if (Model.TicketStatusID > 0)
+        {
+            <button type="submit" class="btn mtr-o-grn btn-l ripplelink pull-right" name="Command" value="Add"><i class="fa fa-paper-plane" aria-hidden="true"></i> Update</button>
+        }
+        else
+        {
+            <button type="submit" class="btn mtr-o-grn btn-l ripplelink pull-right" name="Command" value="Add"><i class="fa fa-paper-plane" aria-hidden="true"></i> Submit</button>
+        }
+    </div>
+
+}
+

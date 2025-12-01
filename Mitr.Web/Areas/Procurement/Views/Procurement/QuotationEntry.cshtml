@@ -1,0 +1,132 @@
+﻿
+@{
+    ViewBag.Title = "Quotation Entry";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<!-- Start -->
+<div class="inner-main defult-height p-3 pb-0">
+    <h1 class="heading-one">Quotation Entry</h1>
+    <div class="row">
+
+        <div class="col-sm-12">
+            <div class="tab-main mb-3">
+
+                <ul id="tabs" class="nav nav-tabs " role="tablist">
+                    <li class="nav-item"> <a id="tab-A" href="#pending" class="nav-link active ripplelink" data-toggle="tab" role="tab"><i class="fas fa-clock"></i>Pending</a> </li>
+                    <li class="nav-item"> <a id="tab-B" href="#approved" class="nav-link ripplelink" data-toggle="tab" role="tab"><i class="fas fa-cogs"></i>UnderProcess</a> </li>
+
+                    <li class="nav-item"> <a id="tab-d" href="#rejected" class="nav-link ripplelink" data-toggle="tab" role="tab"><i class="fa fa-ban" aria-hidden="true"></i>Closed</a> </li>
+                </ul>
+
+                <div id="content" class="tab-content p-0" role="tablist">
+                    <!-- --->
+                    <div id="pending" class="card tab-pane fade show   active" role="tabpanel" aria-labelledby="tab-A">
+                        <div class="card-header" role="tab" id="heading-A">
+                            <h5 class="mb-0"> <a data-toggle="collapse" href="#collapse-A" aria-expanded="true" aria-controls="collapse-A">Pending <i class="fas fa-clock"></i></a> </h5>
+                        </div>
+                        <div id="collapse-A" class="collapse show" data-parent="#content" role="tabpanel" aria-labelledby="heading-A">
+                            <div class="table-responsive">
+                                <table class="table mt-4" id="tblPending">
+                                    <thead>
+                                        <tr>
+                                            <th width="10">S.No</th>
+                                            <th width="80">Request No</th>
+                                            <th width="100">Request Date</th>
+                                            <th width="150">Process By</th>
+                                            <th width="150">Point of Contact</th>
+                                            <th>Project Code</th>
+                                            <th>Contract/Agreement Type </th>
+                                            <th width="100">Req. Amount</th>
+                                            <th width="150">Status</th>
+                                            <th width="70">Action</th>
+                                        </tr>
+                                    </thead>
+
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="approved" class="card tab-pane fade " role="tabpanel" aria-labelledby="tab-b">
+                        <div class="card-header" role="tab" id="heading-A">
+                            <h5 class="mb-0"> <a data-toggle="collapse" href="#collapse-b" aria-expanded="true" aria-controls="collapse-b">Process <i class="fas fa-cogs"></i></a> </h5>
+                        </div>
+                        <div id="collapse-b" class="collapse " data-parent="#content" role="tabpanel" aria-labelledby="heading-b">
+                            <div class="table-responsive">
+                                <table class="table mt-4" id="tblProcess">
+                                    <thead>
+                                        <tr>
+                                            <th width="10">S.No</th>
+                                            <th width="80">Request No</th>
+                                            <th width="100">Request Date</th>
+                                            <th width="150">Process By</th>
+                                            <th width="150">Point of Contact</th>
+                                            <th>Project Code</th>
+                                            <th>Contract/Agreement Type </th>
+                                            <th width="100">Req. Amount</th>
+                                            <th width="150">Status</th>
+                                            <th width="70">Action</th>
+                                        </tr>
+                                    </thead>
+
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                  
+
+                    <div id="rejected" class="card tab-pane fade " role="tabpanel" aria-labelledby="tab-d">
+                        <div class="card-header" role="tab" id="heading-d">
+                            <h5 class="mb-0"> <a data-toggle="collapse" href="#collapse-d" aria-expanded="true" aria-controls="collapse-d">Rejected <i class="fa fa-ban" aria-hidden="true"></i></a> </h5>
+                        </div>
+                        <div id="collapse-d" class="collapse " data-parent="#content" role="tabpanel" aria-labelledby="heading-d">
+                            <div class="table-responsive">
+                                <table class="table mt-4" id="tblClose">
+                                    <thead>
+                                        <tr>
+                                            <th width="10">S.No</th>
+                                            <th width="80">Request No</th>
+                                            <th width="100">Request Date</th>
+                                            <th width="150">Process By</th>
+                                            <th width="150">Point of Contact</th>
+                                            <th>Project Code</th>
+                                            <th>Contract/Agreement Type </th>
+                                            <th width="100">Req. Amount</th>
+                                            <th width="150">Status</th>
+                                            <th width="70">Action</th>
+                                        </tr>
+                                    </thead>
+
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+
+
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+<!-- ENd -->
+
+@section scripts    {
+    @System.Web.Optimization.Scripts.Render("~/bundle/unobtrusivejs")
+    @System.Web.Optimization.Scripts.Render("~/bundle/dataTablesjs")
+    <script src="~/assets/design/Scripts/AddInit.js?v=@clsApplicationSetting.GetWebConfigValue("Version")"></script>
+    <script src="~/Areas/Procurement/DevScript/QuotationEntry.js"></script>
+
+    <script>
+		 var IsEDUser = '@ViewBag.IsED';
+       var loggedinUserid = '@ViewBag.UserId';
+		var loggedinUserName = '@ViewBag.UserName';
+		var UserGrade = '@ViewBag.Grade';
+        var IsPM = '@ViewBag.IsPM';
+
+
+
+    </script>
+}

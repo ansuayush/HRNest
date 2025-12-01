@@ -1,0 +1,58 @@
+﻿@using System.Data
+@model DataSet
+
+
+@Html.EJS().Grid("TalentGrid").DataSource(Model.Tables[0]).RowSelected("rowSelected").RowDeselected("rowSelected").SelectionSettings(ss => ss.EnableToggle(true)).GridLines(Syncfusion.EJ2.Grids.GridLine.Both).Columns(col =>
+{
+    col.Field("REC_TalentID").Visible(false).Add();
+    col.Field("REC_AppID").Visible(false).Add();
+
+    col.Field("RowNum").HeaderText("SNo").Width("50").Add();
+    col.Field("Name").HeaderText("Candidate").Width("120").Add();
+    col.Field("ApplyDate").HeaderText("Date of Application").Width("100").Add();
+    col.Field("Job_SubTitle").HeaderText("Sub Title").Width("100").Add();
+    col.Field("JobTitle").HeaderText("Job Title").Width("100").Add();
+    col.Field("locationName").HeaderText("location").Width("100").Add();
+    col.Type("checkbox").HeaderText("").Field("").Width("30").AllowFiltering(false).AllowSorting(false).Add();
+
+}).AllowPaging().PageSettings(page => page.PageCount(10)).Toolbar(new List<string>() { "Search" }).Render()
+
+
+    <div class="col-sm-12 text-center">
+        @using (Ajax.BeginForm("SetImportTalentPool", "Recruit",
+                        new { src = clsApplicationSetting.EncryptQueryString(ViewBag.MenuID.ToString() + "*/Recruit/SetImportTalentPool*" + ViewBag.REC_ReqID) },
+                        new AjaxOptions { HttpMethod = "POST", OnSuccess = "OnSuccessImportTalentPool", OnBegin = "ShowLoadingDialog();", OnFailure = "CloseLoadingDialog();" },
+                    new { @id = "ImportTalentPoolFrom" })
+                    )
+        {
+            <div class="col-sm-12 text-right">
+
+                <input type="hidden" id="HDNTalentID" name="HDNTalentID" value="" />
+                <div class="text-center mt-2" role="group" aria-label="Basic example">
+                    <button type="submit" name="Command" value="Selected" class="btn mtr-o-grn"><i class="fas fa-save"></i>Save</button>
+                    <button type="button" class="btn cnl-btn" data-dismiss="modal"><i class="fas fa-times"></i>Close</button>
+                </div>
+            </div>
+        }
+    </div>
+    <script>
+
+	function rowSelected(args) {
+		var grid = document.getElementById("TalentGrid").ej2_instances[0];
+		var selectedrowindex = grid.getSelectedRowIndexes();  // get the selected row indexes.
+		var selectedrecords = grid.getSelectedRecords();  // get the selected records.
+		$("#HDNTalentID").val('');
+		for (var i = 0; i < selectedrecords.length; i++) {
+			var ID = selectedrecords[i]['REC_TalentID'];
+			var resultObj = $("#HDNTalentID");
+			var stringToAppend = resultObj.val().length > 0 ? resultObj.val() + "," : "";
+			resultObj.val(stringToAppend + ID);
+		}
+	}
+
+
+
+
+    </script>
+    @(Html.EJS().ScriptManager())
+    @Html.IncludeVersionedJs(Url.Content("~/assets/design/Scripts/SyncScripts.js"))

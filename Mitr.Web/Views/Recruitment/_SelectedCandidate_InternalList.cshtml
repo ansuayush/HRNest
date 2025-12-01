@@ -1,0 +1,77 @@
+﻿@model IList<Mitr.Models.InternalStaff>
+
+<div class="row">
+    <div class="col-sm-12">
+        <strong>Staff List</strong>
+        <div class="table-responsive">
+            <table class="table mt-2">
+                <thead>
+                    <tr>
+                        <th scope="col" rowspan="2">Sno.</th>
+                        <th scope="col" rowspan="2">Name</th>
+                        <th scope="col" class="text-center" colspan="3">Impacts</th>
+                        <th rowspan="2">April</th>
+                        <th rowspan="2">May</th>
+                        <th rowspan="2">June</th>
+                        <th rowspan="2">July</th>
+                        <th rowspan="2">Aug</th>
+                        <th rowspan="2">Sept</th>
+                        <th rowspan="2">Action</th>
+                    </tr>
+                    <tr>
+                        <th scope="col" rowspan="1">Relocation</th>
+                        <th scope="col" rowspan="1">Job Title</th>
+                        <th scope="col" rowspan="1">Pillar</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @{ int Count = 0;}
+                    @for (int i = 0; i < Model.Count; i++)
+                    {
+                        Count++;
+                    <tr>
+                        <td>
+                            @Count
+                                                <input type="hidden" name="ICI" value="@Model[i].InternalCandidateID" />
+                                                <input type="hidden" name="EN" value="@Model[i].EmpName" />
+                                            </td>
+                        <td>@Model[i].EmpName (@Model[i].EMPCode) </td>
+                        <td>
+                            @Model[i].RelocationByHR
+                            @if (Model[i].Relocation != Model[i].RelocationByHR)
+                            {
+                                <i class="fas fa-info-circle"></i>
+                            }
+                        </td>
+                        <td>
+                            @Model[i].JobTitleByHR
+                            @if (Model[i].JobTitle != Model[i].JobTitleByHR)
+                            {
+                                <i class="fas fa-info-circle"></i>
+                            }
+                        </td>
+                        <td>
+                            @Model[i].PillarByHR
+                            @if (Model[i].Pillar != Model[i].PillarByHR)
+                            {
+                                <i class="fas fa-info-circle"></i>
+                            }
+                        </td>
+                        <td>20%</td>
+                        <td>10%</td>
+                        <td>15%</td>
+                        <td>50%</td>
+                        <td>5%</td>
+                        <td>10%</td>
+                        <td>
+                            <a class="btn-c mr-2" data-toggle="tooltip" onclick="DeleteInternalCandi(this)" data-original-title="Cancel"><b><i class="fa fa-times"></i></b></a>
+                        </td>
+                    </tr>
+                    }
+                </tbody>
+
+            </table>
+        </div>
+    </div>
+
+</div>

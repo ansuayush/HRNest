@@ -1,0 +1,64 @@
+﻿
+<table class="table mt-0" id="myTabledata">
+    <thead>
+        <tr>
+            <th class="w-33">S.No </th>
+            <th>Action</th>
+            <th>Travel Type</th>
+            <th class="tw-100">Air Fare </th>
+            <th class="tw-100">Per Diem   </th>
+            <th class="tw-100">Hotel  </th>
+            <th class="tw-100">Local travel</th>
+            <th class="tw-100">Total  </th>
+
+        </tr>
+    </thead>
+
+    <tbody>
+        @{ int Count = 0;
+            string MenuID = "0";
+            if (ViewBag.MenuID != null)
+            {
+                MenuID = ViewBag.MenuID;
+            }
+
+            }
+        @if (Model.TravelBudgetList == null)
+        {
+            List
+            <Mitr.Models.BudgetMaster.TravelBudgetList>
+                List = new List<Mitr.Models.BudgetMaster.TravelBudgetList>
+                    ();
+            List.Add(new Mitr.Models.BudgetMaster.TravelBudgetList());
+            Model.TravelBudgetList = List;
+        }
+
+        @for (int i = 0; i < Model.TravelBudgetList.Count; i++)
+        {
+            Count++;
+		<tr>
+			<td class="hdfbudgetid">@Count  <input type="hidden" value="@Model.TravelBudgetList[i].Id" /></td>
+
+
+			<td class="travelType">@Model.TravelBudgetList[i].TravelType </td>
+			<td class="text-right airFare">@Model.TravelBudgetList[i].AirFare </td>
+			<td class="text-right perDiem">@Model.TravelBudgetList[i].PerDiem   </td>
+			<td class="text-right hotel">@Model.TravelBudgetList[i].Hotel </td>
+			<td class="text-right localTravel">@Model.TravelBudgetList[i].LocalTravel </td>
+			<td class="text-right"><strong>@Model.TravelBudgetList[i].Total  </strong></td>
+			<td class="hdfbudgetYrid">
+				<input type="hidden" value="@Model.TravelBudgetList[i].TravelYear" />
+				<a href="#" onclick="chkedit(this);"><i class="fas fa-edit checkgreen" aria-hidden="true"></i></a>
+				<a onclick="DelRecord_Prospect(this)" class="red-clr"><i class="fas fa-trash"></i> </a>
+			</td>
+
+		</tr>
+
+
+
+
+        }
+
+    </tbody>
+</table>
+

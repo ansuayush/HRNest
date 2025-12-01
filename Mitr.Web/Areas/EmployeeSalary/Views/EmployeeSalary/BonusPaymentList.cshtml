@@ -1,0 +1,425 @@
+﻿
+@model Mitr.Model.Bonus
+@*@model Mitr.CommonClass.HTMLHelper*@
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<div class="inner-main">
+    <h1 class="heading-one ">Bonus Payment Entry</h1>
+
+    @using (Ajax.BeginForm("_BonusPaymentList", "EmployeeSalary",
+            new { src = clsApplicationSetting.EncryptQueryString(ViewBag.MenuID.ToString() + "*/EmployeeSalary/_BonusPaymentList*" + ViewBag.FYID) },
+              new AjaxOptions { HttpMethod = "POST", OnSuccess = "BindTarget", OnBegin = "ShowLoadingDialog()" },
+        new { @id = "__BonusPaymentListFrom" }))
+    {
+        <div class="row">
+
+            <div class="col-lg-3 col-md-3 align-self-end slt-srh form-group">
+                <label class="lbl-abs">Select Year</label>
+                @Html.DropDownListFor(x => Model.FYID, new SelectList(ViewBag.FinYearList, "ID", "Year", Model.FYID), new { @class = "form-control  applyselect ddapplyaction" })
+                @Html.ValidationMessageFor(model => Model.FYID, "", new { @class = "text-danger" })
+            </div>
+
+            <div class="col-sm-2 form-group">
+                <label>Component</label>
+                <select class="form-control applyselect ddapplyaction" id="ComponentID" data-select2-id="4" tabindex="-1" aria-hidden="true">
+                    <option>Bonus </option>
+                    <option>Medical / Accident Insurance</option>
+
+
+                </select>
+                @*<span class="select2 select2-container select2-container--default" dir="ltr" data-select2-id="5" style="width: 173.
+    px;"><span class="selection"><span class="select2-selection select2-selection--single" role="combobox" aria-haspopup="true" aria-expanded="false" tabindex="0" aria-disabled="false" aria-labelledby="select2-x7ov-container"><span class="select2-selection__rendered" id="select2-x7ov-container" role="textbox" aria-readonly="true" title="Select">Select</span><span class="select2-selection__arrow" role="presentation"><b role="presentation"></b></span></span></span><span class="dropdown-wrapper" aria-hidden="true"></span></span>*@
+            </div>
+
+            <div class="col-sm-2 form-group">
+                <label>Paid Date</label>
+                @*<input id="txtPaidDate" type="date" placeholder="" value="" class="form-control ddapplyaction" />*@
+                @Html.TextBoxFor(model => model.PaidDate, new { @class = "form-control", @type = "date", @placeholder = "Enter" })
+                @Html.ValidationMessageFor(model => model.PaidDate, "", new { @class = "text-danger" })
+            </div>
+
+        </div>
+
+    }
+    <div id="TagetDiv"></div>
+</div>
+
+
+<!-- The Modal upload image-->
+<div class="modal fade pop-dgn" id="ViewModal">
+    <div class="modal-dialog modal-lg" id="">
+        <div id="TagetDivView"></div>
+    </div>
+</div>
+
+
+<!-- The Modal upload image-->
+<div class="modal fade pop-dgn" id="PaidModal">
+    <div class="modal-dialog modal-md" id="">
+        <div id="TagetDivPaid"> @Html.Partial("_Loading")</div>
+    </div>
+</div>
+
+
+
+
+@section scripts    {
+    @System.Web.Optimization.Scripts.Render("~/bundle/dataTablesjs")
+    @System.Web.Optimization.Scripts.Render("~/bundle/unobtrusivejs")
+    @*@Html.IncludeVersionedJs(Url.Content("~/assets/design/scripts/CustomValidate.js"))*@
+
+    @*@Html.IncludeVersionedJs(Url.Content("~/assets/tableToExcel.js"))*@
+
+    <script>
+        $(document).ready(function () {
+            BindData();
+        });
+
+        $('.ddapplyaction').bind("change", function () {
+            $("#btnSearch").click();
+        });
+        $(".ddapplyaction").bind("change", function () {
+            BindData();
+        });
+        function OnSuccess(obj) {
+            BindData();
+            if (obj.Status) {
+                SuccessToaster(obj.SuccessMessage);
+                //$("#PaidModal").modal("hide");
+                  window.location.reload();
+                
+            }
+            else {
+                CloseLoadingDialog();
+                FailToaster(obj.SuccessMessage);
+            }
+        }
+        function BindTarget(args) {
+            ShowLoadingDialog();
+            $("#TargetDiv").empty();
+            $("#TargetDiv").html(args);
+            $('[data-toggle="tooltip"]').tooltip();
+            $(".applyselect").select2();
+            CloseLoadingDialog();
+        }
+
+        function BindData() {
+            ShowLoadingDialog();
+        $("#TargetDiv").empty();
+            var FYID = $("#FYID").find('option:selected').val();
+            var Component = $("#ComponentID").find('option:selected').text();
+            var PaidDate = $("#PaidDate").find('option:selected').text();
+			$.ajax({
+                url: "/EmployeeSalary/_BonusPaymentList",
+				type: "Post",
+                data: { src: EncryptQueryStringJSON(@ViewBag.MenuID+"*" + "/EmployeeSalary/_BonusPaymentList" + "*" + FYID + "*" + Component + "*" + PaidDate) },
+                success: function (data)
+                {
+
+                    ShowLoadingDialog();
+					$("#TagetDiv").empty();
+                    $("#TagetDiv").html(data);
+                    $("#Empid").select2();
+                    $("#FYID").select2();
+                    $("#ComponentID").select2();
+
+                    CloseLoadingDialog();
+				},
+                error: function (er) {
+
+					alert(er);
+
+				}
+			});
+        }
+
+
+
+
+
+        function Add(obj, ID, Name, Component, Count) {
+           
+
+    if (ID == undefined) {
+        ID = 0;
+    }
+     var PaidDate = $("#PaidDate").val();
+     var Balance = parseInt($(obj).closest('tr').find("td.hdfBalanceid_" + Count + " input[type='hidden']").val());
+	$.ajax({
+        url: "/EmployeeSalary/_BonusPaymentEntry",
+		type: "Get",
+        data: { src: EncryptQueryStringJSON(@ViewBag.MenuID+"*" + "/EmployeeSalary/_BonusPaymentEntry" + "*" + ID + "*" + Name + "*" + Component + "*" + PaidDate)},
+        success: function (data)
+        {
+
+            $("#TagetDivPaid").empty();
+            $("#TagetDivPaid").html(data);
+            $("#hdfDueAmount").val(Balance);
+            $("#ProjectPaaymentAmountList_0__PaidAmount").val(Balance);
+            $("#PaidModal").modal("show");
+                var form = $("form")
+        .removeData("validator")
+        .removeData("unobtrusiveValidation");
+            $.validator.unobtrusive.parse(form);
+            $("#ProjectID").select2();
+            //$("#ProjectPaaymentAmountList_0__ProjectID").select2();
+            //$("#ProjectPaaymentAmountList_1__ProjectID").select2();
+            //$("#ProjectPaaymentAmountList_2__ProjectID").select2();
+            //$("#ProjectPaaymentAmountList_3__ProjectID").select2();
+
+		},
+        error: function (er) {
+
+			alert(er);
+
+		}
+    });
+
+
+
+    }
+function ListView(ID, Name, Component) {
+    if (ID == undefined) {
+        ID = 0;
+    }
+
+	$.ajax({
+        url: "/EmployeeSalary/_BonusPaymentDetails",
+		type: "Get",
+        data: { src: EncryptQueryStringJSON(@ViewBag.MenuID+"*" + "/EmployeeSalary/_BonusPaymentDetails" + "*" + ID + "*" + Name + "*" +Component)},
+        success: function (data)
+        {
+           
+
+            $("#TagetDivView").empty();
+            $("#TagetDivView").html(data);
+            $("#ViewModal").modal("show");
+                var form = $("form")
+        .removeData("validator")
+        .removeData("unobtrusiveValidation");
+            $.validator.unobtrusive.parse(form);
+		},
+        error: function (er) {
+           
+			alert(er);
+
+		}
+	});
+}
+
+           function AddNewRow() {
+           
+            var LastTRCount = parseInt($('#tblBonusPaymentEntry').find("tbody tr").length) - 1;
+            var $tableBody = $('#tblBonusPaymentEntry').find("tbody"),
+                $trLast = $tableBody.find("tr:last"),
+                $trNew = $trLast.clone();
+            $trNew.find("td:last").html('<a onclick="DeleteRow(this)" class="remove"><i class="fas fa-window-close red-clr" aria-hidden="true"></i></a>')
+            $trNew.find("label").each(function () {
+                $(this).attr({
+                    'id': function (_, id) { var arr = id.split('_'); return id.replace(arr[1], LastTRCount + 1); },
+                });
+                $(this).html(parseInt($('#tblBonusPaymentEntry').find("tbody tr").length) + 1)
+            });
+
+            $trNew.find("select").each(function (i) {
+                $(this).attr({
+                    'id': function (_, name) { return name.replace('_' + LastTRCount + '_', '_' + (parseInt(LastTRCount) + 1) + '_'); },
+                    'name': function (_, name) { return name.replace('[' + LastTRCount + ']', '[' + (parseInt(LastTRCount) + 1) + ']'); },
+                });
+
+            });
+            $trNew.find("input").each(function (i) {
+                $(this).attr({
+                    'id': function (_, name) { return name.replace('_' + LastTRCount + '_', '_' + (parseInt(LastTRCount) + 1) + '_'); },
+                    'name': function (_, name) { return name.replace('[' + LastTRCount + ']', '[' + (parseInt(LastTRCount) + 1) + ']'); },
+                });
+                $(this).val('')
+            });
+            $trNew.find("textarea").each(function (i) {
+                $(this).attr({
+                    'id': function (_, name) { return name.replace('_' + LastTRCount + '_', '_' + (parseInt(LastTRCount) + 1) + '_'); },
+                    'name': function (_, name) { return name.replace('[' + LastTRCount + ']', '[' + (parseInt(LastTRCount) + 1) + ']'); },
+                });
+                $(this).val('')
+            });
+
+            $trNew.find("span").each(function (i) {
+                if ($(this).attr("data-valmsg-for")) {
+                    $(this).attr({
+                        'data-valmsg-for': function (_, name) { return name.replace('[' + LastTRCount + ']', '[' + (parseInt(LastTRCount) + 1) + ']'); }
+                    });
+                }
+                if ($(this).attr("for")) {
+                    $(this).attr({
+                        'for': function (_, name) { return name.replace('_' + LastTRCount + '_', '_' + (parseInt(LastTRCount) + 1) + '_'); }
+                    });
+                }
+            });
+            $trLast.after($trNew);
+            clearlist(parseInt(LastTRCount) + 1);
+            var form = $("form");
+            form.removeData('validator');
+            form.removeData('unobtrusiveValidation');
+            $.validator.unobtrusive.parse(form);
+            $('[data-toggle="tooltip"]').tooltip();
+
+
+        }
+
+    function DeleteRow(obj) {
+        var count = 0;
+        var ID = parseInt($(obj).closest('tr').find("td.hdftableid input[type='hidden']").val());
+        var TotalRowCount = $('#tblBonusPaymentEntry').find("tbody tr").length;
+        var srno = TotalRowCount;
+        if (isNaN(ID)) {
+            ConfirmMsgBox("Are you sure want to delete this row", '', function () {
+                $(obj).closest('tr').remove();
+                $("#tblBonusPaymentEntry TBODY TR").each(function (i) {
+                    srno = srno - 1;
+                    $(this).closest("tr").find("label").each(function () {
+                        $(this).attr({
+                            'id': function (_, id) { var arr = id.split('_'); return id.replace(arr[1], i); },
+                        });
+                        $(this).html(i + 1)
+                    });
+
+                    $(this).closest("tr").find("input").each(function () {
+                        $(this).attr({
+                            'id': function (_, id) { return id.replace('_' + (parseInt(i) + 1) + '_', '_' + i + '_'); },
+                            'name': function (_, name) { return name.replace('[' + (parseInt(i) + 1) + ']', '[' + i + ']'); },
+                        });
+                    });
+                    $(this).closest("tr").find("select").each(function () {
+                        $(this).attr({
+                            'id': function (_, id) { return id.replace('_' + (parseInt(i) + 1) + '_', '_' + i + '_'); },
+                            'name': function (_, name) { return name.replace('[' + (parseInt(i) + 1) + ']', '[' + i + ']'); },
+                        });
+                    });
+                    $(this).closest("tr").find("label").each(function () {
+                        if ($(this).attr("data-valmsg-for")) {
+                            $(this).attr({
+                                'data-valmsg-for': function (_, name) { return name.replace('[' + (parseInt(i) + 1) + ']', '[' + i + ']'); },
+                            });
+                        }
+                        if ($(this).attr("for")) {
+                            $(this).attr({
+                                'for': function (_, id) { return id.replace('_' + (parseInt(i) + 1) + '_', '_' + i + '_'); },
+                            });
+                        }
+                    });
+                });
+                calculateTotal();
+            })
+
+        }
+        else {
+            ConfirmMsgBox("Are you sure want to delete this row", '', function () {
+                $(obj).closest('tr').remove();
+                $("#tblBonusPaymentEntry TBODY TR").each(function (i) {
+                    srno = srno - 1;
+                    $(this).closest("tr").find("label").each(function () {
+                        $(this).attr({
+                            'id': function (_, id) { var arr = id.split('_'); return id.replace(arr[1], i); },
+                        });
+                        $(this).html(i + 1)
+                    });
+
+                    $(this).closest("tr").find("input").each(function () {
+                        $(this).attr({
+                            'id': function (_, id) { return id.replace('_' + (parseInt(i) + 1) + '_', '_' + i + '_'); },
+                            'name': function (_, name) { return name.replace('[' + (parseInt(i) + 1) + ']', '[' + i + ']'); },
+                        });
+                    });
+                    $(this).closest("tr").find("select").each(function () {
+                        $(this).attr({
+                            'id': function (_, id) { return id.replace('_' + (parseInt(i) + 1) + '_', '_' + i + '_'); },
+                            'name': function (_, name) { return name.replace('[' + (parseInt(i) + 1) + ']', '[' + i + ']'); },
+                        });
+                    });
+                    $(this).closest("tr").find("label").each(function () {
+
+                        if ($(this).attr("data-valmsg-for")) {
+                            $(this).attr({
+                                'data-valmsg-for': function (_, name) { return name.replace('[' + (parseInt(i) + 1) + ']', '[' + i + ']'); },
+                            });
+                        }
+                        if ($(this).attr("for")) {
+                            $(this).attr({
+                                'for': function (_, id) { return id.replace('_' + (parseInt(i) + 1) + '_', '_' + i + '_'); },
+                            });
+                        }
+                    });
+                });
+                calculateTotal();
+                var dataObject = JSON.stringify({
+                    'ID': ID,
+                    'Doctype': 'BudgetSublineActivity',
+                });
+                var data = $.parseJSON($.ajax({
+                    url: '/CommonAjax/DelRecord_CommonJson',
+                    type: "post",
+                    data: dataObject,
+                    contentType: 'application/json',
+                    async: false
+                }).responseText);
+                return data;
+            });
+
+        }
+
+    }
+
+    function clearlist(obj) {
+        $("#ProjectID").empty();
+        $("#ProjectID").append($("<option />").val("").text("Select"));
+
+    }
+
+
+
+        function CalculateSum(obj) {
+            debugger;
+        var Balance = $("#hdfDueAmount").val();
+            var EMPID = $("#hdfEMPID").val();
+
+            debugger;
+            txtval1 = $("#ProjectPaaymentAmountList_0__PaidAmount").val();
+            var sum = 0;
+            $(".txtval0").each(function () {
+                if (!isNaN(this.value) && this.value.length != 0) {
+                    sum += parseFloat(this.value);
+                }
+            });
+
+          
+            var lastworkingday = "";
+            var model = {
+                EMPID: EMPID
+
+            }
+            const jsonString = JSON.stringify(model);
+            var ScreenID = "BonusAction";
+            CommonAjaxMethod(virtualPath + 'Generic/GetRecords', { modelData: jsonString, screenId: ScreenID }, 'GET', function (response) {
+                var data = response.data.data.Table;
+                lastworkingday = data[0].Year;
+            });
+          
+            if (lastworkingday == "1900" || lastworkingday == "1899") {
+                if (parseFloat(sum.toFixed(2)) > parseFloat(Balance)) {
+                    alert('Paid Amount can not be greater than Due amount.')
+                    $(obj).closest("tr").find(".txtval0").val(0);
+                }
+            }
+            else {
+                if (parseFloat(sum.toFixed(2)) < parseFloat(Balance)) {
+                    alert('Paid Amount can not be less than Due amount.')
+                    $(obj).closest("tr").find(".txtval0").val(0);
+                }
+            }
+           
+        }
+
+    </script>
+
+}

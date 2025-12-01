@@ -1,0 +1,53 @@
+﻿
+@model Mitr.Models.EmployeeExit.SignatoryMaster
+@using System.Data
+
+
+@using (Ajax.BeginForm("_AddAuthorized", "ExitEmployee",
+		new { src = ViewBag.src },
+		new AjaxOptions { HttpMethod = "POST", OnSuccess = "OnSuccess", OnBegin = "ShowLoadingDialog()" },
+	new { @id = "_AddAuthorizedFrom", enctype = "multipart/form-data" })
+	)
+{
+
+	@Html.HiddenFor(x => Model.Id)
+	@Html.HiddenFor(x => Model.Attachmentid)
+	@Html.AntiForgeryToken()
+	<div class="row">
+		<div class="col-sm-12 form-group">
+			<label>Authorized Signatory<span class="required">*</span> </label>
+			@Html.DropDownListFor(model => model.EMPId, new SelectList(ViewBag.EmpList, "EMPID", "EMP", Model.EMPId), "select", new { @class = "form-control applyselect " })
+			@Html.ValidationMessageFor(model => model.EMPId, "", new { @class = "text-danger" })
+		</div>
+		<div class="col-sm-6 form-group">
+			<label>Start Date<span class="required">*</span> </label>
+			@Html.TextBoxFor(model => model.StartDate, new { @class = "form-control", @type = "date" })
+			@Html.ValidationMessageFor(model => model.StartDate, "", new { @class = "text-danger" })
+		</div>
+
+
+		<div class="col-sm-6 form-group">
+			<label>Upload Signature<span class="required">*</span> </label>
+			@*<input type="file" class="form-control" id="imageUpload" placeholder="Enter" accept="image/*">*@
+			@Html.TextBoxFor(model => model.UploadFile, new { @class = "form-control", @type = "file" })
+			@Html.ValidationMessageFor(model => model.UploadFile, "", new { @class = "text-danger" })
+			@if (Model.Attachmentid > 0)
+			{
+		<a href="@Model.AttachmentPath" target="_blank" class="green-clr mr-2"><i class="fas fa-download"></i>@Model.filename</a>
+			}
+		</div>
+
+		<div id="previewArea" class="col-sm-4"></div>
+		<div class="col-lg-12 text-center mt-3">
+			<button type="submit" class="btn mtr-o-grn btn-l ripplelink pull-right" name="Command" value="Add"><i class="fas fa-save"></i>Save</button>
+			<button type="button" data-dismiss="modal" class="btn cnl-btn ripplelink  pull-right"><i class="fas fa-times"></i> Close</button>
+		</div>
+	</div>
+}
+<script>
+
+		 $(document).ready(function () {
+                    $(".applyselect").select2();
+
+                });
+</script>

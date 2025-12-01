@@ -1,0 +1,130 @@
+﻿@model Mitr.Models.JobRound
+
+@using System.Data
+
+
+@using (Ajax.BeginForm("_AddJobRound", "Master",
+        new { src = ViewBag.src },
+        new AjaxOptions { HttpMethod = "POST", OnSuccess = "ActionOnSuccess", OnBegin = "ShowLoadingDialog()" },
+    new { @id = "_AddJobRoundFrom" })
+    )
+{
+
+    
+    <div class="row">
+        <div class="col-lg-12 col-md-12 col-sm-12  form-group">
+            <label>Round Name</label>
+            @Html.TextBoxFor(model => model.RoundName, new { @class = "form-control", @placeholder = "Enter Round Name" })
+            @Html.ValidationMessageFor(model => model.RoundName, "", new { @class = "text-danger" })
+
+        </div>
+
+        <div class="col-lg-6 col-md-6 col-sm-6  form-group">
+            <label>Negotiation Round</label>
+            @Html.RadioButtonFor(model => model.IsNegotiationRound, "true", new { id = "Yes" })
+            @Html.Label("Yes", "Yes")
+
+            @Html.RadioButtonFor(model => model.IsNegotiationRound, "false", new { id = "No" })
+            @Html.Label("No", "No")
+
+        </div>
+        <div class="col-lg-6 col-md-6 col-sm-6  form-group">
+            <label>Priority<sup>*</sup></label>
+            @Html.TextBoxFor(model => model.Priority, new { @class = "form-control" })
+            @Html.ValidationMessageFor(model => model.Priority, "", new { @class = "text-danger" })
+        </div>
+        <div class="col-lg-12  form-group">
+            <label>Round Descripton</label>
+            @Html.TextAreaFor(model => model.RoundDesc, new { @class = "form-control", @placeholder = "Enter Round Descripton" })
+            @Html.ValidationMessageFor(model => model.RoundDesc, "", new { @class = "text-danger", @placeholder = "text-danger" })
+
+        </div>
+        <div class="col-sm-12">
+            <strong class="green-clr">Member Setting</strong>
+
+            <div class="table-responsive">
+                <table class="table table-scroll" id="tblmember">
+                    <thead>
+                        <tr>
+                            <th class="width-40">S No</th>
+                            <th>Member Type</th>
+                            <th>Member Name</th>
+                            <th>Email</th>
+                            <th></th>
+
+                        </tr>
+
+                    </thead>
+                    <tbody>
+                        @{ int count = 0;
+                            if (Model.JobMemberList == null)
+                            {
+                                List<Mitr.Models.JobMember> List = new List<Mitr.Models.JobMember>();
+                                List.Add(new Mitr.Models.JobMember());
+                                Model.JobMemberList = List;
+                            }
+
+                        }
+
+                        @for (int i = 0; i < Model.JobMemberList.Count; i++)
+                        {
+                            count++;
+                            <tr>
+                                <td>
+                                    @Html.HiddenFor(model => model.JobMemberList[i].JobDetailsID)
+                                    <label id="span_@count" name="span_@count">@count </label>
+                                </td>
+                                <td>
+                                    <select id="@Html.IdFor(x => Model.JobMemberList[i].RoundMemberType)" name="@Html.NameFor(x => Model.JobMemberList[i].RoundMemberType)" class="form-control applyselect ddmembertype">
+                                        <option @(Model.JobMemberList[i].RoundMemberType == "Internal" ? "selected" : "") value="Internal">Internal</option>
+                                        <option @(Model.JobMemberList[i].RoundMemberType == "External" ? "selected" : "") value="External">External</option>
+                                    </select>
+                                    @Html.ValidationMessageFor(model => model.JobMemberList[i].RoundMemberType, "", new { @class = "text-danger" })
+                                </td>
+                                <td class="Internal" style="@(string.IsNullOrEmpty(Model.JobMemberList[i].RoundMemberType) || Model.JobMemberList[i].RoundMemberType=="Internal" ?"":"display:none")">
+                                    <select id="@Html.IdFor(x => Model.JobMemberList[i].EMPID)" name="@Html.NameFor(x => Model.JobMemberList[i].EMPID)" class="form-control applyselect ddEmpList">
+                                        <option value="0">Select</option>
+                                       
+                                    </select>
+                                    @Html.ValidationMessageFor(model => model.JobMemberList[i].EMPID, "", new { @class = "text-danger" })
+
+                                </td>
+                                <td class="External" style="@(Model.JobMemberList[i].RoundMemberType=="External"?"":"display:none")">
+                                    @Html.TextBoxFor(model => model.JobMemberList[i].Name, new { @class = "form-control txtname" })
+                                    @Html.ValidationMessageFor(model => model.JobMemberList[i].Name, "", new { @class = "text-danger" })
+                                </td>
+                                <td>
+                                    @Html.TextBoxFor(model => model.JobMemberList[i].Email, new { @class = "form-control txtemail", @placeholder = "Enter Email Id" })
+                                    @Html.ValidationMessageFor(model => model.JobMemberList[i].Email, "", new { @class = "text-danger" })
+                                </td>
+                                <td class="text-center">
+                                    @if (count > 1)
+                                    {
+                                        <a onclick="DeleteRow(this)" data-toggle='tooltip' data-original-title='Remove'> <i class='fas fa-window-close red-clr m-0'></i></a>
+                                    }
+                                </td>
+                            </tr>
+                        }
+
+
+                    </tbody>
+                </table>
+            </div>
+            <div class="text-right mt-2"><button type="button" class="btn green-clr ripplelink btnAddRowMember"><i class="fas fa-plus"></i> Add Row</button></div>
+            <div class="row">
+                <div class="col-md-12 text-center mt-2">
+                    <button type="submit" name="Command" value="Add" class="btn mtr-o-grn btn-l ripplelink "><i class="fas fa-save"></i>Save</button>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+
+}
+
+<script>
+$(document).ready(function(){
+  $('[data-toggle="tooltip"]').tooltip();
+});
+</script>

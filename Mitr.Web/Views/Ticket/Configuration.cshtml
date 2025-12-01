@@ -1,0 +1,115 @@
+﻿@model Mitr.Models.Helpdesk.TicketConfigration
+@{
+    ViewBag.Title = "Configuration";
+}
+
+<div class="row">
+    <div class="col-md-12">
+        <h1 class="heading-one">Helpdesk Configuration</h1>
+    </div>
+</div>
+
+
+@using (Ajax.BeginForm("Configuration", "Ticket",
+        new { src = ViewBag.src },
+        new AjaxOptions { HttpMethod = "POST", OnSuccess = "OnConfigurationSuccess" },
+    new { @id = "_ConfigurationFrom" })
+    )
+{
+    @Html.HiddenFor(model => model.TicketCongID)
+    @Html.AntiForgeryToken()
+    <div class="page-ctn">
+        <div class="row">
+            <div class="col-md-3 form-group">
+                <label>Start Time</label>
+                @Html.TextBoxFor(model => model.StartTime, new { @class = "form-control",@type="Time" })
+                @Html.ValidationMessageFor(model => model.StartTime, "", new { @class = "text-danger" })
+            </div>
+            <div class="col-md-3 form-group">
+                <label>End Time</label>
+                @Html.TextBoxFor(model => model.EndTime, new { @class = "form-control", @type = "Time" })
+                @Html.ValidationMessageFor(model => model.EndTime, "", new { @class = "text-danger" })
+            </div>
+
+            <div class="col-md-8 form-group">
+                <label>Applicable Days</label>
+                <ul class="list-unstyled inline-li">
+                    <li>
+                        <input type="checkbox" id="week_1" name="@Html.NameFor(model => model.ApplicableDays)" @((Model.ApplicableDays!=null?Model.ApplicableDays.Contains("Monday")?"checked":"":"")) value="Monday">
+                        <label for="week_1"> Monday </label>
+                    </li>
+                    <li>
+                        <input type="checkbox" id="week_2" name="@Html.NameFor(model => model.ApplicableDays)" @((Model.ApplicableDays!=null?Model.ApplicableDays.Contains("Tuesday")?"checked":"":"")) value="Tuesday">
+                        <label for="week_2"> Tuesday  </label>
+                    </li>
+                    <li>
+                        <input type="checkbox" id="week_3" name="@Html.NameFor(model => model.ApplicableDays)" @((Model.ApplicableDays!=null?Model.ApplicableDays.Contains("Wednesday")?"checked":"":"")) value="Wednesday">
+                        <label for="week_3"> Wednesday </label>
+                    </li>
+                    <li>
+                        <input type="checkbox" id="week_4" name="@Html.NameFor(model => model.ApplicableDays)" @((Model.ApplicableDays!=null?Model.ApplicableDays.Contains("Thursday")?"checked":"":""))  value="Thursday">
+                        <label for="week_4"> Thursday </label>
+                    </li>
+                    <li>
+                        <input type="checkbox" id="week_5" name="@Html.NameFor(model => model.ApplicableDays)" @((Model.ApplicableDays!=null?Model.ApplicableDays.Contains("Friday")?"checked":"":"")) value="Friday">
+                        <label for="week_5"> Friday  </label>
+                    </li>
+                    <li>
+                        <input type="checkbox" id="week_6" name="@Html.NameFor(model => model.ApplicableDays)" @((Model.ApplicableDays!=null?Model.ApplicableDays.Contains("Saturday")?"checked":"":"")) value="Saturday">
+                        <label for="week_6"> Saturday </label>
+                    </li>
+
+                </ul>
+                @Html.ValidationMessageFor(model => model.ApplicableDays, "", new { @class = "text-danger" })
+            </div>
+            <div class="col-md-8 form-group">
+                <label>Holiday Calendar Applicable</label>
+                <ul class="list-unstyled inline-li">
+
+                    <li>
+                        <div class="radio-button">
+                            <input id="no" type="radio" name="@Html.NameFor(model => model.IsHolidayCalApplicable)" value="0" @(Model.IsHolidayCalApplicable==0?"checked":"")>
+                            <label for="no" class="radio-label">No</label>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="radio-button">
+                            <input id="yes" type="radio" name="@Html.NameFor(model => model.IsHolidayCalApplicable)" value="1" @(Model.IsHolidayCalApplicable==1?"checked":"")>
+                            <label for="yes" class="radio-label">Yes</label>
+                        </div>
+                    </li>
+
+                    @Html.ValidationMessageFor(model => model.IsHolidayCalApplicable, "", new { @class = "text-danger" })
+                </ul>
+            </div>
+
+            <div class="col-md-8 text-center">
+                <button type="submit" class="btn btn-l ripplelink" name="Command" value="Add"><i class="fas fa-paper-plane"></i>Submit</button>
+                <button type="button" class="btn cnl-btn ripplelink  pull-right" onclick="ShowLoadingDialog();window.location='/Dashboard';"><i class="fas fa-times"></i> Cancel</button>
+
+            </div>
+        </div>
+    </div>
+
+}
+
+
+@section scripts    {
+    @System.Web.Optimization.Scripts.Render("~/bundle/dataTablesjs")
+    <script src="~/assets/design/Scripts/AddInit.js?v=@clsApplicationSetting.GetWebConfigValue("Version")"></script>
+    @System.Web.Optimization.Scripts.Render("~/bundle/unobtrusivejs")
+    <script>
+
+        function OnConfigurationSuccess(obj)
+    {
+        if (obj.Status) {
+            SuccessToaster(obj.SuccessMessage);
+        }
+        else {
+            FailToaster(obj.SuccessMessage);
+        }
+
+            }
+
+    </Script>
+    }

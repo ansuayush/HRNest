@@ -1,0 +1,263 @@
+﻿@model PMS
+
+<div class="inner-main height pb-0">    
+    <div class="col-sm-5"><h1 class="heading-one ">My Team's Goal Sheet</h1></div>
+    @using (Ajax.BeginForm("_TeamGoalSheet", "PMS",
+            new { src = clsApplicationSetting.EncryptQueryString(ViewBag.MenuID.ToString() + "*/PMS/_TeamGoalSheet") },
+              new AjaxOptions { HttpMethod = "POST", OnSuccess = "BindTarget", OnBegin = "ShowLoadingDialog()" },
+        new { @id = "__TeamGoalSheetFrom" })
+        )
+    {
+        <div class="row">
+
+            <div class="col-lg-2 col-md-2 col-sm-2 slt-srh form-group">
+                <label class="lbl-abs">Select Year</label>
+                @Html.DropDownListFor(x => Model.FYID, new SelectList(ViewBag.FinYearList, "ID", "Year", Model.FYID), "Select Year",
+        new { @class = "form-control  applyselect ddapplyaction" })
+                @Html.ValidationMessageFor(model => Model.FYID, "", new { @class = "text-danger" })
+            </div>
+            <div style="display:none">
+                <button type="submit" class="btn mtr-g-grn btn-l ripplelink" id="btnSearch" name="Command" value="Search"><i class="fas fa-search"></i>Search</button>
+            </div>
+        </div>
+    }
+
+    <div id="TargetDiv">@Html.Partial("_Loading")</div>
+</div>
+
+
+<div class="modal fade pop-dgn" id="ViewModal">
+	<div class="modal-dialog modal-xl">
+		<div class="modal-content">
+			<div class="modal-header blk-gdn-btn">
+				<h4 class="modal-title">
+					<i class="fas fa-user-tie"></i><span id="spnHead">TeamGoalSheet</span>
+				</h4>
+				<div class="close" data-dismiss="modal">&times;</div>
+			</div>
+			<!-- Modal body -->
+			<div class="modal-body">
+				<div id="TagetDivAdd"></div>
+			</div>
+		</div>
+	</div>
+</div>
+
+@section scripts    {
+	@System.Web.Optimization.Scripts.Render("~/bundle/unobtrusivejs")
+	@Html.IncludeVersionedJs(Url.Content("~/assets/design/Scripts/ToolTip.js"))
+	@System.Web.Optimization.Scripts.Render("~/assets/design/Scripts/AddInit.js")
+
+	<script>
+		$(document).ready(function () {
+			$("#btnSearch").click();
+		});
+
+		$('.ddapplyaction').bind("change", function () {
+			$("#btnSearch").click();
+		});
+
+		function blockSpecialChar(e){
+
+        var k;
+        document.all ? k = e.keyCode : k = e.which;
+		if(k==39){
+		    event.preventDefault();
+		}
+
+        }
+		function openEdit(){
+		ConfirmMsgBox("Are you sure you want to edit", '', function () {
+		  $(".ddlUM").prop("disabled", false);
+		  $(".PIndicator").prop("disabled", false);
+		  $(".Target").prop("disabled", false);
+		  $("#btnSave").show();
+	      $("#btnResubmit").hide();
+		  $("#btnEdit").hide();
+		  var PMSGSID=$("#PMS_GSID").val();
+		    EditRequest(PMSGSID);
+			});
+		
+		}
+
+		function EditRequest(PMSGSID) {
+
+			$.ajax({
+				url: "/CommonAjax/EditRequestJson",
+				type: "Get",
+				async: true,
+				data: { PMSGSID: PMSGSID},
+				success: function (data) {
+					if (data == 1) {
+						SuccessToaster('Resubmit Edit Locked successfully');
+						window.location.reload();
+					}
+					else {
+						FailToaster('Can not Edit.')
+					}
+				},
+				error: function (er) {
+					alert(er);
+				}
+			});
+		}
+		function BindTarget(args) {
+			CloseLoadingDialog();
+			$("#TargetDiv").empty();
+			$("#TargetDiv").html(args);
+			$('[data-toggle="tooltip"]').tooltip();
+			$(".applyselect").select2();
+		}
+
+		function ViewGoalSheet(obj) {
+	
+			var I = $(obj).closest("tr").find("input:hidden[name=I]").val();
+			var N = $(obj).closest("tr").find("input:hidden[name=N]").val();
+		    var FYID = $("#FYID option:selected").val();
+			$("#spnHead").html(N);
+			$.ajax({
+				url: "/PMS/_ViewGoalSheet",
+				type: "Get",
+				data: { src: EncryptQueryStringJSON(@ViewBag.MenuID+"*" + "/PMS/_ViewGoalSheet" + "*" + I+"*"+FYID) },
+                success: function (data)
+                {
+		         debugger;
+					$("#TagetDivAdd").empty();
+					$("#TagetDivAdd").html(data);
+		          
+		            	    var TotalRowCount = $('#datatable').find("tbody tr").length;
+	                    	if (TotalRowCount>1){
+		            	    var srno = TotalRowCount-1;
+		                   }
+		                else{
+		                  var srno = TotalRowCount;
+		                 }
+		           var IsEdit=$("#IsEdit").val();
+		                  if(IsEdit=="0"){
+		         for(let i=0;i<srno;i++){
+		                 var Utype = $("#GoalSheetDet_"+i+"__UOMID").find("option:selected").attr("uomtype");
+		                   if (Utype == "Text") {
+			     	       //$("#GoalSheetDet_"+i+"__Target").val(0);
+				              $("#GoalSheetDet_"+i+"__Target").prop("type", Utype);
+		                    $("#GoalSheetDet_"+i+"__Target").attr('readonly', true);
+	                       
+                             }
+                          else {
+				
+                          //$("#GoalSheetDet_"+i+"__Target").val('');
+                            $("#GoalSheetDet_"+i+"__Target").prop("type", Utype);
+                           }
+		                 }
+		   $(".ddlUM").prop("disabled", true);
+		   
+		}
+		else if(IsEdit=="1"){
+		srno = TotalRowCount+1
+		         for(let i=0;i<srno;i++){
+		                 var Utype = $("#GoalSheetDet_"+i+"__UOMID").find("option:selected").attr("uomtype");
+		                   if (Utype == "Text") {
+				              $("#GoalSheetDet_"+i+"__Target").prop("type", Utype);
+		                       $("#GoalSheetDet_"+i+"__Target").prop("disabled", false);
+                             }
+                          else {
+                            $("#GoalSheetDet_"+i+"__Target").prop("type", Utype);
+		                 $("#GoalSheetDet_"+i+"__Target").prop("disabled", false);
+                           }
+		     $("#GoalSheetDet_"+i+"__PIndicator").prop("disabled", false);
+
+		                 }
+		 //  $(".ddlUM").prop("disabled", true);
+		}
+		else{
+		srno = TotalRowCount+1
+		  for(let i=0;i<srno;i++){
+		      $("#GoalSheetDet_"+i+"__Target").prop("disabled", false);
+		   $("#GoalSheetDet_"+i+"__PIndicator").prop("disabled", false);
+		$(".ddlUM").prop("disabled", false);
+
+
+		}
+		}
+		               
+		        
+					$("#ViewModal").modal("show");
+					$(".applyselect").select2();
+					$('[data-toggle="tooltip"]').tooltip();
+                     var form = $("form")
+                .removeData("validator")
+                .removeData("unobtrusiveValidation");
+					$.validator.unobtrusive.parse(form);
+
+
+					/* .on() used in case there is ajax loaded content. */
+$("#btnResubmit").on("click",  function() {
+  $("#divres").toggle(); /*shows or hides #box*/
+  	$("#btnEdit").hide();
+  /*$(this) refers to the targeted element: #toggleMessage*/
+  var text = $(this).text();
+  
+  if (text=="Back") { /*if text inside #toggleMessage is Show...*/
+    document.getElementById("btnResubmit").innerHTML = "<i class='fas fa-share'></i>Resubmit"; /*Change button text to Hide*/
+    $("#btnResubmit").removeClass("cnl-btn")
+    $("#btnResubmit").addClass("mtr-o-grn")
+  }
+  else {
+    document.getElementById("btnResubmit").innerHTML = "<i class='fas fa-long-arrow-alt-left'></i>Back"; /*Change button text to Show*/
+    $("#btnResubmit").addClass("btn cnl-btn")
+    $("#btnResubmit").removeClass("mtr-o-grn")
+  }
+});
+					
+				},
+				error: function (er) {
+					alert(er);
+
+				}
+			});
+		}
+
+		function SubmitTeamSheetSuccess(obj) {
+			
+			if (obj.Status) {
+				CloseLoadingDialog();
+				SuccessToaster(obj.SuccessMessage);
+				$("#ViewModal").modal("hide");
+				$("#btnSearch").click();
+			}
+			else {
+				CloseLoadingDialog()
+				FailToaster(obj.SuccessMessage);
+			}
+
+		}
+
+		
+		
+			function FillTarget(obj) {
+		 debugger;
+		       var id = parseInt($(obj).closest('tr').find("td.hdftableid input[type='hidden']").val())-1;
+               var Utype = $(obj).find("option:selected").attr("uomtype");            
+               if (Utype == "Text") {
+	           // $("#GoalSheetDet_'"+id+"__Target").removeProp("type");
+				$("#GoalSheetDet_"+id+"__Target").val(0);
+				$("#GoalSheetDet_"+id+"__Target").prop("type", Utype);
+		       $("#GoalSheetDet_"+id+"__Target").attr('readonly', true);
+            }
+            else {
+				$("#GoalSheetDet_"+id+"__Target").val('');
+                $("#GoalSheetDet_"+id+"__Target").prop("type", Utype);
+		    $("#GoalSheetDet_"+id+"__Target").attr('readonly', false);
+            }
+        }
+
+			//function blockSpecialChar(e){
+           //   var k;
+            //  document.all ? k = e.keyCode : k = e.which;
+		     //  if(k==39){
+		      // event.preventDefault();
+		      //}
+
+         // }
+	</script>
+
+}

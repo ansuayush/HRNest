@@ -1,0 +1,144 @@
+﻿@model Mitr.Models.Helpdesk.CreateTicket
+
+
+@using (Ajax.BeginForm("_CreateTicket", "Ticket",
+        new { src = ViewBag.src },
+        new AjaxOptions { HttpMethod = "POST", OnSuccess = "OnSuccess" },
+    new { @id = "_CreateTicketFrom",enctype = "multipart/form-data"  })
+    )
+{
+
+    @Html.AntiForgeryToken()
+    <div class="row">
+        <div class="col-sm-6 form-group">
+            <label>Category</label>
+            @Html.DropDownListFor(model => model.CategoryID, new SelectList(Model.CategoryList, "ID", "Name", Model.CategoryID), "Select", new { @class = "form-control applyselect ddCategory" })
+            @Html.ValidationMessageFor(model => model.CategoryID, "", new { @class = "text-danger" })
+
+        </div>
+        <div class="col-sm-6 form-group">
+            <label>Sub Category</label>
+            @Html.DropDownListFor(model => model.SubCatgeoryID, new SelectList(Model.SubCategoryList, "SubCategoryID", "Name", Model.SubCatgeoryID), "Select", new { @class = "form-control ddSubCategory" })
+            @Html.ValidationMessageFor(model => model.SubCatgeoryID, "", new { @class = "text-danger" })
+        </div>
+        <div class="col-sm-6 form-group">
+            <label>Location</label>
+            @Html.HiddenFor(model => model.LocationGroupID)
+            <input type="text" id="txtLocation" class="form-control" readonly="readonly" value="@Model.LocationGroup" />
+        </div>
+        <div class="col-sm-6 form-group">
+            <label>Department</label>
+            <input type="text" id="txtRelatedTo" class="form-control" readonly="readonly" />
+        </div>
+
+        <div class="col-sm-8 form-group">
+            <label>Assigned To<sup>*</sup></label>
+            <input type="text" id="txtAssignedTo" class="form-control" readonly="readonly" />
+        </div>
+
+        <div class="col-sm-4 form-group">
+            <label>Priority</label>
+            @Html.DropDownListFor(model => model.SelectedPriorityID, new SelectList(Model.SubCategoryList, "SubSettingID", "PolicyPriority", Model.SelectedPriorityID), "Select", new { @class = "form-control ddPriority" })
+            @Html.ValidationMessageFor(model => model.SelectedPriorityID, "", new { @class = "text-danger" })
+
+        </div>
+
+        <div class="col-sm-12 form-group">
+            <label>Message</label>
+            @Html.TextAreaFor(model => model.Message, new { @class = "form-control" })
+            @Html.ValidationMessageFor(model => model.Message, "", new { @class = "text-danger" })
+        </div>
+
+        <div class="col-sm-8 form-group">
+            <label>Attachment</label>
+            @Html.TextBoxFor(model => model.UploadFile, new { @class = "form-control", @type = "file" })
+            @Html.ValidationMessageFor(model => model.UploadFile, "", new { @class = "text-danger" })
+        </div>
+
+
+    </div>
+
+    <div class=" text-center mt-2">
+        <button type="submit" class="btn btn-l ripplelink" name="Command" value="Add"><i class="fas fa-paper-plane"></i>Submit</button>
+
+        <button type="button" class="btn btn-l cnl-btn ripplelink"><i class="fas fa-times"></i>Close</button>
+
+    </div>
+}
+<script>
+
+    $('.ddCategory').bind("change", function () {
+        ShowLoadingDialog();
+        FillSubCategory(this)
+
+    });
+
+    function FillSubCategory(obj) {
+        var CatID = $(obj).find("option:selected").val();
+        
+        $.ajax({
+            url: "/CommonAjax/FillTicketSubCategoryJson",
+            type: "Get",
+             dataType: "json",
+            data: { CategoryID: CatID },
+            success: function (data) {
+              var a= JSON.parse(data)
+                 CloseLoadingDialog();
+                var mySelect = $('.ddSubCategory');
+                mySelect.empty();
+                 mySelect.append(
+                        $('<option></option>').val("").html("Select Sub Category")
+                );
+                $.each(a, function(i, item) {
+                    mySelect.append(
+                        $('<option>' + a[i].Name + '</option>').val(a[i].SubCategoryID).attr("RelatedTo",a[i].RelatedTo)
+                    );
+                      $(".ddSubCategory").select2();
+                });
+            },
+            error: function (er) {
+                console.log(er);
+                 CloseLoadingDialog();
+            }
+        });
+    }
+    $('.ddSubCategory').bind("change", function () {
+        $("#txtRelatedTo").val($(this).find("option:selected").attr("RelatedTo"))
+        ShowLoadingDialog();
+        FillOther()
+
+    });
+
+
+    function FillOther() {
+        var SubCatID = $(".ddSubCategory").find("option:selected").val();
+        var LocationGroupID = $("#LocationGroupID").val();
+        $.ajax({
+            url: "/CommonAjax/FillTicketOtherDetailsJson",
+            type: "Get",
+             dataType: "json",
+            data: { SubCategoryID: SubCatID,LocationGroupID:LocationGroupID },
+            success: function (data) {
+                CloseLoadingDialog();
+                $("#txtAssignedTo").val(data.AssignedToName)
+                var mySelect = $('.ddPriority');
+                mySelect.empty();
+                 mySelect.append(
+                        $('<option></option>').val("").html("Select Priority")
+                );
+                if (data.TicketPriorityList!="") {
+                    $.each(data.TicketPriorityList, function (i, item) {
+                        mySelect.append(
+                            $('<option>' + data.TicketPriorityList[i].PolicyPriority + '</option>').val(data.TicketPriorityList[i].SubSettingID)
+                        );
+                        $(".ddPriority").select2();
+                    });
+                }
+            },
+            error: function (er) {
+                console.log(er);
+                 CloseLoadingDialog();
+            }
+        });
+    }
+</script>

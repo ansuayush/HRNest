@@ -1,0 +1,819 @@
+﻿@model Mitr.Models.ViewTravelExpenseCompleteRequest
+
+
+@if (Model.TravelExpense.TravelExpenseID == 0)
+{
+	<div class="modal-header blk-gdn-btn">
+		<h4 class="modal-title popuphead">
+			@Model.TravelExpense.TravellerName
+			<small>@Model.TravelExpense.ReqNo <span>|</span> @Model.TravelExpense.req_date </small>
+			<p>Purpose : @Model.TravelExpense.purpofvisit</p>
+		</h4>
+		<div class="close" data-dismiss="modal">&times;</div>
+	</div>
+	<div class="modal-body  p-5">
+		<div class="p-5">
+			<div class="row">
+				<div class="col-sm-12">
+					<div class="no-dat-dv">
+						<img src="~/assets/design/images/not-found-image.png" alt="">
+						<p class="mtr-o-clr">No Record Found</p>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+}
+else
+{
+	<div class="modal-header blk-gdn-btn">
+		<h4 class="modal-title popuphead">
+			@Model.TravelExpense.TravellerName <small>Travel Request No. @Model.TravelExpense.ReqNo <span>|</span> @Model.TravelExpense.req_date <span>|</span> TER-No. @Model.TravelExpense.TRPN </small>
+			<p>Purpose : @Model.TravelExpense.purpofvisit</p>
+			@if (Model.TravelExpense.hod_remarks != "")
+			{
+				<p>Rejected Reason : @Model.TravelExpense.hod_remarks</p>
+			}
+			else if (Model.TravelExpense.ResubmitTer != "")
+			{
+				<p>Resubmit Reason : @Model.TravelExpense.ResubmitTer</p>
+			}
+
+			@*@if (Model.TravelExpense.hod_remarks != "")
+			{
+				<p>Rejected Reason : @Model.TravelExpense.hod_remarks</p>
+			}
+			else if (Model.TravelExpense.Terrsubmit != "")
+			{
+				<p>Resubmit Reason : @Model.TravelExpense.Terrsubmit</p>
+			}*@
+		</h4>
+		<div class="close" data-dismiss="modal">&times;</div>
+	</div>
+
+	<div class="modal-body p-0">
+		<div class="p-3">
+			<div class="row">
+				<div class="col-sm-12">
+					<strong class="green-clr">Project Details</strong>
+					<table class="table table-striped mt-1 mb-2 ">
+						<thead>
+							<tr>
+								<th width="45">S.No.</th>
+								<th>Project Name </th>
+								<th>Cost Centre </th>
+							</tr>
+						</thead>
+						<tbody>
+							@{ int ProjectCount = 0;}
+							@foreach (var item in Model.ProjectList)
+							{
+								ProjectCount++;
+								<tr>
+									<td>@ProjectCount</td>
+									<td>@item.Proj_name</td>
+									<td> @item.costcenter_Name </td>
+								</tr>
+							}
+
+						</tbody>
+					</table>
+				</div>
+			</div>
+
+			<div class="card multicard mb-0">
+				<div class="card-header blk-gdn-btn ">
+					<div><i class="fas fa-ticket-alt"></i> A - Travel Fare</div>
+				</div>
+				<div class="card-body p-0">
+					<div class="table-responsive table-box">
+						<table class="table table-striped mt-1 mb-2" id="tblTravelFare">
+							<thead>
+								<tr>
+									<th>S.No.</th>
+									<th><i class="far fa-calendar-alt"></i> Departure Date </th>
+									<th><i class="fas fa-map-marker"></i> From</th>
+									<th><i class="fas fa-map-marker"></i> To</th>
+									<th><i class="fas fa-ticket-alt"></i> Ticket Source</th>
+									<th><i class="fas fa-user-tag"></i> Mode of Source </th>
+									<th><i class="fas fa-ticket-alt"></i>Boarding Pass/Ticket </th>
+									<th width="100"><i class="fas fa-rupee-sign"></i>Amount(Rs.)</th>
+								</tr>
+							</thead>
+							<tbody>
+								@if (Model.ATRAVELFARE != null)
+								{
+									int countTravelFare = 0;
+
+									for (int i = 0; i < Model.ATRAVELFARE.Count; i++)
+									{
+										DateTime dateTime = Convert.ToDateTime(Model.ATRAVELFARE[i].Date);
+										countTravelFare++;
+										<tr>
+											<td>
+												@countTravelFare
+											</td>
+											<td>
+												@*@Model.ATRAVELFARE[i].Date*@
+												@dateTime.ToString("dd/MM/yyyy")
+											</td>
+											<td>
+												@Model.ATRAVELFARE[i].FromCity
+											</td>
+											<td>
+												@Model.ATRAVELFARE[i].ToCity
+											</td>
+											<td>
+												@Model.ATRAVELFARE[i].TravelMode
+											</td>
+
+											<td>
+
+												@Model.ATRAVELFARE[i].TravelSource
+											</td>
+											<td>
+												@Model.ATRAVELFARE[i].ticket_bordcast
+											</td>
+											<td class="text-right">
+												@string.Format("{0:c}", @Model.ATRAVELFARE[i].PerDiem_Amount)
+
+											</td>
+										</tr>
+
+									}
+
+								}
+							</tbody>
+						</table>
+					</div>
+				</div>
+			</div>
+
+			<div class="card multicard mb-2">
+				<div class="card-header blk-gdn-btn ">
+					<div><i class="fas fa-ticket-alt"></i> B - PER DIEM</div>
+				</div>
+				<div class="card-body p-0">
+					<div class="table-responsive table-box">
+						<table class="table table-striped mt-1 mb-2" id="tblBPerDiem">
+							<thead>
+								<tr>
+									<th>S.No.</th>
+									<th><i class="far fa-calendar-alt"></i>Date </th>
+									<th><i class="fas fa-map-marker"></i>Name of City </th>
+									<th><i class="fas fa-map-marker"></i>Class of City </th>
+									<th><i class="fas fa-map-marker"></i>Project Name</th>
+									<th><i class="fas fa-utensils"></i>Free Meal/Others </th>
+									<th class="text-right"><i class="fas fa-star"></i>Per Diem Rate </th>
+									<th width="100"><i class="fas fa-rupee-sign"></i>Amount(Rs.)</th>
+								</tr>
+							</thead>
+							<tbody>
+							<tbody>
+								@if (Model.BPERDIEM != null)
+								{
+									int countBPERDIEM = 0;
+									for (int i = 0; i < Model.BPERDIEM.Count; i++)
+									{
+										countBPERDIEM++;
+										DateTime dateTime = Convert.ToDateTime(Model.BPERDIEM[i].Date);
+										<tr>
+											<td>
+												@countBPERDIEM
+											</td>
+											<td>
+												@*@Model.BPERDIEM[i].Date*@
+												@dateTime.ToString("dd/MM/yyyy")
+
+											</td>
+											<td>
+												@Model.BPERDIEM[i].CityName
+
+											</td>
+											<td>
+												@Model.BPERDIEM[i].ClassofCity
+
+											</td>
+											<td>
+												@*@Model.BPERDIEM[i].ProjectID*@
+												@Html.DropDownListFor(model => model.BPERDIEM[i].ProjectID, new SelectList(ViewBag.projectlist, "projectID", "LineItem", Model.BPERDIEM[i].ProjectID), "Select", new { @class = "form-control applyselect", @disabled = "disabled" })
+
+											</td>
+											<td>
+												@Model.BPERDIEM[i].FreeMealName
+
+											</td>
+											<td>
+												@Model.BPERDIEM[i].PerDiemRate
+											</td>
+											<td class="text-right">
+												@string.Format("{0:c}", @Model.BPERDIEM[i].Amount)
+
+											</td>
+										</tr>
+									}
+								}
+
+							</tbody>
+						</table>
+						<div class="p-1"><small><strong>As per the organization policy the applicable per diem rate for first and last day of the travel is 75% of the normal per diem rate.</strong> </small></div>
+					</div>
+
+				</div>
+			</div>
+
+			<div class="card multicard mb-2">
+				<div class="card-header blk-gdn-btn ">
+					<div><i class="fas fa-bus"></i> C - TRANSPORTATION</div>
+				</div>
+				<div class="card-body p-0">
+					<div class="table-responsive table-box ">
+						<table class="table table-striped mt-1 mb-2" id="tblTransport">
+							<thead>
+								<tr>
+									<th>S.No.</th>
+									<th>Project </th>
+									<th><i class="far fa-calendar-alt"></i> Date </th>
+									<th><i class="fas fa-bus"></i> Mode of Transport </th>
+									<th><i class="fas fa-info-circle"></i> Details </th>
+									<th><i class="fas fa-paperclip"></i> Attachment No </th>
+									<th><i class="fas fa-suitcase"></i> Travel KM </th>
+									<th><i class="fas fa-map-marker-alt"></i> KM</th>
+									<th width="100"><i class="fas fa-rupee-sign"></i>Amount(Rs.)</th>
+								</tr>
+							</thead>
+							<tbody>
+								@if (Model.CTRANSPORTATION != null)
+								{
+									int countTransport = 0;
+									for (int i = 0; i < Model.CTRANSPORTATION.Count; i++)
+									{
+										countTransport++;
+
+
+										if (Model.CTRANSPORTATION[i].Date != null)
+										{
+											DateTime dateTime = Convert.ToDateTime(Model.CTRANSPORTATION[i].Date);
+										}
+
+										<tr>
+											<td>
+												@countTransport
+											</td>
+											<td>
+
+												@Html.DropDownListFor(model => model.CTRANSPORTATION[i].ProjectID, new SelectList(ViewBag.projectlist, "projectID", "LineItem", Model.CTRANSPORTATION[i].ProjectID), "Select", new { @class = "form-control applyselect", @disabled = "disabled" })
+												@*@Model.CTRANSPORTATION[i].ProjectID*@
+
+											</td>
+											<td>
+												@*@Model.CTRANSPORTATION[i].Date*@
+												@if (Model.CTRANSPORTATION[i].Date != null)
+												{
+													DateTime dateTime = Convert.ToDateTime(Model.CTRANSPORTATION[i].Date);
+													@dateTime.ToString("dd/MM/yyyy")
+												}
+												else
+												{
+
+												}
+
+											</td>
+											<td>
+												@if (Model.CTRANSPORTATION[i].ModeOfTransport != "")
+												{
+													@Model.CTRANSPORTATION[i].ModeOfTransport
+												}
+												else
+												{
+													@Model.CTRANSPORTATION[i].ModeofTrnas
+												}
+
+
+											</td>
+											<td>
+												@Model.CTRANSPORTATION[i].Details
+
+											</td>
+											<td>
+												@Model.CTRANSPORTATION[i].AttachmentNo
+
+
+											</td>
+											<td>
+												@Model.CTRANSPORTATION[i].RateofPerKM
+
+											</td>
+											<td>
+												@Model.CTRANSPORTATION[i].TravelKM
+
+											</td>
+											<td class="text-right">
+												@string.Format("{0:c}", @Model.CTRANSPORTATION[i].Amount)
+
+
+											</td>
+
+										</tr>
+									}
+								}
+							</tbody>
+						</table>
+
+					</div>
+
+				</div>
+			</div>
+
+			<div class="card multicard mb-3">
+				<div class="card-header blk-gdn-btn ">
+					<div><i class="fas fa-rupee-sign"></i> D - OTHER EXPENDITURE</div>
+				</div>
+				<div class="card-body p-0">
+					<div class="table-responsive table-box">
+						<table class="table table-striped mt-1 mb-2" id="tblOtherExpense">
+							<thead>
+								<tr>
+									<th>S.No.</th>
+									<th>Project</th>
+									<th><i class="far fa-calendar-alt"></i> Date </th>
+									<th><i class="fas fa-info-circle"></i> Details </th>
+									<th width="120"><i class="fas fa-paperclip"></i> Attachment No</th>
+									<th width="100"><i class="fas fa-rupee-sign"></i>Amount(Rs.)</th>
+
+								</tr>
+							</thead>
+							<tbody>
+								@if (Model.DOTHEREXPENDITURE != null)
+								{
+									int CountOtherExpense = 0;
+									for (int i = 0; i < Model.DOTHEREXPENDITURE.Count; i++)
+									{
+										CountOtherExpense++;
+										//DateTime dateTime = Convert.ToDateTime(Model.DOTHEREXPENDITURE[i].Date);
+										<tr>
+											<td>
+												@CountOtherExpense
+											</td>
+											<td>
+												@*@Model.DOTHEREXPENDITURE[i].ProjectID*@
+												@Html.DropDownListFor(model => model.DOTHEREXPENDITURE[i].ProjectID, new SelectList(ViewBag.projectlist, "projectID", "LineItem", Model.DOTHEREXPENDITURE[i].ProjectID), "Select", new { @class = "form-control applyselect", @disabled = "disabled" })
+
+											</td>
+											<td>
+												@*@Model.DOTHEREXPENDITURE[i].Date*@
+												@if (Model.DOTHEREXPENDITURE[i].Date != null)
+												{
+													DateTime dateTime = Convert.ToDateTime(Model.DOTHEREXPENDITURE[i].Date);
+													@dateTime.ToString("dd/MM/yyyy")
+												}
+												else
+												{
+
+												}
+
+
+											</td>
+											<td>
+												@Model.DOTHEREXPENDITURE[i].DetailsofExpenditure
+
+											</td>
+											<td>
+												@Model.DOTHEREXPENDITURE[i].AttachmentNo
+
+											</td>
+
+											<td class="text-right">
+												@string.Format("{0:c}", @Model.DOTHEREXPENDITURE[i].Amount)
+
+
+											</td>
+
+										</tr>
+									}
+								}
+
+
+							</tbody>
+						</table>
+
+					</div>
+
+				</div>
+			</div>
+
+
+			<div class="card multicard">
+				<div class="card-header blk-gdn-btn ">
+					<div><i class="fas fa-rupee-sign"></i> E - OTHER CREDITS</div>
+				</div>
+				<div class="card-body p-0">
+					<div class="table-box mt-1 mb-2">
+						@if (Model.TravelExpense.rdbOther_status == "Yes")
+						{
+							<div class="EDiv row">
+								<div class="col-sm-3 form-group">
+									<label>Details of Credit </label>
+									<p>@Model.TravelExpense.credit_details</p>
+
+								</div>
+								<div class="col-sm-3 form-group">
+									<label>Amount:</label>
+									<p>@string.Format("{0:c}", @Model.TravelExpense.amount)</p>
+
+								</div>
+								<div class="col-sm-3 form-group">
+									<label>Pay Mode</label>
+									<p>@Model.TravelExpense.pay_mode</p>
+
+								</div>
+								<div class="col-sm-12 form-group">
+									<label>Remark</label>
+									<p>@Model.TravelExpense.remark</p>
+
+								</div>
+
+
+							</div>
+						}
+						else
+						{
+							@Model.TravelExpense.rdbOther_status
+						}
+					</div>
+
+				</div>
+			</div>
+
+			<div class="card multicard mb-3">
+				<div class="card-header blk-gdn-btn ">
+					<div><i class="fas fa-rupee-sign"></i> F - Trip Report</div>
+				</div>
+				<div class="card-body p-0">
+					<div class="table-responsive table-box">
+						<table class="table table-striped mt-1 mb-2" id="tblOtherExpense">
+							<thead>
+								<tr>
+									<th>S.No.</th>
+									<th><i class="far fa-calendar-alt"></i> Date </th>
+									<th><i class="fas fa-info-circle"></i> Description </th>
+
+								</tr>
+							</thead>
+							<tbody>
+								@if (Model.TripReport != null)
+								{
+									int CountTripReport = 0;
+									for (int i = 0; i < Model.TripReport.Count; i++)
+									{
+										CountTripReport++;
+										DateTime dateTime = Convert.ToDateTime(Model.TripReport[i].Date);
+										<tr>
+											<td>
+												@CountTripReport
+											</td>
+											<td>
+
+												@dateTime.ToString("dd/MM/yyyy")
+
+											</td>
+											<td>
+
+												<p>
+													@Model.TripReport[i].Justification
+												</p>
+												@*<i class="fas fa-info-circle td-info" data-toggle="tooltip" data-placement="right" data-original-title="@Model.TripReport[i].Justification"></i>*@
+
+											</td>
+
+
+										</tr>
+									}
+								}
+
+
+							</tbody>
+						</table>
+
+					</div>
+
+				</div>
+			</div>
+
+			<!-- Trip Report   ---->
+			<div class="card multicard mb-3">
+				<div class="card-header blk-gdn-btn ">
+					<div><i class="fas fa-paperclip"></i> Attachment</div>
+				</div>
+				<div class="card-body p-0">
+					<div class="table-responsive table-box mt-1">
+						<div class="table-responsive table-box" id="DivAttachmentList">
+							@{Html.RenderAction("_ViewAllAttachments", "Master", new { src = clsApplicationSetting.EncryptQueryString(ViewBag.MenuID.ToString() + "*/Master/_ViewAllAttachments*" + Model.TravelExpense.ReqNo + "*TravelExpense") });}
+						</div>
+					</div>
+
+				</div>
+			</div>
+
+
+
+			<div class="card multicard mb-3">
+				<div class="card-header blk-gdn-btn ">
+					<div><i class="fas fa-rupee-sign"></i> Summary</div>
+				</div>
+				<div class="card-body p-0">
+					<table class="table table-striped mt-1 mb-2">
+						<thead>
+							<tr>
+								<th>Particular</th>
+								<th width="100" class="text-right">Total</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr>
+								<td>Travel Fare</td>
+								<td class="text-right">
+									@string.Format("{0:c}", @Model.TravelExpense.travel_fare)
+
+								</td>
+							</tr>
+							<tr>
+								<td>Per Diem</td>
+								<td class="text-right">
+									@string.Format("{0:c}", @Model.TravelExpense.per_Diem)
+
+
+								</td>
+							</tr>
+							<tr>
+								<td>Transportation</td>
+								<td class="text-right">
+									@string.Format("{0:c}", @Model.TravelExpense.transporation)
+
+
+								</td>
+							</tr>
+							<tr>
+								<td>Other Expenses</td>
+								<td class="text-right">
+									@string.Format("{0:c}", @Model.TravelExpense.other_expense)
+
+
+								</td>
+							</tr>
+							<tr>
+								<td class="text-left"><strong>Total Amount</strong></td>
+								<td class="text-right">
+									@string.Format("{0:c}", @Model.TravelExpense.total)
+
+
+								</td>
+							</tr>
+							<tr>
+								<td class="text-left"><strong>Less: Advance Received</strong></td>
+								<td class="text-right">
+									@string.Format("{0:c}", @Model.TravelExpense.Paidamount)
+
+
+								</td>
+							</tr>
+							<tr>
+								<td class="text-left"><strong>Less: Any Other Credits</strong></td>
+								<td class="text-right">
+									@string.Format("{0:c}", @Model.TravelExpense.anyOther_Credit)
+
+
+								</td>
+							</tr>
+							<tr>
+								<td class="text-left">Net (Payable)/Receivable</td>
+								@{
+									var NetRecived = Convert.ToDecimal(Model.TravelExpense.total) - Convert.ToDecimal(Model.TravelExpense.Paidamount);
+								}
+								<td class="text-right">
+									@string.Format("{0:c}", @NetRecived)
+									@*@string.Format("{0:c}", @Model.TravelExpense.net_receivable)*@
+
+								</td>
+							</tr>
+						</tbody>
+						<tfoot>
+							@Model.TravelExpense.remark1
+						</tfoot>
+
+					</table>
+
+				</div>
+			</div>
+			<div class="card multicard mb-3">
+				<div class="card-header blk-gdn-btn ">
+					<div><i class="fas fa-rupee-sign"></i> Payment Details</div>
+				</div>
+				<table class="table v-top table-stripted lg-table mb-0 mt-0">
+					<thead>
+						<tr>
+							<th>Paid Date</th>
+							<th width="100">Paid Amount</th>
+
+						</tr>
+					</thead>
+					<tbody>
+						<tr>
+							<td>@Model.TravelExpense.ExpensePaidDate</td>
+							<td class="text-right">
+								@string.Format("{0:c}", @Model.TravelExpense.ExpenseAmount)
+
+							</td>
+						</tr>
+
+
+					</tbody>
+				</table>
+			</div>
+
+
+			@if (Model.TravelExpense.emp_id.ToString() != clsApplicationSetting.GetSessionValue("EMPID"))
+			{
+
+
+				if (Model.TravelExpense.ExpenseApproved == 0 && Model.TravelExpense.submited == 0)
+				{
+					using (Ajax.BeginForm("_ViewTravelRequest_Expense", "Travel",
+					new
+					{
+						src = clsApplicationSetting.EncryptQueryString(ViewBag.MenuID.ToString() + "*/Travel/_ViewTravelRequest_Expense*" + Model.TravelExpense.TravelExpenseID)
+					},
+			new AjaxOptions { HttpMethod = "POST", OnSuccess = "ActionOnTravelRequestExpense" },
+			new { @id = "_ViewTravelRequest_ExpenseFrom" })
+			)
+					{
+						@Html.AntiForgeryToken()
+
+						<div class="row">
+							<div class="col-sm-12 text-right">
+								@Html.HiddenFor(model => Model.reason)
+								@Html.HiddenFor(model => Model.ActionType)
+								@Html.ValidationMessageFor(model => Model.reason, "", new { @class = "text-danger" })
+								@if (Model.TravelExpense.HodId > 0)
+								{
+									<button type="submit" name="Command" value="Approved" class="btn mtr-g-grn btn-l ripplelink">
+										<i class="fa fa-check"></i>Approve
+									</button>
+									@*<button type="submit" name="Command" value="Reject" class="btn rjt-btn ResubmitRequest">
+									<i class="fa fa-ban"></i> Reject
+								</button>*@
+									<button type="submit" name="Command" value="Resubmit" class="btn blk-gdn-btn btn-l ripplelink ResubmitRequest">
+										<i class="fas fa-sync-alt"></i> Resubmit
+									</button>
+									<a href="@Url.Action("TravelExpensePaymentPrint",new { src = clsApplicationSetting.EncryptFriendly(ViewBag.MenuID+"*"+"/Travel/TravelExpensePaymentPrint*"+Model.TravelExpense.ReqNo+"*"+"ViewExpense") })" target="_blank" class="btn mtr-g-grn btn-l ripplelink" class="green-clr"><i class="fa fa-print"></i>Print</a>
+									@*<a class="btn blk-gdn-btn" data-toggle="modal" data-target="#ftr"><i class="far fa-clipboard"></i> Fill Travel Report</a>*@
+									<button type="button" class="btn cnl-btn btn-l ripplelink" data-dismiss="modal"><i class="fas fa-times"></i>Close</button>
+								}
+
+
+							</div>
+						</div>
+					}
+				}
+				else
+				{ <div class="row">
+						<div class="col-sm-12">
+							@Model.TravelExpense.hod_remarks
+						</div>
+					</div>
+
+				}
+			}
+			else
+			{
+				<div class="row">
+					<div class="col-sm-12">
+						@Model.TravelExpense.hod_remarks
+					</div>
+				</div>
+			}
+
+			<div class="text-center">
+				@if (Model.TravelExpense.ExpenseApproved == 1)
+				{
+
+					<a href="@Url.Action("TravelExpensePaymentPrint",new { src = clsApplicationSetting.EncryptFriendly(ViewBag.MenuID+"*"+"/Travel/TravelExpensePaymentPrint*"+Model.TravelExpense.ReqNo+"*"+"ViewExpense") })" target="_blank" class="btn mtr-g-grn btn-l ripplelink" class="green-clr"><i class="fa fa-print"></i>Print</a>
+					<button type="button" class="btn cnl-btn btn-l ripplelink" data-dismiss="modal"><i class="fas fa-times"></i>Close</button>
+
+				}
+
+			</div>
+
+		</div>
+	</div>
+
+
+	<div class="modal fade pop-dgn" id="ftr">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<!-- Modal Header -->
+				<div class="modal-header blk-gdn-btn">
+					<h4 class="modal-title">Centre for Catalyzing Change<br /><small>New Delhi, Office</small></h4>
+					<div class="close" data-dismiss="modal">&times;</div>
+				</div>
+				<!-- Modal body -->
+				<div class="modal-body">
+					<h2 class="green-clr sz-md">Trip Report </h2>
+					<table class="table">
+						<tr>
+							<td width="80"><strong>Name</strong></td>
+							<td> @Model.TravelExpense.TravellerName</td>
+						</tr>
+					</table>
+
+					<div class="table-responsive">
+						<table class="table table-striped">
+							<thead>
+								<tr>
+									<th width="33"> SNo.</th>
+									<th width="100">Date</th>
+									<th>Description</th>
+								</tr>
+							</thead>
+							<tbody>
+								@if (Model.TripReport != null)
+								{
+									int TripReportCount = 0;
+									for (int i = 0; i < Model.TripReport.Count; i++)
+									{
+										TripReportCount++;
+										<tr>
+											<td>@TripReportCount</td>
+											<td>
+												@Model.TripReport[i].Date
+												@Html.HiddenFor(x => x.TripReport[i].Date)
+											</td>
+											<td>
+												@Html.TextAreaFor(model => model.TripReport[i].Justification, new { @class = "form-control", @placeholder = "Enter" })
+												@Html.ValidationMessageFor(model => model.TripReport[i].Justification, "", new { @class = "text-danger" })
+											</td>
+										</tr>
+
+									}
+								}
+							</tbody>
+						</table>
+
+					</div>
+					<div class="text-center">
+						@*<button type="button" class="btn mtr-o-grn btn-l ripplelink " data-dismiss="modal"><i class="fas fa-save"></i> Save</button>*@
+						<button type="button" class="btn cnl-btn ripplelink " data-dismiss="modal"><i class="fas fa-times"></i> Close</button>
+					</div>
+
+
+				</div>
+			</div>
+		</div>
+	</div>
+}
+<script src="~/assets/design/js/sweetalert2.js?v=@clsApplicationSetting.GetWebConfigValue("Version")"></script>
+<script>
+
+
+	$('.ResubmitRequest').on('click', function (e) {
+		e.preventDefault();
+		e.stopPropagation();
+		$("#ActionType").val($(this).attr("value"));
+		ResubmitOption();
+	});
+
+	function ResubmitOption() {
+		swal.fire({
+			title: 'Enter Reason',
+			input: 'textarea'
+		}).then(function (result) {
+			if (result.value) {
+				$("#reason").val(result.value);
+				$("#_ViewTravelRequest_ExpenseFrom").submit();
+			}
+			else {
+				Swal.fire("", "Can't be Blank");
+			}
+		});
+	}
+
+	function ActionOnTravelRequestExpense(obj) {
+
+		if (obj.Status) {
+			$("#TravelRequestModal").modal("hide");
+			SuccessToaster(obj.SuccessMessage);
+			window.location.reload();
+		} else {
+			FailToaster("Action Not Taken");
+		}
+
+	}
+
+
+</script>
+<script>
+	$(document).ready(function () {
+		$('[data-toggle="tooltip"]').tooltip();
+	});
+</script>

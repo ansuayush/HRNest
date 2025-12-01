@@ -1,0 +1,532 @@
+﻿@model Mitr.Models.BudgetMaster.Budget
+@{
+	ViewBag.Title = "CreateBudget";
+	Layout = "~/Views/Shared/_Layout.cshtml";
+	int TabIndex = 0;
+	string Active = "";
+	if (ViewBag.TabIndex != null)
+	{
+		TabIndex = Convert.ToInt32(ViewBag.TabIndex);
+		if (TabIndex == 2)
+		{
+			Active = "active  show ";
+		}
+		else if (TabIndex == 1)
+		{
+			Active = "active  show ";
+		}
+		else if (TabIndex == 3)
+		{
+			Active = "active  show ";
+		}
+	}
+}
+
+<div class="inner-main defult-height ">
+	@*@Html.Partial("ListCreateBudget_Partial", "Create Budget")*@
+	<div class="row">
+		<div class="col-sm-4">
+			<h1 class="heading-one mb-3">Create Budget</h1>
+		</div>
+		<div class="col-sm-8 text-right ">  <a href="" data-toggle="modal" data-target="#createbudget" class="btn mtr-g-grn btn-l ripplelink btnAdd "><i class="fas fa-plus"></i>Add</a></div>
+	</div>
+
+
+	<!-- tab--->
+	<div class="tab-main  mb-3">
+		<ul id="tabs" class="nav nav-tabs lo " role="tablist">
+			<li class="nav-item"> <a id="tab-C" href="#standalone" class="nav-link ripplelink @(TabIndex==3?"active":"")" data-toggle="tab" role="tab"><i class="fas fa-user-times"></i>Creation of Budget </a> </li>
+			<li class="nav-item"> <a id="tab-A" href="#rfp-budgets" class="nav-link ripplelink @(TabIndex==1?"active":"") " data-toggle="tab" role="tab" aria-selected="true"><i class="fas fa-rupee-sign"></i>Create Budget</a> </li>
+			<li class="nav-item"> <a id="tab-B" href="#processed" class="nav-link ripplelink @(TabIndex==2?"active":"")" data-toggle="tab" role="tab" aria-selected="false"><i class="fas fa-clipboard-list"></i>Subline Activity </a> </li>
+		</ul>
+		<div id="content" class="tab-content shadow-box p-0" role="tablist">
+		
+			<div id="standalone" class="card tab-pane fade " role="tabpanel" aria-labelledby="tab-A">
+				<div class="card-header" role="tab" id="heading-A">
+					<h5 class="mb-0">
+						<!-- Note: `data-parent` removed from here -->
+						<a data-toggle="collapse" href="#collapse-A" aria-expanded="true" aria-controls="collapse-A">Creation of Budget <i class="fas fa-clipboard-list-check"></i></a>
+					</h5>
+				</div>
+
+				<!-- Note: New place of `data-parent` -->
+				<div id="collapse-A" class="collapse show" data-parent="#content" role="tabpanel" aria-labelledby="heading-A">
+					<div class="card-body p-0">
+
+						<!-- Start -->
+						<div class="table-responsive">
+							<div class="table-responsive">
+								<table class="table mt-0">
+									<thead>
+										<tr>
+											<th class="w-33">S.No </th>
+											<th class="tw-100">Date</th>
+											<th>Thematic Area</th>
+											<th>Purpose </th>
+											<th class="tw-100">Status </th>
+											<th class="w-250">Action </th>
+										</tr>
+									</thead>
+									<tbody>
+										@*<tr>
+											<td>1</td>
+											<td>14/4/2020 </td>
+											<td>Youth</td>
+											<td></td>
+											<td>Draft</td>
+											<td><strong><a href="outcomes-and-activities.html"><i class="fas fa-eye"></i>View</a><span class="divline">|</span><a href="outcomes-and-activities.html"><i class="fas fa-edit"></i>Update</a><span class="divline">|</span><a href="create-budget.html"><i class="fas fa-plus"></i>Create Budget</a></strong></td>
+										</tr>
+										<tr>
+											<td>2</td>
+											<td>15/4/2020 </td>
+											<td>Gender</td>
+											<td></td>
+											<td>Draft</td>
+											<td><strong><a href="outcomes-and-activities.html"><i class="fas fa-eye"></i>View</a><span class="divline">|</span><a href="outcomes-and-activities.html"><i class="fas fa-edit"></i>Update</a><span class="divline">|</span><a href="create-budget.html"><i class="fas fa-plus"></i>Create Budget</a></strong></td>
+										</tr>*@
+									</tbody>
+								</table>
+							</div>
+						</div>
+						<!-- End -->
+					</div>
+				</div>
+			</div>
+			<div id="rfp-budgets" class="card tab-pane fade " role="tabpanel" aria-labelledby="tab-A">
+				<div class="card-header" role="tab" id="heading-A">
+					<h5 class="mb-0">
+						<!-- Note: `data-parent` removed from here -->
+						<a data-toggle="collapse" href="#collapse-B" aria-expanded="true" aria-controls="collapse-B">Create Budget <i class="fas fa-rupee-sign"></i></a>
+					</h5>
+				</div>
+
+				<!-- Note: New place of `data-parent` -->
+				<div id="collapse-B" class="collapse " data-parent="#content" role="tabpanel" aria-labelledby="heading-A">
+					<div class="card-body p-0">
+
+						<!-- Start -->
+						<div class="table-responsive">
+							<div class="table-responsive">
+								<table class="table mt-0" >
+									<thead>
+										<tr>
+											<th class="w-33">S.No </th>
+											<th>Project </th>
+											<th>Project Name</th>
+											<th>Status </th>
+											<th width="50" class="text-center">Action</th>
+										</tr>
+									</thead>
+									<tbody>
+										@*@if (Model.listAloneBudget != null)
+										{
+											int count = 0;
+											for (int k = 0; k < Model.listAloneBudget.Count; k++)
+											{
+												count++;
+												<tr>
+													<td>@count</td>
+
+													<td>@Model.listAloneBudget[k].ThematicAreaName </td>
+
+													<td>@Model.listAloneBudget[k].Purposeobjective </td>
+
+													<td>@Model.listAloneBudget[k].StartDate </td>
+
+													<td>@Model.listAloneBudget[k].EndDate </td>
+
+													<td class="text-center">
+														<strong>
+															<a href="@Url.Action("Outcomesactivities",new { src = clsApplicationSetting.EncryptFriendly(ViewBag.MenuID+"*"+"/Budget/Outcomesactivities*"+Model.listAloneBudget[k].Id+"*"+0+"*"+"Edit"+"*") })"><i class="fas fa-edit"></i>Edit</a>
+														</strong>
+													</td>
+												</tr>
+											}
+										}*@
+
+										@if (Model.listSublineActivitydraftList != null)
+										{
+											int count = 0;
+											for (int k = 0; k < Model.listSublineActivitydraftList.Count; k++)
+											{
+												count++;
+
+										<tr>
+											<td>@count</td>
+											<td>@Model.listSublineActivitydraftList[k].doc_no </td>
+											<td>@Model.listSublineActivitydraftList[k].ProjectName </td>
+											<td>Draft </td>
+											<td class="text-center">
+												<strong>
+													<a href="@Url.Action("Outcomesactivities",new { src = clsApplicationSetting.EncryptFriendly(ViewBag.MenuID+"*"+"/Budget/Outcomesactivities*"+Model.listSublineActivitydraftList[k].BudgetId+"*"+Model.listSublineActivitydraftList[k].ProjectId+"*"+"Edit"+"*") })"><i class="fas fa-edit"></i>Edit</a>
+												</strong>
+											</td>
+										</tr>
+											}
+
+										}
+									</tbody>
+								</table>
+							</div>
+						</div>
+						<!-- End -->
+					</div>
+				</div>
+			</div>
+		
+			<div id="processed" class="card tab-pane fade " role="tabpanel" aria-labelledby="tab-A">
+				<div class="card-header" role="tab" id="heading-A">
+					<h5 class="mb-0">
+						<!-- Note: `data-parent` removed from here -->
+						<a data-toggle="collapse" href="#collapse-C" aria-expanded="true" aria-controls="collapse-C">Subline Activity <i class="fas fa-clipboard-list"></i></a>
+					</h5>
+				</div>
+
+				<!-- Note: New place of `data-parent` -->
+				<div id="collapse-C" class="collapse " data-parent="#content" role="tabpanel" aria-labelledby="heading-A">
+					<div class="card-body p-0">
+						<!-- Start -->
+						<div class="table-responsive">
+							<div class="table-responsive">
+								<table class="table table-striped table-bordered dt-responsive nowrap tbltick new_width" id="datatable-buttons">
+									<thead>
+										<tr>
+											<th width="30">S.No</th>
+											<th width="150">Project</th>
+											@*<th>Year</th>*@
+											<th>Project Name</th>
+											<th width="200">Delegation Authority</th>
+											<th width="130">Total Amount</th>
+											<th width="120" class="text-center">Action</th>
+
+										</tr>
+									</thead>
+									<tbody>
+										@if (Model.listSublineActivityList != null)
+										{
+											int count = 0;
+											for (int i = 0; i < Model.listSublineActivityList.Count; i++)
+											{
+												count++;
+												<tr>
+													<td>@count</td>
+
+													<td>@Model.listSublineActivityList[i].doc_no</td>
+
+													@*<td>@Model.listSublineActivityList[i].StartDate-@Model.listSublineActivityList[i].EndDate</td>*@
+
+													<td>@Model.listSublineActivityList[i].ProjectName</td>
+													@if (Model.listSublineActivityList[i].DelegationAuthority != null)
+													{
+														<td>@Model.listSublineActivityList[i].DelegationAuthority</td>
+													}
+													else
+													{
+														<td></td>
+													}
+
+
+													<td class="text-right">@Model.listSublineActivityList[i].TotalAmount</td>
+													@if (Model.listSublineActivityList[i].SublineId > 0)
+													{
+														<td class="text-center">
+															<a href="@Url.Action("AddbudgetSubActivity", new { src = clsApplicationSetting.EncryptFriendly(ViewBag.MenuID + "*" + "/Budget/AddbudgetSubActivity*" + Model.listSublineActivityList[i].ProjectId + "*"+1001+"*") })"><i class="fas fa-eye"></i>View</a>
+															<span class="divline">|</span>
+															<a href="@Url.Action("Outcomesactivities",new { src = clsApplicationSetting.EncryptFriendly(ViewBag.MenuID+"*"+"/Budget/Outcomesactivities*"+Model.listSublineActivityList[i].BudgetId+"*"+Model.listSublineActivityList[i].ProjectId+"*"+"Edit"+"*") })"><i class="fas fa-edit"></i>Edit</a>
+														</td>
+													}
+													else
+													{
+
+														<td class="text-center">
+															<a href="@Url.Action("AddbudgetSubActivity",new { src = clsApplicationSetting.EncryptFriendly(ViewBag.MenuID+"*"+"/Budget/AddbudgetSubActivity*"+Model.listSublineActivityList[i].ProjectId+"*"+0+"*") })"><i class="fas fa-eye"></i>View</a>
+															<span class="divline">|</span>
+															<a href="@Url.Action("Outcomesactivities",new { src = clsApplicationSetting.EncryptFriendly(ViewBag.MenuID+"*"+"/Budget/Outcomesactivities*"+Model.listSublineActivityList[i].BudgetId+"*"+Model.listSublineActivityList[i].ProjectId+"*"+"Edit"+"*") })"><i class="fas fa-edit"></i>Edit</a>
+														</td>
+
+													}
+
+
+												</tr>
+											}
+										}
+
+									</tbody>
+								</table>
+							</div>
+						</div>
+						<!-- End -->
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+@using (Ajax.BeginForm("CreateBudget", "Budget", new { src = ViewBag.src }, new AjaxOptions { HttpMethod = "POST", OnSuccess = "OnSuccess" }, new { @id = "CreateBudget" }))
+{
+	@Html.ValidationSummary()
+	@Html.AntiForgeryToken()
+	@Html.HiddenFor(model => model.BudgetType, new { @id = "hdbudget" })
+	<div class="modal fade" id="createbudget">
+		<div class="modal-dialog modal-lg">
+			<div class="modal-content ">
+
+				<!-- Modal Header -->
+				<div class="modal-header">
+					<h4 class="headingpop"><i class="fas fa-plus"></i>Create Budget</h4>
+					<button type="button" class="close" data-dismiss="modal">&times;</button>
+				</div>
+
+				<!-- Modal body -->
+				<div class="modal-body">
+					<div class="text-center"> <strong class="headingpop">Choose One </strong> </div>
+					<ul class="radio-with-Icon bigtbdgn list-unstyled row">
+						@*@foreach (var value in Enum.GetValues(typeof(AllEnum.Budget_Choose)))
+		{
+
+
+
+			<li class="radioOption-Item nav-item col" id="divradio">
+				<input type="radio" name="budget" class="d-none" id="@value" value="@value">
+				<label for="@value" class="radiobox"><i class="fas fa-rupee-sign"></i>@value </label>
+			</li>
+		}*@
+						<li class="radioOption-Item nav-item col" id="divradio">
+							<input type="radio" name="budget" class="d-none" id="StandaloneBudget" value="StandaloneBudget">
+							<label for="StandaloneBudget" class="radiobox"><i class="fas fa-suitcase"></i>Budget (Stand Alone) </label>
+						</li>
+						<li class="radioOption-Item nav-item col" id="divradio">
+							<input type="radio" name="budget" class="d-none" id="RFPBudget" value="RFPBudget">
+							<label for="RFPBudget" class="radiobox"><i class="fas fa-rupee-sign"></i>Budget (RFP)</label>
+						</li>
+						<li class="radioOption-Item nav-item col" id="divradio">
+							<input type="radio" name="budget" class="d-none" id="Budget" value="Budget">
+							<label for="Budget" class="radiobox"><i class="fas fa-clipboard-list"></i>Budget (Live Project) </label>
+						</li>
+					</ul>
+					<div class="showdiv mt-2" id="budgetdivsb">
+						<div class="row mb-0">
+							<label for="thematicarea" class="col-sm-3 col-form-label">Thematic Area</label>
+							<div class="col-sm-9">
+								@Html.DropDownListFor(model => model.ThematicAreaId, new SelectList(@ViewBag.ThenaticArea, "Id", "Name"), "Select", new { @class = "form-control applyselect", @id = "ddlyear" })
+								@Html.ValidationMessageFor(model => model.ThematicAreaId, "", new { @class = "text-danger" })
+
+							</div>
+						</div>
+						<div class="row mb-0">
+							<label for="geography" class="col-sm-3 col-form-label">Geography</label>
+							<div class="col-sm-9">
+								@Html.HiddenFor(x => Model.LocationId)
+								<select class="applyselect" multiple="multiple" id="ddlocation">
+									<option>Select Skill</option>
+									@if (ViewBag.WorkLocation != null)
+									{
+										foreach (var item in ViewBag.WorkLocation)
+										{
+											<option value="@item.ID">@item.Name</option>
+										}
+									}
+
+								</select>
+
+
+							</div>
+						</div>
+						<div class="form-group row">
+							<div class="col-sm-12">
+								<label for="purpose" class="col-form-label">Purpose/objective of making template budget</label>
+								@Html.TextAreaFor(model => model.Purpose, new { @class = "form-control h-80", @placeholder = "Enter" })
+								@Html.ValidationMessageFor(model => model.Purpose, "", new { @class = "text-danger" })
+
+							</div>
+						</div>
+						<div class="p-0 m-2 text-center ">
+							<button type="button" class="btn cnl-btn ripplelink" data-dismiss="modal"><i class="fas fa-times"></i>Close</button>
+							<button type="submit" class="btn mtr-o-grn btn-l" name="Command" value="StandaloneBudget"><i class="fas fa-paper-plane"></i> Start Making Budge</button>
+
+						</div>
+					</div>
+					<div class="showdiv  mt-2" id="budgetdivrb">
+						<table class="table mb-0">
+							<thead>
+							<th width="33"></th>
+							<th width="220">Project Code/Name</th>
+							<th width="80">Date</th>
+							<th >Primary Donor</th>
+							<th width="60" class="text-center">Action</th>
+							</thead>
+							<tbody>
+							</tbody>
+						</table>
+						<div class="p-0 mt-3 text-center ">
+							<button type="button" class="btn cnl-btn ripplelink" data-dismiss="modal"><i class="fas fa-times"></i>Close</button>
+							<button type="button" data-toggle="modal" data-target="#ifl" data-dismiss="modal" class="btn mtr-o-grn btn-l "><i class="fas fa-file-alt"></i>Import from Library </button>
+							<a href="outcomes-and-activities.html" class="btn mtr-o-grn btn-l "><i class="fas fa-plus"></i>Create New</a>
+						</div>
+					</div>
+					@Html.HiddenFor(modal => modal.Projectid, new { @id = "hdfprojectid" })
+
+					<div class="showdiv  mt-2" id="budgetone">
+						<div class="table-scrollable">
+							<table class="table table-scroll act-table">
+								<thead>
+								<th width="33"></th>
+								<th width="220">Project Code/Name</th>
+								@*<th width="80">Date</th>*@
+								<th >Primary Donor</th>
+								@*<th width="60" class="text-center">Action</th>*@
+								</thead>
+								<tbody>
+									@if (Model.listGetBudgetRpf != null)
+									{
+
+
+										for (int i = 0; i < Model.listGetBudgetRpf.Count; i++)
+										{
+											<tr>
+												<td>
+
+													<div class="radio text-center" id="divbudgetradio">
+														<input type="radio" id="@Model.listGetBudgetRpf[i].Id" class="form-control rdaction" name="slc1" value="@Model.listGetBudgetRpf[i].Id ">
+														<label for="@Model.listGetBudgetRpf[i].Id" class="radio-label mb-0">@*@Model.listGetBudgetRpf[i].Id*@</label>
+													</div>
+												</td>
+
+												@if (Model.listGetBudgetRpf[i].doc_no == "")
+												{
+													<td></td>
+												}
+												else
+												{
+													<td>@Model.listGetBudgetRpf[i].doc_no (@Model.listGetBudgetRpf[i].proj_name)</td>
+												}
+
+												@*<td>@Model.listGetBudgetRpf[i].doc_date.ToString("dd/MM/yyyy")</td>*@
+												@if (Model.listGetBudgetRpf[i].donor_Name == "")
+												{
+													<td></td>
+												}
+												else
+												{
+													<td>@Model.listGetBudgetRpf[i].donor_Name</td>
+												}
+
+												@*<td class="text-center"><a href=""> <i class="fas fa-eye"></i>View </a></td>*@
+											</tr>
+										}
+
+									}
+
+								</tbody>
+							</table>
+						</div>
+						<div class="p-0 mt-3 text-center ">
+							<button type="button" class="btn cnl-btn ripplelink" data-dismiss="modal"><i class="fas fa-times"></i>Close</button>
+							@*<button type="button" data-toggle="modal" data-target="#ifl" data-dismiss="modal" class="btn mtr-o-grn btn-l "><i class="fas fa-file-alt"></i>Import from Library </button>*@
+							<button type="submit" class="btn mtr-o-grn btn-l" name="Command" value="Budget"><i class="fas fa-plus"></i>Create New</button>
+							@*<a href="outcomes-and-activities.html" class="btn mtr-o-grn btn-l "><i class="fas fa-plus"></i>Create New</a>*@
+						</div>
+					</div>
+
+				</div>
+			</div>
+		</div>
+	</div>
+}
+
+@section scripts    {
+
+
+	@System.Web.Optimization.Scripts.Render("~/bundle/dataTablesjs")
+	@System.Web.Optimization.Scripts.Render("~/bundle/unobtrusivejs")
+	@Html.IncludeVersionedJs(Url.Content("~/assets/design/Scripts/AddInit.js"))
+	@Html.IncludeVersionedJs(Url.Content("~/assets/design/Scripts/ToolTip.js"))
+	@Html.IncludeVersionedJs(Url.Content("~/assets/design/scripts/CustomValidate.js"))
+
+
+<script type="text/javascript">
+
+	$(document).ready(function () {
+	
+	   var ActId = parseInt('@ViewBag.TabIndex');
+		if (ActId == 2) {
+			document.getElementById("processed").className += "active  show";
+		}
+		else if (ActId == 1) {
+			document.getElementById("rfp-budgets").className += "active  show";
+		}
+		else {
+			document.getElementById("standalone").className += "active  show";
+		}
+
+			$("#budgetdivsb").hide();
+			$("#budgetdivrb").hide();
+			$("#budgetone").hide();
+
+
+			$("#divradio input[name='budget']").click(function () {
+				var data = $('input:radio[name=budget]:checked').val();
+				$('#hdbudget').val(data);
+				if (data == "StandaloneBudget") {
+					//$("#budgetdivsb").show();
+					$("#budgetdivrb").hide();
+					$("#budgetone").hide();
+				}
+				else if (data == "RFPBudget") {
+					$("#budgetdivsb").hide();
+					//$("#budgetdivrb").show();
+					$("#budgetone").hide();
+				}
+				else if (data == "Budget") {
+					$("#budgetdivsb").hide();
+					$("#budgetdivrb").hide();
+					$("#budgetone").show();
+				}
+
+
+			});
+
+		});
+		function OnSuccess(obj) {
+
+			if (obj.Status) {
+
+				SuccessToaster(obj.SuccessMessage);
+				window.location.href = obj.RedirectURL
+
+			}
+			else {
+				CloseLoadingDialog();
+				FailToaster(obj.SuccessMessage);
+
+			}
+
+
+		}
+		$('#ddlocation').change(function () {
+			GetLocationValue()
+		});
+		function GetLocationValue() {
+			var ddloc = $("#ddlocation").val();
+			if (ddloc == "") {
+				$("#LocationId").val("");
+			}
+			else {
+				$("#LocationId").val(ddloc);
+			}
+
+		}
+		$("#divbudgetradio input[name='slc1']").click(function () {
+
+			var data = $('input:radio[name=slc1]:checked').val();
+			$('#hdfprojectid').val(parseInt(data));
+
+
+		});
+
+
+</script>
+
+}
+

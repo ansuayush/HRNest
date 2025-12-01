@@ -1,0 +1,117 @@
+﻿@using System.Data
+@model DataSet
+
+<div class="x_content table-currency">
+    <div class="table-responsive">
+
+        @if (ViewBag.Approve == "0")
+        {
+            <table id="tableApprove" class="table table-striped table-bordered dt-responsive nowrap tbltick new_width" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
+                <thead>
+                    <tr>
+                        <th>S.no.</th>
+                        <th>Membership No</th>
+                        <th>Membership's Name</th>
+                        <th>DOJ</th>
+                        <th>Title (Governing Body)</th>
+
+                        <th>Address</th>
+                        <th>Renewal Date</th>
+                        <th>Next Renewal Date</th>
+                        <th>Action</th>
+                    </tr>
+                    <tr class="searchbar">
+                        <th class="searchhide"></th>
+                        <th></th>
+                        <th></th>
+                        <th></th>
+                        <th></th>
+                        <th></th>
+                        <th></th>
+                        <th></th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @{ int Count = 0;}
+                    @if (Model != null)
+                    {
+                    foreach (DataRow item in Model.Tables[0].Rows)
+                    {
+                        Count++;
+                        <tr>
+                            <td>@Count</td>
+
+                            <td> @item["memship_no"]</td>
+                            <td> @item["member_name"]</td>
+                            <td> @Convert.ToDateTime(item["Doj"]).ToString("dd-MMM-yyyy")</td>
+
+                            <td> @item["title"]</td>
+                            <td> @item["address"]</td>
+                            <td> @Convert.ToDateTime(item["renewal_date"]).ToString("dd-MMM-yyyy")</td>
+                            <td> @Convert.ToDateTime(item["nextRenual"]).ToString("dd-MMM-yyyy")</td>
+
+                            <td><strong> <a href="@Url.Action("AddMainBoardMemDetails", new { MenuID = ViewBag.MenuID, BoardID = @item["ID"] })">Amend</a></strong></td>
+                        </tr>
+                    }
+                    }
+                </tbody>
+            </table>
+        }
+        else
+        {
+            <table id="tableApprove" class="table table-striped table-bordered dt-responsive nowrap tbltick new_width" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
+                <thead>
+                    <tr>
+                        <th>S.no.</th>
+                        <th>Membership No</th>
+                        <th>Membership's Name</th>
+                        <th>DOJ</th>
+                        <th>Title (Governing Body)</th>
+
+                        <th>Address</th>
+                        <th>Renewal Date</th>
+
+                        <th>Action</th>
+                    </tr>
+                    <tr class="searchbar">
+                        <th class="searchhide"></th>
+                        <th></th>
+                        <th></th>
+                        <th></th>
+                        <th></th>
+                        <th></th>
+                        <th></th>
+
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @{ int Count = 0;}
+                    @if (Model != null)
+                    {
+                        foreach (DataRow item in Model.Tables[0].Rows)
+                        {
+                            Count++;
+                            <tr>
+                                <td>@Count</td>
+
+                                <td> @item["memship_no"]</td>
+                                <td> @item["member_name"]</td>
+                                <td> @Convert.ToDateTime(item["Doj"]).ToString("dd-MMM-yyyy")</td>
+
+                                <td> @item["title"]</td>
+                                <td> @item["address"]</td>
+                                <td> @Convert.ToDateTime(item["leaving_date"]).ToString("dd-MMM-yyyy")</td>
+
+                                <td><strong><a href="@Url.Action("AddMainBoardMemDetails", new { MenuID = ViewBag.MenuID, BoardID = @item["ID"] })">View</a></strong></td>
+                            </tr>
+                        }
+                    }
+                    </tbody>
+            </table>
+        }
+    </div>
+</div>
+
+

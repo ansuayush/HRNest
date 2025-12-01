@@ -1,0 +1,72 @@
+                   --------------------- Error(2025-02-02 18:11:42.3069)SHUBH-------------------- 
+                   
+                   Exception Type:
+                   Exception Message:
+                   Stack Trace:
+                   Additional Info:Invalid object name 'UserEMP_View'.
+Transaction count after EXECUTE indicates a mismatching number of BEGIN and COMMIT statements. Previous count = 0, current count = 1.   at Mitr.BLL.OnboardingBAL.GetRecords(String globalXml, String screenId, Int32 roleId, Int32 userid, String operation, String& errorMessage) in E:\Code\HRSourceCode\Mitr.BLL\OnboardingBAL.cs:line 218
+   at Mitr.Areas.Onboarding.Controllers.OnboardingRequestController.BindHRScreenOnboard() in E:\Code\HRSourceCode\Mitr.Web\Areas\Onboarding\Controllers\OnboardingRequestController.cs:line 130
+                   
+                   --------------------- Error(2025-02-02 18:11:42.4878)SHUBH-------------------- 
+                   
+                   Exception Type:
+                   Exception Message:
+                   Stack Trace:
+                   Additional Info:Invalid object name 'UserEMP_View'.
+Transaction count after EXECUTE indicates a mismatching number of BEGIN and COMMIT statements. Previous count = 0, current count = 1.
+
+                   
+                   --------------------- Error(2025-02-02 18:17:11.4303)SHUBH-------------------- 
+                   
+                   Exception Type:
+                   Exception Message:
+                   Stack Trace:
+                   Additional Info:Invalid object name 'UserEMP_View'.
+Transaction count after EXECUTE indicates a mismatching number of BEGIN and COMMIT statements. Previous count = 0, current count = 1.   at Mitr.BLL.OnboardingBAL.GetRecords(String globalXml, String screenId, Int32 roleId, Int32 userid, String operation, String& errorMessage) in E:\Code\HRSourceCode\Mitr.BLL\OnboardingBAL.cs:line 218
+   at Mitr.Areas.Onboarding.Controllers.OnboardingRequestController.BindHRScreenOnboard() in E:\Code\HRSourceCode\Mitr.Web\Areas\Onboarding\Controllers\OnboardingRequestController.cs:line 130
+                   
+                   --------------------- Error(2025-02-02 18:17:11.4303)SHUBH-------------------- 
+                   
+                   Exception Type:
+                   Exception Message:
+                   Stack Trace:
+                   Additional Info:Invalid object name 'UserEMP_View'.
+Transaction count after EXECUTE indicates a mismatching number of BEGIN and COMMIT statements. Previous count = 0, current count = 1.
+
+                   
+                   --------------------- Error(2025-02-02 18:18:13.4474)SHUBH-------------------- 
+                   
+                   Exception Type:
+                   Exception Message:
+                   Stack Trace:
+                   Additional Info:Invalid object name 'UserEMP_View'.
+Transaction count after EXECUTE indicates a mismatching number of BEGIN and COMMIT statements. Previous count = 0, current count = 1.   at Mitr.BLL.OnboardingBAL.GetRecords(String globalXml, String screenId, Int32 roleId, Int32 userid, String operation, String& errorMessage) in E:\Code\HRSourceCode\Mitr.BLL\OnboardingBAL.cs:line 218
+   at Mitr.Areas.Onboarding.Controllers.OnboardingRequestController.BindHRScreenOnboard() in E:\Code\HRSourceCode\Mitr.Web\Areas\Onboarding\Controllers\OnboardingRequestController.cs:line 130
+                   
+                   --------------------- Error(2025-02-02 18:18:13.4474)SHUBH-------------------- 
+                   
+                   Exception Type:
+                   Exception Message:
+                   Stack Trace:
+                   Additional Info:Invalid object name 'UserEMP_View'.
+Transaction count after EXECUTE indicates a mismatching number of BEGIN and COMMIT statements. Previous count = 0, current count = 1.
+
+                   
+                   --------------------- Error(2025-02-02 18:19:20.9000)SHUBH-------------------- 
+                   
+                   Exception Type:
+                   Exception Message:
+                   Stack Trace:
+                   Additional Info:Invalid object name 'UserEMP_View'.
+Transaction count after EXECUTE indicates a mismatching number of BEGIN and COMMIT statements. Previous count = 0, current count = 1.   at Mitr.BLL.OnboardingBAL.GetRecords(String globalXml, String screenId, Int32 roleId, Int32 userid, String operation, String& errorMessage) in E:\Code\HRSourceCode\Mitr.BLL\OnboardingBAL.cs:line 218
+   at Mitr.Areas.Onboarding.Controllers.OnboardingRequestController.BindHRScreenOnboard() in E:\Code\HRSourceCode\Mitr.Web\Areas\Onboarding\Controllers\OnboardingRequestController.cs:line 130
+                   
+                   --------------------- Error(2025-02-02 18:19:20.9000)SHUBH-------------------- 
+                   
+                   Exception Type:
+                   Exception Message:
+                   Stack Trace:
+                   Additional Info:Invalid object name 'UserEMP_View'.
+Transaction count after EXECUTE indicates a mismatching number of BEGIN and COMMIT statements. Previous count = 0, current count = 1.
+
+                   

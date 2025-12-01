@@ -1,0 +1,309 @@
+﻿@model IList<Mitr.Models.ApplyLeaveList>
+
+@{
+	bool IsED = false;
+	if(clsApplicationSetting.GetSessionValue("IsED")=="Y")
+	{
+		IsED = true;
+	}
+
+	string MenuID = ViewBag.MenuID.ToString();
+	Mitr.Models.LeaveAttachmentCount LeaveAttachmentCount = new Mitr.Models.LeaveAttachmentCount();
+	long loginEMPID = 0;
+	long.TryParse(clsApplicationSetting.GetSessionValue("EMPID"), out loginEMPID);
+	if (ViewBag.AttachmentRequiredCount != null)
+	{
+		LeaveAttachmentCount = ViewBag.AttachmentRequiredCount;
+	}
+}
+<!-- tab--->
+<div class="shadow-box h-500">
+	<h2 class="heading-grd heading-btn  blk-gdn-btn m-0">  Approval Requests <span class="spnCLSLhead">@(clsApplicationSetting.IsSessionExpired("MyTeamLeaveAttachment") ? "" : "( CL/SL Attachments Pending )")</span></h2>
+	<div class="tab-main">
+		<ul id="tabs" class="nav nav-tabs TeamUlTabs" role="tablist">
+			<li class="nav-item"> <a id="tab1" href="#tm" class="nav-link active ripplelink" data-toggle="tab" role="tab"><i class="fas fa-users"></i>Team Requests</a></li>
+
+			<li class="nav-item"> <a id="tab2" href="#spleaves" class="nav-link ripplelink" data-toggle="tab" role="tab"><i class="fas fa-check"></i>Approved</a></li>
+			<li class="nav-item"> <a id="tab3" href="#spCancelled" class="nav-link ripplelink" data-toggle="tab" role="tab"><i class="fas fa-ban"></i>Cancelled</a></li>
+			<li class="tab-right">
+				<div class="right-btn">
+
+					@if (clsApplicationSetting.IsSessionExpired("MyTeamLeaveAttachment"))
+					{
+						<a id="aTeamLeaveRequestAttach" data-toggle="tooltip" data-original-title="Medical or Fitness certificate not yet attached" class="leaveAttach">
+							<i class='fa fa-paperclip '></i>
+							<span class="count-nt wow swing" style="visibility: visible; animation-name: swing;">@LeaveAttachmentCount.TeamLeaveCount</span>
+						</a>
+					}
+					else
+					{
+						<a id="aTeamLeaveRequestAttach" data-toggle="tooltip" data-original-title="Medical or Fitness certificate not yet attached" class="leaveAttach active">
+							Back
+							<span class="count-nt wow swing" style="visibility: visible; animation-name: swing;"></span>
+						</a>
+					}
+
+				
+
+					@Html.CreateAnchor(MenuID, "/Leave/LeaveRequestApproval", "Show All", "", "", "", "")
+
+				</div>
+			</li>
+		</ul>
+		@if (Model != null)
+		{
+			<div id="content" class="tab-content teamn-list shadow-box p-0 " role="tablist">
+				<div id="tm" class="card tab-pane fade show active" role="tabpanel" aria-labelledby="tab-d">
+					<div class="card-header" role="tab" id="heading-e">
+						<h5 class="mb-0">
+							<a data-toggle="collapse" href="#collapse-e" aria-expanded="true" aria-controls="collapse-f">Team Requests <i class="fas fa-users"></i></a>
+						</h5>
+					</div>
+					<div id="collapse-e" class="collapse show" data-parent="#content" role="tabpanel" aria-labelledby="heading-e">
+						<div class="card-body p-0">
+							<ul class="list-unstyled rqt-list scroll h-424 ulmyteam" tabclick="1">
+
+								@if (Model.Where(x => x.Approved == 0 || x.Approved == 3 || (x.RFC == 1 && (x.Approved == 1 || x.Approved == 4 || x.Approved == 3))).ToList().Count > 0)
+								{
+									int count = 0;
+									foreach (var item in Model.Where(x => x.Approved == 0 || x.Approved == 3 || (x.RFC == 1 && (x.Approved == 1 || x.Approved == 4 || x.Approved == 3))).OrderByDescending(x => x.LeaveLogID).ToList())
+									{
+										count++;
+								<li class="item">
+									<div class="row d-flex">
+										<div class="col-sm-4 align-self-center">
+											<div class="left-dtl-r">
+												<span class="countlist">@count)</span>
+												<small class="lgt-text">@item.EMPCode</small><br />
+
+												<strong>@item.EMPName</strong><br />
+												<small class="lgt-text">Req#@item.DocNo<span>|</span>@item.RequestDate</small>
+											</div>
+										</div>
+										<div class="col-sm-5 align-self-end">
+											<div class="cntr-dtl-r">
+												<strong>@item.LeaveName</strong>
+												<br />
+												<small class="lgt-text">
+
+													@item.StartDate to @item.EndDate (@item.hoursDayWise)
+												</small>
+												<div class="tagslist">
+													@if (item.RFC > 0)
+													{
+														<span class="rfcRequestdiv badge" data-toggle="tooltip" data-original-title="Request for cancellation">
+															RFC
+														</span>
+													}
+													@if (item.Approved == 3 || item.Approved == 4)
+													{
+														<span class="rfcRequestdiv badge" data-toggle="tooltip" data-original-title="Exceptional Leave Request">ELR</span>
+													}
+												</div>
+											</div>
+
+										</div>
+										<div class="col-sm-3 align-self-center">
+											<div class="right-dtl-r">
+												<input type="hidden" name="L" value="@item.LeaveLogID" />
+												<input type="hidden" name="E" value="@item.EMPID" />
+												<input type="hidden" name="EN" value="@item.EMPName" />
+												<input type="hidden" name="EC" value="@item.EMPCode" />
+												<input type="hidden" name="D" value="@item.StartDate" />
+												<input type="hidden" name="DocNo" value="@item.DocNo" />
+												<input type="hidden" name="LE" value="@(loginEMPID == item.EMPID ? "Y" : "N")" />
+												@if (item.AttachmentRequired > 0)
+												{
+													<a class="btn-c aLeaveAttachment" data-toggle="tooltip" data-original-title="View attachment"><i class="fa fa-paperclip darkclr"></i></a>
+												}
+												@if (item.Approved == 0 || (item.isED && (item.Approved == 0 || item.Approved == 3)))
+												{
+													<a class="btn-a anchorApproved" data-toggle="tooltip" data-original-title="Click here for approve"><i class="fas fa-check"></i></a>
+												}
+
+												<a class="btn-g anchorpopup" data-toggle="tooltip" data-original-title="View leave request"><i class="fas fa-ellipsis-h"></i></a>
+											</div>
+
+										</div>
+									</div>
+								</li>
+									}
+								}
+								else
+								{
+									<li>
+
+										@Html.Partial("_NoRecordsFound")
+
+									</li>
+								}
+
+							</ul>
+							<!-- -->
+						</div>
+					</div>
+				</div>
+
+				<div id="spleaves" class="card tab-pane fade" role="tabpanel" aria-labelledby="tab-hg">
+					<div class="card-header" role="tab" id="heading-g">
+						<h5 class="mb-0"> <a class="collapsed" data-toggle="collapse" href="#collapse-g" aria-expanded="false" aria-controls="collapse-g">Approved <i class="fas fa-check"></i></a> </h5>
+					</div>
+					<div id="collapse-g" class="collapse" data-parent="#content" role="tabpanel" aria-labelledby="heading-g">
+						<div class="card-body p-0">
+							<!-- -->
+							<ul class="list-unstyled rqt-list scroll h-424 ulmyteam" tabclick="2">
+								@if (Model.Where(x => x.Approved == 1 && x.RFC == 0 || x.Approved == 4 && x.RFC == 0).ToList().Count > 0)
+								{
+									int count = 0;
+									foreach (var item in Model.Where(x => x.Approved == 1 && x.RFC == 0 || x.Approved == 4 && x.RFC == 0).OrderByDescending(x => x.LeaveLogID).ToList())
+									{
+										count++;
+								<li class="item">
+									<div class="row d-flex">
+										<div class="col-sm-4 align-self-center">
+											<div class="left-dtl-r">
+												<span class="countlist">@count)</span>
+												<small class="lgt-text">@item.EMPCode</small><br />
+												<strong>@item.EMPName</strong><br />
+												<small class="lgt-text"> Req#@item.DocNo<span>|</span>@item.RequestDate</small>
+											</div>
+										</div>
+										<div class="col-sm-5 align-self-center">
+											<div class="cntr-dtl-r">
+												<strong>@item.LeaveName</strong><br />
+												<small class="lgt-text"> @item.StartDate to @item.EndDate (@item.hoursDayWise)</small>
+											</div>
+											<div class="tagslist">
+												@if (item.RFC > 0)
+												{
+													<span class="rfcRequestdiv badge" data-toggle="tooltip" data-original-title="Request for cancellation">
+														RFC
+													</span>
+
+												}
+												@if (item.Approved == 4)
+												{
+													<span class="rfcRequestdiv badge" data-toggle="tooltip" data-original-title="Exceptional Leave Request">ELR</span>
+												}
+											</div>
+										</div>
+										<div class="col-sm-3 align-self-center">
+											<div class="right-dtl-r">
+												<input type="hidden" name="L" value="@item.LeaveLogID" />
+												<input type="hidden" name="E" value="@item.EMPID" />
+												<input type="hidden" name="EN" value="@item.EMPName" />
+												<input type="hidden" name="EC" value="@item.EMPCode" />
+												<input type="hidden" name="D" value="@item.StartDate" />
+												<input type="hidden" name="DocNo" value="@item.DocNo" />
+												<input type="hidden" name="LE" value="@(loginEMPID==item.EMPID?"Y":"N")" />
+												@if (item.AttachmentRequired > 0)
+												{
+													<a class="btn-c aLeaveAttachment" data-toggle="tooltip" data-original-title="View attachment"><i class="fa fa-paperclip darkclr"></i></a>
+												}
+												<a class="btn-g anchorpopup" data-toggle="tooltip" data-original-title="View leave request">
+													<i class="fas fa-ellipsis-h"></i>
+												</a>
+											</div>
+										</div>
+									</div>
+								</li>
+									}
+								}
+								else
+								{
+									<li>
+
+										@Html.Partial("_NoRecordsFound")
+
+									</li>
+								}
+							</ul>
+							<!-- -->
+						</div>
+					</div>
+				</div>
+				<div id="spCancelled" class="card tab-pane fade" role="tabpanel" aria-labelledby="tab-f ">
+					<div class="card-header" role="tab" id="heading-f">
+						<h5 class="mb-0"> <a class="collapsed" data-toggle="collapse" href="#collapse-f" aria-expanded="false" aria-controls="collapse-f"> Cancelled <i class="fas fa-ban"></i> </a> </h5>
+					</div>
+					<div id="collapse-f" class="collapse" role="tabpanel" data-parent="#content" aria-labelledby="heading-f">
+						<div class="card-body p-0">
+							<!-- -->
+							<ul class="list-unstyled rqt-list scroll h-424 ulmyteam" tabclick="3">
+								@if (Model.Where(x => x.Approved == 2 || x.Approved == 5).ToList().Count > 0)
+								{
+									int count = 0;
+									foreach (var item in Model.Where(x => x.Approved == 2 || x.Approved == 5).OrderByDescending(x => x.LeaveLogID).ToList())
+									{
+										count++;
+										<li class="item">
+											<div class="row d-flex">
+												<div class="col-sm-4 align-self-center">
+													<div class="left-dtl-r">
+														<span class="countlist">@count)</span>
+														<small class="lgt-text">@item.EMPCode</small><br />
+														<strong>@item.EMPName</strong><br />
+														<small class="lgt-text"> Req#@item.DocNo<span>|</span>@item.RequestDate</small>
+													</div>
+												</div>
+												<div class="col-sm-5 align-self-center">
+													<div class="cntr-dtl-r">
+														<strong>@item.LeaveName</strong><br />
+														<small class="lgt-text"> @item.StartDate to @item.EndDate (@item.hoursDayWise)</small>
+														
+														<div class="tagslist">
+														@if (item.RFC > 0)
+														{
+															<span class="rfcRequestdiv badge" data-toggle="tooltip" data-original-title="Request for cancellation">
+																RFC
+															</span>
+														}
+														@if (item.Approved == 5)
+														{
+															<span class="rfcRequestdiv badge" data-toggle="tooltip" data-original-title="Exceptional Leave Request">ELR</span>
+														}
+														</div>
+													</div>
+
+												</div>
+												<div class="col-sm-3 align-self-center">
+													<div class="right-dtl-r">
+														<input type="hidden" name="L" value="@item.LeaveLogID" />
+														<input type="hidden" name="E" value="@item.EMPID" />
+														<input type="hidden" name="EN" value="@item.EMPName" />
+														<input type="hidden" name="EC" value="@item.EMPCode" />
+														<input type="hidden" name="D" value="@item.StartDate" />
+														<input type="hidden" name="DocNo" value="@item.DocNo" />
+														<input type="hidden" name="LE" value="@(loginEMPID==item.EMPID?"Y":"N")" />
+
+														@if (item.AttachmentRequired > 0)
+														{
+															<a class="btn-c aLeaveAttachment" data-toggle="tooltip" data-original-title="View attachment"><i class="fa fa-paperclip darkclr darkclr"></i></a>
+														}
+														<a class="btn-g anchorpopup" data-toggle="tooltip" data-original-title="View leave request ">
+															<i class="fas fa-ellipsis-h"></i>
+														</a>
+													</div>
+												</div>
+											</div>
+										</li>
+									}
+								}
+								else
+								{
+									<li>
+
+										@Html.Partial("_NoRecordsFound")
+
+									</li>
+								}
+							</ul>
+							<!-- -->
+						</div>
+					</div>
+				</div>
+			</div>
+		}
+	</div>
+</div>
+<!--- close tab --->

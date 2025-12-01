@@ -1,0 +1,97 @@
+﻿@model Mitr.Models.ConsolidateReport
+@using System.Data;
+@{
+    ViewBag.Title = "Consolidated Salary report";
+}
+@Html.Partial("HeaderMsg_Partial")
+<div class="inner-main">
+    <h1 class="heading-one">AL Accrual And Take Report</h1>
+
+    <div class="row">
+        <div class="col-sm-2 hf-575 form-group">
+            <label class="lbl-abs">From Month</label>
+            @Html.TextBoxFor(model => model.Date, new { @class = "form-control actdate h-30", @type = "month" })
+            @Html.ValidationMessageFor(model => model.Date, "", new { @class = "text-danger" })
+        </div>
+        <div class="col-sm-2 hf-575 form-group">
+            <label class="lbl-abs">To Month</label>
+            @Html.TextBoxFor(model => model.ToDate, new { @class = "form-control actdate h-30", @type = "month" })
+            @Html.ValidationMessageFor(model => model.ToDate, "", new { @class = "text-danger" })
+        </div>
+        <div class="col-sm-2 hf-575 form-group">
+            <label class="lbl-abs"> Mitr/Non Mitr </label>
+            @Html.EnumDropDownListFor(model => model.MitrUser, "All", htmlAttributes: new { @class = "form-control applyselect" })
+
+        </div>
+        @if (Model.Empid == 0)
+        {
+            <div class="col-lg-3 col-md-3 col-sm-2  form-group">
+                <label class="lbl-abs">Employee Name</label>
+                @Html.DropDownListFor(model => model.Empid, new SelectList(Model.EmployeeList, "ID", "Name", Model.Empid), "All", new { @class = "form-control applyselect ddapplyaction" })
+                @Html.ValidationMessageFor(model => model.Empid, "", new { @class = "text-danger" })
+
+            </div>
+        }
+        <div class="col-sm-2 hf-575 form-group">
+            <button type="button" onclick="GetList()" class="btn mtr-g-grn btn-l ripplelink pull-right" name="Command" value="Add"><i class="fas fa-search" aria-hidden="true"></i> Show</button>          
+            <button type="button" class="btn blk-gdn-btn btn-l ripplelink" id="btnExportAll"><i class="fas fa-file-excel"></i>Export</button>
+        </div>
+
+        <div class="col-sm-12 form-group">
+            <div id="TagetDiv">
+            </div>
+        </div>
+    </div>
+
+</div>
+
+
+@section scripts    {
+    @System.Web.Optimization.Scripts.Render("~/bundle/dataTablesjs")
+    <script src="~/assets/design/Scripts/AddInit.js?v=@clsApplicationSetting.GetWebConfigValue("Version")"></script>
+    @System.Web.Optimization.Scripts.Render("~/bundle/unobtrusivejs");
+    <script src="~/assets/tableToExcel.js"></script>
+    <script>
+
+        function GetList() {
+            var FDate = $("#Date").val();
+            var TDate = $("#ToDate").val();
+            var MitrUser = $("#MitrUser option:selected").text();
+            var _empid = $("#Empid").find('option:selected').val();
+            ShowLoadingDialog();
+            var Src = EncryptQueryStringJSON(@ViewBag.MenuID+"*" + "/Activity/_ALAccrual_TakeReport" + "*" + '0' + "*" + '0')
+                 var menuid =@ViewBag.MenuID;
+                    $.ajax({
+                        url: "/Activity/_ALAccrual_TakeReport",
+                        type: "Get",
+                        async: true,
+                        data: { src: Src, Empid: _empid, Emptype: MitrUser, FromDate: FDate, ToDate: TDate },
+                        success: function (data) {
+
+                            $("#TagetDiv").empty();
+                            $("#TagetDiv").html(data);
+                            CloseLoadingDialog();
+                        },
+                        error: function (er) {
+                            CloseLoadingDialog();
+                            alert(er);
+
+                        }
+                    });
+        }
+        $("#btnExportAll").click(function (e) {
+            exportReportToExcelAll()
+        });
+        function exportReportToExcelAll() {
+            var FDate = $("#Date").val();
+            var TDate = $("#ToDate").val();
+            let table = document.getElementsByTagName("table"); // you can use document.getElementById('tableId') as well by providing id to the table tag
+            TableToExcel.convert(table[0], { // html code may contain multiple tables so here we are refering to 1st table tag
+                name: 'ALAccrualandTakereport_' + FDate + '_' + TDate +'.xlsx', // fileName you could use any name
+                sheet: {
+                    name: 'Sheet 1' // sheetName
+                }
+            });
+        }
+    </script>
+}

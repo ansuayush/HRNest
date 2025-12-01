@@ -1,0 +1,45 @@
+﻿
+
+@model IList<Mitr.Models.Exit.Request.List>
+
+@{
+	string MenuID = "0";
+	if (ViewBag.MenuID != null)
+	{
+		MenuID = ViewBag.MenuID;
+
+	}
+	var Modify = clsApplicationSetting.GetSessionValue("Modify");
+}
+
+	<div class="control-section">
+		@Html.EJS().Grid("FlatGrid").DataSource((List<Exit.Request.List>)Model).GridLines(Syncfusion.EJ2.Grids.GridLine.Both).Columns(col =>
+   {
+
+       col.Field("Exit_ID").Visible(false).Add();
+       col.Field("EMP_ID").Visible(false).Add();
+       col.Field("Retained_AttachmentPath").Visible(false).Add();
+
+       col.Field("RowNum").HeaderText("S.No").Width("50").Add();
+       col.Field("Req_No").HeaderText("Req No").Width("100").Add();
+       col.Field("Req_Date").HeaderText("Req Date").Width("100").Add();
+       col.Field("Resignation_Reason").HeaderText("Reason").Width("120").Add();
+       col.Field("Retained_Remarks").HeaderText("Retained Remarks").Width("120").Add();
+       col.HeaderText("Attachment").TextAlign(Syncfusion.EJ2.Grids.TextAlign.Center).Template("#tmpAdmin").Width("50").Add();
+      
+
+
+   }).AllowPaging().PageSettings(page => page.PageCount(10)).Toolbar(new List<string>() { "Search" }).Render()
+
+	</div>
+
+    <script id="tmpAdmin" type="text/x-template">
+        ${if(Retained_AttachmentPath != '')}
+        <a href="${Retained_AttachmentPath}" target="_blank" class="color-green"><i class="fa fa-download"></i> Download</a>
+        ${/if}
+    </script>
+
+
+@Html.IncludeVersionedJs(Url.Content("~/assets/design/Scripts/SyncScripts.js"))
+
+@(Html.EJS().ScriptManager())

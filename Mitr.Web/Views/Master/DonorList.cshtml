@@ -1,0 +1,436 @@
+﻿
+@model IList<Donor.List>
+
+
+@section style{
+    @System.Web.Optimization.Styles.Render("~/bundle/dataTablecss")
+}
+
+<div class="inner-main mb-5 pb-0">
+    @Html.Partial("ListHeader_Partial", "Donor List")
+
+    <div class="row">
+        <div class="col-md-12 col-sm-12 col-xs-12">
+
+            <div class="x_content table-currency m-0">
+
+                <div class="table-responsive">
+                    <table id="datatable-buttons" class="table table-striped table-bordered dt-responsive nowrap tbltick new_width" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
+                        <thead>
+                            <tr>
+                                <th>S.no.</th>                                
+                                
+                                <th>Donor Name</th>
+                                <th>Donor Type	</th>
+                                <th>Website</th>
+                                <th>Contact Name</th>
+                                <th>Phone</th>
+                                <th class="w-50 text-center">Priority</th>
+                                <th class="text-center w-50">Action</th>
+                               
+                            </tr>
+                            <tr class="searchbar">
+                                <th class="searchhide"></th>
+                                <th class="searchhide"></th>
+                                <th class="searchhide"></th>
+                                <th> </th>
+                                <th></th>
+                                <th> </th>
+                                <th> </th>
+                                <th> </th>
+                              
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @{ int Count = 0;}
+                            @foreach (Donor.List item in Model)
+                            {
+                                Count++;
+                            <tr class="@(item.IsActive == true?"": "trrowred")">
+                                <td>@Count</td>
+                                
+                                <td> @item.donor_name</td>
+                                <td>@item.DonorTypeName</td>
+                                <td>@item.website</td>
+                                <td>@item.ContactName</td>
+                                <td>@item.Phone</td>
+                                <td class="text-center">
+
+                                    @Html.Raw(clsApplicationSetting.GetSessionValue("Modify") == "True" ? "<input type='number' class='listpriority' list='Donor_Priority' value=\"" + item.Priority + "\" />" : item.Priority.ToString())
+                                </td>
+                                <td class="text-center">
+                                    <input type="hidden" name="I" value="@item.ID" />
+                                    <input type="hidden" name="N" value="@item.donor_name" />
+                                    @if (clsApplicationSetting.GetSessionValue("Modify") == "True")
+                                    {
+                                        @Html.Raw(item.IsActive == true
+                                       ? "<a  data-toggle='tooltip' data-original-title='Click to DeActivate' list='Donor_IsActive' OP='0' class='AIsActive' > <i class='fa fa-check-circle checkgreen' aria-hidden='true'></i></a>"
+                                       : "<a data-toggle='tooltip' data-original-title='Click to Activate' list='Donor_IsActive' OP='1'  class='AIsActive' > <i class='fa fa-times-circle crossred' aria-hidden='true'></i></a>")
+
+                                        <a title="Edit" onclick="ListHeaderAdd(@item.ID);" data-toggle='tooltip'><i class="fas fa-edit checkgreen" aria-hidden="true"></i> </a>
+                                    }
+                                </td>
+
+                              
+                            </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+</div>
+<div class="modal fade pop-dgn" id="ViewModal">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+
+            <div class="modal-header blk-gdn-btn">
+                <h4 class="modal-title"><i class="fas fa-hand-holding-heart"></i>Add Donor </h4>
+                <div class="close" data-dismiss="modal">&times;</div>
+            </div>
+            <!-- Modal body -->
+            <div class="modal-body">
+                <div id="TagetDiv"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@section scripts    {
+    @System.Web.Optimization.Scripts.Render("~/bundle/dataTablesjs")
+
+    @System.Web.Optimization.Scripts.Render("~/bundle/unobtrusivejs")
+    @Html.IncludeVersionedJs(Url.Content("~/assets/design/Scripts/AddInit.js"))
+    @Html.IncludeVersionedJs(Url.Content("~/assets/design/Scripts/ToolTip.js"))
+    <script>
+        function ListHeaderAdd(CMSID) {
+            ShowLoadingDialog();
+        if (CMSID == undefined)
+        {
+            CMSID = 0;
+        }
+			$.ajax({
+                url: "/Master/_AddDonor",
+				type: "Get",
+                data: { src: EncryptQueryStringJSON(@ViewBag.MenuID+"*" + "/Master/_AddDonor" + "*" + CMSID) },
+                success: function (data)
+                {
+
+					$("#TagetDiv").empty();
+                    $("#TagetDiv").html(data);
+                    
+                    $('#ViewModal').modal({
+                        backdrop: 'static',
+                        keyboard: false
+                    });
+                    $(".applyselect").select2();
+
+                    $('#ChkCopySame').change(function () {
+                        CopyDetails(this)
+                    });
+                    BindDropdownonLoad();
+                    var form = $("#_AddDonorFrom")
+                .removeData("validator")
+                .removeData("unobtrusiveValidation");
+                    $.validator.unobtrusive.parse(form);
+
+                    CloseLoadingDialog();
+				},
+				error: function (er) {
+                    alert(er);
+                    CloseLoadingDialog();
+
+				}
+			});
+        }
+
+        function BindDropdownonLoad()
+        {
+            var LCountryID = $("#LocalAddress_CountryID").find('option:selected').val();
+            var PCountryID = $("#PermanentAddress_CountryID").find('option:selected').val();
+            if (LCountryID) {
+                BindDropDown($("#LocalAddress_CountryID"), 'State_Local');
+                $("#LocalAddress_StateID").val($("#hdnLocalStateID").val()).trigger('change');
+
+            }
+            if (PCountryID) {
+                BindDropDown($("#PermanentAddress_CountryID"), 'State_Permanent');
+
+            }
+
+            $("#LocalAddress_StateID").val($("#hdnLocalStateID").val()).trigger('change');
+            $("#PermanentAddress_StateID").val($("#hdnPermanentStateID").val()).trigger('change');
+
+            $("#LocalAddress_CityID").val($("#hdnLocalCityID").val()).trigger('change');
+            $("#PermanentAddress_CityID").val($("#hdnPermanentCityID").val()).trigger('change');
+
+        }
+
+        function OnSuccess(obj) {
+            if (obj.Status) {
+                SuccessToaster(obj.SuccessMessage);
+                window.location.reload();
+            }
+            else {
+                CloseLoadingDialog();
+                FailToaster(obj.SuccessMessage);
+
+            }
+        }
+
+        function CopyDetails(obj) {
+            var checkAll = $(obj).is(":checked");
+            if (checkAll) {
+                $("#PermanentAddress_lane1").val($("#LocalAddress_lane1").val());
+                $("#PermanentAddress_lane2").val($("#LocalAddress_lane2").val());
+                $("#PermanentAddress_zip_code").val($("#LocalAddress_zip_code").val());
+
+                $("#PermanentAddress_CountryID").val($("#LocalAddress_CountryID").val()).trigger('change');
+
+                BindDropDown($("#PermanentAddress_CountryID"), 'StatePermanent');
+                $("#PermanentAddress_StateID").val($("#LocalAddress_StateID").val()).trigger('change');
+
+                BindDropDown($("#PermanentAddress_StateID"), 'CityPermanent');
+                $("#PermanentAddress_CityID").val($("#LocalAddress_CityID").val()).trigger('change');
+
+
+            } else {
+                $("#PermanentAddress_lane1").val('');
+                $("#PermanentAddress_lane2").val('');
+                $("#PermanentAddress_zip_code").val('');
+                $("#PermanentAddress_CountryID").val('').trigger('change');
+                $("#PermanentAddress_StateID").val('').trigger('change');
+                $("#PermanentAddress_CityID").val('').trigger('change');
+
+
+            }
+        }
+
+        function BindDropDown(obj, Value) {
+            var SendValue = Value;
+            if (SendValue.indexOf('_') != -1) {
+                SendValue = SendValue.split('_')[0];
+            }
+            var selectedID = $(obj).find("option:selected").val();
+            var data = GetDropDownData(selectedID, SendValue);
+            if (data) {
+                ShowLoadingDialog();
+                if (Value == "State_Local") {
+                    $("#LocalAddress_StateID").empty();
+                    $("#LocalAddress_StateID").append($("<option />").val("").text("Select"));
+                    $("#LocalAddress_CityID").empty();
+                    $("#LocalAddress_CityID").append($("<option  />").val("").text("Select"));
+                    $(data).each(function () {
+                        $("#LocalAddress_StateID").append($("<option />").val(this.ID).text(this.Name));
+                        $("#LocalAddress_StateID").select2();
+                    });
+                }
+                else if (Value == "City_Local") {
+                    $("#LocalAddress_CityID").empty();
+                    $("#LocalAddress_CityID").append($("<option />").val("").text("Select"));
+                    $(data).each(function () {
+                        $("#LocalAddress_CityID").append($("<option />").val(this.ID).text(this.Name));
+                        $("#LocalAddress_CityID").select2();
+                    });
+                }
+                else if (Value == "State_Permanent") {
+                    $("#PermanentAddress_StateID").empty();
+                    $("#PermanentAddress_StateID").append($("<option     />").val("").text("Select"));
+                    $("#PermanentAddress_CityID").empty();
+                    $("#PermanentAddress_CityID").append($("<option     />").val("").text("Select"));
+                    $(data).each(function () {
+                        $("#PermanentAddress_StateID").append($("<option />").val(this.ID).text(this.Name));
+                        $("#PermanentAddress_StateID").select2();
+                    });
+                }
+                else if (Value == "City_Permanent") {
+                    $("#PermanentAddress_CityID").empty();
+                    $("#PermanentAddress_CityID").append($("<option     />").val("").text("Select"));
+                    $(data).each(function () {
+                        $("#PermanentAddress_CityID").append($("<option />").val(this.ID).text(this.Name));
+                        $("#PermanentAddress_CityID").select2();
+                    });
+                }
+            } else {
+                if (Value == "State_Local") {
+                    $("#LocalAddress_StateID").empty();
+                    $("#LocalAddress_StateID").append($("<option     />").val("").text("Select"));
+                    $("#LocalAddress_CityID").empty();
+                    $("#LocalAddress_CityID").append($("<option     />").val("").text("Select"));
+                }
+                else if (Value == "State_Permanent") {
+                    $("#PermanentAddress_StateID").empty();
+                    $("#PermanentAddress_StateID").append($("<option     />").val("").text("Select"));
+                    $("#PermanentAddress_CityID").empty();
+                    $("#PermanentAddress_CityID").append($("<option     />").val("").text("Select"));
+                }
+            }
+            CloseLoadingDialog();
+        }
+
+
+
+        function AddNewRow(obj) {
+            var Table = $(obj).parent("div").parent('div').find('table');
+            var TableID = $(Table).attr('ID');
+            var LastTRCount = parseInt($('#' + TableID + '').find("tbody tr").length) - 1;
+            var $tableBody = $('#' + TableID + '').find("tbody"),
+                $trLast = $tableBody.find("tr:last"),
+                $trNew = $trLast.clone();
+            $trNew.find("td:last").html('<a onclick="DeleteRow(this)" class="remove"><i class="fas fa-window-close red-clr" aria-hidden="true"></i></a>')
+            $trNew.find("label").each(function () {
+                if ($(this).attr("id")) {
+                    $(this).attr({
+                        'id': function (_, id) { var arr = id.split('_'); return id.replace(arr[1], LastTRCount + 1); },
+                    });
+                    $(this).html(parseInt($('#' + TableID + '').find("tbody tr").length) + 1)
+                }
+                if ($(this).attr("for")) {
+                    $(this).attr({
+                        'for': function (_, name) { return name.replace('_' + LastTRCount, '_' + (parseInt(LastTRCount) + 1)); }
+                    });
+                }
+            });
+
+            $trNew.find("input").each(function (i) {
+                if ($(this).attr('type') == "radio") {
+                    $(this).attr({
+                        'id': function (_, name) { return name.replace('_' + LastTRCount, '_' + (parseInt(LastTRCount) + 1)); }
+                    });
+                    $(this).prop("checked", false);
+                }
+                else {
+                    $(this).attr({
+                        'id': function (_, name) { return name.replace('_' + LastTRCount + '_', '_' + (parseInt(LastTRCount) + 1) + '_'); },
+                        'name': function (_, name) { return name.replace('[' + LastTRCount + ']', '[' + (parseInt(LastTRCount) + 1) + ']'); },
+                    });
+                    $(this).val('')
+                }
+            });
+
+            $trNew.find("span").each(function (i) {
+                if ($(this).attr("data-valmsg-for")) {
+                    $(this).attr({
+                        'data-valmsg-for': function (_, name) { return name.replace('[' + LastTRCount + ']', '[' + (parseInt(LastTRCount) + 1) + ']'); }
+                    });
+                }
+                if ($(this).attr("for")) {
+                    $(this).attr({
+                        'for': function (_, name) { return name.replace('_' + LastTRCount + '_', '_' + (parseInt(LastTRCount) + 1) + '_'); }
+                    });
+                }
+            });
+
+            $trLast.after($trNew);
+            var form = $("#_AddDonorFrom").closest("form");
+            form.removeData('validator');
+            form.removeData('unobtrusiveValidation');
+            $.validator.unobtrusive.parse(form);
+        }
+
+
+        function DeleteRow(obj) {
+            var Response = 0;
+            var ID = $(obj).closest('tr').find('.hdnID').val();
+            var Table = $(obj).closest('table');
+            var TableID = $(Table).attr('ID');
+           
+            ConfirmMsgBox("Are you sure want to delete", '', function () {
+                if (ID) {
+                    var data = DelRecord_Common(ID, 'DonorDetails');
+                    if (data.Status) {
+                        Response = 1;
+                    }
+                    else {
+                        FailToaster(data.SuccessMessage);
+
+                    }
+                }
+                if (Response == 1 || !ID) {
+                    var TotalRowCount = $('#' + TableID + '').find("tbody tr").length;
+
+                    $(obj).closest('tr').remove();
+                    $('#' + TableID + ' TBODY TR').each(function (i) {
+                        $(this).closest("tr").find("label").each(function () {
+                            $(this).attr({
+                                'id': function (_, id) { var arr = id.split('_'); return id.replace(arr[1], i); },
+                            });
+                            $(this).html(i + 1)
+                        });
+
+
+                        $(this).closest("tr").find("input").each(function () {
+                            $(this).attr({
+                                'id': function (_, id) { return id.replace('_' + (parseInt(i) + 1) + '_', '_' + i + '_'); },
+                                'name': function (_, name) { return name.replace('[' + (parseInt(i) + 1) + ']', '[' + i + ']'); },
+                            });
+                        });
+
+                        $(this).closest("tr").find("span").each(function () {
+                            if ($(this).attr("data-valmsg-for")) {
+                                $(this).attr({
+                                    'data-valmsg-for': function (_, name) { return name.replace('[' + (parseInt(i) + 1) + ']', '[' + i + ']'); },
+                                });
+                            }
+                            if ($(this).attr("for")) {
+                                $(this).attr({
+                                    'for': function (_, id) { return id.replace('_' + (parseInt(i) + 1) + '_', '_' + i + '_'); },
+                                });
+                            }
+                        });
+                    });
+                    var form = $("#_AddDonorFrom").closest("form");
+                    form.removeData('validator');
+                    form.removeData('unobtrusiveValidation');
+                    $.validator.unobtrusive.parse(form);
+
+
+                }
+            })
+        }
+
+        function SaveasPrimary(obj) {
+            var DonorID = $("#ID").val();
+            var ID = $(obj).closest('tr').find('.hdnID').val();
+            if (ID) {
+                var dataObject = JSON.stringify({
+                    'ID': ID,
+                    'Value': DonorID,
+                    'Doctype': 'DonorPrimary'
+                });
+                $.ajax({
+                    url: "/CommonAjax/UpdateColumn_CommonJson",
+                    type: "Post",
+                    contentType: 'application/json',
+                    async: true,
+                    data: dataObject,
+                    success: function (args) {
+                        if (args.Status) {
+                            SuccessToaster(args.SuccessMessage);
+                            $(".rdoIsdefault").prop("checked", false);
+                            $('.hdndefault').val(0);
+                            $(obj).closest('tr').find('.hdndefault').val(1);
+                            $(obj).closest('tr').find('.rdoIsdefault').prop("checked", true);
+                        }
+                        else {
+
+                            FailToaster(args.SuccessMessage);
+                        }
+                    },
+                    error: function (er) {
+                        console.log(er);
+                    }
+                });
+            } else {
+                $(".rdoIsdefault").prop("checked", false);
+                $('.hdndefault').val(0);
+                $(obj).closest('tr').find('.hdndefault').val(1);
+                $(obj).closest('tr').find('.rdoIsdefault').prop("checked", true);
+            }
+        }
+    </script>
+}

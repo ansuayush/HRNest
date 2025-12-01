@@ -1,0 +1,1862 @@
+﻿
+@{
+    ViewBag.Title = "RFPProcess";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<!-- Start -->
+<div class="inner-main defult-height p-3 pb-0">
+    <h1 class="heading-one">RPF Process</h1>
+
+    <div class="row">
+
+        <div class="col-sm-12">
+            <div class="tab-main mb-3">
+
+                <ul id="tabs" class="nav nav-tabs " role="tablist">
+                    <li class="nav-item"> <a id="tab-A" href="#pending" class="nav-link active ripplelink" data-toggle="tab" role="tab"><i class="fas fa-clock"></i>Pending</a> </li>
+                    <li class="nav-item"> <a id="tab-B" href="#underprocess" class="nav-link ripplelink" data-toggle="tab" role="tab"><i class="fas fa-cogs"></i>Under Process</a> </li>
+                     <li class="nav-item"> <a id="tab-B" href="#live" class="nav-link ripplelink" data-toggle="tab" role="tab"><i class="fas fa-database"></i>Live</a> </li>
+
+                    <li class="nav-item"> <a id="tab-d" href="#rejected" class="nav-link ripplelink" data-toggle="tab" role="tab"><i class="fa fa-ban" aria-hidden="true"></i>Rejected</a> </li>
+                </ul>
+
+                <div id="content" class="tab-content p-0" role="tablist">
+                    <!-- --->
+                    <div id="pending" class="card tab-pane fade show   active" role="tabpanel" aria-labelledby="tab-A">
+                        <div class="card-header" role="tab" id="heading-A">
+                            <h5 class="mb-0"> <a data-toggle="collapse" href="#collapse-A" aria-expanded="true" aria-controls="collapse-A">Pending <i class="fas fa-clock"></i></a> </h5>
+                        </div>
+                        <div id="collapse-A" class="collapse show" data-parent="#content" role="tabpanel" aria-labelledby="heading-A">
+                            <div class="table-responsive">
+                                <table class="table mt-4" id="tblPending">
+                                    <thead>
+                                        <tr>
+                                            <th width="10">S.No</th>
+                                            <th width="80">Request No</th>
+                                            <th width="100">Request Date</th>
+                                            <th width="150">Process By</th>
+                                            <th width="150">Point of Contact</th>
+                                            <th>Project Code</th>
+                                            <th>Contract/Agreement Type </th>
+                                            <th width="100">Req. Amount</th>
+                                            <th width="150">Status</th>
+                                            <th width="70">Action</th>
+                                        </tr>
+                                    </thead>
+                                 
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="underprocess" class="card tab-pane fade " role="tabpanel" aria-labelledby="tab-b">
+                        <div class="card-header" role="tab" id="heading-A">
+                            <h5 class="mb-0"> <a data-toggle="collapse" href="#collapse-b" aria-expanded="true" aria-controls="collapse-b">Under Process<i class="fas fa-cogs"></i></a> </h5>
+                        </div>
+                        <div id="collapse-b" class="collapse " data-parent="#content" role="tabpanel" aria-labelledby="heading-b">
+                            <div class="table-responsive">
+                                <table class="table mt-4" id="tblUnderprocess">
+                                    <thead>
+                                        <tr>
+                                            <th width="10">S.No</th>
+                                            <th width="80">Request No</th>
+                                            <th width="100">Request Date</th>
+                                            <th width="150">Process By</th>
+                                            <th width="150">Point of Contact</th>
+                                            <th>Project Code</th>
+                                            <th>Contract/Agreement Type </th>
+                                            <th width="100">Req. Amount</th>
+                                            <th width="130">Status</th>
+                                            <th width="70">Action</th>
+                                        </tr>
+                                    </thead>
+                                    
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                 
+
+
+                    <div id="live" class="card tab-pane fade " role="tabpanel" aria-labelledby="tab-b">
+                        <div class="card-header" role="tab" id="heading-A">
+                            <h5 class="mb-0"> <a data-toggle="collapse" href="#collapse-b" aria-expanded="true" aria-controls="collapse-b">Live<i class="fas fa-cogs"></i></a> </h5>
+                        </div>
+                        <div id="collapse-b" class="collapse " data-parent="#content" role="tabpanel" aria-labelledby="heading-b">
+                            <div class="table-responsive">
+                                <table class="table mt-4" id="tbllive">
+                                    <thead>
+                                        <tr>
+                                            <th width="10">S.No</th>
+                                            <th width="80">Request No</th>
+                                            <th width="100">Request Date</th>
+                                            <th width="150">Process By</th>
+                                            <th width="150">Point of Contact</th>
+                                            <th>Project Code</th>
+                                            <th>Contract/Agreement Type </th>
+                                            <th width="100">Req. Amount</th>
+                                            <th width="130">Status</th>
+                                            <th width="70">Action</th>
+                                        </tr>
+                                    </thead>
+                                    
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+
+
+
+                    <div id="rejected" class="card tab-pane fade " role="tabpanel" aria-labelledby="tab-d">
+                        <div class="card-header" role="tab" id="heading-d">
+                            <h5 class="mb-0"> <a data-toggle="collapse" href="#collapse-d" aria-expanded="true" aria-controls="collapse-d">Rejected <i class="fa fa-ban" aria-hidden="true"></i></a> </h5>
+                        </div>
+                        <div id="collapse-d" class="collapse " data-parent="#content" role="tabpanel" aria-labelledby="heading-d">
+                            <div class="table-responsive">
+                                <table class="table mt-4" id="tblRejected">
+                                    <thead>
+                                        <tr>
+                                            <th width="10">S.No</th>
+                                            <th width="80">Request No</th>
+                                            <th width="100">Request Date</th>
+                                            <th width="150">Process By</th>
+                                            <th width="150">Point of Contact</th>
+                                            <th>Project Code</th>
+                                            <th>Contract/Agreement Type </th>
+                                            <th width="100">Req. Amount</th>
+                                            <th width="100">Status</th>
+                                            <th width="70">Action</th>
+                                        </tr>
+                                    </thead>
+                                    
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+
+
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+<!-- ENd -->
+
+<div class="modal fade" id="pr">
+    <div class="modal-dialog modal-xl ">
+        <div class="modal-content">
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <h4 class="modal-title">
+                    <i class="fa fa-plus" aria-hidden="true"></i> <span id="spnHead">Procurement Entry Form</span>
+                </h4>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+
+            <div class="modal-body ">
+                <div class="row">
+                    <div class="col-sm-4 form-group">
+                        <label>Req No</label>
+                        <p>xxx14</p>
+                    </div>
+                    <div class="col-sm-4 form-group">
+                        <label>Req Date</label>
+                        <p>21/09/2022</p>
+                    </div>
+                    <div class="col-sm-4 form-group">
+                        <label>Req By</label>
+                        <p>Raj Kumar</p>
+                    </div>
+                    <div class="col-md-12 form-group">
+                        <hr>
+                        <span class="hr-aps"><i class="fas fa-comment-dots"></i>Reason for Resubmission</span>
+                    </div>
+                    <div class="col-sm-12 form-group">
+                        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc auctor turpis quis lorem lacinia porta. Praesent posuere placerat risus, at semper enim viverra quis</p>
+                    </div>
+                    <div class="col-sm-12 form-group">
+                        <div class="table-responsive">
+                            <table id="datatable" class="table mt-0 mb-2">
+                                <thead>
+                                    <tr>
+                                        <th width="10">S.NO</th>
+                                        <th>Item Name</th>
+                                        <th>Project Code</th>
+                                        <th>Project Sub Line Item</th>
+                                        <th>Item Description</th>
+                                        <th>Project Manager	</th>
+                                        <th width="80">Approved On</th>
+                                        <th width="50">Qty</th>
+                                        <th width="80">Amount</th>
+                                        <th>Remarks</th>
+                                        <th width="80">Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>1</td>
+                                        <td>Laptop</td>
+                                        <td>P076</td>
+                                        <td>P076.05.001</td>
+                                        <td>Laptop for new joinee</td>
+                                        <td></td>
+                                        <td></td>
+                                        <td class="text-right">1</td>
+                                        <td class="text-right">100000</td>
+                                        <td></td>
+                                        <td class="green-clr">Approved</td>
+                                    </tr>
+
+                                    <tr>
+                                        <td>2</td>
+                                        <td>Laptop</td>
+                                        <td>P076</td>
+                                        <td>P076.05.001</td>
+                                        <td>Laptop for new joinee</td>
+                                        <td></td>
+                                        <td></td>
+                                        <td class="text-right">1</td>
+                                        <td class="text-right">100000</td>
+                                        <td></td>
+                                        <td>Resubmitted</td>
+                                    </tr>
+                                    <tr>
+                                        <td>3</td>
+                                        <td>Laptop</td>
+                                        <td>P076</td>
+                                        <td>P076.05.001</td>
+                                        <td>Laptop for new joinee</td>
+                                        <td></td>
+                                        <td></td>
+                                        <td class="text-right">1</td>
+                                        <td class="text-right">100000</td>
+                                        <td></td>
+                                        <td class="red-clr">Rejected</td>
+                                    </tr>
+                                    <tr class="green-clr lgt-mtr-o-bg text-right fn-bold">
+                                        <td colspan="8">Total</td>
+                                        <td class="text-right">300000</td>
+                                        <td colspan="2"></td>
+                                    </tr>
+
+                                </tbody>
+                            </table>
+                        </div>
+
+                    </div>
+
+                    <div class="col-sm-3 form-group">
+                        <label>Agreed scope of work</label>
+                        <p>Attachment</p>
+                    </div>
+                    <div class="col-sm-3 form-group">
+                        <label>Delivery Schedule</label>
+                        <p>30/3/2023</p>
+                    </div>
+                    <div class="col-sm-3 form-group">
+                        <label>Start Date</label>
+                        <p>1/1/2023</p>
+                    </div>
+                    <div class="col-sm-3 form-group"></div>
+                    <div class="col-sm-3 form-group">
+                        <label>Payment Terms</label>
+                        <p>Text</p>
+                    </div>
+
+                    <div class="col-sm-3 form-group">
+                        <label>Special Condition</label>
+                        <p>Text</p>
+                    </div>
+
+                    <div class="col-sm-3 form-group">
+                        <label>
+                            Justification(In case of less than 3 qutation)
+                        </label>
+                        <p>Text</p>
+                    </div>
+
+                    <div class="col-sm-3 form-group">
+                        <label>Negotatiation Remarks</label>
+                        <p>Text</p>
+                    </div>
+
+
+                    <div class="col-md-12 form-group">
+                        <hr>
+                        <span class="hr-aps"><i class="fas fa-exclamation-circle"></i>RFP Details</span>
+                    </div>
+
+                    <div class="col-sm-12 form-group">
+                        <div class="table-responsive">
+                            <table id="datatable" class="table mt-0 mb-2">
+                                <thead>
+                                    <tr>
+                                        <th width="200">Vendor</th>
+                                        <th>Vendor Type</th>
+                                        <th>Relationship with C3</th>
+                                        <th width="150">Quotation Attachment</th>
+                                        <th width="100">Reccomendation</th>
+                                        <th width="100">Amount</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>Vendor 1</td>
+                                        <td></td>
+                                        <td></td>
+
+                                        <td><a href=""><i class="fas fa-download"></i>Attachment download</a></td>
+                                        <td>
+                                            <div class="radio-button text-center">
+                                                <input id="reccomendation" name="radio" type="radio" checked>
+                                                <label for="reccomendation" class="radio-label"></label>
+                                            </div>
+                                        </td>
+                                        <td></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                    </div>
+
+
+                    <div class="col-md-12 form-group">
+                        <hr>
+                        <span class="hr-aps"><i class="fas fa-exclamation-circle"></i>Consultant</span>
+                    </div>
+
+                    <div class="col-sm-12 form-group">
+                        <div class="table-responsive">
+                            <table id="datatable" class="table mt-0 mb-2">
+                                <thead>
+                                    <tr>
+                                        <th width="200">Consultant</th>
+                                        <th>Daily/ Monthly Rate</th>
+                                        <th>Days/ Months</th>
+                                        <th width="100">Fee Amount</th>
+                                        <th width="150">Reimbursement Amount</th>
+                                        <th width="100">Total</th>
+                                        <th width="100">Inclusive GST</th>
+                                        <th width="150">Quotation Attachment</th>
+                                        <th width="100">Amount</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>Consultant	</td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td><a href=""><i class="fas fa-download"></i>Attachment download</a></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                    </div>
+
+                    <div class="col-sm-12 form-group">
+                        <label>Have you received quotation from any other vendor?</label>
+                        <ul class="list-unstyled inline-li">
+                            <li>
+                                <div class="radio-button">
+                                    <input id="yes1" name="radio" type="radio" checked>
+                                    <label for="yes1" class="radio-label">Yes</label>
+                                </div>
+                            </li>
+                            <li>
+                                <div class="radio-button">
+                                    <input id="no1" name="radio" type="radio" disabled>
+                                    <label for="no1" class="radio-label">No</label>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <div class="col-sm-12 form-group div1 allshow">
+                        <div class="table-responsive">
+                            <table class="table mt-0 mb-2 table-bordered dt-responsive ">
+                                <thead>
+                                    <tr>
+                                        <th width="300">Temporary Vendor</th>
+                                        <th>Temporary Consultant</th>
+
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>Temporary Vendor 1</td>
+                                        <td>Temporary Consultant 1</td>
+
+                                    </tr>
+
+
+                                </tbody>
+                            </table>
+                        </div>
+
+
+                    </div>
+
+                    <div class="col-md-12 form-group">
+                        <hr>
+                        <span class="hr-aps"><i class="fas fa-comment"></i>Procurement Committee Remarks</span>
+                    </div>
+
+
+                    <div class="col-sm-12 form-group">
+                        <div class="table-responsive">
+                            <table id="datatable" class="table mt-0 mb-2">
+                                <thead>
+                                    <tr>
+                                        <th width="10">SNo.</th>
+                                        <th>Committee Member</th>
+                                        <th>Designation</th>
+                                        <th>Department</th>
+                                        <th>Location</th>
+                                        <th>Remarks</th>
+                                        <th width="100">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>1</td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td>Approved</td>
+
+                                    </tr>
+                                    <tr>
+                                        <td>2</td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td>Pending</td>
+
+                                    </tr>
+                                    <tr>
+                                        <td>3</td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td>Rejected</td>
+
+                                    </tr>
+                                    <tr>
+                                        <td>4</td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td>Resubmitted</td>
+
+                                    </tr>
+
+
+                                </tbody>
+                            </table>
+                        </div>
+
+                    </div>
+
+                    <div class="col-sm-12 form-group">
+                        <label>Enter Reason, if Rejected/ Resubmitted</label>
+                        <p>Text</p>
+                    </div>
+
+
+                    <div class="col-sm-4 form-group">
+                        <label>Authorised Signatory</label>
+                        <select class="form-control applyselect">
+                            <option>Seleet</option>
+                            <option>Aakash Kumar Singh	</option>
+                            <option>Abhikal Gupta	</option>
+                            <option>Aditya Raj	</option>
+                            <option>Ajay Kumar Singh	</option>
+
+                        </select>
+                    </div>
+
+
+                    <div class="col-sm-12" id="Div2" style="display: none;">
+                        <div class="row">
+                            <div class="col-md-12 form-group">
+                                <hr>
+                                <span class="hr-aps"><i class="fas fa-times"></i>Procurement Admin Action</span>
+                            </div>
+
+                            <div class="col-sm-12 form-group">
+                                <label>
+                                    Enter Reason, in case of Cancel
+                                    <sup>*</sup>
+                                </label>
+                                <textarea class="form-control h-100" placeholder="Enter"></textarea>
+                            </div>
+                            <div class="col-sm-12 text-center">
+                                <button type="submit" data-toggle="modal" class="btn mtr-o-grn btn-l ripplelink pull-right" name="Command" value="Add"><i class="fa-solid fa-paper-plane"></i>Submit</button>
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <div class="col-sm-12 text-center">
+                        <a href="authorised-signatory-approval.html" class="btn mtr-o-grn" name="Command" value="Add"><i class="fa-solid fa-paper-plane"></i>Send to authorised signatory</a>
+                        <button type="submit" class="btn cnl-btn " name="Command" value="Add" onclick="divVisibility('Div2');"><i class="fas fa-times"></i>Cancel</button>
+
+
+
+                    </div>
+
+
+
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+
+</div>
+
+
+<div class="modal fade" id="pra">
+    <div class="modal-dialog modal-xl ">
+        <div class="modal-content">
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <h4 class="modal-title">
+                    <i class="fa fa-plus" aria-hidden="true"></i> <span id="spnHead">Procurement Entry Form</span>
+                </h4>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+
+            <div class="modal-body ">
+                <div class="row">
+                    <div class="col-sm-4 form-group">
+                        <label>Req No</label>
+                        <p>xxx14</p>
+                    </div>
+                    <div class="col-sm-4 form-group">
+                        <label>Req Date</label>
+                        <p>21/09/2022</p>
+                    </div>
+                    <div class="col-sm-4 form-group">
+                        <label>Req By</label>
+                        <p>Raj Kumar</p>
+                    </div>
+                    <div class="col-md-12 form-group">
+                        <hr>
+                        <span class="hr-aps"><i class="fas fa-comment-dots"></i>Reason for Resubmission</span>
+                    </div>
+                    <div class="col-sm-12 form-group">
+                        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc auctor turpis quis lorem lacinia porta. Praesent posuere placerat risus, at semper enim viverra quis</p>
+                    </div>
+                    <div class="col-sm-12 form-group">
+                        <div class="table-responsive">
+                            <table id="datatable" class="table mt-0 mb-2">
+                                <thead>
+                                    <tr>
+                                        <th width="10">S.NO</th>
+                                        <th>Item Name</th>
+                                        <th>Project Code</th>
+                                        <th>Project Sub Line Item</th>
+                                        <th>Item Description</th>
+                                        <th>Project Manager	</th>
+                                        <th width="80">Approved On</th>
+                                        <th width="50">Qty</th>
+                                        <th width="80">Amount</th>
+                                        <th>Remarks</th>
+                                        <th width="80">Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>1</td>
+                                        <td>Laptop</td>
+                                        <td>P076</td>
+                                        <td>P076.05.001</td>
+                                        <td>Laptop for new joinee</td>
+                                        <td></td>
+                                        <td></td>
+                                        <td class="text-right">1</td>
+                                        <td class="text-right">100000</td>
+                                        <td></td>
+                                        <td class="green-clr">Approved</td>
+                                    </tr>
+
+                                    <tr>
+                                        <td>2</td>
+                                        <td>Laptop</td>
+                                        <td>P076</td>
+                                        <td>P076.05.001</td>
+                                        <td>Laptop for new joinee</td>
+                                        <td></td>
+                                        <td></td>
+                                        <td class="text-right">1</td>
+                                        <td class="text-right">100000</td>
+                                        <td></td>
+                                        <td>Resubmitted</td>
+                                    </tr>
+                                    <tr>
+                                        <td>3</td>
+                                        <td>Laptop</td>
+                                        <td>P076</td>
+                                        <td>P076.05.001</td>
+                                        <td>Laptop for new joinee</td>
+                                        <td></td>
+                                        <td></td>
+                                        <td class="text-right">1</td>
+                                        <td class="text-right">100000</td>
+                                        <td></td>
+                                        <td class="red-clr">Rejected</td>
+                                    </tr>
+                                    <tr class="green-clr lgt-mtr-o-bg text-right fn-bold">
+                                        <td colspan="8">Total</td>
+                                        <td class="text-right">300000</td>
+                                        <td colspan="2"></td>
+                                    </tr>
+
+                                </tbody>
+                            </table>
+                        </div>
+
+                    </div>
+
+                    <div class="col-sm-3 form-group">
+                        <label>Agreed scope of work</label>
+                        <p>Attachment</p>
+                    </div>
+                    <div class="col-sm-3 form-group">
+                        <label>Delivery Schedule</label>
+                        <p>30/3/2023</p>
+                    </div>
+                    <div class="col-sm-3 form-group">
+                        <label>Start Date</label>
+                        <p>1/1/2023</p>
+                    </div>
+                    <div class="col-sm-3 form-group"></div>
+                    <div class="col-sm-3 form-group">
+                        <label>Payment Terms</label>
+                        <p>Text</p>
+                    </div>
+
+                    <div class="col-sm-3 form-group">
+                        <label>Special Condition</label>
+                        <p>Text</p>
+                    </div>
+
+                    <div class="col-sm-3 form-group">
+                        <label>
+                            Justification(In case of less than 3 qutation)
+                        </label>
+                        <p>Text</p>
+                    </div>
+
+                    <div class="col-sm-3 form-group">
+                        <label>Negotatiation Remarks</label>
+                        <p>Text</p>
+                    </div>
+
+
+                    <div class="col-md-12 form-group">
+                        <hr>
+                        <span class="hr-aps"><i class="fas fa-exclamation-circle"></i>RFP Details</span>
+                    </div>
+
+                    <div class="col-sm-12 form-group">
+                        <div class="table-responsive">
+                            <table id="datatable" class="table mt-0 mb-2">
+                                <thead>
+                                    <tr>
+                                        <th width="200">Vendor</th>
+                                        <th>Vendor Type</th>
+                                        <th>Relationship with C3</th>
+                                        <th width="150">Quotation Attachment</th>
+                                        <th width="100">Reccomendation</th>
+                                        <th width="100">Amount</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>Vendor 1</td>
+                                        <td></td>
+                                        <td></td>
+
+                                        <td><a href=""><i class="fas fa-download"></i>Attachment download</a></td>
+                                        <td>
+                                            <div class="radio-button text-center">
+                                                <input id="reccomendation" name="radio" type="radio" checked>
+                                                <label for="reccomendation" class="radio-label"></label>
+                                            </div>
+                                        </td>
+                                        <td></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                    </div>
+
+
+                    <div class="col-md-12 form-group">
+                        <hr>
+                        <span class="hr-aps"><i class="fas fa-exclamation-circle"></i>Consultant</span>
+                    </div>
+
+                    <div class="col-sm-12 form-group">
+                        <div class="table-responsive">
+                            <table id="datatable" class="table mt-0 mb-2">
+                                <thead>
+                                    <tr>
+                                        <th width="200">Consultant</th>
+                                        <th>Daily/ Monthly Rate</th>
+                                        <th>Days/ Months</th>
+                                        <th width="100">Fee Amount</th>
+                                        <th width="150">Reimbursement Amount</th>
+                                        <th width="100">Total</th>
+                                        <th width="100">Inclusive GST</th>
+                                        <th width="150">Quotation Attachment</th>
+                                        <th width="100">Amount</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>Consultant	</td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td><a href=""><i class="fas fa-download"></i>Attachment download</a></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                    </div>
+
+                    <div class="col-sm-12 form-group">
+                        <label>Have you received quotation from any other vendor?</label>
+                        <ul class="list-unstyled inline-li">
+                            <li>
+                                <div class="radio-button">
+                                    <input id="yes1" name="radio" type="radio" checked>
+                                    <label for="yes1" class="radio-label">Yes</label>
+                                </div>
+                            </li>
+                            <li>
+                                <div class="radio-button">
+                                    <input id="no1" name="radio" type="radio" disabled>
+                                    <label for="no1" class="radio-label">No</label>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <div class="col-sm-12 form-group div1 allshow">
+                        <div class="table-responsive">
+                            <table class="table mt-0 mb-2 table-bordered dt-responsive ">
+                                <thead>
+                                    <tr>
+                                        <th width="300">Temporary Vendor</th>
+                                        <th>Temporary Consultant</th>
+
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>Temporary Vendor 1</td>
+                                        <td>Temporary Consultant 1</td>
+
+                                    </tr>
+
+
+                                </tbody>
+                            </table>
+                        </div>
+
+
+                    </div>
+
+                    <div class="col-md-12 form-group">
+                        <hr>
+                        <span class="hr-aps"><i class="fas fa-comment"></i>Procurement Committee Remarks</span>
+                    </div>
+
+
+                    <div class="col-sm-12 form-group">
+                        <div class="table-responsive">
+                            <table id="datatable" class="table mt-0 mb-2">
+                                <thead>
+                                    <tr>
+                                        <th width="10">SNo.</th>
+                                        <th>Committee Member</th>
+                                        <th>Designation</th>
+                                        <th>Department</th>
+                                        <th>Location</th>
+                                        <th>Remarks</th>
+                                        <th width="100">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>1</td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td>Approved</td>
+
+                                    </tr>
+                                    <tr>
+                                        <td>2</td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td>Pending</td>
+
+                                    </tr>
+                                    <tr>
+                                        <td>3</td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td>Rejected</td>
+
+                                    </tr>
+                                    <tr>
+                                        <td>4</td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td>Resubmitted</td>
+
+                                    </tr>
+
+
+                                </tbody>
+                            </table>
+                        </div>
+
+                    </div>
+
+                    <div class="col-md-12 form-group">
+                        <hr>
+                        <span class="hr-aps"><i class="fas fa-comment"></i>Procurement Admin Action</span>
+                    </div>
+
+                    <div class="col-sm-3 form-group">
+                        <label>PO Date</label>
+                        <input type="date" class="form-control" placeholder="">
+                    </div>
+
+                    <div class="col-sm-3 form-group">
+                        <label>Delivery Date</label>
+                        <input type="date" class="form-control" placeholder="">
+                    </div>
+
+                    <div class="col-sm-3 form-group">
+                        <label>Bill No</label>
+                        <input type="text" class="form-control" placeholder="Enter">
+                    </div>
+
+                    <div class="col-sm-3 form-group">
+                        <label>Bill Date</label>
+                        <input type="date" class="form-control" placeholder="">
+                    </div>
+
+                    <div class="col-sm-12 form-group">
+                        <div class="table-responsive">
+                            <table id="datatable" class="table mt-0 mb-2">
+                                <thead>
+                                    <tr>
+                                        <th width="10">SNo.</th>
+                                        <th>Committee Member</th>
+                                        <th>Designation</th>
+                                        <th>Department</th>
+                                        <th>Location</th>
+                                        <th>Remarks</th>
+                                        <th width="100">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>1</td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td>Approved</td>
+
+                                    </tr>
+                                    <tr>
+                                        <td>2</td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td>Pending</td>
+
+                                    </tr>
+                                    <tr>
+                                        <td>3</td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td>Rejected</td>
+
+                                    </tr>
+                                    <tr>
+                                        <td>4</td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td>Resubmitted</td>
+
+                                    </tr>
+
+
+                                </tbody>
+                            </table>
+                        </div>
+
+                    </div>
+
+                    <div class="col-md-12 form-group">
+                        <hr>
+                        <span class="hr-aps"><i class="fas fa-paperclip"></i>Attachment</span>
+                    </div>
+
+                    <div class="col-sm-12 form-group">
+                        <div class="table-responsive">
+                            <table id="datatable" class="table mt-0 mb-2">
+                                <thead>
+                                    <tr>
+                                        <th width="10">SNo.</th>
+                                        <th>Document Type</th>
+                                        <th>Document Details</th>
+                                        <th width="250">Attachment</th>
+                                        <th>Remarks</th>
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>1</td>
+                                        <td>Receipt of Goods & Services</td>
+                                        <td><input type="text" class="form-control" placeholder="Enter"></td>
+                                        <td><input type="file" class="form-control" placeholder=""></td>
+                                        <td><textarea class="form-control" placeholder="Enter"></textarea> </td>
+
+                                    </tr>
+                                    <tr>
+                                        <td>2</td>
+                                        <td>Upload Invoice</td>
+                                        <td><input type="text" class="form-control" placeholder="Enter"></td>
+                                        <td><input type="file" class="form-control" placeholder=""></td>
+                                        <td><textarea class="form-control" placeholder="Enter"></textarea> </td>
+
+                                    </tr>
+                                    <tr>
+                                        <td>3</td>
+                                        <td>Utilization Statement</td>
+                                        <td><input type="text" class="form-control" placeholder="Enter"></td>
+                                        <td><input type="file" class="form-control" placeholder=""></td>
+                                        <td><textarea class="form-control" placeholder="Enter"></textarea> </td>
+
+                                    </tr>
+
+
+
+                                </tbody>
+                            </table>
+                        </div>
+
+                    </div>
+
+                    <div class="col-sm-12 text-center">
+                        <a href="" class="btn mtr-g-grn btn-l ripplelink "><i class="fas fa-edit"></i>Amendment</a>
+                        <a href="" class="btn mtr-g-grn btn-l ripplelink "><i class="fas fa-edit"></i>Update</a>
+                        <button type="button" class="btn cnl-btn " data-dismiss="modal"><i class="fas fa-times"></i>Close</button>
+                    </div>
+
+
+
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+
+</div>
+
+
+<div class="modal fade" id="prc">
+    <div class="modal-dialog modal-xl ">
+        <div class="modal-content">
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <h4 class="modal-title">
+                    <i class="fa fa-plus" aria-hidden="true"></i> <span id="spnHead">Procurement Entry Form</span>
+                </h4>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+
+            <div class="modal-body ">
+                <div class="row">
+                    <div class="col-sm-4 form-group">
+                        <label>Req No</label>
+                        <p>xxx14</p>
+                    </div>
+                    <div class="col-sm-4 form-group">
+                        <label>Req Date</label>
+                        <p>21/09/2022</p>
+                    </div>
+                    <div class="col-sm-4 form-group">
+                        <label>Req By</label>
+                        <p>Raj Kumar</p>
+                    </div>
+                    <div class="col-md-12 form-group">
+                        <hr>
+                        <span class="hr-aps"><i class="fas fa-comment-dots"></i>Reason for Resubmission</span>
+                    </div>
+                    <div class="col-sm-12 form-group">
+                        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc auctor turpis quis lorem lacinia porta. Praesent posuere placerat risus, at semper enim viverra quis</p>
+                    </div>
+                    <div class="col-sm-12 form-group">
+                        <div class="table-responsive">
+                            <table id="datatable" class="table mt-0 mb-2">
+                                <thead>
+                                    <tr>
+                                        <th width="10">S.NO</th>
+                                        <th>Item Name</th>
+                                        <th>Project Code</th>
+                                        <th>Project Sub Line Item</th>
+                                        <th>Item Description</th>
+                                        <th>Project Manager	</th>
+                                        <th width="80">Approved On</th>
+                                        <th width="50">Qty</th>
+                                        <th width="80">Amount</th>
+                                        <th>Remarks</th>
+                                        <th width="80">Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>1</td>
+                                        <td>Laptop</td>
+                                        <td>P076</td>
+                                        <td>P076.05.001</td>
+                                        <td>Laptop for new joinee</td>
+                                        <td></td>
+                                        <td></td>
+                                        <td class="text-right">1</td>
+                                        <td class="text-right">100000</td>
+                                        <td></td>
+                                        <td class="green-clr">Approved</td>
+                                    </tr>
+
+                                    <tr>
+                                        <td>2</td>
+                                        <td>Laptop</td>
+                                        <td>P076</td>
+                                        <td>P076.05.001</td>
+                                        <td>Laptop for new joinee</td>
+                                        <td></td>
+                                        <td></td>
+                                        <td class="text-right">1</td>
+                                        <td class="text-right">100000</td>
+                                        <td></td>
+                                        <td>Resubmitted</td>
+                                    </tr>
+                                    <tr>
+                                        <td>3</td>
+                                        <td>Laptop</td>
+                                        <td>P076</td>
+                                        <td>P076.05.001</td>
+                                        <td>Laptop for new joinee</td>
+                                        <td></td>
+                                        <td></td>
+                                        <td class="text-right">1</td>
+                                        <td class="text-right">100000</td>
+                                        <td></td>
+                                        <td class="red-clr">Rejected</td>
+                                    </tr>
+                                    <tr class="green-clr lgt-mtr-o-bg text-right fn-bold">
+                                        <td colspan="8">Total</td>
+                                        <td class="text-right">300000</td>
+                                        <td colspan="2"></td>
+                                    </tr>
+
+                                </tbody>
+                            </table>
+                        </div>
+
+                    </div>
+
+                    <div class="col-sm-3 form-group">
+                        <label>Agreed scope of work</label>
+                        <p>Attachment</p>
+                    </div>
+                    <div class="col-sm-3 form-group">
+                        <label>Delivery Schedule</label>
+                        <p>30/3/2023</p>
+                    </div>
+                    <div class="col-sm-3 form-group">
+                        <label>Start Date</label>
+                        <p>1/1/2023</p>
+                    </div>
+                    <div class="col-sm-3 form-group"></div>
+                    <div class="col-sm-3 form-group">
+                        <label>Payment Terms</label>
+                        <p>Text</p>
+                    </div>
+
+                    <div class="col-sm-3 form-group">
+                        <label>Special Condition</label>
+                        <p>Text</p>
+                    </div>
+
+                    <div class="col-sm-3 form-group">
+                        <label>
+                            Justification(In case of less than 3 qutation)
+                        </label>
+                        <p>Text</p>
+                    </div>
+
+                    <div class="col-sm-3 form-group">
+                        <label>Negotatiation Remarks</label>
+                        <p>Text</p>
+                    </div>
+
+
+                    <div class="col-md-12 form-group">
+                        <hr>
+                        <span class="hr-aps"><i class="fas fa-exclamation-circle"></i>RFP Details</span>
+                    </div>
+
+                    <div class="col-sm-12 form-group">
+                        <div class="table-responsive">
+                            <table id="datatable" class="table mt-0 mb-2">
+                                <thead>
+                                    <tr>
+                                        <th width="200">Vendor</th>
+                                        <th>Vendor Type</th>
+                                        <th>Relationship with C3</th>
+                                        <th width="150">Quotation Attachment</th>
+                                        <th width="100">Reccomendation</th>
+                                        <th width="100">Amount</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>Vendor 1</td>
+                                        <td></td>
+                                        <td></td>
+
+                                        <td><a href=""><i class="fas fa-download"></i>Attachment download</a></td>
+                                        <td>
+                                            <div class="radio-button text-center">
+                                                <input id="reccomendation" name="radio" type="radio" checked>
+                                                <label for="reccomendation" class="radio-label"></label>
+                                            </div>
+                                        </td>
+                                        <td></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                    </div>
+
+
+                    <div class="col-md-12 form-group">
+                        <hr>
+                        <span class="hr-aps"><i class="fas fa-exclamation-circle"></i>Consultant</span>
+                    </div>
+
+                    <div class="col-sm-12 form-group">
+                        <div class="table-responsive">
+                            <table id="datatable" class="table mt-0 mb-2">
+                                <thead>
+                                    <tr>
+                                        <th width="200">Consultant</th>
+                                        <th>Daily/ Monthly Rate</th>
+                                        <th>Days/ Months</th>
+                                        <th width="100">Fee Amount</th>
+                                        <th width="150">Reimbursement Amount</th>
+                                        <th width="100">Total</th>
+                                        <th width="100">Inclusive GST</th>
+                                        <th width="150">Quotation Attachment</th>
+                                        <th width="100">Amount</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>Consultant	</td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td><a href=""><i class="fas fa-download"></i>Attachment download</a></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                    </div>
+
+                    <div class="col-sm-12 form-group">
+                        <label>Have you received quotation from any other vendor?</label>
+                        <ul class="list-unstyled inline-li">
+                            <li>
+                                <div class="radio-button">
+                                    <input id="yes1" name="radio" type="radio" checked>
+                                    <label for="yes1" class="radio-label">Yes</label>
+                                </div>
+                            </li>
+                            <li>
+                                <div class="radio-button">
+                                    <input id="no1" name="radio" type="radio" disabled>
+                                    <label for="no1" class="radio-label">No</label>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <div class="col-sm-12 form-group div1 allshow">
+                        <div class="table-responsive">
+                            <table class="table mt-0 mb-2 table-bordered dt-responsive ">
+                                <thead>
+                                    <tr>
+                                        <th width="300">Temporary Vendor</th>
+                                        <th>Temporary Consultant</th>
+
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>Temporary Vendor 1</td>
+                                        <td>Temporary Consultant 1</td>
+
+                                    </tr>
+
+
+                                </tbody>
+                            </table>
+                        </div>
+
+
+                    </div>
+
+                    <div class="col-md-12 form-group">
+                        <hr>
+                        <span class="hr-aps"><i class="fas fa-comment"></i>Procurement Committee Remarks</span>
+                    </div>
+
+
+                    <div class="col-sm-12 form-group">
+                        <div class="table-responsive">
+                            <table id="datatable" class="table mt-0 mb-2">
+                                <thead>
+                                    <tr>
+                                        <th width="10">SNo.</th>
+                                        <th>Committee Member</th>
+                                        <th>Designation</th>
+                                        <th>Department</th>
+                                        <th>Location</th>
+                                        <th>Remarks</th>
+                                        <th width="100">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>1</td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td>Approved</td>
+
+                                    </tr>
+                                    <tr>
+                                        <td>2</td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td>Pending</td>
+
+                                    </tr>
+                                    <tr>
+                                        <td>3</td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td>Rejected</td>
+
+                                    </tr>
+                                    <tr>
+                                        <td>4</td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td>Resubmitted</td>
+
+                                    </tr>
+
+
+                                </tbody>
+                            </table>
+                        </div>
+
+                    </div>
+
+                    <div class="col-md-12 form-group">
+                        <hr>
+                        <span class="hr-aps"><i class="fas fa-comment"></i>Procurement Admin Action</span>
+                    </div>
+
+                    <div class="col-sm-3 form-group">
+                        <label>PO Date</label>
+                        <p>30/3/2023</p>
+                    </div>
+
+                    <div class="col-sm-3 form-group">
+                        <label>Delivery Date</label>
+                        <p>30/3/2023</p>
+                    </div>
+
+                    <div class="col-sm-3 form-group">
+                        <label>Bill No</label>
+                        <p>15220</p>
+                    </div>
+
+                    <div class="col-sm-3 form-group">
+                        <label>Bill Date</label>
+                        <p>30/3/2023</p>
+                    </div>
+
+                    <div class="col-sm-12 form-group">
+                        <div class="table-responsive">
+                            <table id="datatable" class="table mt-0 mb-2">
+                                <thead>
+                                    <tr>
+                                        <th width="10">SNo.</th>
+                                        <th>Committee Member</th>
+                                        <th>Designation</th>
+                                        <th>Department</th>
+                                        <th>Location</th>
+                                        <th>Remarks</th>
+                                        <th width="100">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>1</td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td>Approved</td>
+
+                                    </tr>
+                                    <tr>
+                                        <td>2</td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td>Pending</td>
+
+                                    </tr>
+                                    <tr>
+                                        <td>3</td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td>Rejected</td>
+
+                                    </tr>
+                                    <tr>
+                                        <td>4</td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td>Resubmitted</td>
+
+                                    </tr>
+
+
+                                </tbody>
+                            </table>
+                        </div>
+
+                    </div>
+
+                    <div class="col-md-12 form-group">
+                        <hr>
+                        <span class="hr-aps"><i class="fas fa-paperclip"></i>Attachment</span>
+                    </div>
+
+                    <div class="col-sm-12 form-group">
+                        <div class="table-responsive">
+                            <table id="datatable" class="table mt-0 mb-2">
+                                <thead>
+                                    <tr>
+                                        <th width="10">SNo.</th>
+                                        <th>Document Type</th>
+                                        <th>Document Details</th>
+                                        <th>Attachment</th>
+                                        <th>Remarks</th>
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>1</td>
+                                        <td>Receipt of Goods & Services</td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+
+                                    </tr>
+                                    <tr>
+                                        <td>2</td>
+                                        <td>Upload Invoice</td>
+                                        <td></td>
+                                        <td></td>
+
+                                    </tr>
+                                    <tr>
+                                        <td>3</td>
+                                        <td>Utilization Statement</td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+
+                                    </tr>
+
+
+
+                                </tbody>
+                            </table>
+                        </div>
+
+                    </div>
+
+                    <div class="col-sm-12 text-center">
+                        <button type="button" class="btn cnl-btn " data-dismiss="modal"><i class="fas fa-times"></i>Close</button>
+                    </div>
+
+
+
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+
+</div>
+@section scripts    {
+    @System.Web.Optimization.Scripts.Render("~/bundle/unobtrusivejs")
+    @System.Web.Optimization.Scripts.Render("~/bundle/dataTablesjs")
+    <script src="~/assets/design/Scripts/AddInit.js?v=@clsApplicationSetting.GetWebConfigValue("Version")"></script>
+ 
+    <script src="~/Areas/Procurement/DevScript/RFPProcess.js"></script>
+    <script>
+		 var IsEDUser = '@ViewBag.IsED';
+       var loggedinUserid = '@ViewBag.UserId';
+		var loggedinUserName = '@ViewBag.UserName';
+		var UserGrade = '@ViewBag.Grade';
+        var IsPM = '@ViewBag.IsPM';      
+    </script>
+}
+<script>
+    $(document).ready(function () {
+        $(".applyselect").select2();
+    });
+</script>
+
+<script>
+    var MenuID = Number(129);
+
+
+
+
+    function SuccessToaster(Message) {
+        $("#toastMsg").html(Message);
+        $("#toasticon i").addClass("fas fa-check green-clr ");
+        var x = document.getElementById("toast")
+        x.className = "show";
+        setTimeout(function () { x.className = x.className.replace("show", ""); }, 4000);
+    }
+
+    function FailToaster(Message) {
+        $("#toastMsg").html(Message);
+        $("#toasticon i").addClass("fas fa-exclamation-triangle red-clr");
+        var x = document.getElementById("toast")
+        x.className = "show toaster-warning";
+        setTimeout(function () { x.className = x.className.replace("show toaster-warning", ""); }, 4000);
+    }
+
+
+    function ValidateFile(FileName) {
+
+        var result = false;
+        if (document.getElementById(FileName).files[0].name.toUpperCase().match(/\.(PDF|DOCX|TXT|XLS|XLSX)$/)) {
+
+            var filesize = 3145728;
+            var sizeinbytes = document.getElementById(FileName).files[0].size;
+            if (filesize >= sizeinbytes) {
+                result = true;
+            }
+            else {
+                FailToaster("File size should be less than 3 MB");
+                document.getElementById(FileName).value = '';
+                result = false;
+
+            }
+            return result;
+        }
+        else {
+            FailToaster("Invalid file type , please select valid file again");
+            document.getElementById(FileName).value = '';
+            return result;
+        }
+
+    }
+
+    function ValidateImage(FileName) {
+
+        var result = false;
+        if (document.getElementById(FileName).files[0].name.toUpperCase().match(/\.(JPG|JPEG|PNG|PDF)$/)) {
+
+            var filesize = 2097152;
+            var sizeinbytes = document.getElementById(FileName).files[0].size;
+            if (filesize >= sizeinbytes) {
+                result = true;
+            }
+            else {
+                FailToaster("Image should be less than 2 MB");
+
+                document.getElementById(FileName).value = '';
+                result = false;
+
+            }
+            return result;
+        }
+        else {
+            FailToaster("Invalid Image type , please select valid Image");
+            document.getElementById(FileName).value = '';
+            return result;
+        }
+
+    }
+</script>
+<script>
+    // JavaScript Document
+    $(function () {
+        $('#js-nav-toggle').click(function (e) {
+            e.preventDefault();
+            $("html").toggleClass("is-sideopen");
+            $("#js-nav-toggle").toggleClass("is-active");
+        });
+
+        var $content = $('.l-contents');
+        var $header = $('.l-header');
+
+
+        $content.click(function () {
+            $("html").removeClass("is-sideopen");
+        });
+
+
+        $header.click(function () {
+            $("html").removeClass("is-sideopen");
+        });
+
+
+    });
+
+
+    $(function () {
+
+        var $dropdown = $('.js-dropdown');
+        var $content = $('.l-contents');
+        var $toggle = $('#js-nav-toggle');
+
+
+        $('.js-dropdown-menu').hide();
+        $dropdown.click(function () {
+            $('i').removeClass('is-rotate');
+            $('.js-dropdown-menu').slideUp(200);
+            if ($('+.js-dropdown-menu', this).css('display') == 'none') {
+                $('i', this).addClass('is-rotate');
+                $('+.js-dropdown-menu', this).slideDown(200);
+            }
+        });
+
+
+        $content.click(function () {
+            $('i').removeClass('is-rotate');
+            $('.js-dropdown-menu').slideUp(200);
+            if ($('+.js-dropdown-menu', this).css('display') == 'none') {
+                $('i', this).addClass('is-rotate');
+                $('+.js-dropdown-menu', this).slideDown(200);
+            }
+        });
+
+
+        $toggle.click(function () {
+            $('i').removeClass('is-rotate');
+            $('.js-dropdown-menu').slideUp(200);
+            if ($('+.js-dropdown-menu', this).css('display') == 'none') {
+                $('i', this).addClass('is-rotate');
+                $('+.js-dropdown-menu', this).slideDown(200);
+            }
+        });
+
+    });
+
+    $(function () {
+        $('.is-ac-close').hide();
+        $(".is-ac-click").on("click", function () {
+            if ($(this).children('i').is('.fa-angle-right')) {
+                $(this).children('i')
+                    .removeClass('fa-angle-right')
+                    .addClass('fa-angle-down');
+            } else {
+                $(this).children('i')
+                    .removeClass('fa-angle-down')
+                    .addClass('fa-angle-right');
+            }
+            $(this).next().slideToggle(200);
+        });
+
+        $('.is-ac-close').hide();
+        $(".is-ac-bar").on("click", function () {
+
+            if ($(this).find('i').is('.fa-caret-down')) {
+
+                $(this).find('i')
+                    .removeClass()
+                    .addClass('fa fa-caret-up');
+            } else {
+                $(this).find('i')
+                    .removeClass()
+                    .addClass('fa fa-caret-down');
+            }
+            $(this).next().slideToggle(200);
+        });
+    });
+
+
+
+
+    //---------------------------------------------------
+    // ▼　tab
+    //---------------------------------------------------
+    $(function () {
+        var rwdTab = $('.c-tab'),
+            switchPoint = 768,
+            fadeSpeed = 300,
+            slideSpeed = 300;
+
+        var tabBtn = rwdTab.children('.c-tab-panel').children('.c-tab-heading'),
+            contentsArea = rwdTab.children('.c-tab-panel').children('.c-tab-body');
+
+        tabBtn.on('click', function () {
+            if (!$(this).hasClass('c-tab-active')) {
+                tabBtn.removeClass('c-tab-active');
+                $(this).addClass('c-tab-active');
+
+                if (window.innerWidth > switchPoint) {
+                    contentsArea.fadeOut(fadeSpeed);
+                    $(this).next().fadeIn(fadeSpeed);
+                } else {
+                    contentsArea.slideUp(slideSpeed);
+                    $(this).next().slideDown(slideSpeed);
+                }
+            }
+        });
+
+        tabBtn.first().click();
+    });
+
+
+
+</script>
+<!-- required -->
+<script type="text/javascript">
+    jQuery(document).ready(function ($) {
+        jQuery('.stellarnav').stellarNav({
+            theme: 'dark',
+            breakpoint: 960,
+            position: 'right',
+
+        });
+        $('.notifyjs-corner').empty();
+    });
+</script>
+<!-- required -->
+<script>
+    $("document").ready(function () {
+
+        $('.dropdown-menu').on('click', function (e) {
+            if ($(this).hasClass('dropdown-menu-form')) {
+                e.stopPropagation();
+            }
+        });
+    });
+
+
+</script>
+<script>
+
+    var links = document.querySelectorAll('.ripplelink');
+
+    for (var i = 0, len = links.length; i < len; i++) {
+        links[i].addEventListener('click', function (e) {
+            var targetEl = e.target;
+            var inkEl = targetEl.querySelector('.ink');
+
+            if (inkEl) {
+                inkEl.classList.remove('animate');
+            }
+            else {
+                inkEl = document.createElement('span');
+                inkEl.classList.add('ink');
+                inkEl.style.width = inkEl.style.height = Math.max(targetEl.offsetWidth, targetEl.offsetHeight) + 'px';
+                targetEl.appendChild(inkEl);
+            }
+
+            inkEl.style.left = (e.offsetX - inkEl.offsetWidth / 2) + 'px';
+            inkEl.style.top = (e.offsetY - inkEl.offsetHeight / 2) + 'px';
+            inkEl.classList.add('animate');
+        }, false);
+    }
+</script>
+<script type="text/javascript">
+    $(window).scroll(function () {
+        if ($(this).scrollTop() > 250) {
+            $('.header').addClass("sticky");
+        }
+        else {
+            $('.header').removeClass("sticky");
+        }
+    });
+
+
+</script>
+
+<script type="text/javascript">
+    $(".but").click(function () {
+        // Close all open windows
+        $(".content").stop().slideUp(300);
+        // Toggle this window open/close
+        $(this).next(".content").stop().slideToggle(300);
+        //hitter test//
+        $(".hitter").show()
+    });
+
+    $(".hitter").click(function () {
+        // Close all open windows
+        $(".content").stop().slideUp(300);
+    });
+</script>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('#selectall').click(function () {
+            $('.selectedId').prop('checked', this.checked);
+        });
+
+        $('.selectedId').change(function () {
+            var check = ($('.selectedId').filter(":checked").length == $('.selectedId').length);
+            $('#selectall').prop("checked", check);
+        });
+    });
+</script>
+<script>
+    function valueChanged() {
+        if ($('.sltchk').is(":checked"))
+            $(".hide").show();
+        else
+            $(".hide").hide();
+    };
+</script>
+<script type="text/javascript">
+    var divs = ["Div2"];
+    var visibleDivId = null;
+    function divVisibility(divId) {
+        if (visibleDivId === divId) {
+            visibleDivId = null;
+        } else {
+            visibleDivId = divId;
+        }
+        hideNonVisibleDivs();
+    }
+    function hideNonVisibleDivs() {
+        var i, divId, div;
+        for (i = 0; i < divs.length; i++) {
+            divId = divs[i];
+            div = document.getElementById(divId);
+            if (visibleDivId === divId) {
+                div.style.display = "block";
+            } else {
+                div.style.display = "none";
+            }
+        }
+    }
+</script>

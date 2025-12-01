@@ -1,0 +1,84 @@
+﻿@model MPR.Targets.TargetAction
+
+
+
+<div class="inner-main" role="main">
+    <h1 class="heading-one">
+        Project Wise Targets
+    </h1>
+
+    @using (Ajax.BeginForm("_ProjectTargets", "MPR",
+            new { src = clsApplicationSetting.EncryptQueryString(ViewBag.MenuID.ToString() + "*/MPR/_ProjectTargets") },
+            new AjaxOptions { HttpMethod = "POST", OnSuccess = "BindTarget" },
+        new { @id = "_ProjectTargetsFrom" })
+        )
+    {
+        @Html.HiddenFor(model => model.Approve)
+        <div class="tab-main ">
+            <div class="row text-clr">
+                <div class="col-md-12">
+                    <ul id="tabs" class="nav nav-tabs " role="tablist">
+                        <li class="nav-item"> <a tabvalue="0" class="nav-link active ripplelink AnchorApproval" data-toggle="tab" role="tab"><i class="fal fa-envelope-open"></i>Pending</a> </li>
+                        <li class="nav-item"> <a tabvalue="1" class="nav-link ripplelink AnchorApproval" data-toggle="tab" role="tab"><i class="fa fa-check" aria-hidden="true"></i>Processed</a></li>
+
+                    </ul>
+                </div>
+                <div class="col-md-2 form-group">
+                    <label> Year</label>
+                    <select name="@Html.NameFor(x=>x.FinID)" id="ddFinYear" class="applyselect">
+                        <option value="0">All</option>
+                        @foreach (var item in ViewBag.FinYearList)
+                        {
+                            <option value="@item.FInID">@item.Year</option>
+                        }
+                    </select>
+                </div>
+                <div style="display:none">
+                    <button type="submit" class="btn mtr-g-grn btn-l ripplelink" id="btnSearch" name="Command" value="Search"><i class="fas fa-search"></i>Search</button>
+                </div>
+
+            </div>
+        </div>
+    }
+    <div id="TargetDiv"></div>
+
+</div>
+
+
+
+@section scripts    {
+    @System.Web.Optimization.Scripts.Render("~/bundle/unobtrusivejs")
+    @Html.IncludeVersionedJs(Url.Content("~/assets/design/Scripts/ToolTip.js"))
+    @Html.IncludeVersionedJs(Url.Content("~/assets/design/scripts/AddInit.js"))
+
+    <script>
+        $('.AnchorApproval').on('click', function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+            var att = $(this).attr("tabvalue");
+            $(".AnchorApproval.active").removeClass("active");
+            $(this).addClass("active");
+            $("#Approve").val(att);
+            ShowLoadingDialog();
+            $("#btnSearch").click();
+        });
+
+        $('#ddFinYear').bind("change", function () {
+            ShowLoadingDialog();
+            $("#btnSearch").click();
+        });
+
+        function BindTarget(args) {
+            CloseLoadingDialog();
+            $("#TargetDiv").empty();
+            $("#TargetDiv").html(args);
+        }
+
+        $(document).ready(function () {
+            $("#btnSearch").click();
+        });
+    </script>
+}
+
+
+

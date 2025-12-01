@@ -1,0 +1,144 @@
+﻿@model Mitr.Models.FundRaising.LeadDashboard
+@{
+	ViewBag.Title = "LeadDashboard";
+	Layout = "~/Views/Shared/_Layout.cshtml";
+	string MenuID = ViewBag.MenuID.ToString();
+}
+
+                <!---->
+        <div class="row">
+            <div class="col-lg-6 col-md-6 col-sm-12 mb-0">
+                <div class="shadow-box pr trboxhg">
+                    <!---->
+                    <h2 class="heading-grd heading-btn  blk-gdn-btn m-0">
+                        Lead Dashboard
+                        <div class="rgt-pst">
+                            <a href="@Url.Action("AddLead",new { src = clsApplicationSetting.EncryptFriendly(ViewBag.MenuID+"*"+"/FundRaising/AddLead*0") })" target="_blank" class="mtr-o-grn br-0 btn"><i class="fas fa-plus"></i><span class="d-575-none">Add Lead</span></a><a href="@Url.Action("ProspectList",new { src = clsApplicationSetting.EncryptFriendly(ViewBag.MenuID+"*"+"/FundRaising/ProspectList*0") })" target="_blank" class="mtr-g-grn br-0 btn ml-0 "><i class="fas fa-edit"></i> <span class="d-575-none">Update Prospect</span></a>
+                        </div>
+                    </h2>
+
+                    <div class="row">
+                        <div class="col-lg-12 ">
+                            <div class="mt-2 pl-2"><strong>Stage Wise Lead Count</strong></div>
+                        </div>
+
+
+                        @for (int i = 0; i < Model.listSatgeCount.Count; i++)
+                        {
+                            <div class="col-sm-3 hf-575">
+                                <div class="leadcountlist">
+                                    
+                                    <img src="~/assets/design/images/icon/fund-raising-icon/@(Model.listSatgeCount[i].FieldName)-icon.svg" alt="Conversion" class="icon-40">
+                                    
+                                    <div class="lead-dtl">
+                                        <span class="cnt-number counter" data-target="5">@Model.listSatgeCount[i].Value</span>
+                                        <p class="cnt-text">@Model.listSatgeCount[i].FieldName</p>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+
+                    </div>
+
+                    <div class="p-2">
+                   
+                        <div class="slider">
+                      
+                            <div id="product-slider">
+                                @for (int i = 0; i < Model.listNatureCount.Count; i++)
+                                {
+                                    <div class="thumbnail product">
+                                       
+                                        <div class="ldimplist">
+                                            <div class="ldimplistbox">
+												<span class="count-nt">@Model.listNatureCount[i].Count</span>
+                                               
+                                                <img src="~/assets/design/images/icon/fund-raising-icon/@( Model.listNatureCount[i].ToFieldName.Replace('/','_'))-icon.svg" alt="Hot Icon" class="icon-80">
+                                               
+                                                <h2>@Model.listNatureCount[i].ToFieldName</h2>
+                                            </div>
+                                            <p>Projected Revenue Total</p>
+											<strong><i class="fas fa-rupee-sign"></i>@(string.Format("{0:#,0}", Convert.ToDecimal(Model.listNatureCount[i].TotalPrice)))</strong>
+                                        </div>
+                                      
+                                    </div>
+                                    }
+                              
+
+
+                                </div>
+                            </div> <!-- /.slider-->
+                            <!------>
+
+                        </div>
+
+
+
+              
+                    </div>
+            </div>
+            <div class="col-lg-6 col-md-6 col-sm-12 mb-0">
+                    <div class="shadow-box trboxhg">
+                        <h2 class="heading-grd heading-btn  blk-gdn-btn m-0">
+                            Lead List
+                            <div class="rgt-pst">
+                                <a class="linkrgt" href="@Url.Action("LeadList",new { src = clsApplicationSetting.EncryptFriendly(ViewBag.MenuID+"*"+"/FundRaising/LeadList*0") })">Show All</a>
+                            </div>
+                        </h2>
+
+                        <!------>
+
+                        <ul class="list-unstyled rqt-list scroll box-fh trboxhglist ulmyteam" tabclick="1">
+
+                            @for (int j = 0; j< Model.listLead.Count; j++)
+                            {
+                                <li class="item">
+                                    <div class="row d-flex">
+                                        <div class="col-sm-4 align-self-center">
+                                            <div class="left-dtl-r">
+                                                <span class="countlist">1)</span>
+                                                <small class="lgt-text">@Model.listLead[j].DocNo</small><br>
+                                                <strong>@Model.listLead[j].NickName </strong><br>
+                                                <small class="lgt-text">@Model.listLead[j].DocDate </small>
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-5 align-self-end">
+                                            <div class="cntr-dtl-r">
+                                                <strong>@Model.listLead[j].ProspectName </strong>
+                                                <br>
+                                                <small class="lgt-text">
+                                                    @Model.listLead[j].ContactPerson
+                                                </small>
+                                                <div class="tagslist w-128">
+                                                    <img src="~/assets/design/images/icon/fund-raising-icon/@(Model.listLead[j].StageLevel)-icon.svg" alt="Pre-sales icon" class="icon-20"> @Model.listLead[j].StageLevel
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                        <div class="col-sm-3 align-self-center">
+											<div class="right-dtl-r">
+												<a href="@Url.Action("AddLead",new { src = clsApplicationSetting.EncryptFriendly(ViewBag.MenuID+"*"+"/FundRaising/AddLead*"+@Model.listLead[j].Id+"") })" target="_blank" class="btn-g" data-toggle="tooltip" data-original-title="View"><i class="fa-solid fa-eye"></i></a>
+													
+
+
+											</div>
+
+                                        </div>
+                                    </div>
+                                </li>
+                            }
+
+
+
+                         
+
+                        </ul>
+
+                        <!------>
+
+
+
+                    </div>
+            </div
+        </div>
+      

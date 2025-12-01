@@ -1,0 +1,380 @@
+﻿@model Mitr.Models.EmployeeExit.ResignationRequest
+@{
+	string MenuID = ViewBag.MenuID.ToString();
+
+
+}
+
+
+
+@using (Ajax.BeginForm("ResignationRequest", "ExitEmployee", new { src = ViewBag.src }, new AjaxOptions { HttpMethod = "POST", OnSuccess = "OnSuccess", OnBegin = "ShowLoadingDialog()" }, new { @id = "AddResignationRequest" }))
+{
+	<div class="inner-main defult-height p-3 pb-0">
+
+		@Html.HiddenFor(model => model.iNoticePeriodServe)
+		<input type="hidden" id="hdfEMPID" value="@ViewBag.EMPID" />
+		<div class="row">
+			<div class="col-sm-4 align-self-center"><h1 class="heading-one mb-3">Resignation Request </h1></div>
+			<div class="col-sm-8 text-right">
+				<a class="btn mtr-g-grn btn-l ripplelink " href="" data-toggle="modal" data-target="#viewhistory" onclick="ListHeaderAdd(0)"><i class="fas fa-eye"></i>View History</a>
+			</div>
+			<div class="col-xl-6 col-lg-8">
+				<div class="row">
+					<div class="col-sm-6 wh-575 form-group">
+						<label>Request No</label>
+						<p>@Model.sRequestno</p>
+					</div>
+					<div class="col-sm-3 wh-575 form-group">
+						<label>Request Date</label>
+						<p>@Model.sRequestdate</p>
+					</div>
+					<div class="col-sm-3 wh-575 form-group">
+						<label>Status</label>
+						@if (Model.lId == 0)
+						{
+							<p>Pending</p>
+						}
+						else
+						{
+							<p>Pending at HR</p>
+						}
+
+					</div>
+					<input type="hidden" name="sRequestdate" id="sRequestdate" value="@( Convert.ToDateTime(Model.sRequestdate).ToString("yyyy-MM-dd"))" />
+
+					<input type="hidden" id="hfRelievingdate" value="@Model.sReleivingdate" />
+					<div class="col-sm-6 form-group">
+						<label>Reason for Resignation <sup>*</sup></label>
+
+						@Html.DropDownListFor(model => model.lReasonid, new SelectList(ViewBag.reason, "Id", "field_name", Model.lReasonid), "select", new { @class = "form-control applyselect " })
+						@Html.ValidationMessageFor(model => model.lReasonid, "", new { @class = "text-danger" })
+					</div>
+					<div id="other" style="display: none;" class="col-md-6 col-sm-4 form-group">
+						<label>Describe Your Reason <sup>*</sup> </label>
+
+						<textarea class="form-control" placeholder="Enter" spellcheck="false"></textarea>
+					</div>
+
+					<div class="col-sm-6 form-group">
+						<label>Comment</label>
+						@Html.TextBoxFor(model => model.sComment, new { @class = "form-control " })
+					</div>
+					<div class="col-sm-12 form-group"> <strong>Notice Period as per Policy: <span class="red-clr">@Model.iNoticePeriod Days</span></strong> </div>
+
+
+					<div class="col-sm-12 form-group">
+						<ul class="list-unstyled inline-li m-0">
+							<li>
+								<label class="m-0">Do you want to serve full notice period?</label>
+							</li>
+							<li>
+								<div class="radio-button">
+									<input id="rdonoticeperiodY" name="radio1" type="radio" @(Model.iNoticePeriodServe == 1 ? "checked" : "") onclick="Fnnoticeperiod()" />
+									<label for="rdonoticeperiodY" class="radio-label">Yes</label>
+									@*<input id="yes1" name="radio" type="radio" onclick="show1();">*@
+									@*<label for="yes1" class="radio-label mb-0">Yes</label>*@
+								</div>
+							</li>
+							<li>
+								<div class="radio-button">
+									<input id="rdonoticeperiodN" name="radio1" type="radio" @(Model.iNoticePeriodServe == 0 ? "checked" : "") onclick="Fnnoticeperiod()" />
+									<label for="rdonoticeperiodN" class="radio-label">No</label>
+									@*<input id="no1" name="radio" type="radio" onclick="show2();">
+										<label for="no1" class="radio-label mb-0">No</label>*@
+								</div>
+							</li>
+						</ul>
+					</div>
+					@if (Model.lId > 0)
+					{
+						if (Model.iNoticePeriodServe == 1)
+						{
+							<div class="col-sm-6 form-group" id="divasperpolcy">
+								<label>Relieving date as per policy</label>
+								<p>@Model.sReleivingdate</p>
+								@Html.HiddenFor(Modal => Modal.sReleivingdate)
+							</div>
+						}
+						else
+						{
+							Model.sNReleivingdate = Convert.ToDateTime(Model.sReleivingdate).ToString("yyyy-MM-dd");
+							<div class="col-sm-12" id="DivReasonNoticePeriod" class="hide">
+								<div class="row">
+									<div class="col-sm-6 wh-575 form-group">
+										<label>Relieving Date  <sup>*</sup></label>
+										@Html.TextBoxFor(model => model.sNReleivingdate, new { @class = "form-control", @type = "date", @onchange = "FnReleivingDay();" })
+										@Html.ValidationMessageFor(model => model.sNReleivingdate, "", new { @class = "text-danger" })
+									</div>
+									<div class="col-sm-6 wh-575 form-group">
+										<label>Short Notice Period</label>
+										<div class="input-group w-100 ">
+
+											<input type="number" class="form-control" id="iRelievingDay" value="@Model.iRelievingDay" placeholder="0" aria-label="Username" disabled="" aria-describedby="basic-addon1">
+											<div class="input-group-prepend"> <span class="input-group-text" id="basic-addon1">Days</span> </div>
+										</div>
+									</div>
+									<div class="col-sm-12 form-group">
+										<label>Reason for not serving full notice period <sup>*</sup></label>
+										@Html.TextBoxFor(model => model.sReasonNoticePeriod, new { @class = "form-control h-100" })
+									</div>
+								</div>
+							</div>
+						}
+					}
+					else
+					{
+						<div class="col-sm-6 form-group" id="divasperpolcy">
+							<label>Relieving date as per policy</label>
+							<p>@Model.sReleivingdate</p>
+							@Html.HiddenFor(Modal => Modal.sReleivingdate)
+						</div>
+
+						<div class="col-sm-12" style="display: none;" id="DivReasonNoticePeriod" class="hide">
+							<div class="row">
+								<div class="col-sm-6 wh-575 form-group">
+									<label>Relieving Date  <sup>*</sup></label>
+									@Html.TextBoxFor(model => model.sNReleivingdate, new { @class = "form-control", @type = "date", @onchange = "FnReleivingDay();" })
+									@Html.ValidationMessageFor(model => model.sNReleivingdate, "", new { @class = "text-danger" })
+								</div>
+								<div class="col-sm-6 wh-575 form-group">
+									<label>Short Notice Period</label>
+									<div class="input-group w-100 ">
+
+										<input type="number" class="form-control" id="iRelievingDay" value="" placeholder="0" aria-label="Username" disabled="" aria-describedby="basic-addon1">
+										<div class="input-group-prepend"> <span class="input-group-text" id="basic-addon1">Days</span> </div>
+									</div>
+								</div>
+								<div class="col-sm-12 form-group">
+									<label>Reason for not serving full notice period <sup>*</sup></label>
+									@Html.TextBoxFor(model => model.sReasonNoticePeriod, new { @class = "form-control h-100" })
+								</div>
+							</div>
+						</div>
+
+
+					}
+
+                <div class="col-sm-12 text-left">
+                    @if (Model.lId == 0)
+                    {
+                        <button type="button" name="Command" value="Add" class="btn mtr-o-grn btn-l ripplelink " data-toggle="modal" data-target="#dc"><i class="fas fa-share"></i>Forward to HR<span class="ink animate" style="height: 150px; width: 150px; left: 7px; top: -58px;"></span></button>
+
+                        <button type="submit" name="Command" id="btnsubmit" value="Save" class="btn mtr-o-grn btn-l ripplelink " style="display:none"> <i class="fas fa-share"></i>Forward to HR </button>
+                        //  <button type="submit" name="Command" value="Save" class="btn mtr-o-grn btn-l ripplelink "> <i class="fas fa-share"></i>Forward to HR </button>
+                    }
+
+
+
+                    @Html.CreateAnchor(MenuID, "/Account/Dashboard", "Close", "btn cnl-btn btn-l ripplelink", "Close", "fas fa-arrow-left", "")
+
+
+                </div>
+				</div>
+			</div>
+
+		</div>
+	</div>
+}
+<div class="modal fade" id="dc">
+
+    <div class="modal-dialog modal-dialog-centered modal-md ">
+
+        <div class="modal-content">
+
+            <!-- Modal Header -->
+
+            <div class="swal-icon swal-icon--warning">
+
+                <span class="swal-icon--warning__body">
+
+                    <span class="swal-icon--warning__dot"></span>
+
+                </span>
+
+            </div>
+
+
+
+            <div class="modal-body ">
+
+                <div class="swal-title text-center">The information will be shared with your supervisor. Do you want to proceed ?</div>
+
+            </div>
+
+            <div class="modal-footer">
+
+                <button type="button" data-dismiss="modal" data-toggle="modal" class="btn cnl-btn">No</button>
+
+                <a data-toggle="modal" data-target="#int1" class="btn mtr-o-grn" onclick="Submitdata()">Yes</a>
+
+
+
+            </div>
+
+
+
+        </div>
+
+
+
+
+
+
+
+    </div>
+
+</div>
+<div class="modal fade" id="viewhistory">
+	<div class="modal-dialog modal-dialog-centered modal-lg">
+		<div class="modal-content">
+			<!-- Modal Header -->
+			<div class="modal-header">
+				<h4 class="modal-title"> <i class="fas fa-eye" aria-hidden="true"></i> <span id="spnHead">View History</span></h4>
+				<button type="button" class="close" data-dismiss="modal">&times;</button>
+			</div>
+			<div class="modal-body ">
+				<div id="TagetDiv"></div>
+			</div>
+		</div>
+	</div>
+</div>
+
+@section scripts    {
+
+
+	@System.Web.Optimization.Scripts.Render("~/bundle/dataTablesjs")
+	@System.Web.Optimization.Scripts.Render("~/bundle/unobtrusivejs")
+	@Html.IncludeVersionedJs(Url.Content("~/assets/design/Scripts/AddInit.js"))
+	@Html.IncludeVersionedJs(Url.Content("~/assets/design/Scripts/ToolTip.js"))
+	<script src="~/assets/design/scripts/DevScriptExit/ResignationRequest.js"></script>
+    <script>
+  function show1(){
+  document.getElementById('div1').style.display ='none';
+  document.getElementById('div2').style.display ='block';
+}
+function show2(){
+  document.getElementById('div1').style.display = 'block';
+  document.getElementById('div2').style.display ='none';
+}
+
+
+		    function ListHeaderAdd(CMSID) {
+        if (CMSID == undefined)
+        {
+            CMSID = 0;
+        }
+			$.ajax({
+                url: "/ExitEmployee/_ResignationHistory",
+				type: "Get",
+                data: { src: EncryptQueryStringJSON(@ViewBag.MenuID+"*" + "/ExitEmployee/_ResignationHistory" + "*" + CMSID) },
+                success: function (data)
+                {
+		
+					$("#TagetDiv").empty();
+                    $("#TagetDiv").html(data);
+                    $("#ViewModal").modal("show");
+                     var form = $("form")
+                .removeData("validator")
+                .removeData("unobtrusiveValidation");
+                    $.validator.unobtrusive.parse(form);
+		            BindScreen();
+
+
+				},
+				error: function (er) {
+					alert(er);
+
+				}
+			});
+            }
+
+
+	  function FnReleivingDay() {
+
+            var RequestDate, Relievingdate;
+            RequestDate = new Date($('#sRequestdate').val());
+            Relievingdate = new Date(($('#sNReleivingdate').val()));
+            var dt = $('#sReleivingdate').val();
+            var Difference_In_Days = Math.round((Relievingdate - RequestDate) / (1000 * 3600 * 24), 0) + 1;
+
+                    if (Difference_In_Days < 0) {
+                        swal('', 'Enter Correct Relieving Date');
+                        $('#sReleivingdate').val('');
+                        //Relievingdate = new Date(Model.sReleivingdate) + 1);
+                        //alert(Relievingdate);
+                    }
+                    else {
+                        $('#iRelievingDay').val(Difference_In_Days);
+                    }
+
+
+        }
+     function Fnnoticeperiod() {
+            // var  RequestDate = new Date($('#sRequestdate').val());
+
+            var checkAll = $("#rdonoticeperiodY").is(":checked");
+            if (checkAll) {
+                $('#DivReasonNoticePeriod').hide();
+              $('#div2').show();
+        $('#divasperpolcy').show();
+                $('#sReleivingdate').attr("disabled", "disabled");
+                $('#iNoticePeriodServe').val('1');
+
+
+
+            }
+            else {
+                $('#DivReasonNoticePeriod').show();
+               $('#div2').hide();
+
+        $('#divasperpolcy').hide();
+                $('#iNoticePeriodServe').val('0');
+
+
+            }
+
+            FnReleivingDay();
+            // $('.sReleivingdate').attr('min','2020-03-05');
+        }
+            function OnSuccess(obj) {
+            if (obj.Status) {
+                SuccessToaster(obj.SuccessMessage);
+                window.location.reload();
+            }
+            else {
+                CloseLoadingDialog();
+                FailToaster(obj.SuccessMessage);
+
+            }
+		}
+
+
+		     function ViewResignation(id) {
+ debugger;
+ var mId = "";
+ var url = "";
+ ShowLoadingDialog();
+
+ // var menuId = "@ViewBag.MenuID";
+ mId = "@clsApplicationSetting.EncryptQueryString(ViewBag.MenuID.ToString() + "*/ExitEmployee/EmployeeApproveAction")";
+                 url = "/ExitEmployee/EmployeeApproveAction?src=" + mId + "&id=" + id ;
+ window.location.href = url;
+
+
+
+
+
+ setTimeout(function () {
+ CloseLoadingDialog();
+ }, 4000);
+		}
+
+        function Submitdata() {
+
+            $("#btnsubmit").click();
+
+        }
+    </script>
+
+
+}

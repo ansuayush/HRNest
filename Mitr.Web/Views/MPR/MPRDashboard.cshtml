@@ -1,0 +1,263 @@
+﻿@model MPRDashboard
+
+@{
+	string MenuID = ViewBag.MenuID.ToString();
+}
+	<!-- Start -->
+	<div class="inner-main mb-5 pb-0">
+		<h1 class="heading-one ">MPR Dashboard</h1>
+
+		@using (Ajax.BeginForm("_MPRDashboard", "MPR",
+				new { src = clsApplicationSetting.EncryptQueryString(ViewBag.MenuID.ToString() + "*/MPR/_MPRDashboard") },
+				  new AjaxOptions { HttpMethod = "POST", OnSuccess = "BindTarget", OnBegin = "ShowLoadingDialog()" },
+			new { @id = "MPRDashboardFrom" })
+			)
+		{
+			<div class="row">
+
+				<div class="col-lg-2 col-md-2 col-sm-2  form-group">
+					<label class="lbl-abs">Select Month</label>
+					@Html.TextBoxFor(model => model.Month, new { @class = "form-control actdate ddapplyaction", @type = "month" })
+					@Html.ValidationMessageFor(model => model.Month, "", new { @class = "text-danger" })
+				</div>
+
+				<div class="col-lg-2 col-md-2 col-sm-2 slt-dgn  form-group">
+					<label class="lbl-abs">Project</label>
+					<select class="form-control applyselect ddapplyaction" name="@Html.NameFor(model => model.ProjectID)" id="@Html.IdFor(model => model.ProjectID)">
+						<option value="0">All</option>
+						@foreach (var item in Model.ProjectList)
+						{
+							<option @(item.ProjectID == Model.ProjectID ? "selected" : "") value="@item.ProjectID">@item.ProjectName</option>
+						}
+					</select>
+					@Html.ValidationMessageFor(model => model.ProjectID, "", new { @class = "text-danger" })
+				</div>
+
+				<div class="col-lg-2 col-md-2 col-sm-2 slt-dgn form-group">
+					<label class="lbl-abs">State</label>
+					<select class="form-control applyselect ddapplyaction" name="@Html.NameFor(model => model.StateID)" id="@Html.IdFor(model => model.StateID)">
+						<option value="0">All</option>
+						@foreach (var item in Model.StateList)
+						{
+							<option @(item.StateID == Model.StateID ? "selected" : "") value="@item.StateID">@item.StateName</option>
+						}
+					</select>
+					@Html.ValidationMessageFor(model => model.StateID, "", new { @class = "text-danger" })
+				</div>
+                <div class="col-lg-6 col-md-6 col-sm-2 text-right tev  pt-2  form-group">
+
+
+
+
+                    <a id="btnNotify" class="btn mtr-o-grn btn-l ripplelink pull-right">
+                        <i class="fas fa-bell"></i> Notify
+                    </a>
+
+                    @Html.CreateAnchor(MenuID, "/MPR/MPRNewReports", "Generate Report", "btn blk-gdn-btn btn-l ripplelink", "Go for reports", "fas fa-file-alt", "")
+                    @Html.CreateAnchor(MenuID, "/MPR/MPRReportExcel", "MPR Report", "btn blk-gdn-btn btn-l ripplelink", "Go for reports", "fas fa-file-alt", "")
+
+                </div>
+				<div style="display:none">
+					<button type="submit" class="btn mtr-g-grn btn-l ripplelink" id="btnSearch" name="Command" value="Search"><i class="fas fa-search"></i>Search</button>
+				</div>
+			</div>
+		}
+
+		<div id="TargetDiv">@Html.Partial("_Loading")</div>
+	</div>
+
+	<div class="modal fade pop-dgn" id="ViewModal">
+		<div class="modal-dialog modal-md">
+			<div class="modal-content">
+
+				<div class="modal-header blk-gdn-btn">
+					<h4 class="modal-title"><i class="fas fa-print"></i><span class="spnhead"></span> </h4>
+					<div class="close" data-dismiss="modal">&times;</div>
+				</div>
+				<div class="modal-body p-2">
+					<div id="SMPRStatusDiv"></div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="modal fade pop-dgn" id="ModalMonthlyCloser">
+		<div class="modal-dialog modal-md">
+			<div class="modal-content ">
+				<div class="modal-header">
+					<h4 class="modal-title">Close Month </h4>
+					<button type="button" class="close" data-dismiss="modal">×</button>
+				</div>
+				<div class="modal-body p-3">
+					@{SMPR.SMPRLock LockModal = new SMPR.SMPRLock(); }
+					@Html.Partial("_SetLockUnlockSMPR", LockModal)
+				</div>
+			</div>
+		</div>
+	</div>
+
+
+	@section scripts    {
+		@System.Web.Optimization.Scripts.Render("~/bundle/unobtrusivejs")
+		@Html.IncludeVersionedJs(Url.Content("~/assets/design/Scripts/ToolTip.js"))
+		@Html.IncludeVersionedJs(Url.Content("~/assets/design/scripts/AddInit.js"))
+		@Html.IncludeVersionedJs(Url.Content("~/assets/design/Scripts/SyncDialogUtility.js"))
+<script>
+		$(document).ready(function () {
+			$("#btnSearch").click();
+			GetSMPRList(1);
+		});
+
+		function openSolution(Text){
+		
+		GetSMPRList(Text);
+		}
+
+		$('.ddapplyaction').bind("change", function () {
+			$("#btnSearch").click();
+		});
+
+		function SMPRLockSuccess(obj) {
+
+			CloseLoadingDialog();
+			if (obj.Status) {
+				SuccessToaster(obj.SuccessMessage);
+				$("#btnSearch").click();
+				$("#ModalMonthlyCloser").modal('hide');
+				$("#LockRemarks").val('');
+
+			}
+			else {
+				FailToaster(obj.SuccessMessage);
+				$("#ModalMonthlyCloser").modal('hide');
+			}
+		}
+    
+			function GetSMPRList(Text) {
+		
+			ShowLoadingDialog();
+			var Month = $('#Month').val();
+		    var StateID = parseInt($("#StateID").val());
+		    var ProjectID = parseInt($("#ProjectID").val());
+		   var newText="";
+		if(Text=="1"){
+		newText="Executor";
+		}
+		else if (Text=="2"){
+		newText="SectionApproval";
+		}
+		else if (Text=="3"){
+		newText="Level1";
+		}
+		else if (Text=="4"){
+		newText="Level2";
+		}
+		else if (Text=="5"){
+		newText="Completed";
+		}
+		
+			$.ajax({
+				url: "/MPR/_MPRDashboardListData",
+				type: "post",
+				data: { src: EncryptQueryStringJSON(@ViewBag.MenuID+"*" + "/MPR/_MPRDashboardListData" + "*" + Month + "*" + StateID+ "*" + ProjectID+ "*" + newText) },
+                success: function (data)
+				{
+					$("#SMPRListDiv").empty();
+					$("#SMPRListDiv").html(data);
+					CloseLoadingDialog();
+
+				},
+				error: function (er) {
+					alert(er);
+					CloseLoadingDialog();
+
+				}
+			});
+		}
+		function BindTarget(args) {
+			CloseLoadingDialog();
+			$("#TargetDiv").empty();
+			$("#TargetDiv").html(args);
+
+			
+
+			$('.AMonthlyCloser').on('click', function (e) {
+				e.preventDefault();
+				SendToMonthlyCloser();
+			});
+		}
+
+		function SendToMonthlyCloser()
+		{
+			var hdnTSMPR = $("#hdnTSMPR").val();
+			var content = "Do you want to proceed.";
+			if (hdnTSMPR > 0) {
+				content = hdnTSMPR + " MPRs are incomplete. Do you want to proceed.";
+			}
+			SyncConfirmBox('Warning', content, funOk, funCan)
+			function funOk() {
+				SyncCloseDialog();
+				var dt = $("#Month").val();
+				$("#dtdate").val(dt);
+				$("#Lock").val("1");
+				$("#ModalMonthlyCloser").modal('show');
+			}
+			function funCan() {
+				SyncCloseDialog();
+			}
+		}
+
+		function GetSMPRStatus(obj) {
+			ShowLoadingDialog();
+			var TT = $(obj).attr("tt");
+			var SS = $(obj).closest("tr").find("input:hidden[name=SMPRID]").val();
+			var ProName = $(obj).closest("tr").find("input:hidden[name=ProName]").val();
+			$(".spnhead").html(ProName);
+			$.ajax({
+				url: "/MPR/_SMPRStatus",
+				type: "Get",
+				data: { src: EncryptQueryStringJSON(@ViewBag.MenuID+"*" + "/MPR/_SMPRStatus" + "*" + SS + "*" + TT) },
+                success: function (data)
+				{
+					$("#SMPRStatusDiv").empty();
+					$("#SMPRStatusDiv").html(data);
+					$("#ViewModal").modal('show');
+					CloseLoadingDialog();
+
+				},
+				error: function (er) {
+					alert(er);
+					CloseLoadingDialog();
+
+				}
+			});
+		}
+
+		$("#btnNotify").on("click", function (e) {
+			ShowLoadingDialog();
+			var Month = $("#Month").val();
+			$.ajax({
+				url: "/CommonAjax/NotifyMPR",
+				type: "Get",
+				data: { Month: Month  },
+                success: function (data)
+				{
+					CloseLoadingDialog();
+					if (data.Status) {
+						SuccessToaster(data.SuccessMessage);
+					} else {
+						FailToaster(data.SuccessMessage);
+
+					}
+
+				},
+				error: function (er) {
+					CloseLoadingDialog();
+				}
+			});
+		});
+
+
+
+</script>
+	}

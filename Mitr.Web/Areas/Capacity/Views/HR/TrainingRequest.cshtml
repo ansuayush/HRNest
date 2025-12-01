@@ -1,0 +1,272 @@
+﻿@{
+	ViewBag.Title = "TrainingRequest";
+	Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<script>
+	function ViewApplication(ReqID, Status, Source) {
+		if (ReqID != "" || Status != "") {
+			//var str = obj.split('-')
+			var ReqID = ReqID;
+			var Status = Status;
+			var Source = Source;
+			if (Source == "HR") {
+				if (Status == "Draft") {
+					window.location.href = virtualPath + 'HR/DraftTrainingRequest?id=' + ReqID;
+				}
+				if (Status == "Pending") {
+					window.location.href = virtualPath + 'HR/PendingHRViewTrainingRequest?id=' + ReqID;
+				}
+			}
+			if (Source == "Self") {
+				window.location.href = virtualPath + 'HR/PendingUserViewTrainingRequest?id=' + ReqID;
+			}
+			if (Source == "PMS") {
+				alert("PMS");
+			}
+			//if (Status == "Draft") {
+			//	window.location.href = virtualPath + 'HR/ViewTrainingRequest?id=' + ReqID;
+			//}
+			//else if (Status == "Pending") {
+			//	window.location.href = virtualPath + 'HR/PendingUserViewTrainingRequest?id=' + ReqID;
+			//}
+		}
+		else {
+			console.log(obj);
+		}
+	}
+</script>
+
+<input type="hidden" id="hdnLoggedInUser" />
+<!-- Start -->
+<div class="inner-main  defult-height">
+
+	<div class="row">
+		<div class="col-sm-4 align-self-center"><h1 class="heading-one mb-3">Training Request</h1></div>
+		<div class="col-sm-8 text-right">
+			<a href="AddTrainingRequest?id=1" class="btn mtr-g-grn "><i class="fas fa-plus"></i>Request for Training</a>
+			<a href="#" onclick="ClubbedTrainingRequest();" class="btn mtr-g-grn "><i class="fas fa-plus"></i>Add </a>
+		</div>
+	</div>
+
+	<!-- tab--->
+	<div class="tab-main mb-3">
+		<ul id="tabs" class="nav nav-tabs " role="tablist">
+			<li class="nav-item"> <a id="tab-A" href="#pending" onclick="BindTrainingRequestPending();" class="nav-link ripplelink active" data-toggle="tab" role="tab" aria-selected="false"><i class="far fa-clock"></i>Pending </a> </li>
+			<li class="nav-item"> <a id="tab-B" href="#process" onclick="BindTrainingRequestProcess();" class="nav-link ripplelink" data-toggle="tab" role="tab" aria-selected="true"><i class="fas fa-cogs"></i>Process<span class="ink animate" style="height: 103px; width: 103px; left: 10.5px; top: -37.5px;"></span></a> </li>
+			<li class="nav-item"> <a id="tab-B" href="#Completed" onclick="BindTrainingRequestCompleted();" class="nav-link ripplelink" data-toggle="tab" role="tab"><i class="fas fa-check"></i>Completed</a> </li>
+		</ul>
+		<div id="content" class="tab-content shadow-box p-0" role="tablist">
+			<div id="pending" class="card tab-pane fade active show" role="tabpanel" aria-labelledby="tab-A">
+				<div class="card-header" role="tab" id="heading-A">
+					<h5 class="mb-0">
+						<!-- Note: `data-parent` removed from here -->
+						<a data-toggle="collapse" href="#collapse-A" aria-expanded="true" aria-controls="collapse-A">Committee Assign</a>
+					</h5>
+				</div>
+
+				<!-- Note: New place of `data-parent` -->
+				<div id="collapse-A" class="card tab-pane fade active show" data-parent="#content" role="tabpanel" aria-labelledby="heading-A">
+					<div class="card-body p-0">
+						<!-- Start -->
+						<div class="card-body p-0 pt-2">
+							<div class="table-responsive">
+								<table id="tbltrainingRequestPending" class="table mt-0">
+									<thead>
+										<tr>
+											<th class="w-33">S.No </th>
+											<th width='100'>Req. No</th>
+											<th width='100'>Req. Date </th>
+											<th width='150'>Requested By</th>
+											<th width='100'>Source</th>
+											<th width='300'>Type of Training</th>
+											<th width='300'>Name of Training</th>
+											<th width='60'>Status</th>
+											<th width='60'>Action</th>
+											<th class="w-33"><input type='checkbox'	id='SelectAll' onc class='selectedId sltchk' name='select' /><label for='SelectAll' class='m-0'></label></th>
+											<th width='60' style='display:none'>ReqID</th>
+											<th width='60' style='display:none'>TypeOfTrainingID</th>
+											<th width='60' style='display:none'>TrainingID</th>
+										</tr>
+									</thead>
+								</table>
+							</div>
+							<!-- <div class="col-sm-12  text-right">
+							  <a href="add-training-request.html" class="btn mtr-g-grn hide" ><i class="fa fa-plus" aria-hidden="true"></i>Add</a>
+							</div> -->
+						</div>
+						<!-- End -->
+					</div>
+				</div>
+			</div>
+			<div id="process" class="card tab-pane fade " role="tabpanel" aria-labelledby="tab-B">
+				<div class="card-header" role="tab" id="heading-B">
+					<h5 class="mb-0"> <a class="collapsed" data-toggle="collapse" href="#collapse-B" aria-expanded="false" aria-controls="collapse-B">Stage </a> </h5>
+				</div>
+				<div id="collapse-B" class="collapse" data-parent="#content" role="tabpanel" aria-labelledby="heading-B">
+					<!-- Start -->
+					<div class="card-body p-0 pt-2">
+						<div class="table-responsive">
+							<table id="tbltrainingRequestProcesses" class="table mt-0">
+								<thead>
+									<tr>
+										<th width='33'>S.No </th>
+										<th width='70'>Req. No</th>
+										<th width='100'>Req. Date </th>
+										<th>Requested By</th>
+										<th width='100'>Source</th>
+										<th>Type of Training</th>
+										<th>Name of Training</th>
+										<th width='150'>Status</th>
+										<th width='80'>Action</th>
+										<th width='20' style='display:none'></th>
+									</tr>
+								</thead>
+								
+							</table>
+						</div>
+						<!-- End -->
+					</div>
+				</div>
+			</div>
+			<div id="Completed" class="card tab-pane fade" role="tabpanel" aria-labelledby="tab-B">
+				<div class="card-header" role="tab" id="heading-B">
+					<h5 class="mb-0"> <a class="collapsed" data-toggle="collapse" href="#collapse-B" aria-expanded="false" aria-controls="collapse-B">Stage </a> </h5>
+				</div>
+				<div id="collapse-B" class="collapse" data-parent="#content" role="tabpanel" aria-labelledby="heading-B">
+					<!-- Start -->
+					<div class="card-body p-0 pt-2">
+						<div class="table-responsive">
+							<table id="tbltrainingRequestCompleted" class="table mt-0">
+								<thead>
+									<tr>
+										<th width='30'>S.No </th>
+										<th width='100'>Req. No</th>
+										<th width='100'>Req. Date </th>
+										<th width='150'>Requested By</th>
+										<th width='200'>Source</th>
+										<th width='200'>Type of Training</th>
+										<th width='200'>Name of Training</th>
+										<th width='150'>Status</th>
+										<th width='60'>Action</th>
+										<th width='20' style='display:none'></th>
+									</tr>
+								</thead>
+								
+							</table>
+						</div>
+						<!-- End -->
+					</div>
+
+				</div>
+			</div>
+		</div>
+
+	</div>
+	
+	<!--- close tab --->
+
+</div>
+@section scripts    {
+	@System.Web.Optimization.Scripts.Render("~/bundle/unobtrusivejs")
+	@System.Web.Optimization.Scripts.Render("~/bundle/dataTablesjs")
+	<script src="~/assets/design/Scripts/AddInit.js?v=@clsApplicationSetting.GetWebConfigValue("Version")"></script>
+
+	<script src="~/Areas/Capacity/DevScript/HRTrainingRequest.js"></script>
+	<script>
+		 var IsEDUser = '@ViewBag.IsED';
+       var loggedinUserid = '@ViewBag.UserId';
+       var loggedinUserid = '@ViewBag.UserId';
+		var loggedinUserName = '@ViewBag.UserName';
+		var UserGrade = '@ViewBag.Grade';
+        var IsPM = '@ViewBag.IsPM';
+		var ReqId = "";
+	</script>
+}
+<!----- add slot ---->
+<!-- TASK Modal -->
+<div class="modal fade pop-dgn" id="ViewAppModal">
+	<div class="modal-dialog modal-lg">
+		<div class="modal-content">
+
+			<div class="modal-header blk-gdn-btn">
+				<h4 class="modal-title">Training Request</h4>
+				<div class="close" data-dismiss="modal">&times;</div>
+			</div>
+			<div class="modal-body">
+				<div id="DivViewApp"></div>
+			</div>
+		</div>
+	</div>
+</div>
+<div class="modal fade pop-dgn" id="tc">
+	<div class="modal-dialog mdl-lg">
+		<div class="modal-content">
+
+			<!-- Modal Header -->
+			<div class="modal-header blk-gdn-btn">
+				<h4 class="modal-title">Add Training Calendar </h4>
+				<div class="close" data-dismiss="modal">&times;</div>
+			</div>
+
+			<!-- Modal body -->
+			<div class="modal-body p-2">
+				<div class="row">
+					<div class="col-md-4 col-sm-4 form-group">
+						<label>Training Type</label>
+						<select class="form-control dpselect">
+							<option>Select </option>
+							<option>Training Type 1</option>
+							<option>Training Type 2</option>
+							<option>Training Type 3</option>
+							<option>Training Type 4</option>
+						</select>
+					</div>
+					<div class="col-md-4 col-sm-4 form-group">
+						<label>Training Name  </label>
+						<input type="text" class="form-control" placeholder="Enter Title" value="Enter Name">
+					</div>
+					<div class="col-md-4 col-sm-4 form-group">
+						<label>Month</label>
+						<select class="form-control dpselect">
+							<option>Select </option>
+							<option>January</option>
+							<option>February  </option>
+							<option>March</option>
+							<option>April</option>
+						</select>
+					</div>
+					<div class="col-md-4 col-sm-4 form-group">
+						<label>Project  </label>
+						<select class="form-control dpselect">
+							<option>Select </option>
+							<option>Project 1</option>
+							<option>Project 2 </option>
+							<option>Project 3</option>
+							<option>Project 4</option>
+						</select>
+					</div>
+					<div class="col-md-4 col-sm-4 form-group">
+						<label>Project Line </label>
+						<input type="text" class="form-control" placeholder="Enter Title" value="Enter ">
+					</div>
+					<div class="col-md-4 col-sm-4 form-group">
+						<label>Budget</label>
+						<input type="text" class="form-control" placeholder="Enter Title" value="Enter ">
+					</div>
+
+					<div class="col-sm-12  text-center mt-2">
+						<button type="button" class="btn cnl-btn ripplelink  pull-right" data-dismiss="modal"><i class="fas fa-times"></i> Close</button>
+						<button type="button" class="btn mtr-o-grn"><i class="fa fa-paper-plane" aria-hidden="true"></i> Submit</button>
+					</div>
+
+				</div>
+
+
+
+			</div>
+		</div>
+	</div>
+</div>
+
+
+

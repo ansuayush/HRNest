@@ -1,0 +1,70 @@
+﻿@model Mitr.Models.FNFSettlement
+
+@{
+    ViewBag.Title = "DORReport";
+}
+@Html.Partial("HeaderMsg_Partial")
+<div class="inner-main mb-5">
+
+<h1 class="heading-one">F&F Settlement</h1>
+
+
+    @using (Ajax.BeginForm("_FNFSettlement", "Activity",
+           new { src = clsApplicationSetting.EncryptQueryString(ViewBag.MenuID.ToString() + "*/Activity/_FNFSettlement") },
+           new AjaxOptions { HttpMethod = "POST", OnSuccess = "ActionOnSuccess", OnFailure="ActionOnSuccess" },
+       new { @id = "_FNFSettlementFrom" })
+       )
+    {
+
+
+        @Html.AntiForgeryToken()
+        <div class="row">
+            <div class="col-sm-3 form-group">
+                <label>	Emp Name </label>
+                @Html.DropDownListFor(n => n.EMPID, new SelectList(Model.EmployeeList, "EMPID", "emp_name"), "Select Employee",
+                 new { @class = "form-control  applyselect" })
+                @Html.ValidationMessageFor(n => n.EMPID, "", new { @class = "text-danger" })
+
+            </div>
+
+            <div class="col-sm-3 form-group pt-13 ">
+
+                <button type="submit" class="btn blk-gdn-btn ripplelink"><i class="fas fa-eye"></i>View</button>
+                <button type="button" onclick="ShowLoadingDialog(); window.location = '@Url.Action("FNFSettlement", new { src = ViewBag.src })" class="btn cnl-btn btn-l ripplelink"><i class="fas fa-times"></i> Cancel</button>
+            </div>
+        </div>
+
+
+    }
+    <div id="TargetDiv"></div>
+
+</div>
+
+@section scripts    {
+    @System.Web.Optimization.Scripts.Render("~/bundle/dataTablesjs")
+    <script src="~/assets/design/Scripts/AddInit.js?v=@clsApplicationSetting.GetWebConfigValue("Version")"></script>
+    @System.Web.Optimization.Scripts.Render("~/bundle/unobtrusivejs");
+
+    <script>
+        $(document).ready(function () {
+           
+            $("#_FNFSettlementFrom").submit();
+        });
+
+        $("select").bind("change", function () {
+            if ($(this).val() == "") {
+                $("#TargetDiv").empty();
+            } else {
+                ShowLoadingDialog();
+                $("#_FNFSettlementFrom").submit();
+            }
+        });
+
+        function ActionOnSuccess(obj) {
+           
+            $("#TargetDiv").empty();
+            $("#TargetDiv").html(obj);
+             CloseLoadingDialog()
+        }
+    </script>
+}

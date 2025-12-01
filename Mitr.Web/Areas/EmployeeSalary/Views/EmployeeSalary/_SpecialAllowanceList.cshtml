@@ -1,0 +1,99 @@
+﻿@model IList<Mitr.Model.EmployeeSalary.SpecialAllowance>
+
+<div class="inner-main mb-5 pb-0">
+    <div class="row">
+
+        <div class="col-sm-12 form-group text-right align-self-center">
+            @if (Model.Count > 0)
+            {
+                if (Model[0].Status == 1)
+                {
+                    <a class="btn mtr-g-grew btn-l ripplelink "><i class="fas fa-calculator"></i>Special Allowance Calculate<span class="ink animate" style="height: 200px; width: 200px; left: -19px; top: -83px;"></span></a>
+                }
+                else
+                {
+                    <a onclick="SpecialAllowanceCalculate()" class="btn mtr-g-grn btn-l ripplelink "><i class="fas fa-calculator"></i>Special Allowance Calculate<span class="ink animate" style="height: 200px; width: 200px; left: -19px; top: -83px;"></span></a>
+                }
+            }
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12 col-sm-12 col-xs-12">
+            <!-- Note: New place of `data-parent` -->
+            <div id="collapse-A" class="collapse show" data-parent="#content" role="tabpanel" aria-labelledby="heading-A">
+                <!--- -->
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table id="datatable-buttons" class="table table-striped table-bordered dt-responsive nowrap tbltick new_width" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
+                            <thead>
+                                <tr>
+                                    <th>S.no.</th>
+                                    <th>Employee Code</th>
+                                    <th>Employee Name</th>
+                                    <th>Category</th>
+                                    <th>Designation</th>
+                                    <th>Location</th>
+                                    <th>Date of Joining</th>
+                                    <th>Due Amount</th>
+                                    <th>Paid</th>
+                                    <th width="80">Previous</th>
+                                    <th width="80">Action</th>
+                                </tr>
+                                <tr class="searchbar">
+                                    <th class="searchhide"></th>
+                                    <th></th>
+                                    <th></th>
+                                    <th> </th>
+                                    <th> </th>
+                                    <th></th>
+                                    <th></th>
+                                    <th> </th>
+                                    <th> </th>
+                                    <th class="searchhide"></th>
+                                    <th class="searchhide"></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @{ int Count = 0;}
+                                @foreach (Mitr.Model.EmployeeSalary.SpecialAllowance item in Model)
+                                {
+                                    Count++;
+                                    <tr class="trrowred">
+                                        <td>@Count</td>
+                                        <td>@item.EmpCode</td>
+                                        <td>@item.EmpName</td>
+                                        <td>@item.Category</td>
+                                        <td>@item.Designation</td>
+                                        <td>@item.Location</td>
+                                        <td>@item.DateofJoining</td>
+                                        <td class="hdfBalanceid_@Count">
+                                            <label>@item.Balance</label>
+                                            <input type="hidden" value="@item.Balance" />
+                                        </td>
+                                        <td>@item.Paid</td>
+                                        <td class="text-center">
+                                            <a onclick="ListView(@item.EmpID,'@item.EmpName','@item.Component');" data-toggle="modal" data-target="#view"><i class="fas fa-rupee-sign"></i>View</a>
+                                        </td>
+                                        <td class="text-center">
+                                     
+                                                    <a onclick="Add(this,@item.EmpID,'@item.EmpName',@Model[0].Status,@Count);" data-toggle="modal" data-target="#add"><i class="fas fa-rupee-sign"></i>Paid</a>
+                                               
+                                        
+                                        
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <!--- -->
+            </div>
+        </div>
+    </div>
+</div>
+
+@System.Web.Optimization.Scripts.Render("~/bundle/dataTablesjs")
+@System.Web.Optimization.Scripts.Render("~/bundle/unobtrusivejs")
+
+

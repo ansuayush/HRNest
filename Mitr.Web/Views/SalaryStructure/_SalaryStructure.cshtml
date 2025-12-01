@@ -1,0 +1,82 @@
+﻿@model Mitr.Models.SalaryStructure.EmployeeSalary.Add
+    
+<table class="table prc-tbl" id="tblSalaryStructure">
+    <thead>
+        <tr>
+            <th colspan="2" class="text-right">
+                <input type="hidden" id="hfStructureid" name="hfStructureid" value="@Model.Structureid" />
+                Amount ( <i class="fas fa-rupee-sign m-0 green-clr"></i> )
+            </th>
+        </tr>
+    </thead>
+    @{ string DoctypeOld = ""; decimal CTC = 0; int NoofHours = 0; decimal HourlyRate = 0;string EmployeeDays="" ;
+        try { EmployeeDays = Model.Days; } catch { }
+        int Days = Convert.ToInt32(EmployeeDays == "6 Days" ? "6" : "5");
+        decimal WorkingHours = Days * 52 * Model.WorkingHours;
+        // Model.HourlyRate =Convert.ToString( Math.Round(Model.AnnualSalary/2080));
+        try
+        {
+            Model.HourlyRate = string.Format("{0:0.00}",Math.Round((Model.AnnualSalary / WorkingHours), 2));
+        }
+        catch { }
+
+    }
+    @for (int i = 0; i < Model.lstSalryStructure.Count; i++)
+    {
+        CTC = CTC + Convert.ToDecimal(Model.lstSalryStructure[i].Amount);
+        if (Model.lstSalryStructure[i].Doctype != DoctypeOld)
+        {
+            <tr>
+                <td colspan="2" class="text-left ">
+                    <strong>@Model.lstSalryStructure[i].Doctype</strong>
+                </td>
+            </tr>
+        }
+        <tr class="prc-tbltr">
+            <td>               
+                @Model.lstSalryStructure[i].Component
+            </td>
+            <td class=" text-right" width="80">
+                @if (Model.lstSalryStructure[i].CalculationType == "Manual")
+                {
+                    @Html.HiddenFor(x => Model.lstSalryStructure[i].Componentid)
+                    @*@Html.HiddenFor(x => Model.lstSalryStructure[i].Amount)
+                    @Model.lstSalryStructure[i].Amount*@
+                    @Html.TextBoxFor(model => Model.lstSalryStructure[i].Amount, new { @class = "form-control Amount text-right",@Type="Number", @OnBlur = "FnCalculateCTC()" })
+                    @Html.ValidationMessageFor(model => Model.lstSalryStructure[i].Amount, "", new { @class = "text-danger" })
+                }
+                else
+                {
+                    <strong>
+                        @Html.HiddenFor(x => Model.lstSalryStructure[i].Componentid)
+                        @Html.HiddenFor(x => Model.lstSalryStructure[i].Amount,new {@Class= "Amount" })                   
+                        @(string.Format("{0:#,0}", Convert.ToDecimal(Model.lstSalryStructure[i].Amount)))
+                    </strong>
+
+
+                }
+            </td>
+        </tr>
+        DoctypeOld = Model.lstSalryStructure[i].Doctype;
+    }   
+
+<tr class="green-clr lgt-mtr-o-bg">
+    <td><strong>Total CTC</strong></td>   
+    <td class="text-right"><strong>@*<i class="fas fa-rupee-sign green-clr"></i>*@<span id="txtCTC"> @(string.Format("{0:#,0}", Convert.ToDecimal(CTC))) </span></strong> </td>
+</tr>
+    <tr class="lgt-mtr-o-bg">
+        <td><strong>No. of Hours</strong> </td>
+        <td class="text-right"><strong>@WorkingHours</strong> </td>
+    </tr>
+    <tr class="lgt-mtr-o-bg">
+        <td><strong>Hourly Rate</strong></td>
+        @{
+            Model.WorkingHours = WorkingHours;
+            Model.CTC = CTC.ToString();
+         }
+        @Html.HiddenFor(x => Model.TotalHours)
+        @Html.HiddenFor(x => Model.CTC,new {@class="CTC" })
+        @Html.HiddenFor(x => Model.HourlyRate)
+        <td class="text-right"><strong> @Model.HourlyRate</strong></td>
+    </tr>
+</table>

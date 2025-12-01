@@ -1,0 +1,446 @@
+﻿@model Mitr.Models.UserGrievance
+
+@{
+	ViewBag.Title = "UserGrievanceEdit";
+	Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@Html.HiddenFor(x => Model.ID)
+<div class="row">
+	<div class="inner-main defult-height pb-0 mb-100">
+		<div class="row">
+			<div class="col-sm-5 align-self-center"><h1 class="heading-one mb-0">Grievance Committee</h1></div>
+			<div class="col-sm-12 form-group">
+				<table class="table  table-striped tkttbl">
+					<tr>
+						<td class="text-left text-clr fn-bold" width="120">Ticket No</td>
+						<td width="10">:</td>
+						<td width="250">
+							@Model.TicketNo
+						</td>
+						<td width="110" class="text-left text-clr fn-bold">Category</td>
+						<td width="10">:</td>
+						<td width="200">@Model.CategoryName</td>
+						<td width="80" class="text-right text-clr fn-bold">Level 1	</td>
+						<td width="10">:</td>
+						<td> @Model.Level1</td>
+
+
+					</tr>
+					<tr>
+						<td class="text-left text-clr fn-bold">Created on</td>
+						<td width="10">:</td>
+						<td>  @Convert.ToDateTime(@Model.Createdat).ToString("dd-MMM-yy hh:mm:ss tt")	</td>
+						<td class="text-left text-clr fn-bold">Sub Category</td>
+						<td width="10">:</td>
+						<td> @Model.SubCategoryName</td>
+						<td class="text-right text-clr fn-bold">Level 2</td>
+						<td width="10">:</td>
+						<td colspan="4">
+							@Model.Level2
+						</td>
+					</tr>
+
+					<tr>
+						<td class="text-left text-clr fn-bold">Created by</td>
+						<td width="10">:</td>
+						<td>
+							@{ string Createdby = string.Empty; }
+							@{ if (Model.IsAnonymous)
+								{
+									Createdby = "Anonymous";
+								}
+								else
+								{
+									Createdby = @Model.CreatedbyName;
+								} }
+							@Createdby;
+						</td>
+						<td class="text-left text-clr fn-bold">Primary Assignee/Secretary</td>
+						<td width="10">:</td>
+						<td> @Model.PrimaryAssignee</td>
+
+						<td class="text-right text-clr fn-bold">Level 3</td>
+						<td width="10">:</td>
+						<td colspan="4"> @Model.Level3</td>
+
+					</tr>
+
+					<tr>
+						<td class="text-left text-clr fn-bold">Priority</td>
+						<td width="10">:</td>
+						<td class="red-clr fn-bold"> @Model.Priority</td>
+						<td class="text-left text-clr fn-bold">Status</td>
+						<td width="10">:</td>
+						<td>
+							<strong class="red-clr" data-toggle="tooltip" data-original-title="">
+
+								@Model.Status
+
+							</strong>
+
+						</td>
+
+						<td class="text-right text-clr fn-bold"></td>
+						<td width="10"></td>
+						<td colspan="4">
+							<a class="btn-l ripplelink " onclick="ViewSLAPolicy(@Model.ID,@Model.Subcatid,@Model.Categoryid);" data-toggle="modal" data-target="#add">View SLA Policy</a>
+						</td>
+
+					</tr>
+
+					<tr>
+						<td class="text-left text-clr fn-bold">Grievance Details	</td>
+						<td width="10">:</td>
+						<td colspan="10">@Model.Description</td>
+
+					</tr>
+					<tr>
+						<td class="text-left text-clr fn-bold">Attachment1</td>
+						<td width="10">:</td>
+						<td class="red-clr fn-bold">
+							@if (Model.Attachmentid1 > 0)
+							{
+								<a href="@Model.AttachmentPath1" target="_blank" class="green-clr mr-2"><i class="fas fa-download"></i>Download</a>
+							}
+						</td>
+						<td class="text-left text-clr fn-bold">Attachment2</td>
+						<td width="10">:</td>
+						<td>
+							@if (Model.Attachmentid2 > 0)
+							{
+								<a href="@Model.AttachmentPath2" target="_blank" class="green-clr mr-2"><i class="fas fa-download"></i>Download</a>
+							}
+						</td>
+
+						<td class="text-right text-clr fn-bold"></td>
+						<td width="10"></td>
+						<td colspan="4"></td>
+
+					</tr>
+				</table>
+			</div>
+
+
+			<div class="col-sm-12 form-group">
+				<hr>
+				<span class="hr-aps "><i class="fas fa-sticky-note"></i>Notes</span>
+			</div>
+			<div class="col-sm-12  form-group">
+				<table class="table table-striped ">
+					<thead>
+						<tr>
+							<th width="20">S.No.</th>
+							<th width="80">Status</th>
+							<th>Remarks</th>
+							<th width="100">Attachment</th>
+							<th width="150">Escalation/Level</th>
+							<th width="150">Next Date</th>
+
+							<th width="220">Inserted Details</th>
+
+						</tr>
+
+					</thead>
+					<tbody>
+						@{int Count = 0; }
+						@foreach (Mitr.Models.UserGrievanceAccident item in Model.UserGrievanceAccidentList)
+						{
+							Count++;
+
+							<tr class="@(item.Isdeleted == 0 ? "" : "trrowred")">
+								<td>@Count</td>
+								<td class="red-clr">@item.Choosename</td>
+								<td>@item.Remarks</td>
+								<td>
+
+
+									@if (item.Attachmentid > 0)
+									{
+										<a href="@item.Attachment" target="_blank" class="green-clr mr-2"><i class="fas fa-download"></i>Download</a>
+									}
+
+								</td>
+								<td>
+									@if (item.Escalateid > 0)
+									{@item.EscalateTo}
+								else
+								{ @item.Employee}
+
+								</td>
+								<td>@item.Createdat</td>
+								<td>
+									@item.Createdat
+									@item.CreatedbyName
+
+								</td>
+							</tr>
+						}
+					</tbody>
+				</table>
+			</div>
+		</div>
+
+	</div>
+
+
+	<div class="ftr-btn text-center">
+		@{ if (Model.Status != null && Model.Status.ToUpper().Trim() != "Completed".ToUpper().Trim())
+			{
+				<a class="btn mtr-g-grn btn-l ripplelink " onclick="ListHeaderAdd(@Model.ID,@Model.Subcatid,@Model.Categoryid);" data-toggle="modal" data-target="#add"><i class="fas fa-sticky-note"></i>Action</a>
+			}
+			else
+			{
+				<a class="btn btn-l ripplelink " style="pointer-events: none" data-toggle="modal" data-target="#add"><i class="fas fa-sticky-note"></i>Action</a>
+			}
+
+
+		}
+
+		<button type="button" class="btn cnl-btn ripplelink  pull-right" onclick="ShowLoadingDialog();window.location='@Url.Action("GrievanceCommitteeList", new { src = clsApplicationSetting.EncryptQueryString(ViewBag.MenuID.ToString() + "*/Grievance/GrievanceCommitteeList*0") })';"><i class="fas fa-arrow-left"></i> Back</button>
+	</div>
+</div>
+<!-- The Modal upload image-->
+<div class="modal fade pop-dgn" id="ViewModal">
+	<div class="modal-dialog modal-lg">
+		<div class="modal-content">
+
+			<div class="modal-header blk-gdn-btn">
+				<h4 class="modal-title"><i class="fa fa-plus"></i>Add Notes</h4>
+				<div class="close" data-dismiss="modal">&times;</div>
+			</div>
+			<!-- Modal body -->
+			<div class="modal-body">
+				<div id="TagetDiv"></div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<!-- The Modal upload image-->
+<div class="modal fade pop-dgn" id="ViewSLAModal">
+	<div class="modal-dialog modal-lg">
+		<div class="modal-content">
+
+			<div class="modal-header blk-gdn-btn">
+				<h4 class="modal-title"><i class="fa fa-plus"></i>View SLA Policy</h4>
+				<div class="close" data-dismiss="modal">&times;</div>
+			</div>
+			<!-- Modal body -->
+			<div class="modal-body">
+				<div id="TagetDiv1"></div>
+			</div>
+		</div>
+	</div>
+</div>
+
+@section scripts    {
+	@System.Web.Optimization.Scripts.Render("~/bundle/dataTablesjs")
+	@System.Web.Optimization.Scripts.Render("~/bundle/unobtrusivejs")
+
+
+	
+	<script>
+          $(document).ready(function (){
+       $(".applyselect").select2();
+        });
+        function ListHeaderAdd(CMSID, SUBCATID, CATID) {
+            if (CMSID == undefined) {
+                CMSID = 0;
+            }
+            if (SUBCATID == undefined) {
+                 SUBCATID = 0;
+            }
+            if (CATID == undefined) {
+               CATID = 0;
+            }
+
+			$.ajax({
+                url: "/Grievance/_GrievanceCommitteeAdd",
+				type: "Get",
+                data: { src: EncryptQueryStringJSON(@ViewBag.MenuID+"*" + "/Grievance/_GrievanceCommitteeAdd" + "*" + CMSID + "*" + SUBCATID + "*" + CATID)},
+                success: function (data)
+                {
+
+					$("#TagetDiv").empty();
+                    $("#TagetDiv").html(data);
+                    $('#Categoryid option[value=""]').attr("selected", true);
+                    $("#ViewModal").modal("show");
+                     var form = $("form")
+                    .removeData("validator")
+                    .removeData("unobtrusiveValidation");
+                    $.validator.unobtrusive.parse(form);
+                    $("#Escalateid").select2();
+                    $("#EmployeeId").select2();
+                    $("#Choosename").select2();
+                    $("#Categoryid").select2();
+                    $("#SubCategoryid").select2();
+                    $("#EscalateNextlevelid").select2();
+		           	$(".applyselect").select2();
+				},
+                error: function (er) {
+
+					alert(er);
+
+				}
+			});
+            }
+		
+        function OnSuccess(obj) {
+
+            if (obj.Status) {
+                SuccessToaster(obj.SuccessMessage);
+                window.location.reload();
+            }
+            else {
+                CloseLoadingDialog();
+                FailToaster(obj.SuccessMessage);
+
+            }
+        }
+
+        //$(document).ready(function () {
+        //    var Categoryid = $("#Categoryid").find('option:selected').val();
+        //    if (Categoryid) {
+        //        BindDropDownSubcat($("#Categoryid"));
+        //    }
+        //});
+
+        function BindDropDown(obj) {
+            $('#lblRemarks').text("Remarks");
+            $('#EscalateToid').hide();
+            $('#DivEmployee').hide();
+            $('#DivCategoryid').hide();
+            $('#DivSubcategoryid').hide();
+            $('#Remarks').val('');
+            $('#DevEscalateNextlevels').hide();
+
+
+            var selectedID = $(obj).find("option:selected").val();
+            var selectedtext = $(obj).find("option:selected").text();
+            if (selectedID == undefined ) {
+                selectedID = 0;
+            }
+            $("#Escalateid").rules("remove", "required")
+            $("#Categoryid").rules("remove", "required")
+            $("#SubCategoryid").rules("remove", "required")
+            $("#EmployeeId").rules("remove", "required")
+            $("#EscalateNextlevelid").rules("remove", "required")
+
+            if (selectedtext == "Escalate" || selectedID == "6") {
+                $('#EscalateToid').show();
+                $("#Escalateid").rules("add", "required", "Hey! You missed this field")
+
+            }
+            else if (selectedtext == "Forward to Primary Assignee" || selectedID == "5") {
+                $('#DevEscalateNextlevels').show();
+                $("#EscalateNextlevelid").rules("add", "required", "Hey! You missed this field")
+                $('#lblForward').text("Forward To Primary Assignee")
+            }
+            else if (selectedtext == "Forward to next levels" || selectedID == "10") {
+                $('#DevEscalateNextlevels').show();
+                $("#EscalateNextlevelid").rules("add", "required", "Hey! You missed this field")
+                $('#lblForward').text("Forward To Next levels")
+
+            }
+            else if (selectedtext == "Forward to Team)" || selectedID == "11") {
+                $('#DivEmployee').show();
+                $('#EmployeeId').trigger("chosen:updated");
+                $("#Escalateid").rules("remove", "required")
+                $("#EmployeeId").rules("add", "required","Hey! You missed this field")
+            }
+            else if (selectedtext == "Resolved (Register Grievance)" || selectedID=="7") {
+
+                $('#EscalateToid').hide();
+                $('#DivCategoryid').show();
+                $('#DivSubcategoryid').show();
+                $('#DivEmployee').show();
+
+                $("#Escalateid").rules("remove", "required")
+                $("#Categoryid").rules("add", "required", "Hey! You missed this field")
+                $("#SubCategoryid").rules("add", "required", "Hey! You missed this field")
+                $("#EmployeeId").rules("add", "required","Hey! You missed this field")
+            }
+            else if (selectedID == "8" || selectedID == "9" || selectedID == "5" || selectedID == "12" || selectedID == "13") {
+                 ;
+                if (selectedID == "8") { $('#lblRemarks').text("Please share details of resolution"); }
+                else {
+                    $('#lblRemarks').text("Remarks");
+                    $('#Remarks').val($(obj).find("option:selected").text());
+                }
+            }
+
+
+        }
+		function BindDropDownCC(obj) {
+		 ;
+		GetEmailvalue();
+		}
+		function GetEmailvalue() {
+		 ;
+            var Ids = $("#ddlcc").val();
+            $("#ToCCMailId").val(Ids);
+        }
+        function BindDropDownSubcat(obj) {
+
+            //$('#CategoryDescription').empty();
+            //$('#SubcategoryDescription').empty();
+            //$("#chkAnonymous").hide();
+            //$("#IsAnonymous").removeAttr("checked");
+            $("#SubCategoryid").empty();
+            var selectedID = $(obj).find("option:selected").val();
+            $("#SubCategoryid").append($("<option />").val("").text("Select"));
+
+            var data = GetDropDownData(selectedID, "Gr_SubCategory");
+            if (data) {
+                ShowLoadingDialog();
+                $(data).each(function () {
+                    $("#SubCategoryid").append($("<option />").val(this.ID).text(this.Name));
+                    $("#SubCategoryid").select2();
+                });
+            }
+            CloseLoadingDialog();
+        }
+
+        function ViewSLAPolicy(CMSID, SUBCATID, CATID) {
+            if (CMSID == undefined) {
+                CMSID = 0;
+            }
+            if (SUBCATID == undefined) {
+                 SUBCATID = 0;
+            }
+            if (CATID == undefined) {
+               CATID = 0;
+            }
+
+			$.ajax({
+                url: "/Grievance/_ViewSLAPolicy",
+				type: "Get",
+                data: { src: EncryptQueryStringJSON(@ViewBag.MenuID+"*" + "/Grievance/_ViewSLAPolicy" + "*" + CMSID + "*" + SUBCATID + "*" + CATID)},
+                success: function (data)
+                {
+
+					$("#TagetDiv1").empty();
+                    $("#TagetDiv1").html(data);
+                    $('#Categoryid option[value=""]').attr("selected", true);
+                    $("#ViewSLAModal").modal("show");
+                     var form = $("form")
+                .removeData("validator")
+                .removeData("unobtrusiveValidation");
+                    $.validator.unobtrusive.parse(form);
+                    $("#Escalateid").select2();
+                    $("#EmployeeId").select2();
+                    $("#Choosename").select2();
+                    $("#Categoryid").select2();
+                    $("#SubCategoryid").select2();
+                    $("#EscalateNextlevelid").select2();
+
+				},
+                error: function (er) {
+
+					alert(er);
+
+				}
+			});
+            }
+	</script>
+}

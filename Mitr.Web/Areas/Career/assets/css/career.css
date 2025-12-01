@@ -1,0 +1,90 @@
+﻿.form-control[readonly] {
+    font-weight: normal;
+    border: 0px;
+    height: auto;
+    padding: 0px;
+    color: #000;
+    border: 0px solid #ccc;
+    padding: 5px;
+    background: #f2f2f2;
+}
+
+.notemtr {
+    background: #fbf3e7;
+    font-size: 12px !important;
+    font-weight: bold;
+    display: table !important;
+    text-align: center !important;
+    width: 100%;
+    padding: 15px !important;
+    color: #2a2b3c !important;
+}
+
+.table td, .table th {
+    border-top: 0px solid #dee2e6;
+    border-bottom: 1px solid #dee2e6;
+    border: 1px solid #dee2e6;
+    position: relative;
+}
+
+.table th {
+    background: #f1f1f1;
+    font-weight: bold;
+	color: #212529;
+}
+
+.ot-list li{
+	    border-bottom: 1px solid #c4c4c4;
+		padding:5px
+}
+
+
+.myContent{
+	background: #f2f2f2;
+    padding: 5px;
+    margin: 5px 0px;
+}
+
+input[type="file"] {
+    white-space: normal;
+    word-wrap: break-word;
+    font-size: 9px;
+    line-height: 21px;
+}
+
+.center-div
+{
+  position: absolute;
+  margin: auto;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  width: 500px;
+  height: 300px;
+  background-color: #fff;
+  border-radius: 10px;
+  text-align:center;
+  box-shadow: 4px 8px 40px 8px rgb(0 0 0 / 20%);
+}
+.thnkdgn{
+	width:50%
+}
+
+.thnkdgn .w-100{width:100% !important}
+.thnkdgn h2{
+	
+    font-size: 30px;
+    letter-spacing: 3px;
+    color: #ef8813;
+    margin: 0;
+    margin-bottom: 10px;
+}
+
+.thnkdgn span{
+	font-weight:bold;
+	font-size:18px
+}
+.validation-error{}
+
+

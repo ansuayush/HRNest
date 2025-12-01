@@ -1,0 +1,62 @@
+﻿@model List<Project.DonorDetails>
+
+
+@using (Ajax.BeginForm("_PendingDonorContactList", "Projects",
+        new { src = ViewBag.src },
+        new AjaxOptions { HttpMethod = "POST", OnSuccess = "OnPendingDonorContactLSuccess", OnBegin = "ShowLoadingDialog()", OnFailure = "OnPostFailure()" },
+    new { @id = "_PendingDonorContactListFrom", @autocomplete = "Off" })
+    )
+{
+    <div class="table-resposive">
+        <table class="table table-stripted lg-table  mt-0">
+            <thead>
+                <tr>
+                    <th class="w-50 text-center">S. No. </th>
+                    <th>Name </th>
+                    <th>Designation</th>
+                    <th>Phone Number</th>
+                    <th>Email </th>
+                    <th>Location </th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+
+                @for (int i = 0; i < Model.Count; i++)
+                {
+                    <tr>
+                        <td class="text-center">
+                            @Model[i].RowNum
+                            @Html.HiddenFor(x => Model[i].ID)
+                            @Html.HiddenFor(x => Model[i].person_name)
+                            @Html.HiddenFor(x => Model[i].designation)
+                            @Html.HiddenFor(x => Model[i].phone_no)
+                            @Html.HiddenFor(x => Model[i].email)
+                            @Html.HiddenFor(x => Model[i].location)
+                            @Html.HiddenFor(x => Model[i].donor_id)
+                        </td>
+                        <td>@Model[i].person_name</td>
+                        <td>@Model[i].designation</td>
+                        <td>@Model[i].phone_no</td>
+                        <td>@Model[i].email</td>
+                        <td>@Model[i].location</td>
+                        <td>
+                            <div class="text-center">
+                                <input type="checkbox" id="chkPending_@i" name="@Html.NameFor(x=> Model[i].Chk)" class="form-control rdaction">
+                                <label for="chkPending_@i" class="radio-label"></label>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+    if (Model.Count > 0)
+    {
+        <div class="text-center">
+
+            <button type="submit" class="btn mtr-o-grn " name="Command" value="Add"><i class="fas fa-paper-plane"></i>Submit</button>
+
+        </div>
+    }
+}

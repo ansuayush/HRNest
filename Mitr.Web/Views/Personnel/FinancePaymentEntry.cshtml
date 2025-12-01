@@ -1,0 +1,125 @@
+﻿@model Personnels.FinancePaymentEntry
+@{
+	string MenuID = "0";
+	if (ViewBag.MenuID != null)
+	{
+		MenuID = ViewBag.MenuID;
+	}
+}
+@section style{
+	@System.Web.Optimization.Styles.Render("~/bundle/dataTablecss")
+	@Html.IncludeVersionedCss(Url.Content("~/assets/design/css/modelprint.css"))
+}
+
+<div class="right_col defult-height inner-main" role="main">
+	@Html.Partial("HeaderMsg_Partial")
+	<h1 class="heading-one">Finance Payment List</h1>
+
+	@using (Ajax.BeginForm("_FinancePaymentEntry", "Personnel",
+			new { src = clsApplicationSetting.EncryptQueryString(ViewBag.MenuID.ToString() + "*/Personnel/_FinancePaymentEntry") },
+			new AjaxOptions { HttpMethod = "POST", OnSuccess = "BindTarget" },
+		new { @id = "_FinancePaymentEntryFrom" })
+		)
+	{
+		<div class="tab-main ">
+			<div class="row text-clr">
+				<div class="col-md-12">
+					<ul id="tabs" class="nav nav-tabs " role="tablist">
+						<li class="nav-item"> <a tabvalue="0" class="nav-link active ripplelink AnchorApproval" data-toggle="tab" role="tab"><i class="fal fa-envelope-open"></i>Pending</a> </li>
+						<li class="nav-item"> <a tabvalue="1" class="nav-link ripplelink AnchorApproval" data-toggle="tab" role="tab"><i class="fa fa-check" aria-hidden="true"></i>Approved</a></li>
+						<li class="nav-item"> <a tabvalue="2" class="nav-link ripplelink AnchorApproval" data-toggle="tab" role="tab"><i class="fas fa-ban"></i>Reject</a> </li>
+					</ul>
+				</div>
+				<div class="col-md-2 form-group">
+					<label> Financial Year</label>
+					@Html.HiddenFor(model => model.Approve)
+					<select id="@Html.IdFor(n => n.FYId)" name="@Html.NameFor(n => n.FYId)" class="form-control  applyselect">
+						<option value="0">All</option>
+						@foreach (var item in Model.finyear)
+						{
+							<option value="@item.ID">@item.Year</option>
+						}
+					</select>
+					@Html.ValidationMessageFor(model => model.FYId, "", new { @class = "text-danger" })
+				</div>
+				<div class="col-md-2 form-group">
+					<label> Name</label>
+					<select id="@Html.IdFor(n => n.EmpId)" name="@Html.NameFor(n => n.EmpId)" class="form-control  applyselect">
+						<option value="0">All</option>
+						@foreach (var item in Model.claimemployees)
+						{
+							<option value="@item.EmpId">@item.EmpName</option>
+						}
+					</select>
+					@Html.ValidationMessageFor(model => model.EmpId, "", new { @class = "text-danger" })
+				</div>
+				<div style="display:none">
+					<button type="submit" class="btn mtr-g-grn btn-l ripplelink" id="btnSearch" name="Command" value="Search"><i class="fas fa-search"></i>Search</button>
+				</div>
+
+			</div>
+		</div>
+	}
+	<div id="TargetDiv"></div>
+
+</div>
+
+@section scripts    {
+	@System.Web.Optimization.Scripts.Render("~/bundle/dataTablesjs")
+	<script src="~/assets/design/Scripts/AddInit.js?v=@clsApplicationSetting.GetWebConfigValue("Version")"></script>
+	@System.Web.Optimization.Scripts.Render("~/bundle/unobtrusivejs");
+
+	<script type="text/javascript">
+		$(document).ready(function () {
+			$("#btnSearch").click();
+		});
+
+		$('.AnchorApproval').on('click', function (e) {
+			e.preventDefault();
+			e.stopPropagation();
+			var att = $(this).attr("tabvalue");
+			$(".AnchorApproval.active").removeClass("active");
+			$(this).addClass("active");
+			$("#Approve").val(att);
+			ShowLoadingDialog();
+			$("#btnSearch").click();
+		});
+
+		$('#FYId').bind("change", function () {
+		debugger;
+			ShowLoadingDialog();
+			$("#btnSearch").click();
+		});
+
+		$('#EmpId').bind("change", function () {
+			ShowLoadingDialog();
+			$("#btnSearch").click();
+		});
+
+		function BindTarget(args) {
+			CloseLoadingDialog();
+			$("#TargetDiv").empty();
+			$("#TargetDiv").html(args);
+			$('[data-toggle="tooltip"]').tooltip();
+			DatatableScriptsWithColumnSearch("tableApprove");
+
+			var form = $("form")
+				.removeData("validator")
+				.removeData("unobtrusiveValidation");
+			$.validator.unobtrusive.parse(form);
+
+		}
+
+		function OnSuccessAction(objsss) {
+			ShowLoadingDialog();
+			if (objsss.Status) {
+				$("#btnSearch").click();
+			}
+			else {
+				FailToaster(objsss.SuccessMessage);
+			}
+			CloseLoadingDialog();
+		}
+
+	</script>
+}

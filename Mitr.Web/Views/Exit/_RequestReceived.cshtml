@@ -1,0 +1,91 @@
+﻿
+
+@model IList<Mitr.Models.Exit.Req_Received.List>
+
+@{
+	string MenuID = "0";
+	if (ViewBag.MenuID != null)
+	{
+		MenuID = ViewBag.MenuID;
+
+	}
+	var Modify = clsApplicationSetting.GetSessionValue("Modify");
+}
+<div class="control-section">
+	@if (ViewBag.Approve == 3)
+	{
+		@Html.EJS().Grid("FlatGrid").DataSource((List<Exit.Req_Received.List>)Model).GridLines(Syncfusion.EJ2.Grids.GridLine.Both).Columns(col =>
+   {
+
+	   col.Field("Exit_ID").Visible(false).Add();
+	   col.Field("EMP_ID").Visible(false).Add();
+
+	   col.Field("RowNum").HeaderText("S.No").Width("50").Add();
+	   col.Field("Req_No").HeaderText("Req No").Width("80").Add();
+	   col.Field("Req_Date").HeaderText("Req Date").Width("80").Add();
+	   col.Field("emp_code").HeaderText("EMP Code").Width("80").Add();
+	   col.Field("emp_name").HeaderText("EMP Name").Width("80").Add();
+	   col.Field("Department").HeaderText("Department").Width("150").Add();
+	   col.Field("DesignationName").HeaderText("Designation").Width("150").Add();
+	   col.Field("Resignation_Reason").HeaderText("Reason").Width("150").Add();
+	   col.Field("RetainedByName").HeaderText("Retained By").Width("90").Add();
+	   col.Field("Retained_Remarks").HeaderText("Retained Remarks").Width("150").Add();
+	   col.HeaderText("Action").TextAlign(Syncfusion.EJ2.Grids.TextAlign.Center).Template("#tmpView").Width("100").Add();
+
+   }).AllowPaging().PageSettings(page => page.PageCount(10)).Toolbar(new List<string>() { "Search" }).Render()
+	}
+	else
+	{
+
+		@Html.EJS().Grid("FlatGrid").DataSource((List<Exit.Req_Received.List>)Model).GridLines(Syncfusion.EJ2.Grids.GridLine.Both).Columns(col =>
+	{
+
+		col.Field("Exit_ID").Visible(false).Add();
+		col.Field("EMP_ID").Visible(false).Add();
+		col.Field("DaysLeft").Visible(false).Add();
+
+		col.Field("RowNum").HeaderText("S.No").Width("50").Add();
+		col.Field("Req_No").HeaderText("Req No").Width("80").Add();
+		col.Field("Req_Date").HeaderText("Req Date").Width("80").Add();
+		col.Field("emp_code").HeaderText("EMP Code").Width("80").Add();
+		col.Field("emp_name").HeaderText("EMP Name").Width("80").Add();
+		col.Field("Department").HeaderText("Department").Width("150").Add();
+		col.Field("DesignationName").HeaderText("Designation").Width("150").Add();
+		col.Field("Resignation_Reason").HeaderText("Reason").Width("150").Add();
+		col.Field("RelievingDate").HeaderText("Relieving Date").Width("90").Add();
+		col.HeaderText("Days Left").TextAlign(Syncfusion.EJ2.Grids.TextAlign.Center).Template("#tmpNoticePeriod").Width("100").Add();
+		col.HeaderText("Action").TextAlign(Syncfusion.EJ2.Grids.TextAlign.Center).Template("#tmpAction").Width("100").Add();
+
+	}).AllowPaging().PageSettings(page => page.PageCount(10)).Toolbar(new List<string>() { "Search" }).Render()
+
+
+	}
+</div>
+
+<script id="tmpView" type="text/x-template">
+	${if('@Modify' === 'True')}
+	<input type="hidden" name="I" value="${Exit_ID}" />
+	<a onclick="BindEdit(this)"><i class="fas fa-eyes"></i>View </a>
+	${/if}
+</script>
+
+<script id="tmpAction" type="text/x-template">
+	${if('@Modify' === 'True')}
+	<input type="hidden" name="I" value="${Exit_ID}" />
+	<a onclick="BindEdit(this)"><i class="fas fa-cogs"></i>Proceed </a>
+	${/if}
+</script>
+
+
+<script id="tmpNoticePeriod" type="text/x-template">
+    ${if(DaysLeft<=7 )}
+    <strong class="badge badge-secondary mtr-y-bg">${DaysLeft} Days</strong>
+
+    ${else}
+    <strong class="badge badge-secondary mtr-g-bg">${DaysLeft} Days</strong>
+    ${/if}
+</script>
+
+@Html.IncludeVersionedJs(Url.Content("~/assets/design/Scripts/SyncScripts.js"))
+
+@(Html.EJS().ScriptManager())

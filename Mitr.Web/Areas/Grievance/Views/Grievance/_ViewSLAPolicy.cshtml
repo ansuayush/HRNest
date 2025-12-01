@@ -1,0 +1,53 @@
+﻿@model Mitr.Models.SubCategoryAssigneeDetails
+
+@Html.HiddenFor(model => Model.ID)
+@{ string SubcategoryName = string.Empty;}
+
+
+<div class="row">
+    <div class="col-sm-12 form-group">
+        <div class="table-responsive">
+            <table class="table mt-0" id="Slapolicy">
+            <thead>
+                <tr>
+                    <th>Priority</th>
+                    <th width="250" colspan="2">Action</th>
+                    <th class="text-left">First Response (Hours)</th>
+                    <th class="text-left">Follow Up - every (Hours)</th>
+                    <th class="text-left">Escalation Level 1 (Hours)</th>
+                    <th class="text-left">Escalation Level 2 (Hours)</th>
+                    <th class="text-left">Escalation Level 3 (Hours)</th>
+                    <th width="150" class="text-left">Ticket auto close after (Hours)</th>
+                </tr>
+            </thead>
+            <tbody>
+                @{ if (Model.SubCategorySLAPolicy != null)
+                    {
+                        for (int i = 0; i < Model.SubCategorySLAPolicy.Count; i++)
+                        {
+                            <tr class="@( Model.SubCategorySLAPolicy[i].IsActive == true ? "" : "trrowred")">
+                                @Html.HiddenFor(x => Model.SubCategorySLAPolicy[i].ID)
+                                @Html.HiddenFor(x => Model.SubCategorySLAPolicy[i].SubCategoryid)
+                                <td>@Model.SubCategorySLAPolicy[i].Priority</td>
+                                <td>@Html.CheckBoxFor(x => x.SubCategorySLAPolicy[i].ActionDefault, new { @class = "chkDefault srcheck", disabled = "true", onchange = "chkDefault(this)" })<label for="lvl1">Default</label>                                                </td>
+                                <td>@Html.CheckBoxFor(x => x.SubCategorySLAPolicy[i].ActionFreezed, new { @class = "chkFreezed srcheck", disabled = "true", onchange = "chkFreezed(this)" })<label for="lvl1">Freezed</label>                                                </td>
+                                <td>@Html.TextBoxFor(model => Model.SubCategorySLAPolicy[i].FirstResponse, new { @class = "form-control sla", disabled = "true", type = "number" })</td>
+                                <td>@Html.TextBoxFor(model => Model.SubCategorySLAPolicy[i].FollowUpEvery, new { @class = "form-control sla", disabled = "true", type = "number" })</td>
+                                <td>@Html.TextBoxFor(model => Model.SubCategorySLAPolicy[i].EscalationLevel1, new { @class = "form-control sla", disabled = "true", type = "number" })</td>
+                                <td>@Html.TextBoxFor(model => Model.SubCategorySLAPolicy[i].EscalationLevel2, new { @class = "form-control sla", disabled = "true", type = "number" })</td>
+                                <td>@Html.TextBoxFor(model => Model.SubCategorySLAPolicy[i].EscalationLevel3, new { @class = "form-control sla", disabled = "true", type = "number" })</td>
+                                <td>@Html.TextBoxFor(model => Model.SubCategorySLAPolicy[i].TicketAutoCloseAfter, new { @class = "form-control sla", disabled = "true", type = "number" })</td>
+
+                            </tr>
+                            
+                        }
+                    }
+                }
+            </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="col-sm-12 text-center">
+
+    </div>
+</div>

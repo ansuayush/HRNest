@@ -1,0 +1,103 @@
+﻿@model  Project.Attachment
+@{
+    string MenuID = ViewBag.MenuID.ToString();
+}
+@Html.Partial("_ProjectHeader")
+
+
+<div class="mb-100">
+    @Html.HiddenFor(x => x.ID)
+    <div class="inner-main mb-3 pb-0">
+
+        @{
+            Html.RenderAction("_AddProjectAttachment", new { src = clsApplicationSetting.EncryptQueryString(ViewBag.MenuID.ToString() + "*/Projects/_AddProjectAttachment*" + ViewBag.ID) });
+        }
+
+        <div id="TargetDiv">
+            @{Html.RenderPartial("_ListProjectAttachments", Model.documentList);}
+        </div>
+
+
+    </div>
+    <div class="ftr-btn">
+    
+        @if (Model.Inactive == 0 && Model.ID > 0)
+        {
+            <button type="button" onclick="MakeItLive();" class="btn mtr-o-grn " name="Command" value="Add"><i class="fas fa-paper-plane"></i>Make It Live</button>
+        }
+        <a class="btn cnl-btn"href="@Url.Action("DonorsReport",new { src = clsApplicationSetting.EncryptFriendly(ViewBag.MenuID+"*"+"/Projects/DonorsReport*"+Model.ID) })">
+           <i class="fas fa-angle-double-left m-0"></i>  Back
+        </a>
+		<a class="btn cnl-btn" href="@Url.Action("ProjectRegistrationList",new { src = clsApplicationSetting.EncryptFriendly(ViewBag.MenuID+"*"+"/Projects/ProjectRegistrationList") })">
+			<i class="fas fa-times"></i> Close
+		</a>
+    </div>
+</div>
+
+
+@section scripts    {
+    @System.Web.Optimization.Scripts.Render("~/bundle/unobtrusivejs")
+    @Html.IncludeVersionedJs(Url.Content("~/assets/design/scripts/AddInit.js"))
+    <script>
+        function DeleteRecord(obj) {
+            var Response = 0;
+            var ID = $(obj).closest('tr').find('.hdnID').val();
+            var Table = $(obj).closest('table');
+            var TableID = $(Table).attr('ID');
+            ConfirmMsgBox("Are you sure want to delete", '', function () {
+                if (ID) {
+                    var data = DelRecord_Common(ID, "ProjectAttachment");
+                    if (data.Status) {
+                        $(obj).closest('tr').remove();
+                    }
+                    else {
+                        FailToaster(data.SuccessMessage);
+
+                    }
+                }
+            })
+        }
+
+        function OnSuccess(obj) {
+            if (obj.Status) {
+                SuccessToaster(obj.SuccessMessage);
+                $("#TargetDiv").empty();
+                $("#TargetDiv").html(obj.ViewAsString);
+                CloseLoadingDialog();
+                $("#DocumentType").val('');
+                $("#Description").val('');
+                $("#upload").val('');
+            }
+            else {
+                CloseLoadingDialog();
+                FailToaster(obj.SuccessMessage);
+
+            }
+        }
+
+
+        function MakeItLive() {
+            ShowLoadingDialog();
+            var ID = $("#ID").val();
+            $.ajax({
+                url: "/Projects/SetProjectMakeItLive",
+                type: "Post",
+                data: {
+                    src: EncryptQueryStringJSON(MenuID + "*" + "/Projects/SetProjectMakeItLive" + "*" + ID)
+                },
+                success: function (obj) {
+                    if (obj.Status) {
+                        SuccessToaster(obj.SuccessMessage);
+                        window.location.reload();
+                    }
+                    else {
+                        CloseLoadingDialog();
+                        FailToaster(obj.SuccessMessage);
+
+                    }
+                }
+            });
+
+        }
+    </script>
+}

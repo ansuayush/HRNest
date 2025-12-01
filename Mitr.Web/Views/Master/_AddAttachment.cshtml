@@ -1,0 +1,31 @@
+﻿@model Mitr.Models.Attachments
+
+        @using (Ajax.BeginForm("_AddAttachment", "Master",
+				new { src = ViewBag.src },
+				new AjaxOptions { HttpMethod = "POST",OnSuccess = "OnAttachmentSuccess",OnFailure = "OnAttachmentSuccess" , OnBegin = "ShowLoadingDialog()" },
+			new { @id = "AddAttachmentFrom", enctype = "multipart/form-data" })
+			)
+		{
+            <div class="row">
+
+		<div class="col-lg-6 form-group">
+                <label>Description</label>
+                @Html.TextBoxFor(model => model.Description, new { @class = "form-control", @placeholder ="Enter" })
+                @Html.ValidationMessageFor(model => model.Description, "", new { @class = "text-danger" })
+            </div>
+
+            <div class="col-lg-6 form-group">
+                <label>Upload Attachment</label>
+                @Html.TextBoxFor(model => model.UploadFile, new { @class = "form-control", @type = "file" })
+                @Html.ValidationMessageFor(model => model.UploadFile, "", new { @class = "text-danger" })
+            </div>
+
+
+            <div class="col-lg-12 form-group text-center">
+                <button type="submit" name="Command" value="Add" class="btn mtr-g-grn btn-l ripplelink"><i class="fa fa-plus"></i>Add</button>
+                <button type="button" class="btn cnl-btn" data-dismiss="modal"><i class="fas fa-times"></i>Close</button>
+            </div>
+			</div>
+        }
+
+ 

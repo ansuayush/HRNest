@@ -1,0 +1,82 @@
+﻿@using System.Data
+@model DataSet
+@{ 
+	string MonthName = ""; string YearName = "";
+	string CompanyName = "", Address = "";	
+	if (Model != null)
+	{
+		try
+		{
+			MonthName = Model.Tables[0].Rows[0]["MonthName"].ToString();
+			YearName = Model.Tables[0].Rows[0]["YearName"].ToString();
+			CompanyName = Model.Tables[0].Rows[0]["CompanyName"].ToString();
+			Address = Model.Tables[0].Rows[0]["CompanyAddress"].ToString();
+		}
+		catch
+		{
+		}
+
+	}
+}
+<table id="tblPF" name="tblPF">
+	<thead>
+		<tr>
+			<th class="text-center" style="font-size:medium" colspan="4"><img src="https://mitr2.c3india.org/assets/design/images/logoc3.png" /></th>
+			<th class="text-center" style="font-size:medium" colspan="6">@CompanyName <br />@Address</th>			
+		</tr>		
+		<tr>
+			<th class="text-center" style="font-size:medium" colspan="4"></th>
+			<th class="text-center" style="font-size:medium" colspan="6">Provident Fund Report for the month of @MonthName @YearName</th>
+		</tr>
+		
+		<tr style="font-weight:bold">
+			<th class="text-center">S.No</th>
+			<th class="text-center">Code</th>
+			<th class="text-center">Name</th>
+			<th class="text-center">Date of Joining</th>
+			<th class="text-center">Date of Birth</th>
+			<th class="text-center">Last Working Day</th>
+			<th class="text-center">UAN</th>
+			<th class="text-center">Aadhar No</th>
+			<th class="text-center">PAN</th>
+			<th class="text-center">PF Basic</th>
+			<th class="text-center">Gross Salary </th>
+			<th class="text-center" colspan="3">PF Contribution</th>
+			<th class="text-center">Type</th>
+		</tr>
+		<tr>
+			<th colspan="11"></th>
+			<th>Staff</th>
+			<th>VPF</th>
+			<th>C3</th>
+		</tr>
+	</thead>
+	<tbody>
+		@{
+			var Employee = from myRow in Model.Tables[1].AsEnumerable()
+						   select myRow;
+			int count = 0;
+		}
+		@foreach (var item in Employee)
+		{
+			count++;
+		<tr>
+			<td>@(count)</td>
+			<td>@item["emp_code"]</td>
+			<td>@item["emp_name"]</td>
+			<td>@item["DateOfJoining"]</td>
+			<td>@item["DOB"]</td>
+			<td>@item["lastworking_day"]</td>
+			<td>@item["UAN_No"]</td>
+			<td>@item["Adhar"]</td>
+			<td>@item["pan_no"]</td>
+			<td>@Convert.ToDouble(item["BasicPFAmount"]).ToString("#,##0")</td>
+			<td>@Convert.ToDouble(item["GrossSalary"]).ToString("#,##0")</td>
+			<td>@Convert.ToDouble(item["PFStaff"]).ToString("#,##0")</td>
+			<td>@Convert.ToDouble(item["VPF"]).ToString("#,##0")</td>
+			<td>@Convert.ToDouble(item["PFAmountC3"]).ToString("#,##0")</td>
+			<td>@item["Doctype"]</td>
+		</tr>
+		}
+	</tbody>
+</table>

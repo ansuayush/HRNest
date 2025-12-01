@@ -1,0 +1,68 @@
+﻿@model IList<Personnels.ReimbursementBooking.FYList>
+@{
+	var Modify = clsApplicationSetting.GetSessionValue("Modify");
+}
+@{
+	string MenuID = "0";
+	if (ViewBag.MenuID != null)
+	{
+		MenuID = ViewBag.MenuID;
+	}
+}
+<div class="inner-main defult-height pb-0">
+	<h1 class="heading-one">Reimbursement Booking</h1>
+	<div class="row">
+		<div class="col-md-12 col-sm-12 col-xs-12">
+			@Html.EJS().Grid("Grid").DataSource((List<Personnels.ReimbursementBooking.FYList>)Model).GridLines(Syncfusion.EJ2.Grids.GridLine.Both).Columns(col =>
+	   {
+		   col.Field("FYId").Visible(false).Add();
+		   col.Field("EmpId").Visible(false).Add();
+		   col.Field("RowNum").HeaderText("SNo.").Width("20").Add();
+		   col.Field("EmployeeCode").HeaderText("Employee Code").Width("100").Add();
+		   col.Field("EmployeeName").HeaderText("Employee Name").Width("200").Add();
+		   col.Field("FinancialYear").HeaderText("Financial Year").Width("100").Add();
+		   col.HeaderText("Action").TextAlign(Syncfusion.EJ2.Grids.TextAlign.Center).Template("#tmpAction").Width("90").Add();		   
+	   }).AllowPaging().PageSettings(page => page.PageSize(10)).Created("created").Toolbar(new List<string>() { "Search" }).Render()
+		</div>
+	</div>	
+</div>
+
+<script id="tmpAction" type="text/x-template">
+	<input type="hidden" name="I" value="${FYId}" />
+	${if(FYId == CFYId)}	
+		<a onclick="BindEdit(this)"><i class="fas fa-eye"></i>View & Claim</a>	
+	${else}	
+		<a onclick="BindEdit(this)"><i class="fas fa-eye"></i>View</a>
+	${/if}
+</script>
+
+<script>
+    function created() {
+        var grid = document.getElementById("Grid").ej2_instances[0];
+        document.getElementById(grid.element.id + "_searchbar").addEventListener('keyup', () => {
+            grid.search(event.target.value)
+        });
+    }
+</script>
+@Html.IncludeVersionedJs(Url.Content("~/assets/design/Scripts/SyncScripts.js"))
+
+@(Html.EJS().ScriptManager())
+
+@section scripts    {
+	@System.Web.Optimization.Scripts.Render("~/bundle/unobtrusivejs")
+
+	@Html.IncludeVersionedJs(Url.Content("~/assets/design/Scripts/ToolTip.js"))
+
+	@Html.IncludeVersionedJs(Url.Content("~/assets/design/Scripts/SyncScripts.js"))
+	@Html.IncludeVersionedJs(Url.Content("~/assets/tableToExcel.js"))
+	<script>
+		function ListAdd(ID) {
+            var ID = Number(ID);
+            var MenuID = Number('@MenuID');
+            ShowLoadingDialog();
+			var url = "/Personnel/ReimbursementHead?src=" + EncryptQueryStringJSON(MenuID + "*" + "/Personnel/ReimbursementHead" + "*" + ID);
+            window.location.href = url;
+		}
+	</script>
+}
+

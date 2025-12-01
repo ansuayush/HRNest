@@ -1,0 +1,124 @@
+﻿@using System.Data
+@model Mitr.Models.Exit.Tabs
+
+@section style{
+    @System.Web.Optimization.Styles.Render("~/bundle/dataTablecss")
+}
+@{
+    string MenuID = "0";
+    if (ViewBag.MenuID != null)
+    {
+        MenuID = ViewBag.MenuID;
+    }
+}
+<div class="inner-main">
+    <div class="right_col" role="main">
+        @Html.Partial("ListHeader_Partial", "NOC Requests List")
+
+
+        @using (Ajax.BeginForm("_NOCDashboard", "Exit",
+           new { src = clsApplicationSetting.EncryptQueryString(ViewBag.MenuID.ToString() + "*/Exit/_NOCDashboard") },
+           new AjaxOptions { HttpMethod = "POST", OnSuccess = "BindTarget" },
+       new { @id = "_NOCDashboardFrom" })
+       )
+        {
+
+            <div class="tab-main ">
+                <div class="row text-clr">
+                    <div class="col-md-12">
+                        <ul id="tabs" class="nav nav-tabs " role="tablist">
+                            <li class="nav-item"> <a tabvalue="0" class="nav-link active ripplelink AnchorApproval" data-toggle="tab" role="tab"><i class="far fa-clock"></i>Pending</a> </li>
+                            <li class="nav-item"> <a tabvalue="1" class="nav-link ripplelink AnchorApproval" data-toggle="tab" role="tab"><i class="fas fa-database"></i>Processed</a> </li>
+
+                        </ul>
+                    </div>
+                    <div style="display:none">
+                        @Html.HiddenFor(model => model.Approve)
+                        <button type="submit" class="btn mtr-g-grn btn-l ripplelink" id="btnSearch" name="Command" value="Search">
+                            <i class="fas fa-search"></i>Search
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+        }
+
+        <div id="TargetDiv"></div>
+    </div>
+</div>
+
+
+<div class="modal fade pop-dgn" id="ViewModal">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header blk-gdn-btn">
+                <h4 class="modal-title"><i class="fas fa-print"></i><span class="spn_Head"></span></h4>
+                <div class="close" data-dismiss="modal">&times;</div>
+            </div>
+            <div class="modal-body">
+                <div id="ViewModal_Target"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@section scripts    {
+
+    @System.Web.Optimization.Scripts.Render("~/bundle/unobtrusivejs")
+
+    @Html.IncludeVersionedJs(Url.Content("~/assets/design/Scripts/ToolTip.js"))
+
+    @Html.IncludeVersionedJs(Url.Content("~/assets/design/Scripts/SyncScripts.js"))
+    <script>
+        $(document).ready(function () {
+            $("#btnSearch").click();
+        });
+        $('.AnchorApproval').on('click', function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+            var att = $(this).attr("tabvalue");
+            $(".AnchorApproval.active").removeClass("active");
+            $(this).addClass("active");
+            $("#Approve").val(att);
+            ShowLoadingDialog();
+            $("#btnSearch").click();
+        });
+
+
+        function BindTarget(args) {
+            CloseLoadingDialog();
+            $("#TargetDiv").empty();
+            $("#TargetDiv").html(args);
+		}
+
+
+        function GetTaskList(obj)
+        {
+            var Exit_ID = $(obj).closest("tr").find("input:hidden[name=I]").val();
+            var N = $(obj).closest("tr").find("input:hidden[name=N]").val();
+            $(".spn_Head").html(N);
+			ShowLoadingDialog();
+		   $.ajax({
+               url: "/Exit/_Exit_TaskList",
+				type: "Get",
+               data: { src: EncryptQueryStringJSON(@ViewBag.MenuID+"*" + "/Exit/_Exit_TaskList" + "*" + Exit_ID) },
+                success: function (data)
+                {
+                    $("#ViewModal_Target").empty();
+                    $("#ViewModal_Target").html(data);
+					$('#ViewModal').modal({
+						backdrop: 'static',
+						keyboard: false
+					});
+                    CloseLoadingDialog();
+				},
+				error: function (er) {
+                    console.log(er);
+                    CloseLoadingDialog();
+				}
+			});
+	    }
+
+    </script>
+}

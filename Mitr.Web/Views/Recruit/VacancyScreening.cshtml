@@ -1,0 +1,213 @@
+﻿
+@model Mitr.Models.Recruit.Tabs
+@{
+	string MenuID = ViewBag.MenuID.ToString();
+}
+<div class="inner-main mb-5 pb-0">
+	<h1 class="heading-one ">Vacancy Screening</h1>
+
+	@{ Html.RenderAction("_EViewRequests", "Recruit", new { src = clsApplicationSetting.EncryptQueryString(MenuID + " */Recruit/_EViewRequests*" + ViewBag.REC_ReqID + "*Y") }); }
+
+
+@using (Ajax.BeginForm("_ScreeningApplicationList", "Recruit",
+		   new { src = clsApplicationSetting.EncryptQueryString(ViewBag.MenuID.ToString() + "*/Recruit/_ScreeningApplicationList*" + ViewBag.REC_ReqID) },
+		   new AjaxOptions { HttpMethod = "POST", OnSuccess = "BindTarget" },
+	   new { @id = "_ScreeningApplicationListFrom" })
+	   )
+{
+
+	<div class="tab-main ">
+		<div class="row text-clr">
+			<div class="col-md-12 ">
+
+				<ul id="tabs" class="nav nav-tabs " role="tablist">
+					<li class="nav-item"> <a tabvalue="0" class="nav-link active ripplelink AnchorApproval" data-toggle="tab" role="tab"><i class="far fa-clock"></i>Pending</a> </li>
+					<li class="nav-item"> <a tabvalue="2" class="nav-link ripplelink AnchorApproval" data-toggle="tab" role="tab"><i class="fas fa-ban"></i>Rejected</a> </li>
+					<li class="nav-item"> <a tabvalue="1" class="nav-link ripplelink AnchorApproval" data-toggle="tab" role="tab"><i class="fas fa-users"></i>Screened</a> </li>
+					<li class="nav-item"> <a tabvalue="3" class="nav-link ripplelink AnchorApproval" data-toggle="tab" role="tab"><i class="fas fa-share"></i>Forwarded to Shortlisting Team</a> </li>
+				</ul>
+				<div class="text-right mt-2">
+					<a id="btnTalentPool" class="btn blk-gdn-btn"><i class="fas fa-plus"></i>Add Import from Talent Pool</a>
+				</div>
+			</div>
+			<div class="col-md-12" id="divFilter">				
+					<ul class="list-unstyled inlin-list">
+						<li>
+							<input type="checkbox" id="eca" class="chkfilter" value="Applied" name="Applied">
+							<label for="eca"> Exclude candidates already applied before</label>
+						</li>
+						<li>
+							<input type="checkbox" id="caw" class="chkfilter" value="Worked" name="Worked">
+							<label for="caw"> Candidates already worked before </label>
+						</li>
+					</ul>
+			</div>
+			<div style="display:none">
+				@Html.HiddenFor(model => model.Approve)
+				<button type="submit" class="btn mtr-g-grn btn-l ripplelink" id="btnSearch" name="Command" value="Search">
+					<i class="fas fa-search"></i>Search
+				</button>
+			</div>
+
+		</div>
+	</div>
+
+}
+
+<div id="TargetDiv"></div>
+</div>
+
+<div class="modal fade pop-dgn" id="ViewAppModal">
+	<div class="modal-dialog modal-lg">
+		<div class="modal-content">
+
+			<div class="modal-header blk-gdn-btn">
+				<h4 class="modal-title"></h4>
+				<div class="close" data-dismiss="modal">&times;</div>
+			</div>
+			<div class="modal-body">
+				<div id="DivViewApp"></div>
+			</div>
+		</div>
+	</div>
+</div>
+
+
+<div class="modal fade pop-dgn" id="TalentModal">
+	<div class="modal-dialog modal-lg">
+		<div class="modal-content">
+
+			<div class="modal-header blk-gdn-btn">
+				<h4 class="modal-title"><i class="fas fa-plus"></i> Talent Pool</h4>
+				<div class="close" data-dismiss="modal">&times;</div>
+			</div>
+			<div class="modal-body">
+				<div id="DivTalent"></div>
+			</div>
+		</div>
+	</div>
+</div>
+
+@section scripts    {
+
+	@System.Web.Optimization.Scripts.Render("~/bundle/unobtrusivejs")
+	@Html.IncludeVersionedJs(Url.Content("~/assets/design/Scripts/AddInit.js"))
+	<script src="~/assets/design/Scripts/AddInit.js?v=@clsApplicationSetting.GetWebConfigValue("Version")"></script>
+
+	<script>
+
+		function ViewApplication(obj)
+		{
+			var AppIID = $(obj).closest("tr").find("input:hidden[name=AppIID]").val();
+			$.ajax({
+				url: "/Recruit/_ViewApplications",
+				type: "Get",
+				data: { src: EncryptQueryStringJSON(@ViewBag.MenuID+"*" + "/Recruit/_ViewApplications" + "*" + AppIID) },
+				success: function (args) {
+					CloseLoadingDialog();
+					$("#DivViewApp").empty();
+					$("#DivViewApp").html(args);
+					$("#ViewAppModal").modal('show');
+				},
+				error: function (er) {
+					CloseLoadingDialog()
+				}
+			});
+		}
+
+        $(document).ready(function () {
+            $("#btnSearch").click();
+        });
+        $('.AnchorApproval').on('click', function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+            var att = $(this).attr("tabvalue");
+            $(".AnchorApproval.active").removeClass("active");
+            $(this).addClass("active");
+			$("#Approve").val(att);
+			if (att == 0) {
+				$("#divFilter").show();
+			} else {
+				$("#divFilter").hide();
+			}
+            ShowLoadingDialog();
+            $("#btnSearch").click();
+        });
+
+		$('.chkfilter').on('click', function (e) {
+			ShowLoadingDialog();
+			$("#btnSearch").click();
+		});
+
+        function BindTarget(args) {
+            CloseLoadingDialog();
+            $("#TargetDiv").empty();
+			$("#TargetDiv").html(args);
+			$(".applyselect").select2();
+        }
+
+		function OnSuccessSetScreening(obj) {
+
+			if (obj.Status) {
+				SuccessToaster(obj.SuccessMessage);
+				$("#TalentModal").modal('hide');
+				$("#myModal").modal('hide');
+				$("#btnSearch").click();
+			}
+			else {
+				CloseLoadingDialog();
+				FailToaster(obj.SuccessMessage);
+			}
+		}
+
+		$('#btnApplication').on('click', function (e) {
+			var a = $("#hdnlink").val();
+			if (a) {
+				$(this).attr("href", a);
+			}
+		});
+
+		$('#btnTalentPool').on('click', function (e) {
+			$.ajax({
+				url: "/Recruit/_TalentPoolList",
+				type: "Get",
+				data: { src: EncryptQueryStringJSON(@ViewBag.MenuID+"*" + "/Recruit/_TalentPoolList" + "*" + '@ViewBag.REC_ReqID') },
+				success: function (args) {
+					CloseLoadingDialog();
+					$("#DivTalent").empty();
+					$("#DivTalent").html(args);
+					$("#TalentModal").modal('show');
+				},
+				error: function (er) {
+					CloseLoadingDialog()
+				}
+			});
+		});
+		
+
+		function OnSuccessImportTalentPool(obj) {
+
+			if (obj.Status) {
+				$("#TalentModal").modal('hide');
+				SuccessToaster(obj.SuccessMessage);
+				$("#btnSearch").click();
+			}
+			else {
+				CloseLoadingDialog();
+				FailToaster(obj.SuccessMessage);
+			}
+		}
+
+         function ProjectTaggingSuccess(obj) {
+
+			if (obj.Status) {
+				SuccessToaster(obj.SuccessMessage);
+				window.location.reload();
+			}
+			else {
+				CloseLoadingDialog();
+				FailToaster(obj.SuccessMessage);
+			}
+		}
+	</script>
+}

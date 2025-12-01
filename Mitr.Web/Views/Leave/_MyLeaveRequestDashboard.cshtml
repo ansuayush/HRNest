@@ -1,0 +1,284 @@
+﻿@model IList<Mitr.Models.ApplyLeaveList>
+@{
+    string MenuID = ViewBag.MenuID.ToString();
+    Mitr.Models.LeaveAttachmentCount LeaveAttachmentCount = new Mitr.Models.LeaveAttachmentCount();
+    long loginEMPID = 0;
+    long.TryParse(clsApplicationSetting.GetSessionValue("EMPID"), out loginEMPID);
+    if (ViewBag.AttachmentRequiredCount != null)
+    {
+        LeaveAttachmentCount = ViewBag.AttachmentRequiredCount;
+    }
+}
+<h2 class="heading-grd heading-btn  blk-gdn-btn m-0">
+    <i class="fas fa-comments"></i>My Request <span class="spnCLSLhead">@(clsApplicationSetting.IsSessionExpired("MyLeaveAttachment") ? "" : "( CL/SL Attachments Pending )")</span>
+</h2>
+
+
+<div class="tab-main">
+    <ul id="tabs" class="nav nav-tabs myUltabs " role="tablist">
+        <li class="nav-item">
+            <a id="tab1" href="#active-log" class="nav-link active ripplelink" data-toggle="tab" role="tab"><i class="fal fa-envelope-open"></i>To be approved</a>
+			 
+        </li>
+        <li class="nav-item">
+            <a id="tab2" href="#leaves" class="nav-link ripplelink" data-toggle="tab" role="tab"><i class="fa fa-check" aria-hidden="true"></i>Approved</a>
+           
+        </li>
+        <li class="nav-item"> <a id="tab3" href="#asset" class="nav-link ripplelink" data-toggle="tab" role="tab"><i class="fa fa-ban" aria-hidden="true"></i>Cancelled</a> </li>
+        <li class="tab-right">
+			<div class="right-btn">
+
+				@if (clsApplicationSetting.IsSessionExpired("MyLeaveAttachment"))
+				{
+					<a id="aLeaveRequestAttach" data-toggle="tooltip" data-original-title="Medical or Fitness certificate not yet attached" class="leaveAttach">
+						<i class='fa fa-paperclip '></i>
+						<span class="count-nt wow swing" style="visibility: visible; animation-name: swing;">@LeaveAttachmentCount.MyLeaveCount</span>
+					</a>
+				}
+				else
+				{
+					<a id="aLeaveRequestAttach" data-toggle="tooltip" data-original-title="Medical or Fitness certificate not yet attached" class="leaveAttach active">
+						Back
+						<span class="count-nt wow swing" style="visibility: visible; animation-name: swing;"></span>
+					</a>
+				}
+
+
+				@Html.CreateAnchor(MenuID, "/Leave/MyLeaveRequest", "Show All", "", "", "", "")
+			</div>
+        </li>
+
+    </ul>
+    @if (Model != null)
+    {
+        <div id="content" class="tab-content p-0" role="tablist">
+            <div id="active-log" class="card tab-pane fade show active" role="tabpanel" aria-labelledby="tab-or">
+                <div class="card-header" role="tab" id="heading-or">
+                    <h5 class="mb-0">
+                        <a data-toggle="collapse" href="#collapse-or" aria-expanded="true" aria-controls="collapse-or"><i class="fal fa-envelope-open"></i> Open Requests </a>
+                    </h5>
+                </div>
+                <div id="collapse-or" class="collapse show" data-parent="#content" role="tabpanel" aria-labelledby="heading-or">
+                    <div class="card-body p-0">
+                        <ul class="list-unstyled rqt-list scroll trboxhglist ulmyattach" tabclick="1">
+                            @if (Model.Where(x => x.Approved == 0 || x.Approved == 3).ToList().Count > 0)
+                            {
+                                int count = 0;
+                                foreach (var item in Model.Where(x => x.Approved == 0 || x.Approved == 3).OrderByDescending(x => x.LeaveLogID).ToList())
+                                {
+                                    count++;
+							<li class="item">
+								<div class="row d-flex">
+									<div class="col-sm-3 align-self-center">
+
+										<div class="left-dtl-r">
+											<small class="lgt-text"><strong>Req#@item.DocNo</strong><br />@item.RequestDate</small>
+										</div>
+									</div>
+									<div class="col-sm-6 align-self-center">
+										<div class="cntr-dtl-r">
+											<strong>@item.LeaveName</strong><br />
+											<small class="lgt-text">@item.StartDate to @item.EndDate (@item.hoursDayWise)</small>
+											@if (item.RFC > 0)
+											{
+												<span class="rfcRequestdiv badge red-clr" data-toggle="tooltip" data-original-title="Request for cancellation">
+													RFC
+												</span>
+											}
+
+										</div>
+									</div>
+									<div class="col-sm-3 align-self-center">
+
+										<div class="right-dtl-r">
+
+											<input type="hidden" name="AR" value="@item.AttachmentRequired" />
+											<input type="hidden" name="L" value="@item.LeaveLogID" />
+											<input type="hidden" name="E" value="@item.EMPID" />
+											<input type="hidden" name="EN" value="@item.EMPName" />
+											<input type="hidden" name="EC" value="@item.EMPCode" />
+											<input type="hidden" name="D" value="@item.StartDate" />
+											<input type="hidden" name="DocNo" value="@item.DocNo" />
+											<input type="hidden" name="LE" value="@(loginEMPID==item.EMPID?"Y":"N")" />
+											@if (item.IsDailyLogApproved == "N" && item.RFC == 0 && item.Approved == 3)
+											{
+												<a class="btn-c red-clr RFCRequest" data-toggle="tooltip" data-original-title="Cancel your @(item.Approved == 3?"partially":"") approved leave "><i class="fa fa-times "></i></a>
+											}
+											@if (item.AttachmentRequired > 0)
+											{
+												<a class="btn-c aLeaveAttachment" data-toggle="tooltip" data-original-title="Attach medical or fitness certificate "><i class="fa fa-paperclip darkclr"></i></a>
+											}
+											@if (item.Approved == 0)
+											{
+												<a class="btn-c deleteRequest" data-toggle="tooltip" data-original-title="Delete your leave request"><i class="fas fa-trash-alt"></i></a>
+											}
+											<a class="btn-g anchorpopup" data-toggle="tooltip" data-original-title="View your leave request "><i class="fas fa-ellipsis-h"></i></a>
+										</div>
+									</div>
+								</div>
+							</li>
+                                }
+                            }
+                            else
+
+                            {
+                                <li>
+                                    @Html.Partial("_NoRecordsFound")
+                                </li>
+                            }
+
+                        </ul>
+                        <!-- -->
+                    </div>
+                </div>
+            </div>
+            <div id="leaves" class="card tab-pane fade" role="tabpanel" aria-labelledby="tab-arl">
+                <div class="card-header" role="tab" id="heading-arl">
+                    <h5 class="mb-0"> <a class="collapsed" data-toggle="collapse" href="#collapse-arl" aria-expanded="false" aria-controls="collapse-B"><i class="fa fa-check" aria-hidden="true"></i> Approvel </a> </h5>
+                </div>
+                <div id="collapse-arl" class="collapse" data-parent="#content" role="tabpanel" aria-labelledby="heading-arl">
+                    <div class="card-body p-0">
+                        <ul class="list-unstyled rqt-list scroll trboxhglist ulmyattach" tabclick="2">
+                            @if (Model.Where(x => x.Approved == 1 || x.Approved == 4).ToList().Count > 0)
+                            {
+                                int count = 0;
+                                foreach (var item in Model.Where(x => x.Approved == 1 || x.Approved == 4).OrderByDescending(x => x.LeaveLogID).ToList())
+                                {
+                                    count++;
+							<li class="item">
+								<div class="row d-flex">
+									<div class="col-sm-3 align-self-center">
+										<div class="left-dtl-r">
+											<small class="lgt-text"><strong>Req#@item.DocNo</strong><br />@item.RequestDate</small>
+										</div>
+									</div>
+									<div class="col-sm-6 align-self-center">
+										<div class="cntr-dtl-r">
+											<strong>@item.LeaveName</strong><br />
+											<small class="lgt-text">@item.StartDate to @item.EndDate (@item.hoursDayWise)</small>
+										</div>
+										@if (item.RFC > 0)
+										{
+											<span class="rfcRequestdiv badge red-clr" data-toggle="tooltip" data-original-title="Request for cancellation">
+												RFC
+											</span>
+										}
+									</div>
+									<div class="col-sm-3 align-self-center">
+										<div class="right-dtl-r ">
+
+											<input type="hidden" name="AR" value="@item.AttachmentRequired" />
+											<input type="hidden" name="L" value="@item.LeaveLogID" />
+											<input type="hidden" name="E" value="@item.EMPID" />
+											<input type="hidden" name="EN" value="@item.EMPName" />
+											<input type="hidden" name="EC" value="@item.EMPCode" />
+											<input type="hidden" name="D" value="@item.StartDate" />
+											<input type="hidden" name="DocNo" value="@item.DocNo" />
+											<input type="hidden" name="LE" value="@(loginEMPID==item.EMPID?"Y":"N")" />
+											@if (item.IsDailyLogApproved == "N" && item.RFC == 0)
+											{
+												<a class="btn-c RFCRequest red-clr " data-toggle="tooltip" data-original-title="Cancel your approved leave "><i class="fa fa-times"></i></a>
+											}
+											@if (item.AttachmentRequired > 0)
+											{
+												<a class="btn-c aLeaveAttachment" data-toggle="tooltip" data-original-title="Attach medical or fitness certificate"><i class="fa fa-paperclip darkclr"></i></a>
+											}
+											<a class="btn-g anchorpopup" data-toggle="tooltip" data-original-title="View your leave request ">
+												<i class="fas fa-ellipsis-h"></i>
+											</a>
+										</div>
+									</div>
+								</div>
+							</li>
+                                }
+                            }
+                            else
+                            {
+                                <li>
+
+                                    @Html.Partial("_NoRecordsFound")
+
+                                </li>
+                            }
+                        </ul>
+
+
+                    </div>
+                </div>
+            </div>
+            <div id="asset" class="card tab-pane fade" role="tabpanel" aria-labelledby="tab-C">
+                <div class="card-header" role="tab" id="heading-rjt">
+                    <h5 class="mb-0"> <a class="collapsed" data-toggle="collapse" href="#collapse-rjt" aria-expanded="false" aria-controls="collapse-C"><i class="fa fa-ban" aria-hidden="true"></i> Cancelled </a> </h5>
+                </div>
+                <div id="collapse-rjt" class="collapse " role="tabpanel" data-parent="#content" aria-labelledby="heading-rjt">
+                    <div class="card-body p-0">
+                        <!-- -->
+                        <ul class="list-unstyled rqt-list scroll trboxhglist ulmyattach" tabclick="3">
+                            @if (Model.Where(x => x.Approved == 2 || x.Approved == 5).ToList().Count > 0)
+                            {
+                                int count = 0;
+                                foreach (var item in Model.Where(x => x.Approved == 2 || x.Approved == 5).OrderByDescending(x => x.LeaveLogID).ToList())
+                                {
+                                    count++;
+							<li class="item">
+								<div class="row d-flex">
+									<div class="col-sm-3 align-self-center">
+										<div class="left-dtl-r">
+											<small class="lgt-text"><strong>Req#@item.DocNo</strong><br />@item.RequestDate</small>
+										</div>
+									</div>
+									<div class="col-sm-6 align-self-center">
+										<div class="cntr-dtl-r">
+											<strong>@item.LeaveName</strong><br />
+											<small class="lgt-text">@item.StartDate to @item.EndDate (@item.hoursDayWise)</small>
+											@if (item.RFC > 0)
+											{
+												<span class="rfcRequestdiv badge red-clr" data-toggle="tooltip" data-original-title="Request for cancellation">
+													RFC
+												</span>
+
+											}
+										</div>
+
+									</div>
+									<div class="col-sm-3 align-self-center">
+										<div class="right-dtl-r">
+
+											<input type="hidden" name="AR" value="@item.AttachmentRequired" />
+											<input type="hidden" name="L" value="@item.LeaveLogID" />
+											<input type="hidden" name="E" value="@item.EMPID" />
+											<input type="hidden" name="EN" value="@item.EMPName" />
+											<input type="hidden" name="EC" value="@item.EMPCode" />
+											<input type="hidden" name="D" value="@item.StartDate" />
+											<input type="hidden" name="DocNo" value="@item.DocNo" />
+											<input type="hidden" name="LE" value="@(loginEMPID==item.EMPID?"Y":"N")" />
+
+											@if (item.AttachmentRequired > 0)
+											{
+												<a class="btn-c aLeaveAttachment" data-toggle="tooltip" data-original-title="Attach medical or fitness certificate"><i class="fa fa-paperclip darkclr"></i></a>
+											}
+											<a class="btn-g anchorpopup" data-toggle="tooltip" data-original-title="View your leave request ">
+												<i class="fas fa-ellipsis-h"></i>
+											</a>
+										</div>
+									</div>
+								</div>
+							</li>
+                                }
+                            }
+                            else
+                            {
+                                <li>
+                                    @Html.Partial("_NoRecordsFound")
+                                </li>
+                            }
+                        </ul>
+                        <!-- -->
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+

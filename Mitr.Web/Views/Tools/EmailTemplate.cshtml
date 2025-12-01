@@ -1,0 +1,102 @@
+﻿
+@model IList<Mitr.Models.EmailTemplate>
+
+
+@section style{
+    @System.Web.Optimization.Styles.Render("~/bundle/dataTablecss")
+}
+
+<div>
+    @Html.Partial("ListHeader_Partial", "Email Template List")
+
+
+    <div class="row">
+        <div class="col-md-12 col-sm-12 col-xs-12">
+            <div class="card p-0">
+                <div class="card-body p-0">
+
+                    <div class="x_content table-currency">
+                        <input type="hidden" id="hdnAddUrl" name="hdnAddUrl" value="@Url.Action("EmailTemplateAdd",new { src = clsApplicationSetting.EncryptQueryString(ViewBag.MenuID+"*"+"/Tools/EmailTemplateAdd"+"*"+"0") })" />
+
+
+
+                        <div class="table-responsive">
+                            <table id="datatable-buttons" class="table table-striped table-bordered dt-responsive nowrap tbltick new_width" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
+                                <thead>
+                                    <tr>
+                                        <th>S.no.</th>
+                                        <th>Action</th>
+                                        <th>Template Group</th>
+                                        <th>Template Name</th>
+                                        <th>Subject</th>
+                                        <th>CC Mail</th>
+                                        <th>BCC Mail</th>
+                                        <th>Inserted Date</th>
+                                        <th>Updated Date</th>
+                                        <th>IP Address</th>
+                                    </tr>
+                                    <tr class="searchbar">
+                                        <th class="searchhide"></th>
+                                        <th class="searchhide"></th>
+                                        <th> </th>
+
+                                        <th> </th>
+                                        <th></th>
+                                        <th> </th>
+                                        <th> </th>
+                                        <th> </th>
+                                        <th> </th>
+                                        <th> </th>
+                                    </tr>
+
+                                </thead>
+                                <tbody>
+                                    @{ int Count = 0;}
+                                    @foreach (Mitr.Models.EmailTemplate item in Model)
+                                    {
+                                        Count++;
+                                    <tr class="@(item.IsActive == true?"": "trrowred")">
+                                        <td>@Count</td>
+                                        <td>
+                                            <input type="hidden" name="I" value="@item.ID" />
+                                            <input type="hidden" name="N" value="@item.TemplateName" />
+                                            @if (clsApplicationSetting.GetSessionValue("Modify") == "True")
+                                            {
+                                                @Html.Raw(item.IsActive == true
+                                               ? "<a  data-toggle='tooltip' data-original-title='Click to DeActivate' list='EmailTemplateList' OP='0' class='AIsActive' > <i class='fa fa-check-circle checkgreen' aria-hidden='true'></i></a>"
+                                               : "<a data-toggle='tooltip' data-original-title='Click to Activate' list='EmailTemplateList' OP='1'  class='AIsActive' > <i class='fa fa-times-circle crossred' aria-hidden='true'></i></a>")
+
+                                                <a title="Edit" href="@Url.Action("EmailTemplateAdd", new { src = clsApplicationSetting.EncryptQueryString(ViewBag.MenuID + "*" + "/Tools/EmailTemplateAdd" + "*" + item.ID) })" data-toggle='tooltip'> <i class="fas fa-edit checkgreen" aria-hidden="true"></i> </a>
+                                            }
+                                        </td>
+
+                                        <td> @item.GroupName</td>
+                                        <td> @item.TemplateName</td>
+                                        <td> @item.Subject</td>
+                                        <td>@item.CCMail</td>
+                                        <td>@item.BCCMail</td>
+                                        <td>@item.CreatedDate</td>
+                                        <td>@item.ModifiedDate</td>
+                                        <td>@item.IPAddress</td>
+                                    </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+
+
+@section scripts    {
+    @System.Web.Optimization.Scripts.Render("~/bundle/dataTablesjs")
+
+    @Html.IncludeVersionedJs(Url.Content("~/assets/design/Scripts/AddInit.js"))
+    @Html.IncludeVersionedJs(Url.Content("~/assets/design/Scripts/ToolTip.js"))
+}

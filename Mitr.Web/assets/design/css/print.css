@@ -1,0 +1,35 @@
+﻿
+
+@media print {
+  .pagebreak {page-break-after: always;} 
+  .print-header{display: none} 
+  table td, table th{border: 1px solid #000 !important}
+
+  .inner-main{
+  	border: 1px solid #000 !important 
+  }
+  .pmt-0{
+  	margin: 0px !important
+  }
+
+  .table thead th {
+    border-bottom: 1px solid #000000 !important;
+}
+
+.table-scroll th, .table-scroll td, .table td, .table th, .successmgs-dgn, #DivLeaveRequestTable, .table-currency .btn-secondary, .table-bordered td, .table-bordered th, .modal .alert, .heading-three {
+    border-color: #000000 !important;
+}
+
+.print-height-auto{
+  height: auto !important;
+}
+
+  .print-height-auto td, .print-height-auto th{
+    padding: 0px !important
+ 
+  }
+
+  .container.mt-5{margin-top:0px !important }
+  .container.pt-3{padding-top: 0px !important}
+}
+

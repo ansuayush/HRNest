@@ -1,0 +1,218 @@
+﻿@model Donor.Add
+
+@using (Ajax.BeginForm("_AddDonor", "Master",
+        new { src = ViewBag.src },
+        new AjaxOptions { HttpMethod = "POST", OnSuccess = "OnSuccess",OnBegin= "ShowLoadingDialog()" },
+    new { @id = "_AddDonorFrom" })
+    )
+{
+
+<div class="row">
+    @Html.HiddenFor(model => model.ID)
+    <div class="col-sm-4 form-group">
+        <label>Source Type  </label>
+        @Html.EnumDropDownListFor(model => model.SourceType, "Select", htmlAttributes: new { @class = "form-control applyselect" })
+        @Html.ValidationMessageFor(model => model.SourceType, "", new { @class = "text-danger" })
+    </div>
+    <div class="col-sm-4 form-group">
+        <label>Donor Name  </label>
+        @Html.TextBoxFor(model => model.donor_name, new { @class = "form-control", @placeholder = "Enter" })
+        @Html.ValidationMessageFor(model => model.donor_name, "", new { @class = "text-danger" })
+    </div>
+    <div class="col-sm-4 form-group">
+        <label>Donor Type  </label>
+        @Html.DropDownListFor(n => n.DonorTypeID, new SelectList(Model.DonorTypeList, "ID", "Name", Model.DonorTypeID), "Select",
+                      new { @class = "form-control  applyselect" })
+        @Html.ValidationMessageFor(model => model.DonorTypeID, "", new { @class = "text-danger" })
+    </div>
+    
+
+
+
+    <div class="col-sm-12 form-group">
+        <hr>
+        <span class="hr-aps lgt-text font-sm">Registered Office </span>
+    </div>
+
+    
+        <div class="col-sm-12 form-group">
+            <label>Address</label>
+            @Html.HiddenFor(model => model.LocalAddress.ID)
+            @Html.TextAreaFor(model => model.LocalAddress.lane1, new { @class = "form-control ", @placeholder = "Enter" })
+            @Html.ValidationMessageFor(model => model.LocalAddress.lane1, "", new { @class = "text-danger" })
+        </div>
+
+        <div class="col-lg-3 col-md-6 form-group hw-575">
+            <label>PIN </label>
+            @Html.TextBoxFor(model => model.LocalAddress.zip_code, new { @class = "form-control", @placeholder = "Enter" })
+            @Html.ValidationMessageFor(model => model.LocalAddress.zip_code, "", new { @class = "text-danger" })
+        </div>
+
+        <div class="col-lg-3 col-md-6 form-group hw-575">
+            <label>Country </label>
+            @Html.DropDownListFor(n => n.LocalAddress.CountryID, new SelectList(Model.CountryList, "ID", "Name", Model.LocalAddress.CountryID), "Select",
+              new { @class = "form-control  applyselect", onchange = "BindDropDown(this,'State_Local')" })
+            @Html.ValidationMessageFor(model => model.LocalAddress.CountryID, "", new { @class = "text-danger" })
+        </div>
+        <div class="col-lg-3 col-md-6 form-group hw-575">
+            <label>State </label>
+            <input type="hidden" id="hdnLocalStateID" value="@Model.LocalAddress.StateID" />
+            @Html.DropDownListFor(n => n.LocalAddress.StateID, new SelectList(Model.StateList, "ID", "Name", Model.LocalAddress.StateID), "Select",
+             new { @class = "form-control  applyselect", onchange = "BindDropDown(this,'City_Local')" })
+            @Html.ValidationMessageFor(model => model.LocalAddress.StateID, "", new { @class = "text-danger" })
+        </div>
+        <div class="col-lg-3 col-md-6 form-group hw-575">
+            <label>City </label>
+            <input type="hidden" id="hdnLocalCityID" value="@Model.LocalAddress.CityID" />
+            @Html.DropDownListFor(n => n.LocalAddress.CityID, new SelectList(Model.CityList, "ID", "Name", Model.LocalAddress.CityID), "Select",
+            new { @class = "form-control  applyselect" })
+            @Html.ValidationMessageFor(model => model.LocalAddress.CityID, "", new { @class = "text-danger" })
+        </div>
+
+
+    
+
+
+    <div class="col-sm-12 form-group">
+        <ul class="list-unstyled inlin-list ">
+            <li>
+                <input type="checkbox" id="ChkCopySame" class="trigger">
+                <label for="ChkCopySame"> Same for Country Office</label>
+
+            </li>
+        </ul>
+    </div>
+
+    <div class="col-sm-12 form-group">
+        <hr>
+        <span class="hr-aps lgt-text font-sm">Country Office </span>
+    </div>
+    
+        <div class="col-sm-12 form-group">
+            <label>Address</label>
+            @Html.HiddenFor(model => model.PermanentAddress.ID)
+            @Html.TextAreaFor(model => model.PermanentAddress.lane1, new { @class = "form-control", @placeholder = "Enter" })
+            @Html.ValidationMessageFor(model => model.PermanentAddress.lane1, "", new { @class = "text-danger" })
+        </div>
+
+        <div class="col-lg-3 col-md-6 form-group hw-575">
+            <label>PIN </label>
+            @Html.TextBoxFor(model => model.PermanentAddress.zip_code, new { @class = "form-control", @placeholder = "Enter" })
+            @Html.ValidationMessageFor(model => model.PermanentAddress.zip_code, "", new { @class = "text-danger" })
+        </div>
+
+        <div class="col-lg-3 col-md-6 form-group hw-575">
+            <label>Country </label>
+            @Html.DropDownListFor(n => n.PermanentAddress.CountryID, new SelectList(Model.CountryList, "ID", "Name", Model.PermanentAddress.CountryID), "Select",
+              new { @class = "form-control  applyselect", onchange = "BindDropDown(this,'State_Permanent')" })
+            @Html.ValidationMessageFor(model => model.PermanentAddress.CountryID, "", new { @class = "text-danger" })
+        </div>
+        <div class="col-lg-3 col-md-6 form-group hw-575">
+            <label>State </label>
+            <input type="hidden" id="hdnPermanentStateID" value="@Model.PermanentAddress.StateID" />
+            @Html.DropDownListFor(n => n.PermanentAddress.StateID, new SelectList(Model.StateList, "ID", "Name", Model.PermanentAddress.StateID), "Select",
+             new { @class = "form-control  applyselect", onchange = "BindDropDown(this,'City_Permanent')" })
+            @Html.ValidationMessageFor(model => model.PermanentAddress.StateID, "", new { @class = "text-danger" })
+        </div>
+        <div class="col-lg-3 col-md-6 form-group hw-575">
+            <label>City </label>
+            <input type="hidden" id="hdnPermanentCityID" value="@Model.PermanentAddress.CityID" />
+            @Html.DropDownListFor(n => n.PermanentAddress.CityID, new SelectList(Model.CityList, "ID", "Name", Model.PermanentAddress.CityID), "Select",
+            new { @class = "form-control  applyselect" })
+            @Html.ValidationMessageFor(model => model.PermanentAddress.CityID, "", new { @class = "text-danger" })
+        </div>
+
+        <div class="col-sm-12 form-group">
+        <label>Website  </label>
+        @Html.TextBoxFor(model => model.website, new { @class = "form-control", @placeholder = "Enter" })
+        @Html.ValidationMessageFor(model => model.website, "", new { @class = "text-danger" })
+    </div>
+
+
+    <div class="col-sm-12 form-group">
+        <hr>
+        <span class="hr-aps lgt-text font-sm">Contact Details </span>
+    </div>
+
+    <div class="col-sm-12 form-group">
+        <div class="table-responsive">
+            <table id="TableDonorDetailsList" class="table table-stripted mb-0 mt-0 lg-table">
+                <thead>
+                    <tr>
+                        <th width="50" class=" text-center">S.No.</th>
+                        <th>Name </th>
+                        <th width="200">Designation</th>
+                        <th width="100">Location</th>
+                        <th width="100">Phone</th>
+                        <th width="200">Email</th>
+                        <th width="50">Primary</th>
+                        <th width="50">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model.DonorDetailsList != null)
+                    {
+                        int Rcount = 0;
+                        for (int i = 0; i < Model.DonorDetailsList.Count; i++)
+                        {
+                            Rcount++;
+                            <tr>
+                                <td class="text-center">
+                                    @Html.HiddenFor(model => Model.DonorDetailsList[i].ID, new { @class = "hdnID" })
+                                    <label id="span_@Rcount" name="span_@Rcount">@Rcount </label>
+                                </td>
+                                <td>
+                                    @Html.TextBoxFor(model => Model.DonorDetailsList[i].person_name, new { @class = "form-control", @placeholder = "Enter" })
+                                    @Html.ValidationMessageFor(model => Model.DonorDetailsList[i].person_name, "", new { @class = "text-danger" })
+                                </td>
+                                <td>
+                                    @Html.TextBoxFor(model => Model.DonorDetailsList[i].designation, new { @class = "form-control", @placeholder = "Enter" })
+                                    @Html.ValidationMessageFor(model => Model.DonorDetailsList[i].designation, "", new { @class = "text-danger" })
+                                </td>
+                                <td>
+                                    @Html.TextBoxFor(model => Model.DonorDetailsList[i].location, new { @class = "form-control", @placeholder = "Enter" })
+                                    @Html.ValidationMessageFor(model => Model.DonorDetailsList[i].location, "", new { @class = "text-danger" })
+                                </td>
+                                <td>
+                                    @Html.TextBoxFor(model => Model.DonorDetailsList[i].phone_no, new { @class = "form-control", @placeholder = "Enter" })
+                                    @Html.ValidationMessageFor(model => Model.DonorDetailsList[i].phone_no, "", new { @class = "text-danger" })
+                                </td>
+                                <td>
+                                    @Html.TextBoxFor(model => Model.DonorDetailsList[i].email, new { @class = "form-control", @placeholder = "Enter" })
+                                    @Html.ValidationMessageFor(model => Model.DonorDetailsList[i].email, "", new { @class = "text-danger" })
+                                </td>
+                                <td>
+                                    <div class="radio text-center">
+                                        @Html.HiddenFor(model => Model.DonorDetailsList[i].Isdefault, new { @class = "hdndefault" })
+                                        <input type="radio" id="chk_@i" name="group" onclick="SaveasPrimary(this)" class="form-control rdoIsdefault" @(Model.DonorDetailsList[i].Isdefault == 1 ? "checked" : "")>
+                                        <label for="chk_@i" class="radio-label"></label>
+                                    </div>
+                                </td>
+                                <td class="text-center">
+                                    @if (Rcount > 1)
+                                    {
+                                        <a onclick="DeleteRow(this)" class="remove"><i class="fas fa-window-close red-clr" aria-hidden="true"></i></a>
+                                    }
+                                    else
+                                    {
+                                        <a class="disabled"><i class="fas fa-window-close" aria-hidden="true"></i></a>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+            <div class="text-right mt-2">
+                <a class="btn mtr-g-grn m-0" onclick="AddNewRow(this)"><strong><i class="fas fa-plus"></i>Add</strong></a>
+            </div>
+        </div>
+    </div>
+
+
+</div>
+    <div class="p-0 text-center ">
+        <button type="button" class="btn cnl-btn ripplelink" data-dismiss="modal"><i class="fas fa-times"></i>Close</button>
+        <button type="submit" name="Command" value="Submit" class="btn mtr-o-grn btn-l "><i class="fas fa-paper-plane"></i>Submit</button>
+    </div>
+}

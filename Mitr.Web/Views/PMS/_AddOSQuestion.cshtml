@@ -1,0 +1,80 @@
+﻿
+@model PMS.OSQuestion.Add
+
+@using (Ajax.BeginForm("_AddOSQuestion", "PMS",
+						new { src = ViewBag.src },
+						new AjaxOptions { HttpMethod = "POST", OnSuccess = "OnSuccessAddOSQuestion" },
+					new { @id = "_AddOSQuestionFrom" })
+					)
+{
+
+	@Html.AntiForgeryToken()
+<div class="row">
+	<div class="col-sm-12 form-group">
+		<label>Organisational Standard Question<span class="required">*</span> </label>
+		@Html.TextAreaFor(model => model.Question, new { @class = "form-control", @placeholder="Enter " })
+		@Html.ValidationMessageFor(model => model.Question, "", new { @class = "text-danger" })
+	</div>
+	<div class="col-sm-3 form-group">
+		<label>Designation Applicable<span class="required">*</span> </label>
+		@{
+			List<SelectListItem> D1 = new List<SelectListItem>
+{
+							new SelectListItem{Text="All",Value="All" },
+							new SelectListItem{Text="Specific",Value="Specific" }
+							};
+		}
+		@Html.DropDownListFor(model => model.QApplyDesignation, new SelectList(D1, "Value", "text", Model.QApplyDesignation), new { @class = "form-control applyselect", @onchange = "ApplyShowhide(this)" })
+		@Html.ValidationMessageFor(model => model.QApplyDesignation, "", new { @class = "text-danger" })
+
+	</div>
+	<div class="col-sm-9 form-group">
+		<div id="ddSelectedDesig" style="display: none;">
+			<label>Designation<span class="required">*</span> </label>
+			@Html.DropDownListFor(model => model.SelectedDesig, new SelectList(ViewBag.DesignationList, "ID", "Design", Model.SelectedDesig), "Select", new { @class = "form-control applyselect", @multiple = "multiple" })
+			@Html.ValidationMessageFor(model => model.SelectedDesig, "", new { @class = "text-danger" })
+		</div>
+	</div>
+
+		
+
+
+	<div class="col-sm-12 form-group">
+		<label>Question For<span class="required">*</span> </label>
+		<ul class="list-unstyled inline-list">
+			<li>
+				<input type="checkbox" id="q1" name="@Html.NameFor(x=>x.ChkValues)" value="Confirmed">
+				<label for="q1" class="m-0">Confirmed Employee</label>
+			</li>
+			<li>
+				<input type="checkbox" id="q4" name="@Html.NameFor(x=>x.ChkValues)" value="On Probation">
+				<label for="q4" class="m-0">Employee on Probabation</label>
+			</li>
+			<li>
+				<input type="checkbox" id="q2" name="@Html.NameFor(x=>x.ChkValues)" value="Appraiser">
+				<label for="q2" class="m-0">Appraiser</label>
+			</li>
+			<li>
+				<input type="checkbox" id="q3" name="@Html.NameFor(x=>x.ChkValues)" value="Reviewer">
+				<label for="q3" class="m-0">Additional Reviewer</label>
+			</li>
+
+			@Html.ValidationMessageFor(model => model.ChkValues, "", new { @class = "text-danger" })
+
+		</ul>
+	</div>
+
+	<div class="col-lg-3 form-group">
+		<label>Priority</label>
+		@Html.TextBoxFor(model => model.Priority, new { @class = "form-control" })
+		@Html.ValidationMessageFor(model => model.Priority, "", new { @class = "text-danger" })
+	</div>
+
+
+		<div class="col-lg-12 text-center mt-3">
+			<button type="button" data-dismiss="modal" class="btn cnl-btn ripplelink  pull-right"><i class="fas fa-times"></i>Close</button>
+			<button type="submit" class="btn mtr-o-grn btn-l ripplelink pull-right" name="Command" value="Add"><i class="fas fa-save"></i>Save</button>
+		</div>
+	</div>
+
+	}

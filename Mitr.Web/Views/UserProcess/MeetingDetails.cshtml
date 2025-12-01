@@ -1,0 +1,521 @@
+﻿
+@{
+	ViewBag.Title = "MeetingDetails";
+	Layout = "~/Views/Shared/_UserProcess.cshtml";
+}
+
+
+<script src="~/assets/design/js/wow.js"></script>
+<script src="~/assets/design/js/wow.min.js"></script>
+@section scripts    {
+	@System.Web.Optimization.Scripts.Render("~/bundle/unobtrusivejs")
+	@System.Web.Optimization.Scripts.Render("~/bundle/dataTablesjs")
+	<script src="~/assets/design/Scripts/AddInit.js?v=@clsApplicationSetting.GetWebConfigValue("Version")"></script>
+
+	<script src="~/Scripts/MeetingDetails.js"></script>
+	<script>
+
+        var CandidateId = '@ViewBag.RequestId';
+		var IsEDUser = '@ViewBag.IsED';
+        var loggedinUserid = '@ViewBag.UserId';
+		var loggedinUserName = '@ViewBag.UserName';
+		var UserGrade = '@ViewBag.Grade';
+		var IsPM = '@ViewBag.IsPM';
+		var IPAddress = '@ViewBag.IPAddress';
+
+		//$(document).ready(function () {
+		//	UpdatePageStatus();
+		//});
+		//function UpdatePageStatus() {
+		//	CommonAjaxMethod(virtualPath + 'UserProcess/UpdateVideoReview', { CandidateId: CandidateId, VideoReviewed: "MeetingDetails" }, 'POST', function (response) {
+		//		//SuccessToaster(response.SuccessMessage);
+		//		//window.location.href = virtualPath + 'UserProcess/Introduction';
+		//	});
+		//}
+	</script>
+}
+<h1 class="heading-one ">Meeting Details</h1>
+
+
+<!-- Start -->
+<div id="divMeetingDetails"></div>
+
+<!-- The Modal -->
+<div class="modal" id="vf">
+	<div class="modal-dialog modal-lg">
+		<div class="modal-content ">
+
+			<!-- Modal Header -->
+			<div class="modal-header">
+				<h4 class="modal-title"><i class="fas fa-user-tie"></i>Ashok</h4>
+				<button type="button" class="close" data-dismiss="modal">×</button>
+			</div>
+
+			<!-- Modal body -->
+			<div class="modal-body">
+				<div class="row">
+					<div class="col-sm-4 form-group">
+						<label>Date</label>
+						<p>25/5/2020</p>
+					</div>
+					<div class="col-sm-2 form-group">
+						<label>Time</label>
+						<p>10:00 AM</p>
+					</div>
+					<div class="col-sm-12 form-group">
+						<label>Feedback</label>
+						<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer porttitor arcu augue, in venenatis nunc feugiat ut. Quisque ut condimentum tortor. Ut feugiat mi non lorem tincidunt efficitur. Phasellus eget arcu sed enim mollis placerat quis at leo. Nunc consequat mi ac lorem ullamcorper aliquam. </p>
+					</div>
+				</div>
+				<!-- Modal footer -->
+				<div class="p-0 text-center mt-3 ">
+					<button type="button" class="btn cnl-btn ripplelink" data-dismiss="modal"><i class="fas fa-times"></i>Close</button>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<!-- The Modal -->
+<div class="modal" id="feedback">
+	<div class="modal-dialog modal-lg">
+		<div class="modal-content ">
+			<input type="hidden" id="hddfeedbackRowId" />
+			<!-- Modal Header -->
+			<div class="modal-header">
+				<h4 class="modal-title"><i class="fas fa-user-tie"></i><span id="spfeedbackName"></span></h4>
+				<button type="button" class="close" data-dismiss="modal">×</button>
+			</div>
+
+			<!-- Modal body -->
+			<div class="modal-body">
+				<div class="row">
+
+					<div class="col-sm-12 form-group">
+						<label>Feedback</label>
+						<textarea id="txtaFeedback" class="form-control h-100 maxSize[1200]" placeholder="Enter"></textarea>
+						<div id="word_count_info" class="text-right mt-2"></div>
+					</div>
+				</div>
+				<!-- Modal footer -->
+				<div class="row">
+					<div style="text-align:right">
+						<button id="btnFeedBackUpdate" type="button" onclick="FeedBackUpdate();" class="btn mtr-o-grn btn-l "><i class="fas fa-paper-plane"></i>Submit</button>
+					</div>
+					<div class="col-sm-6 text-center ">
+						<button type="button" class="btn cnl-btn ripplelink" data-dismiss="modal"><i class="fas fa-times"></i>Close</button>
+					</div>
+				</div>
+
+			</div>
+		</div>
+	</div>
+</div>
+
+<!-- The Modal -->
+<div class="modal" id="reschedule">
+	<div class="modal-dialog modal-md">
+		<div class="modal-content ">
+			<input type="hidden" id="hddrescheduleRowId" />
+			<!-- Modal Header -->
+			<div class="modal-header">
+				<h4 class="modal-title"><i class="fas fa-user-tie"></i><span id="spRescheduleName"></span></h4>
+				<button type="button" class="close" data-dismiss="modal">×</button>
+			</div>
+
+			<!-- Modal body -->
+			<div class="modal-body">
+				<div class="row">
+					<div class="col-sm-8 form-group">
+						<label>Date <sup>*</sup></label>
+						<input type="text" autocomplete="off" id="txtRescheduleDate" onchange="HideErrorMessage(this)" class="form-control datepicker Mandatory">
+						<span id="sptxtRescheduleDate" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+					</div>
+					<div class="col-sm-4 form-group">
+						<label>Time <sup>*</sup></label>
+						<input type="time" id="txtRescheduleTime" onchange="HideErrorMessage(this)" class="form-control Mandatory">
+						<span id="sptxtRescheduleTime" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+					</div>
+
+				</div>
+				<!-- Modal footer -->
+				<div class="p-0 text-center mt-3 ">
+					<button type="button" class="btn cnl-btn ripplelink" data-dismiss="modal"><i class="fas fa-times"></i>Close</button>
+
+					<button type="button" onclick="RescheduleDateTime();" class="btn mtr-o-grn btn-l "><i class="fas fa-paper-plane"></i>Submit</button>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+
+<script>
+	$(document).ready(function () {
+		$(".dpselect").select2();
+	});
+</script>
+<script type="text/javascript">
+	$(function () {
+		$(".fold-table tr.view").on("click", function () {
+			$(this).toggleClass("open").next(".fold").toggleClass("open");
+		});
+	});
+</script>
+<script>
+	var MenuID = Number(129);
+
+	wow = new WOW();
+	wow.init();
+
+
+	function SuccessToaster(Message) {
+		$("#toastMsg").html(Message);
+		$("#toasticon i").addClass("fas fa-check green-clr ");
+		var x = document.getElementById("toast")
+		x.className = "show";
+		setTimeout(function () { x.className = x.className.replace("show", ""); }, 4000);
+	}
+
+	function FailToaster(Message) {
+		$("#toastMsg").html(Message);
+		$("#toasticon i").addClass("fas fa-exclamation-triangle red-clr");
+		var x = document.getElementById("toast")
+		x.className = "show toaster-warning";
+		setTimeout(function () { x.className = x.className.replace("show toaster-warning", ""); }, 4000);
+	}
+
+
+	function ValidateFile(FileName) {
+
+		var result = false;
+		if (document.getElementById(FileName).files[0].name.toUpperCase().match(/\.(PDF|DOCX|TXT|XLS|XLSX)$/)) {
+
+			var filesize = 3145728;
+			var sizeinbytes = document.getElementById(FileName).files[0].size;
+			if (filesize >= sizeinbytes) {
+				result = true;
+			}
+			else {
+				FailToaster("File size should be less than 3 MB");
+				document.getElementById(FileName).value = '';
+				result = false;
+
+			}
+			return result;
+		}
+		else {
+			FailToaster("Invalid file type , please select valid file again");
+			document.getElementById(FileName).value = '';
+			return result;
+		}
+
+	}
+
+	function ValidateImage(FileName) {
+
+		var result = false;
+		if (document.getElementById(FileName).files[0].name.toUpperCase().match(/\.(JPG|JPEG|PNG|PDF)$/)) {
+
+			var filesize = 2097152;
+			var sizeinbytes = document.getElementById(FileName).files[0].size;
+			if (filesize >= sizeinbytes) {
+				result = true;
+			}
+			else {
+				FailToaster("Image should be less than 2 MB");
+
+				document.getElementById(FileName).value = '';
+				result = false;
+
+			}
+			return result;
+		}
+		else {
+			FailToaster("Invalid Image type , please select valid Image");
+			document.getElementById(FileName).value = '';
+			return result;
+		}
+
+	}
+</script>
+<script>
+	// JavaScript Document
+	$(function () {
+		$('#js-nav-toggle').click(function (e) {
+			e.preventDefault();
+			$("html").toggleClass("is-sideopen");
+			$("#js-nav-toggle").toggleClass("is-active");
+		});
+
+		var $content = $('.l-contents');
+		var $header = $('.l-header');
+
+
+		$content.click(function () {
+			$("html").removeClass("is-sideopen");
+		});
+
+
+		$header.click(function () {
+			$("html").removeClass("is-sideopen");
+		});
+
+
+	});
+
+
+	$(function () {
+
+		var $dropdown = $('.js-dropdown');
+		var $content = $('.l-contents');
+		var $toggle = $('#js-nav-toggle');
+
+
+		$('.js-dropdown-menu').hide();
+		$dropdown.click(function () {
+			$('i').removeClass('is-rotate');
+			$('.js-dropdown-menu').slideUp(200);
+			if ($('+.js-dropdown-menu', this).css('display') == 'none') {
+				$('i', this).addClass('is-rotate');
+				$('+.js-dropdown-menu', this).slideDown(200);
+			}
+		});
+
+
+		$content.click(function () {
+			$('i').removeClass('is-rotate');
+			$('.js-dropdown-menu').slideUp(200);
+			if ($('+.js-dropdown-menu', this).css('display') == 'none') {
+				$('i', this).addClass('is-rotate');
+				$('+.js-dropdown-menu', this).slideDown(200);
+			}
+		});
+
+
+		$toggle.click(function () {
+			$('i').removeClass('is-rotate');
+			$('.js-dropdown-menu').slideUp(200);
+			if ($('+.js-dropdown-menu', this).css('display') == 'none') {
+				$('i', this).addClass('is-rotate');
+				$('+.js-dropdown-menu', this).slideDown(200);
+			}
+		});
+
+	});
+
+	$(function () {
+		$('.is-ac-close').hide();
+		$(".is-ac-click").on("click", function () {
+			if ($(this).children('i').is('.fa-angle-right')) {
+				$(this).children('i')
+					.removeClass('fa-angle-right')
+					.addClass('fa-angle-down');
+			} else {
+				$(this).children('i')
+					.removeClass('fa-angle-down')
+					.addClass('fa-angle-right');
+			}
+			$(this).next().slideToggle(200);
+		});
+
+		$('.is-ac-close').hide();
+		$(".is-ac-bar").on("click", function () {
+
+			if ($(this).find('i').is('.fa-caret-down')) {
+
+				$(this).find('i')
+					.removeClass()
+					.addClass('fa fa-caret-up');
+			} else {
+				$(this).find('i')
+					.removeClass()
+					.addClass('fa fa-caret-down');
+			}
+			$(this).next().slideToggle(200);
+		});
+	});
+
+
+
+
+	//---------------------------------------------------
+	// ▼　tab
+	//---------------------------------------------------
+	$(function () {
+		var rwdTab = $('.c-tab'),
+			switchPoint = 768,
+			fadeSpeed = 300,
+			slideSpeed = 300;
+
+		var tabBtn = rwdTab.children('.c-tab-panel').children('.c-tab-heading'),
+			contentsArea = rwdTab.children('.c-tab-panel').children('.c-tab-body');
+
+		tabBtn.on('click', function () {
+			if (!$(this).hasClass('c-tab-active')) {
+				tabBtn.removeClass('c-tab-active');
+				$(this).addClass('c-tab-active');
+
+				if (window.innerWidth > switchPoint) {
+					contentsArea.fadeOut(fadeSpeed);
+					$(this).next().fadeIn(fadeSpeed);
+				} else {
+					contentsArea.slideUp(slideSpeed);
+					$(this).next().slideDown(slideSpeed);
+				}
+			}
+		});
+
+		tabBtn.first().click();
+	});
+
+
+
+</script>
+<!-- required -->
+<script type="text/javascript">
+	jQuery(document).ready(function ($) {
+		jQuery('.stellarnav').stellarNav({
+			theme: 'dark',
+			breakpoint: 960,
+			position: 'right',
+
+		});
+		$('.notifyjs-corner').empty();
+	});
+</script>
+<!-- required -->
+<script>
+	$("document").ready(function () {
+
+		$('.dropdown-menu').on('click', function (e) {
+			if ($(this).hasClass('dropdown-menu-form')) {
+				e.stopPropagation();
+			}
+		});
+	});
+
+
+</script>
+<script>
+
+	var links = document.querySelectorAll('.ripplelink');
+
+	for (var i = 0, len = links.length; i < len; i++) {
+		links[i].addEventListener('click', function (e) {
+			var targetEl = e.target;
+			var inkEl = targetEl.querySelector('.ink');
+
+			if (inkEl) {
+				inkEl.classList.remove('animate');
+			}
+			else {
+				inkEl = document.createElement('span');
+				inkEl.classList.add('ink');
+				inkEl.style.width = inkEl.style.height = Math.max(targetEl.offsetWidth, targetEl.offsetHeight) + 'px';
+				targetEl.appendChild(inkEl);
+			}
+
+			inkEl.style.left = (e.offsetX - inkEl.offsetWidth / 2) + 'px';
+			inkEl.style.top = (e.offsetY - inkEl.offsetHeight / 2) + 'px';
+			inkEl.classList.add('animate');
+		}, false);
+	}
+</script>
+<script type="text/javascript">
+	$(window).scroll(function () {
+		if ($(this).scrollTop() > 250) {
+			$('.header').addClass("sticky");
+		}
+		else {
+			$('.header').removeClass("sticky");
+		}
+	});
+
+
+</script>
+<script>
+	(function ($) {
+		$.fn.textareaCounter = function (options) {
+			var defaults = { limit: 500 };
+			var options = $.extend(defaults, options);
+
+			// and the plugin begins
+			return this.each(function () {
+				var obj, text, wordcount, limited;
+
+				obj = $(this);
+				obj.after('<div class="limittext text-right mt-2" id="counter-text">Max. ' + options.limit + ' words</div>');
+
+				obj.keyup(function () {
+					text = obj.val();
+					if (text === "") {
+						wordcount = 0;
+					} else {
+						wordcount = $.trim(text).split(" ").length;
+					}
+					if (wordcount > options.limit) {
+						$("#counter-text").html('');
+						limited = $.trim(text).split(" ", options.limit);
+						limited = limited.join(" ");
+						$(this).val(limited);
+					} else {
+						$("#counter-text").html((options.limit - wordcount) + ' words left');
+					}
+				});
+			});
+		};
+	})(jQuery);
+
+	$(".textareawordcount").textareaCounter({ limit: 500 });
+</script>
+
+<script>
+	$(document).ready(function () {
+		var maxWords = 500;
+		var textarea = $('.word_limit_textarea');
+
+		function enforceWordLimit(text) {
+			var words = text.match(/\b[-?(\w+)?]+\b/gi);
+			if (words && words.length > maxWords) {
+				return words.slice(0, maxWords).join(' ') + ' '; // Add space at the end
+			}
+			return text;
+		}
+
+		textarea.on('input', function () {
+			var text = $(this).val();
+			$(this).val(enforceWordLimit(text));
+		});
+
+		textarea.on('keydown', function (e) {
+			var text = $(this).val();
+			var words = text.match(/\b[-?(\w+)?]+\b/gi) || [];
+
+		});
+
+		textarea.on('paste', function (e) {
+			var pastedText = (e.originalEvent || e).clipboardData.getData('text/plain');
+			var text = $(this).val() + pastedText;
+			var newText = enforceWordLimit(text);
+			if (text !== newText) {
+				e.preventDefault();
+				$(this).val(newText);
+			}
+		});
+
+		// Update word count info initially and on input
+		textarea.on('input', function () {
+			var wordCount = ($(this).val().match(/\b[-?(\w+)?]+\b/gi) || []).length;
+			$('#word_count_info').text(wordCount + '/' + maxWords + ' Words');
+		}).trigger('input'); // Trigger input event on page load to update count
+	});
+
+</script>
+<noscript>
+	<p class="NojavaScript">Javascripts is disabled</a></p>
+</noscript>
+
+
+
+

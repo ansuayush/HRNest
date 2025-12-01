@@ -1,0 +1,26 @@
+﻿@model List<User_Task.Task.List>
+<div class="row">
+    <div class="control-section">
+
+        @Html.EJS().Grid("FlatGrid_Exit").DataSource((List<User_Task.Task.List>)Model).GridLines(Syncfusion.EJ2.Grids.GridLine.Both).Columns(col =>
+   {
+       col.Field("TaskID").Visible(false).Add();
+       col.Field("RowNum").HeaderText("S.No").Width("50").Add();
+       col.HeaderText("Status").TextAlign(Syncfusion.EJ2.Grids.TextAlign.Center).Template("#tmpAction").Width("80").Add();
+       col.Field("Priority").HeaderText("Priority").Width("80").Add();
+       col.Field("Subject").HeaderText("Subject").Width("100").Add();
+       col.Field("Message").HeaderText("Message").Width("100").Add();
+       col.Field("Remarks").HeaderText("Remarks").Width("100").Add();
+       col.Field("AssigenedTo_Names").HeaderText("Assigened To").Width("200").Add();
+       col.Field("createdby_Name").HeaderText("created by").Width("80").Add();
+   }).AllowPaging().PageSettings(page => page.PageCount(10)).Toolbar(new List<string>() { "Search" }).Render()
+
+    </div>
+</div>
+
+<script id="tmpAction" type="text/x-template">
+    <a class="${DisplayName}">${DisplayName} </a>
+</script>
+
+@Html.IncludeVersionedJs(Url.Content("~/assets/design/Scripts/SyncScripts.js"))
+@(Html.EJS().ScriptManager())

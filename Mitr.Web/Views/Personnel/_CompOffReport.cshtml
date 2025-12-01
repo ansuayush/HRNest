@@ -1,0 +1,54 @@
+﻿@model DataSet
+@using System.Data
+    <div id="" class="slr-dtl-box ">
+        <div class="row">
+            <div class="col-sm-2"><img class="l-header-logo-link-img" src="../images/logo.jpg" alt=""></div>
+            <div class="col-sm-8 text-center"><strong class="mtr-o-clr">CENTRE FOR CATALYZING CHANGE</strong><br> <small>C-1 Hauz Khas, New Delhi - 110016</small></div>
+
+            <div class="col-sm-2"><img class="l-header-logo-link-img " src="../images/mitr-logo.jpg" alt=""></div>
+        </div>
+        <hr>
+
+        <div class="table-responsive">
+            <table id="datatable" class="table text-left table-striped">
+                <thead>
+                    <tr>
+                        <th><div style="width:60px;">Code</div></th>
+                        <th><div style="width:100px;">Name</div> </th>
+                        <th><div style="width:100px;">Date</div></th>
+                        <th>Description</th>
+                        <th>Applied Hours</th>
+                        <th>Approved Hours  </th>
+                        <th>Leave Hours </th>
+                        <th>Lapse Hours </th>
+                        <th>Laspse Date </th>
+                        <th>Days Upto  </th>
+                        <th>Balance Hours </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model != null)
+                    {
+                        foreach (DataRow item in Model.Tables[0].Rows)
+                        {
+                            <tr>
+                                <td>@item["emp_code"]</td>
+                                <td>@item["emp_name"]</td>
+                                <td>@(Convert.ToDateTime(item["date"]).Year == 1900 ? "-" : Convert.ToDateTime(item["date"]).ToString("dd-MMM-yyyy"))</td>
+                                <td>@item["description"]</td>
+                                <td>@item["hours"]</td>
+                                <td>@item["approve_hours"]</td>
+                                <td>@item["leave_applied"]</td>
+                                <td>@item["lapse_hours"]</td>
+                                <td>@(Convert.ToDateTime(item["lapse_date"]).Year == 1900 ? "-" : Convert.ToDateTime(item["lapse_date"]).ToString("dd-MMM-yyyy"))</td>
+                                <td>@item["noofdays"]</td>
+                                <td></td>
+                            </tr>
+                        }
+
+                    }
+
+                </tbody>
+            </table>
+        </div>
+    </div>

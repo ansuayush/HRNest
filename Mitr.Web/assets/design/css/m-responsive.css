@@ -1,0 +1,75 @@
+@media screen and (max-width:799px){
+    .m_login-bg {background-position: 0px 0px;}
+}
+@media screen and (max-width:575px){
+    .m_login-bg {
+        background-position: 0px 80px;
+    }
+    .prfcardinfo .image {
+        width: 70px;
+        height: 70px;
+    }
+    .prfcardinfo .image img {
+        width: 68px;
+        height: 68px;
+    }
+    .l-hamburger{display: none !important;}
+    .m-container{width: 100%;}
+    .stellarnav.dark a {
+        color: #fff;
+    }
+    .stellarnav .menulastchild .menu-list:last-child ul {
+        top: 0px;
+    }
+    .wf-575{width: 50%; float: left;}
+}
+
+@media screen and (max-width:450px){
+    .m-header {background-position: 0px 0px;}
+    .righsidetxt h4{font-size: 16px}
+    .m-header {padding: 14px 0px;}
+}
+
+
+
+
+
+@media screen and (max-width:420px){
+    .m_login-bg{background-position: 0px 51px;}    
+}
+@media screen and (max-width:400px){
+        .m_login-bg{background-position: 0px 51px;}    
+    .m-header {background-position: -40px -10px;}
+    .prfcardinfo {margin: 0px auto 0px 40px;}
+}
+@media screen and (max-width: 350px){
+    .m-header {background-position: -80px -10px;}
+    
+}
+
+@media screen and (max-width:375px){
+    .m_login-bg{background-position: -22px 52px}    
+    .mlgnhdr h1 {
+        font-size: 24px;
+        margin: 5px 0px 0px;
+    }
+    .mlgnhdr {top: 23px;}
+}
+@media screen and (max-width:360px){
+.m_login-bg {
+    background-position: 0px 50px;
+}
+}
+
+
+@media screen and (max-width:330px){
+    .m_login-bg {
+        background-position: 0px 40px;
+    }
+
+    .mlgnhdr {position: inherit; margin: 100px 0px 40px;}
+    .m-loginftr {
+        position: inherit;
+        margin: 0px auto 20px;     
+    }
+}

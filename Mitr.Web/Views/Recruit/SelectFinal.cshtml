@@ -1,0 +1,191 @@
+﻿@model Recruit.Final_Preference
+<div class="inner-main mb-5 pb-0">
+	<h1 class="heading-one ">Final Preference for Program Officer</h1>
+
+	@{ Html.RenderAction("ViewRequests", "Recruit", new { src = clsApplicationSetting.EncryptQueryString(ViewBag.MenuID.ToString() + " */Recruit/ViewRequests*" + ViewBag.REC_ReqID) }); }
+
+</div>
+
+@using (Ajax.BeginForm("SelectFinal", "Recruit",
+new { src = ViewBag.src },
+new AjaxOptions { HttpMethod = "POST", OnSuccess = "SelectFinalSuccess", OnBegin = "ShowLoadingDialog();", OnFailure = "CloseLoadingDialog();" },
+new
+{
+	@id = "SelectFinalSuccessFrom",
+	enctype = "multipart/form-data"
+})
+)
+{
+
+	<div class="row">
+		<div class="col-sm-12">
+			<strong>Staff List</strong>
+			<div class="table-responsive">
+				<table class="table mt-2">
+					<thead>
+						<tr>
+							<th scope="col" rowspan="2">Sno.</th>
+							<th scope="col" rowspan="2">Name</th>
+							<th scope="col" class="text-center" colspan="3">Impacts</th>
+							<th scope="col" class="text-center" colspan="@Model.StaffList.Select(x => x.ApproverName).Distinct().Count()">Recommenders</th>
+							<th scope="col" rowspan="2">Action</th>
+
+						</tr>
+						<tr>
+							<th scope="col" rowspan="1">Relocation</th>
+							<th scope="col" rowspan="1">Job Title</th>
+							<th scope="col" rowspan="1">Pillar</th>
+							@foreach (var item in Model.StaffList.Select(x => x.ApproverName).Distinct())
+							{
+								<th scope="col" rowspan="1">@item</th>
+							}
+						</tr>
+					</thead>
+					<tbody>
+						@{ int Count = 0;
+
+							var DistinctList = Model.StaffList.GroupBy(x => x.EmpID)
+				  .Select(x => new
+				  {
+					  EmpID = x.Key,
+					  EMPCode = x.Select(ex => ex.EMPCode).FirstOrDefault(),
+					  EmpName = x.Select(ex => ex.EmpName).FirstOrDefault(),
+					  RelocationByHR = x.Select(ex => ex.RelocationByHR).FirstOrDefault(),
+					  Relocation = x.Select(ex => ex.Relocation).FirstOrDefault(),
+					  JobTitleByHR = x.Select(ex => ex.JobTitleByHR).FirstOrDefault(),
+					  JobTitle = x.Select(ex => ex.JobTitle).FirstOrDefault(),
+					  PillarByHR = x.Select(ex => ex.PillarByHR).FirstOrDefault(),
+					  Pillar = x.Select(ex => ex.Pillar).FirstOrDefault(),
+					  Selected = x.Select(ex => ex.Selected).FirstOrDefault()
+				  })
+				  .ToList();
+
+						}
+
+						@foreach (var myitem in DistinctList)
+						{
+							Count++;
+							<tr>
+								<td>
+									@Count
+								</td>
+								<td>@myitem.EmpName (@myitem.EMPCode) </td>
+								<td>
+									@myitem.RelocationByHR
+									@if (myitem.Relocation != myitem.RelocationByHR)
+									{
+										<i class="fas fa-info-circle"></i>
+									}
+								</td>
+								<td>
+									@myitem.JobTitleByHR
+									@if (myitem.JobTitle != myitem.JobTitleByHR)
+									{
+										<i class="fas fa-info-circle"></i>
+									}
+								</td>
+								<td>
+									@myitem.PillarByHR
+									@if (myitem.Pillar != myitem.PillarByHR)
+									{
+										<i class="fas fa-info-circle"></i>
+									}
+								</td>
+								@foreach (var item in Model.StaffList.Select(x => x.ApproverName).Distinct())
+								{
+									string Comment = Model.StaffList.Where(x => x.ApproverName == item && x.EmpID == myitem.EmpID).Select(x => x.comment).FirstOrDefault();
+									int Preference = Model.StaffList.Where(x => x.ApproverName == item && x.EmpID == myitem.EmpID).Select(x => x.Preference).FirstOrDefault();
+									<td>
+
+										@Html.Raw(Preference==0? "<span class='red-clr'>NA</span>": Preference.ToString())
+
+										@if (!string.IsNullOrEmpty(Comment))
+										{
+											<i class="fas fa-info-circle td-info" data-toggle="tooltip" data-placement="right" data-original-title="@Comment"></i>
+										}
+									</td>
+								}
+								<td>
+									@if (Model.IsBtnVisible)
+									{
+										@Html.RadioButtonFor(x => x.ApproveCandidate, @myitem.EmpID.ToString(), new { @ID = "ChekAgree", @class = "chkagree" })
+										<label for="ChekAgree"> </label>
+									}
+									else
+									{
+										if (myitem.Selected == 1)
+										{
+											<span class="green-clr">Selected</span>
+										}
+									}
+
+								</td>
+
+							</tr>
+						}
+					</tbody>
+
+				</table>
+				@if (Model.IsBtnVisible)
+				{
+					<div class="col-sm-12 text-right mt-2">
+						<div class="col-lg-8 col-md-8 col-sm-8  form-group">
+							<label>Remarks</label>
+							@Html.TextAreaFor(x => Model.Remarks, new { @class = "form-control" })
+							@Html.ValidationMessageFor(model => model.Remarks, "", new { @class = "text-danger" })
+						</div>
+						<div class="col-lg-4 col-md-4 col-sm-4  form-group">
+							<ul class="list-unstyled radio-btn">
+								<li class="radio">
+									@Html.RadioButtonFor(x => x.ApproveCandidate, "None", new { @ID = "None" })
+									<label for="None" class="radio-label red-clr">None of the Above</label>
+								</li>
+							</ul>
+						</div>
+						@Html.ValidationMessageFor(model => model.ApproveCandidate, "", new { @class = "text-danger" })
+					</div>
+				}
+				else
+				{
+					<p>@Model.Remarks</p>
+				}
+			</div>
+		</div>
+
+	</div>
+	if (Model != null)
+	{
+		if (Model.IsBtnVisible)
+		{
+			<div class="row">
+				<div class="col-lg-12 text-right">
+					<button type="submit" class="btn  mtr-o-grn mb-0 btn-l ripplelink" name="Command" value="Add"><i class="fa fa-paper-plane" aria-hidden="true"></i> Submit</button>
+				</div>
+
+			</div>
+		}
+	}
+
+}
+
+
+
+@section scripts    {
+
+	@System.Web.Optimization.Scripts.Render("~/bundle/unobtrusivejs")
+	@Html.IncludeVersionedJs(Url.Content("~/assets/design/Scripts/AddInit.js"))
+
+	<script>
+		function SelectFinalSuccess(obj) {
+
+			if (obj.Status) {
+				SuccessToaster(obj.SuccessMessage);
+				window.location.href = obj.RedirectURL;
+			}
+			else {
+				CloseLoadingDialog();
+				FailToaster(obj.SuccessMessage);
+			}
+		}
+	</script>
+}

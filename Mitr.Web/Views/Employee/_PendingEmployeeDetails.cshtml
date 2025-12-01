@@ -1,0 +1,67 @@
+﻿@model IList<Employee.List>
+@section style{
+	@System.Web.Optimization.Styles.Render("~/bundle/dataTablecss")
+}
+<div id="pending" class="card tab-pane active show fade" role="tabpanel" aria-labelledby="tab-C">
+
+	<div class="card-header" role="tab" id="heading-C">
+		<h5 class="mb-0"> <a class="collapsed" data-toggle="collapse" href="#collapse-C" aria-expanded="false" aria-controls="collapse-C">Pending<i class="fas fa-cogs"></i></a> </h5>
+	</div>
+	<div id="collapse-C" class="collapse" role="tabpanel" data-parent="#content" aria-labelledby="heading-C">
+		
+		<div class="table-responsive">
+			<table class="table mt-0">
+				<thead>
+					<tr>
+						<th width="33">S.No</th>
+						<th width="80">REC.No</th>
+						<th width="100">Employee Code</th>
+						<th>Employee Name </th>
+						<th width="80">Category</th>
+						<th width="200">Job Title</th>
+						<th width="100">Department</th>
+						<th width="100">Location</th>
+						<th width="100">Date of Joining</th>
+						<th width="80">Req Date</th>
+						<th width="80">Status</th>
+						<th width="70">Action</th>
+					</tr>
+				</thead>
+				<tbody>
+					@{ int count = 0;}
+					@if (Model != null)
+					{
+						foreach (var item in Model.Where(x=>x.Status == "Pending" || x.Status == "Partially").ToList())
+						{
+							count++;
+					<tr>
+
+						<td class="hdfempid">@count<input type="hidden" value="@item.ID" id="hdfEmp" /></td>
+						<td>@item.REC_Code</td>
+						<td class="hdfempcode">@item.emp_code<input type="hidden" value="@item.emp_code" id="hdfempcode" /></td>
+						<td class="hdfempname">@item.emp_name	<input type="hidden" value="@item.emp_name" id="hdfempname" /></td>
+						<td class="hdfMUID">@item.emp_type <input type="hidden" value="@item.MUID" id="hdfMUID" /></td>
+						<td class="hdfdoctype">@item.JobTitle<input type="hidden" value="@item.DocType" id="hdfdoctype" /></td>
+						<td>@item.Department</td>
+						<td>@item.Location</td>
+						<td>@item.DateOfJoining</td>
+						<td>@item.createdat</td>
+						<td>@item.Status</td>
+						<td class="text-left"><a href="" onclick="ModalAdd(this);" data-toggle="modal" data-target="#ae"><i class="fas fa-eye"></i>View</a></td>
+					</tr>
+						}
+					}
+
+
+</table>
+		</div>
+	</div>
+	
+</div>
+@section scripts    {
+	@System.Web.Optimization.Scripts.Render("~/bundle/dataTablesjs")
+	@System.Web.Optimization.Scripts.Render("~/bundle/unobtrusivejs")
+	@Html.IncludeVersionedJs(Url.Content("~/assets/design/Scripts/AddInit.js"))
+	@Html.IncludeVersionedJs(Url.Content("~/assets/design/Scripts/ToolTip.js"))
+
+}

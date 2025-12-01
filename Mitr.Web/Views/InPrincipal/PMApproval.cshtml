@@ -1,0 +1,201 @@
+﻿@model Mitr.Models.Principal
+@{
+	ViewBag.Title = "PMApproval";
+	Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@section style{
+	@System.Web.Optimization.Styles.Render("~/bundle/dataTablecss")
+}
+<div class="inner-main defult-height p-3 pb-0">
+	<h1 class="heading-one  mb-3">Project Manager Approval</h1>
+	<div class="">
+		<div id="collapse-A" class="collapse show" data-parent="#content" role="tabpanel" aria-labelledby="heading-A">
+			<div class="table-responsive">
+				<table class="table mt-12">
+					<thead>
+						<tr>
+							<th width="10">S.No</th>
+							<th width="10">TRNo</th>
+							<th width="10">Traveller Name</th>
+							<th width="450">Traveller Details</th>
+							<th width="80">Project Name</th>
+							<th width="140">Cost Center Name</th>
+							<th width="110">Action</th>
+						</tr>
+					</thead>
+					<tbody>
+						@{ int ProjectCount = 0;}
+						@foreach (var item in Model.listprincipal)
+						{
+							ProjectCount++;
+						<tr>
+							<td class="hdftableid">
+								@ProjectCount
+								<input type="hidden" name="TRNO" value="@item.travel_id" />
+							</td>
+
+							<td class="hdftableprojectdetid">
+								@item.travel_id
+								<input type="hidden" name="ProjectDetId" value="@item.ID" />
+							</td>
+							<td>@item.traveller_name</td>
+							<td>@Html.Raw(@item.TravelDetails)</td>
+							<td>@item.proj_name</td>
+							<td>@item.costcenter_name</td>
+							@if (item.Approved == 0)
+							{
+								<td class="text-left">
+									<button type="submit" name="Command" onclick="ViewTravelRequest(this)" class="btn-none">
+										<i class="far fa-eye"></i>View
+									</button><span class="divline">|</span>
+
+									<button onclick="Confirm(this)" class="btn-none green-clr ">
+										<i class="fa fa-check"></i>Approve
+									</button><span class="divline">|</span>
+									<button onclick="Cancel(this)" class="btn-none rct-clr RejectRequest">
+										<i class="fa fa-ban"></i>Reject
+									</button>
+								</td>
+							}
+							else
+							{
+								<td>Approved</td>
+							}
+
+
+						</tr>
+						}
+
+
+
+					</tbody>
+				</table>
+			</div>
+		</div>
+	</div>
+</div>
+<div class="modal fade pop-dgn" id="TravelRequestModal">
+	<div class="modal-dialog mdl-lg">
+		<div class="modal-content">
+			<div id="UpdateModalTravelRequest"></div>
+		</div>
+	</div>
+</div>
+@section scripts    {
+	@System.Web.Optimization.Scripts.Render("~/bundle/unobtrusivejs");
+	<script>
+
+
+
+
+		function ViewTravelRequest(obj) {
+			 
+			   var TravelRequestID = parseInt($(obj).closest('tr').find("td.hdftableid input[type='hidden']").val());
+			$.ajax({
+				url: "/InPrincipal/_ViewTravelRequest",
+				type: "Get",
+				data: { src: EncryptQueryStringJSON(@ViewBag.MenuID+"*" + "/InPrincipal/_ViewTravelRequest" + "*" + TravelRequestID) },
+                success: function (data)
+                {
+					$("#UpdateModalTravelRequest").empty();
+                    $("#UpdateModalTravelRequest").html(data);
+                    $("#TravelRequestModal").modal("show");
+
+				},
+				error: function (er) {
+				  FailToaster(er);
+				}
+			});
+            }
+		function Cancel(obj) {
+		
+			var TravelRequestID = parseInt($(obj).closest('tr').find("td.hdftableid input[type='hidden']").val());
+			var ProjectDetId = parseInt($(obj).closest('tr').find("td.hdftableprojectdetid input[type='hidden']").val());
+	
+			if (TravelRequestID > 0 && ProjectDetId > 0) {
+
+				ConfirmMsgBox("Are you sure to Reject this Request.", '', function () {
+
+					RejectRequest(TravelRequestID, ProjectDetId);
+
+				});
+						}
+			else {
+				ConfirmMsgBox("something wrong .", '', function () {
+
+
+
+				});
+			}
+
+
+		}
+		function Confirm(obj) {
+		
+			var TravelRequestID = parseInt($(obj).closest('tr').find("td.hdftableid input[type='hidden']").val());
+			var ProjectDetId = parseInt($(obj).closest('tr').find("td.hdftableprojectdetid input[type='hidden']").val());
+
+			if (TravelRequestID > 0 && ProjectDetId > 0) {
+
+				ConfirmMsgBox("Are you sure to approve this Request.", '', function () {
+
+					ApproveRequest(TravelRequestID, ProjectDetId);
+
+				});
+			}
+			else {
+				ConfirmMsgBox("something wrong .", '', function () {
+
+
+
+				});
+			}
+
+
+		}
+		function ApproveRequest(TravelRequestID, ProjectDetId) {
+		
+			$.ajax({
+				url: "/CommonAjax/ApprovedManagerTravelRequestJson",
+				type: "Get",
+				async: true,
+				data: { TravelRequestID: TravelRequestID, ProjectDetId: ProjectDetId },
+				success: function (data) {
+					if (data == 1) {
+						SuccessToaster(' Request Approve successfully');
+						window.location.reload();
+					}
+					else {
+						FailToaster('Can not Approve.')
+					}
+				},
+				error: function (er) {
+					alert(er);
+				}
+			});
+		}
+		function RejectRequest(TravelRequestID, ProjectDetId) {
+			
+			$.ajax({
+				url: "/CommonAjax/RejectManagerTravelRequestJson",
+				type: "Get",
+				async: true,
+				data: { TravelRequestID: TravelRequestID, ProjectDetId: ProjectDetId },
+				success: function (data) {
+					if (data == 1) {
+						SuccessToaster(' Request Reject successfully');
+						window.location.reload();
+					}
+					else {
+						FailToaster('Can not Reject.')
+					}
+				},
+				error: function (er) {
+					alert(er);
+				}
+			});
+		}
+	</script>
+
+
+}

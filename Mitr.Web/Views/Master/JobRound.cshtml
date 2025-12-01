@@ -1,0 +1,400 @@
+﻿@model Mitr.Models.ViewJobDetails
+@using System.Data
+
+<div class="row">
+	<div class="col-sm-12 text-right ">
+		<a class="btn mtr-g-grn btn-l ripplelink pull-right btnAddRound">
+			<i class="fas fa-plus"></i>Add Round
+		</a>
+	</div>
+</div>
+<div class="row  text-clr">
+	<div class="col-lg-3 col-md-4 col-sm-6  form-group">
+		<label>Job Code</label>
+		<input type="text" disabled value="@Model.Job.JobCode" class="form-control">
+	</div>
+
+	<div class="col-lg-3 col-md-4 col-sm-6  form-group">
+		<label>Title</label>
+		<input type="text" disabled value="@Model.Job.Title" class="form-control">
+	</div>
+
+	<div class="col-lg-3 col-md-4 col-sm-6  form-group">
+		<label>Experience</label>
+		<input type="text" disabled value="@Model.Job.Experience" class="form-control">
+	</div>
+
+	<div class="col-lg-3 col-md-4 col-sm-6  form-group">
+		<label>Notice Period</label>
+		<input type="text" disabled value="@Model.Job.NoticePeriod" class="form-control">
+	</div>
+</div>
+
+
+<div class="inner-main mb-5 pb-0">
+	<div class="tab-main tab-main-scd mb-3">
+		<ul id="tabs" class="nav nav-tabs " role="tablist">
+			@{ int countA = 0;}
+			@foreach (var item in Model.JobRoundList)
+			{
+				countA++;
+				<li class="nav-item">
+					<a id="tab-B" href="#A_@countA" class="nav-link @(countA==1?"active":"") ripplelink" data-toggle="tab" role="tab">
+						<strong>@item.RoundName</strong>
+					</a>
+				</li>
+			}
+		</ul>
+		<div id="content" class="tab-content shadow-box p-0" role="tablist">
+			@{ int countB = 0;}
+			@foreach (var item in Model.JobRoundList)
+			{
+				countB++;
+				<div id="A_@countB" class="card tab-pane fade @(countB==1?"show active":"")" role="tabpanel" aria-labelledby="tab-B">
+					<div class="card-header" role="tab" id="heading-B">
+						<h5 class="mb-0"> <a class="collapsed" data-toggle="collapse" href="#collapse-1" aria-expanded="false" aria-controls="collapse-B">Round 1</a> </h5>
+					</div>
+					<div id="collapse-1" class="collapse" data-parent="#content" role="tabpanel" aria-labelledby="heading-B">
+						<div class="card-body">
+							<div class="row">
+								<div class="col-sm-11">
+									<strong>Description</strong>
+									<p>@item.RoundDesc</p>
+								</div>
+								<div class="col-sm-1">
+									<input type="hidden" name="I" value="@item.JobDetailsID" />
+									<input type="hidden" name="N" value="@item.RoundName" />
+									<a class="btnEdit"><i class="fas fa-edit checkgreen" aria-hidden="true"></i></a>
+									<a class="btnDelete"><i class="fas fa-trash red-clr" aria-hidden="true"></i></a>
+								</div>
+								<div class="col-sm-12">
+									<strong class="green-clr">Member Setting</strong>
+									@if (item.JobMemberList != null)
+									{
+										<div class="table-responsive">
+											<table class="table">
+												<thead>
+													<tr>
+														<th>Member Type</th>
+														<th>Member Type</th>
+														<th>Email ID</th>
+
+													</tr>
+												</thead>
+												<tbody>
+													@foreach (var item12 in item.JobMemberList)
+													{
+														<tr>
+															<td>@item12.Name</td>
+															<td>@item12.RoundMemberType</td>
+															<td>@item12.Email</td>
+
+														</tr>
+													}
+
+												</tbody>
+											</table>
+										</div>
+									}
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			}
+
+
+		</div>
+
+	</div>
+</div>
+
+<div class="modal fade pop-dgn" id="addround">
+	<div class="modal-dialog mdl-sm">
+		<div class="modal-content">
+
+			<div class="modal-header blk-gdn-btn">
+				<h4 class="modal-title"><i class="fas fa-plus"></i>Add Round </h4>
+				<div class="close" data-dismiss="modal">&times;</div>
+			</div>
+
+			<div class="modal-body">
+				<div id="TargetDiv"></div>
+			</div>
+		</div>
+	</div>
+</div>
+
+
+
+@section scripts    {
+	<script src="~/assets/design/Scripts/AddInit.js?v=@clsApplicationSetting.GetWebConfigValue("Version")"></script>
+	@System.Web.Optimization.Scripts.Render("~/bundle/unobtrusivejs")
+	<script>
+    $(".btnAddRound").click(function (e) {
+            ShoAddRound(0);
+    });
+
+		$(".btnEdit").click(function (e) {
+			var I = $(this).closest("div").find("input:hidden[name=I]").val();
+			ShoAddRound(I);
+		});
+
+
+		$(".btnDelete").click(function (e) {
+			var I = $(this).closest("div").find("input:hidden[name=I]").val();
+			var Name = $(this).closest("div").find("input:hidden[name=N]").val();
+			DeleteRound(I, Name);
+		});
+		function DeleteRound(ID,Name) {
+			ConfirmMsgBox('Are you sure want to delete ' + Name, '', function () {
+				ShowLoadingDialog();
+				$.ajax({
+					url: "/CommonAjax/DeleteJobRoundJSON",
+					type: "Get",
+					async: true,
+					data: { JobDetailsID: ID },
+					success: function (data) {
+						if (data.Status) {
+							window.location.reload();
+						}
+						else {
+							CloseLoadingDialog();
+							FailToaster(data.SuccessMessage);
+						}
+					},
+					error: function (er) {
+						alert(er);
+					}
+				});
+			});
+		}
+
+    function HideShowmemberTD(obj) {
+        var a = $(obj).find("option:selected").val();
+
+        if (a === "Internal") {
+
+
+              $(obj).closest("tr").find("td.Internal").show();
+              $(obj).closest("tr").find("td.External").hide();
+          }
+          else {
+               $(obj).closest("tr").find("td.Internal").hide();
+              $(obj).closest("tr").find("td.External").show();
+          }
+    }
+
+                function FillEmpName(obj)
+                {
+                    var a = $(obj).find("option:selected").text();
+                    var b = $(obj).find("option:selected").attr("email");
+
+                    $(obj).closest("tr").find("td .txtname").val(a)
+                    $(obj).closest("tr").find("td .txtemail").val(b)
+
+                }
+
+		function ShoAddRound(ID) {
+			ShowLoadingDialog();
+			$.ajax({
+                url: "/Master/_AddJobRound",
+				type: "Get",
+				data: { src: EncryptQueryStringJSON(@ViewBag.MenuID+"*" + "/Master/_AddJobRound" + "*" + @ViewBag.JobID+"*" + ID) },
+                success: function (data)
+                {
+					$("#TargetDiv").empty();
+                    $("#TargetDiv").html(data);
+                    $("#addround").modal("show");
+					CloseLoadingDialog();
+
+                     $(".btnAddRowMember").click(function (e) {
+						   AddNewRow();
+                     });
+
+                    var form = $("form")
+                .removeData("validator")
+                .removeData("unobtrusiveValidation");
+                    $.validator.unobtrusive.parse(form);
+                    $(".applyselect").select2();
+
+                     $(".ddmembertype").change(function () {
+							HideShowmemberTD(this);
+					  });
+
+				$(".ddEmpList").change(function () {
+						FillEmpName(this);
+				});
+
+
+				},
+				error: function (er) {
+					alert(er);
+
+				}
+			});
+    }
+
+
+
+
+           function AddNewRow() {
+               var LastTRCount = parseInt($('#tblmember').find("tbody tr").length) - 1;
+                $('.applyselect').select2("destroy");
+            var $tableBody = $('#tblmember').find("tbody"),
+                $trLast = $tableBody.find("tr:last"),
+                $trNew = $trLast.clone();
+            $trNew.find("td:last").html('<a onclick="DeleteRow(this)" class="remove" data-toggle="tooltip" title="Remove"><i class="fas fa-window-close red-clr m-0" aria-hidden="true"></i></a>')
+
+
+            $trNew.find("div").each(function () {
+                $(this).attr({
+                    'id': function (_, id) { var arr = id.split('_'); return id.replace(arr[1], LastTRCount + 1); },
+                });
+
+            });
+
+            $trNew.find("label").each(function () {
+                $(this).attr({
+                    'id': function (_, id) { var arr = id.split('_'); return id.replace(arr[1], LastTRCount + 1); },
+                });
+                $(this).html(parseInt($('#tblmember').find("tbody tr").length) + 1)
+            });
+
+                $trNew.find("select").each(function (i) {
+                $(this).attr({
+                    'id': function (_, name) { return name.replace('_' + LastTRCount + '_', '_' + (parseInt(LastTRCount) + 1) + '_'); },
+                    'name': function (_, name) { return name.replace('[' + LastTRCount + ']', '[' + (parseInt(LastTRCount) + 1) + ']'); },
+                });
+
+                    if ($(this).find("option:selected").val() === "Internal") {
+                        $(this).closest("tr").find("td.Internal").show();
+                        $(this).closest("tr").find("td.External").hide();
+                    }
+                    else if ($(this).find("option:selected").val() === "External") {
+                        $(this).closest("tr").find("td.Internal").hide();
+                        $(this).closest("tr").find("td.External").show();
+                    }
+                    else {
+                        $(this).val('');
+                    }
+
+
+
+
+
+            });
+            $trNew.find("input").each(function (i) {
+                $(this).attr({
+                    'id': function (_, name) { return name.replace('_' + LastTRCount + '_', '_' + (parseInt(LastTRCount) + 1) + '_'); },
+                    'name': function (_, name) { return name.replace('[' + LastTRCount + ']', '[' + (parseInt(LastTRCount) + 1) + ']'); },
+                });
+                $(this).val('')
+            });
+
+
+            $trNew.find("span").each(function (i) {
+                if ($(this).attr("data-valmsg-for")) {
+                    $(this).attr({
+                        'data-valmsg-for': function (_, name) { return name.replace('[' + LastTRCount + ']', '[' + (parseInt(LastTRCount) + 1) + ']'); }
+                    });
+                }
+                if ($(this).attr("for")) {
+                    $(this).attr({
+                        'for': function (_, name) { return name.replace('_' + LastTRCount + '_', '_' + (parseInt(LastTRCount) + 1) + '_'); }
+                    });
+                }
+            });
+
+            $trLast.after($trNew);
+            var form = $("#_AddJobRoundFrom").closest("form");
+            form.removeData('validator');
+            form.removeData('unobtrusiveValidation');
+            $.validator.unobtrusive.parse(form);
+               $('[data-toggle="tooltip"]').tooltip();
+               $(".applyselect").select2();
+                $(".ddmembertype").change(function () {
+                    HideShowmemberTD(this);
+                     });
+               $(".ddEmpList").change(function () {
+          FillEmpName(this);
+      });
+        }
+
+
+        function DeleteRow(obj) {
+            var count = 0;
+            var TotalRowCount = $('#tblmember').find("tbody tr").length;
+            ConfirmMsgBox("Are you sure want to delete", '', function () {
+
+                $(obj).closest('tr').remove();
+                $("#tblmember TBODY TR").each(function (i) {
+                    $(this).closest("tr").find("label").each(function () {
+                        $(this).attr({
+                            'id': function (_, id) { var arr = id.split('_'); return id.replace(arr[1], i); },
+                        });
+                        $(this).html(i + 1)
+                    });
+
+                    $(this).closest("tr").find("div").each(function () {
+                        $(this).attr({
+                            'id': function (_, id) { var arr = id.split('_'); return id.replace(arr[1], i); },
+                        });
+                    });
+
+
+                    $(this).closest("tr").find("input").each(function () {
+                        $(this).attr({
+                            'id': function (_, id) { return id.replace('_' + (parseInt(i) + 1) + '_', '_' + i + '_'); },
+                            'name': function (_, name) { return name.replace('[' + (parseInt(i) + 1) + ']', '[' + i + ']'); },
+                        });
+
+                    });
+
+
+
+                    $(this).closest("tr").find("textarea").each(function () {
+                        $(this).attr({
+                            'id': function (_, id) { return id.replace('_' + (parseInt(i) + 1) + '_', '_' + i + '_'); },
+                            'name': function (_, name) { return name.replace('[' + (parseInt(i) + 1) + ']', '[' + i + ']'); },
+                        });
+
+                    });
+
+
+                    $(this).closest("tr").find("span").each(function () {
+                        if ($(this).attr("data-valmsg-for")) {
+                            $(this).attr({
+                                'data-valmsg-for': function (_, name) { return name.replace('[' + (parseInt(i) + 1) + ']', '[' + i + ']'); },
+                            });
+                        }
+                        if ($(this).attr("for")) {
+                            $(this).attr({
+                                'for': function (_, id) { return id.replace('_' + (parseInt(i) + 1) + '_', '_' + i + '_'); },
+                            });
+                        }
+                    });
+                });
+                var form = $("#_AddJobRoundFrom").closest("form");
+                form.removeData('validator');
+                form.removeData('unobtrusiveValidation');
+                $.validator.unobtrusive.parse(form);
+
+            })
+            }
+
+
+		function ActionOnSuccess(obj) {
+			
+        if (obj.Status) {
+                SuccessToaster(obj.SuccessMessage);
+                window.location.reload();
+            }
+            else {
+			CloseLoadingDialog();
+			FailToaster(obj.SuccessMessage);
+            }
+
+        }
+	</script>
+}

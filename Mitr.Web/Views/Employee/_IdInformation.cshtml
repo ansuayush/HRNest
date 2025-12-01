@@ -1,0 +1,524 @@
+﻿@model Employee.IDInfoNew
+<div class="tab-pane fade show active" id="idi" role="tabpanel" aria-labelledby="contact-tab">
+	<div class="table-responsive">
+		<table class="table td-border-none th-bg-none   m-0">
+			<thead>
+				<tr>
+					<th width="350"></th>
+					@if (ViewBag.status == 1)
+					{
+
+
+						<th class="lgt-clr">OLD</th>
+					}
+					else
+					{
+						<th width="250" class="lgt-clr">OLD</th>
+						<th class="lgt-clr">NEW</th>
+					}
+
+					<th width="10" class="text-center"></th>
+				</tr>
+			</thead>
+			<tbody>
+
+
+				<tr>
+					<td colspan="3"><h2 class="headingtwo"><i class="fas fa-id-card"></i>Voter ID</h2></td>
+					<td>
+						@if (ViewBag.status == 0)
+						{
+							<input class="cbx-select-group selectallV" id="selectallV" type="checkbox" value="pf" />
+							<label class="m-0" for="selectallV" data-toggle="tooltip" title="Select All"></label>
+						}
+
+					</td>
+				</tr>
+				<tr>
+					<td>Voter ID</td>
+					@if (ViewBag.status == 0)
+					{
+						<td>@ViewBag.VoterId</td>
+					}
+
+					@if (Model.VoterId != null)
+					{
+						<td class="fn-bold">@Model.VoterId</td>
+					}
+					else
+					{
+						<td class="fn-bold">-</td>
+					}
+					@if (Model.HRVVoterId == 0)
+					{
+						<td class="text-center">
+							<input class="cbx-group-pf  selectedVI" disabled id="cbx-group-pf-41" type="checkbox" value="VoterId_@Model.EMPId+@Model.VoterId+@Model.MUID" />
+							<label class="m-0 ipbdr-none" for="cbx-group-pf-41"></label>
+						</td>
+					}
+					else
+					{
+						<td class="text-center">
+							<input class="cbx-group-pf " disabled checked id="cbx-group-pf-41" type="checkbox" value="VoterId_@Model.EMPId+@Model.VoterId+@Model.MUID" />
+							<label class="m-0 ipbdr-none" for="cbx-group-pf-41"></label>
+						</td>
+					}
+
+				</tr>
+
+
+				<tr>
+					<td colspan="3"><h2 class="headingtwo"><i class="fas fa-id-card"></i>Passport</h2></td>
+					<td>
+						@if (ViewBag.status == 0)
+						{
+							<input class="cbx-select-group selectallP" id="selectallP" type="checkbox" value="h3" />
+							<label class="m-0" for="selectallP" data-toggle="tooltip" title="Select All"></label>
+						}
+
+					</td>
+				</tr>
+				<tr>
+					<td> Name</td>
+					@if (ViewBag.status == 0)
+					{
+						<td>@ViewBag.PassportName</td>
+					}
+
+					@if (Model.PassportName != null)
+					{
+						<td class="fn-bold">@Model.PassportName</td>
+					}
+					else
+					{
+						<td class="fn-bold">-</td>
+					}
+					@if (Model.HRVPassportName == 0)
+					{
+						<td class="text-center">
+							<input class="cbx-group-h3 selectedPD" disabled id="cbx-group-h3-50" type="checkbox" value="PassportName_@Model.EMPId+@Model.PassportName+@Model.MUID" />
+							<label class="m-0 ipbdr-none" for="cbx-group-h3-50"></label>
+						</td>
+					}
+					else
+					{
+						<td class="text-center">
+							<input class="cbx-group-h3 " disabled checked id="cbx-group-h3-50" type="checkbox" value="PassportName_@Model.EMPId+@Model.PassportName+@Model.MUID" />
+							<label class="m-0 ipbdr-none" for="cbx-group-h3-50"></label>
+						</td>
+					}
+
+				</tr>
+				<tr>
+					<td> No. </td>
+					@if (ViewBag.status == 0)
+					{
+						<td>@ViewBag.PassportNo</td>
+					}
+
+					@if (Model.PassportNo != null)
+					{
+						<td class="fn-bold">@Model.PassportNo</td>
+					}
+					else
+					{
+						<td class="fn-bold">-</td>
+					}
+
+					@if (Model.HRVPassportNo == 0)
+					{
+						<td class="text-center">
+							<input class="cbx-group-h3 selectedPD" disabled id="cbx-group-h3-49" type="checkbox" value="PassportNo_@Model.EMPId+@Model.PassportNo+@Model.MUID" />
+							<label class="m-0 ipbdr-none" for="cbx-group-h3-49"></label>
+						</td>
+					}
+					else
+					{
+						<td class="text-center">
+							<input class="cbx-group-h3" disabled checked id="cbx-group-h3-49" type="checkbox" value="PassportNo_@Model.EMPId+@Model.PassportNo+@Model.MUID" />
+							<label class="m-0 ipbdr-none" for="cbx-group-h3-49"></label>
+						</td>
+					}
+
+				</tr>
+				<tr>
+					<td>
+						Place Of Issue
+					</td>
+
+					@if (ViewBag.status == 0)
+					{
+						<td>@ViewBag.PlaceOfIssue</td>
+					}
+					@if (Model.PlaceOfIssue != null)
+					{
+						<td class="fn-bold">@Model.PlaceOfIssue</td>
+					}
+					else
+					{
+						<td class="fn-bold">-</td>
+					}
+					@if (Model.HRVPlaceOfIssue == 0)
+					{
+						<td class="text-center">
+							<input class="cbx-group-h3 selectedPD" disabled id="cbx-group-h3-491" type="checkbox" value="PlaceOfIssue_@Model.EMPId+@Model.PlaceOfIssue+@Model.MUID" />
+							<label class="m-0 ipbdr-none" for="cbx-group-h3-49"></label>
+						</td>
+					}
+					else
+					{
+						<td class="text-center">
+							<input class="cbx-group-h3" checked id="cbx-group-h3-491" disabled type="checkbox" value="PlaceOfIssue_@Model.EMPId+@Model.PlaceOfIssue+@Model.MUID" />
+							<label class="m-0 ipbdr-none" for="cbx-group-h3-49"></label>
+						</td>
+					}
+
+
+				</tr>
+				<tr>
+					<td>
+						Expiry Date
+					</td>
+
+					@if (ViewBag.status == 0)
+					{
+						<td>@ViewBag.ExpiryDate</td>
+					}
+					@if (Model.PassportExpiryDate != null)
+					{
+						<td class="fn-bold">@Model.PassportExpiryDate</td>
+					}
+					else
+					{
+						<td class="fn-bold">-</td>
+					}
+					@if (Model.HRVPassportExpiryDate == 0)
+					{
+
+						<td class="text-center">
+							<input class="cbx-group-h3 selectedPD" disabled id="cbx-group-h3-4911" type="checkbox" value="ExpiryDate_@Model.EMPId+@Model.PassportExpiryDate+@Model.MUID" />
+							<label class="m-0 ipbdr-none" for="cbx-group-h3-49"></label>
+						</td>
+					}
+					else
+					{
+
+						<td class="text-center">
+							<input class="cbx-group-h3" checked  disabled id="cbx-group-h3-4911" type="checkbox" value="ExpiryDate_@Model.EMPId+@Model.PassportExpiryDate+@Model.MUID" />
+							<label class="m-0 ipbdr-none" for="cbx-group-h3-49"></label>
+						</td>
+					}
+
+				</tr>
+
+
+
+				<tr>
+					<td colspan="3"><h2 class="headingtwo"><i class="fas fa-id-card"></i>Director Identification Number</h2></td>
+					<td>
+						@if (ViewBag.status == 0)
+						{
+							<input class="cbx-select-group selectallDin" id="selectallDin" type="checkbox" value="pt" />
+							<label class="m-0" for="selectallDin" data-toggle="tooltip" title="Select All"></label>
+						}
+
+					</td>
+				</tr>
+				<tr>
+					<td>Name</td>
+
+					@if (ViewBag.status == 0)
+					{
+						<td>@ViewBag.DNName</td>
+					}
+					@if (Model.NameonDIN != null)
+					{
+						<td class="fn-bold">@Model.NameonDIN</td>
+					}
+					else
+					{
+						<td class="fn-bold">-</td>
+					}
+
+					@if (Model.HRVNameonDIN == 0)
+					{
+						<td class="text-center">
+							<input class="cbx-group-pt selectedDin" disabled id="cbx-group-pt-4343" type="checkbox" value="NameonDIN_@Model.EMPId+@Model.NameonDIN+@Model.MUID" />
+							<label class="m-0 ipbdr-none" for="cbx-group-pt-43"></label>
+						</td>
+					}
+					else
+					{
+						<td class="text-center">
+							<input class="cbx-group-pt" checked id="cbx-group-pt-4343" disabled type="checkbox" value="NameonDIN_@Model.EMPId+@Model.NameonDIN+@Model.MUID" />
+							<label class="m-0 ipbdr-none" for="cbx-group-pt-43"></label>
+						</td>
+					}
+
+				</tr>
+
+				<tr>
+					<td>No.</td>
+
+					@if (ViewBag.status == 0)
+					{
+						<td>@ViewBag.DNNo</td>
+					}
+					@if (Model.DIN != null)
+					{
+						<td class="fn-bold">@Model.DIN</td>
+					}
+					else
+					{
+						<td class="fn-bold">-</td>
+					}
+					@if (Model.HRVDIN == 0)
+					{
+
+						<td class="text-center">
+							<input class="cbx-group-pt selectedDin" disabled id="cbx-group-pt-4545" type="checkbox" value="DIN_@Model.EMPId+@Model.DIN+@Model.MUID" />
+							<label class="m-0 ipbdr-none" for="cbx-group-pt-45"></label>
+						</td>
+					}
+					else
+					{
+
+						<td class="text-center">
+							<input class="cbx-group-pt" checked id="cbx-group-pt-4545" disabled type="checkbox" value="DIN_@Model.EMPId+@Model.DIN+@Model.MUID" />
+							<label class="m-0 ipbdr-none" for="cbx-group-pt-45"></label>
+						</td>
+					}
+				</tr>
+
+				<tr>
+					<td colspan="3"><h2 class="headingtwo"><i class="fas fa-id-card"></i>Driving License</h2></td>
+					<td>
+						@if (ViewBag.status == 0)
+						{
+							<input class="cbx-select-group selectallDl" id="selectallDl" type="checkbox" value="pt" />
+							<label class="m-0" for="selectallDl" data-toggle="tooltip" title="Select All"></label>
+						}
+
+					</td>
+				</tr>
+				<tr>
+					<td>
+						No
+					</td>
+
+					@if (ViewBag.status == 0)
+					{
+						<td>@ViewBag.DlNo</td>
+					}
+					@if (Model.DlNo != null)
+					{
+						<td class="fn-bold">@Model.DlNo</td>
+					}
+					else
+					{
+						<td class="fn-bold">-</td>
+					}
+					@if (Model.HRVDlno == 0)
+					{
+						<td class="text-center">
+							<input class="cbx-group-pt selectedDln" disabled id="cbx-group-pt-434" type="checkbox" value="DlNo_@Model.EMPId+@Model.DlNo+@Model.MUID" />
+							<label class="m-0 ipbdr-none" for="cbx-group-pt-43"></label>
+						</td>
+					}
+					else
+					{
+						<td class="text-center">
+							<input class="cbx-group-pt" checked id="cbx-group-pt-434" disabled type="checkbox" value="DlNo_@Model.EMPId+@Model.DlNo+@Model.MUID" />
+							<label class="m-0 ipbdr-none" for="cbx-group-pt-43"></label>
+						</td>
+					}
+
+
+				</tr>
+
+				<tr>
+					<td>Name</td>
+
+					@if (ViewBag.status == 0)
+					{
+						<td>@ViewBag.DlName</td>
+					}
+					@if (Model.DlName != null)
+					{
+						<td class="fn-bold">@Model.DlName</td>
+					}
+					else
+					{
+						<td class="fn-bold">-</td>
+					}
+					@if (Model.HRVDlName == 0)
+					{
+						<td class="text-center">
+							<input class="cbx-group-pt selectedDln" disabled id="cbx-group-pt-453" type="checkbox" value="DlName_@Model.EMPId+@Model.DlName+@Model.MUID" />
+							<label class="m-0 ipbdr-none" for="cbx-group-pt-45"></label>
+						</td>
+					}
+					else
+					{
+						<td class="text-center">
+							<input class="cbx-group-pt" checked id="cbx-group-pt-453" disabled type="checkbox" value="DlName_@Model.EMPId+@Model.DlName+@Model.MUID" />
+							<label class="m-0 ipbdr-none" for="cbx-group-pt-45"></label>
+						</td>
+					}
+
+				</tr>
+				<tr>
+					<td>Issue Date</td>
+
+					@if (ViewBag.status == 0)
+					{
+						<td>@ViewBag.DlIssueDate</td>
+					}
+					@if (Model.IssueDate != null)
+					{
+						<td class="fn-bold">@Model.IssueDate</td>
+					}
+					else
+					{
+						<td class="fn-bold">-</td>
+					}
+					@if (Model.HRVIssueDate == 0)
+					{
+						<td class="text-center">
+							<input class="cbx-group-pt selectedDln" disabled id="cbx-group-pt-454" type="checkbox" value="IssueDate_@Model.EMPId+@Model.IssueDate+@Model.MUID" />
+							<label class="m-0 ipbdr-none" for="cbx-group-pt-45"></label>
+						</td>
+					}
+					else
+					{
+						<td class="text-center">
+							<input class="cbx-group-pt" checked id="cbx-group-pt-454" disabled type="checkbox" value="IssueDate_@Model.EMPId+@Model.IssueDate+@Model.MUID" />
+							<label class="m-0 ipbdr-none" for="cbx-group-pt-45"></label>
+						</td>
+					}
+
+				</tr>
+				<tr>
+					<td>Expiry Date</td>
+
+					@if (ViewBag.status == 0)
+					{
+						<td>@ViewBag.DlExpiryDate</td>
+					}
+					@if (Model.DlExpiryDate != null)
+					{
+						<td class="fn-bold">@Model.DlExpiryDate</td>
+					}
+					else
+					{
+						<td class="fn-bold">-</td>
+					}
+					@if (Model.HRVDlExpiryDate == 0)
+					{
+						<td class="text-center">
+							<input class="cbx-group-pt selectedDln" disabled id="cbx-group-pt-455" type="checkbox" value="DlExpiryDate_@Model.EMPId+@Model.DlExpiryDate+@Model.MUID" />
+							<label class="m-0 ipbdr-none" for="cbx-group-pt-45"></label>
+						</td>
+					}
+					else
+					{
+						<td class="text-center">
+							<input class="cbx-group-pt" checked id="cbx-group-pt-455" disabled type="checkbox" value="DlExpiryDate_@Model.EMPId+@Model.DlExpiryDate+@Model.MUID" />
+							<label class="m-0 ipbdr-none" for="cbx-group-pt-45"></label>
+						</td>
+					}
+
+				</tr>
+				<tr>
+					<td>Place Of Issue</td>
+
+					@if (ViewBag.status == 0)
+					{
+						<td>@ViewBag.DlPlaceOfIssue</td>
+					}
+					@if (Model.DlPlaceOfIssue != null)
+					{
+						<td class="fn-bold">@Model.DlPlaceOfIssue</td>
+					}
+					else
+					{
+						<td class="fn-bold">-</td>
+					}
+					@if (Model.HRVDlPlaceOfIssue == 0)
+					{
+						<td class="text-center">
+							<input class="cbx-group-pt selectedDln" disabled id="cbx-group-pt-456" type="checkbox" value="DlPlaceOfIssue_@Model.EMPId+@Model.DlPlaceOfIssue+@Model.MUID" />
+							<label class="m-0 ipbdr-none" for="cbx-group-pt-45"></label>
+						</td>
+					}
+					else
+					{
+						<td class="text-center">
+							<input class="cbx-group-pt" checked id="cbx-group-pt-456" disabled type="checkbox" value="DlPlaceOfIssue_@Model.EMPId+@Model.DlPlaceOfIssue+@Model.MUID" />
+							<label class="m-0 ipbdr-none" for="cbx-group-pt-45"></label>
+						</td>
+					}
+
+				</tr>
+				<tr>
+					<td>Remarks</td>
+
+					@if (ViewBag.status == 0)
+					{
+						<td>@ViewBag.DlRemark</td>
+					}
+					@if (Model.DlRemark != null)
+					{
+						<td class="fn-bold">@Model.DlRemark</td>
+					}
+					else
+					{
+						<td class="fn-bold">-</td>
+					}
+					@if (Model.HRVDlRemark == 0)
+					{
+						<td class="text-center">
+							<input class="cbx-group-pt selectedDln" disabled id="cbx-group-pt-457" type="checkbox" value="DlRemark_@Model.EMPId+@Model.DlRemark+@Model.MUID" />
+							<label class="m-0 ipbdr-none" for="cbx-group-pt-45"></label>
+						</td>
+					}
+					else
+					{
+						<td class="text-center">
+							<input class="cbx-group-pt" checked  disabled id="cbx-group-pt-457" type="checkbox" value="DlRemark_@Model.EMPId+@Model.DlRemark+@Model.MUID" />
+							<label class="m-0 ipbdr-none" for="cbx-group-pt-45"></label>
+						</td>
+					}
+
+				</tr>
+			</tbody>
+		</table>
+	</div>
+
+</div>
+<script>
+	$('#selectallV').click(function () {
+		var someObj = {};
+		someObj.NochkId = [];
+		someObj.ChkId = [];
+		$('.selectedVI').prop('checked', this.checked);
+	});
+	$('#selectallP').click(function () {
+		var someObj = {};
+		someObj.NochkId = [];
+		someObj.ChkId = [];
+		$('.selectedPD').prop('checked', this.checked);
+	});
+	$('#selectallDin').click(function () {
+		var someObj = {};
+		someObj.NochkId = [];
+		someObj.ChkId = [];
+		$('.selectedDin').prop('checked', this.checked);
+	});
+	$('#selectallDl').click(function () {
+		var someObj = {};
+		someObj.NochkId = [];
+		someObj.ChkId = [];
+		$('.selectedDln').prop('checked', this.checked);
+	});
+</script>

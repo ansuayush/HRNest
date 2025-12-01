@@ -1,0 +1,733 @@
+﻿
+@{
+    ViewBag.Title = "ExitProcessRequest";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="inner-main defult-height p-3 pb-0">
+    <h1 class="heading-one mb-3">Exit Process Request</h1>
+    <!-- tab--->
+    <input type="hidden" value="@ViewBag.EMPID" id="hdfEMPID" />
+    <div class="tab-main mb-3">
+        <ul id="tabs" class="nav nav-tabs " role="tablist">
+            <li class="nav-item"> <a id="tab-A" href="#pending" class="nav-link ripplelink active" data-toggle="tab" role="tab" aria-selected="true"><i class="fas fa-clock"></i>Pending <span class="ink animate" style="height: 104px; width: 104px; left: 7px; top: -48px;"></span></a> </li>
+            <li class="nav-item"> <a id="tab-C" href="#resolutionrecorded" class="nav-link ripplelink" data-toggle="tab" role="tab" aria-selected="false"><i class="fas fa-file-alt"></i>Resolution Recorded<span class="ink animate" style="height: 172px; width: 172px; left: -2px; top: -69px;"></span></a> </li>
+            <li class="nav-item"> <a id="tab-B" href="#nocprocess" class="nav-link ripplelink" data-toggle="tab" role="tab" aria-selected="false"><i class="fas fa-cogs"></i>NOC Process<span class="ink animate" style="height: 131px; width: 131px; left: 10.5px; top: -48.5px;"></span></a> </li>
+            <li class="nav-item"> <a id="tab-d" href="#pendingpartb" class="nav-link ripplelink" data-toggle="tab" role="tab" aria-selected="false"><i class="fas fa-clock"></i>Pending for Part b (F&amp;F)<span class="ink animate" style="height: 190px; width: 190px; left: -50px; top: -74px;"></span></a> </li>
+        </ul>
+
+
+        <div id="content" class="tab-content shadow-box p-0" role="tablist">
+            <div id="pending" class="card tab-pane fade show active" role="tabpanel" aria-labelledby="tab-A">
+                <div class="card-header" role="tab" id="heading-A">
+                    <h5 class="mb-0">
+                        <!-- Note: `data-parent` removed from here -->
+                        <a data-toggle="collapse" href="#collapse-A" aria-expanded="true" aria-controls="collapse-A">Pending<i class="fas fa-clock"></i></a>
+                    </h5>
+                </div>
+
+                <!-- Note: New place of `data-parent` -->
+                <div id="collapse-A" class="collapse show" data-parent="#content" role="tabpanel" aria-labelledby="heading-A">
+                    <div class="card-body p-0">
+                        <!-- Start -->
+                        <div class="table-responsive">
+                            <table id="tabelpending" class="table mt-0  table-bordered dt-responsive nowrap tbltick new_width">
+                                <thead>
+                                    <tr>
+                                        <th width="33">S.No</th>
+                                        <th width="100">Employee Code</th>
+                                        <th>Employee Name</th>
+                                        <th width="100">Location</th>
+                                        <th width="100">Department</th>
+                                        <th width="100">Designation</th>
+                                        <th width="100">Request Date</th>
+                                        <th width="100">Relieving Date</th>
+                                        <th width="80">Days left	</th>
+                                        <th class="w-250">Action</th>
+                                    </tr>
+                                    <tr class="searchbar" role="row">
+                                        <th class="searchhide"></th>
+                                        <th></th>
+                                        <th></th>
+                                        <th></th>
+                                        <th></th>
+                                        <th></th>
+                                        <th></th>
+                                        <th></th>
+                                        <th></th>
+                                        <th class="searchhide"></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @*<tr>
+                                            <td>1</td>
+                                            <td>xxxx25</td>
+                                            <td>Rakesh</td>
+                                            <td>Delhi</td>
+                                            <td>Department Name</td>
+                                            <td>Designation Name</td>
+                                            <td>14/5/2020</td>
+                                            <td>14/6/2020</td>
+                                            <td class="text-right"><strong class="badge badge-secondary mtr-y-bg">2 Days</strong></td>
+                                            <td><strong><a href="../hr/hr_start-exit-process.html"><i class="fas fa-cogs"></i>Start Exit Process</a></strong></td>
+                                        </tr>
+                                        <tr>
+                                            <td>2</td>
+                                            <td>xxxx26</td>
+                                            <td>Jitender</td>
+                                            <td>Delhi</td>
+                                            <td>Department Name</td>
+                                            <td>Designation Name</td>
+                                            <td>14/5/2020</td>
+                                            <td>14/6/2020</td>
+                                            <td class="text-right"><strong class="badge badge-secondary mtr-y-bg">2 Days</strong></td>
+                                            <td><strong><a href="../hr/hr_start-exit-process.html"><i class="fas fa-cogs"></i>Start Exit Process</a><span class="divline">|</span><a href="" data-toggle="modal" data-target="#rfc"><i class="fas fa-file-alt"></i>Record Resolution</a></strong></td>
+                                        </tr>
+                                        <tr>
+                                            <td>3</td>
+                                            <td>xxxx27</td>
+                                            <td>Rohul</td>
+                                            <td>Delhi</td>
+                                            <td>Department Name</td>
+                                            <td>Designation Name</td>
+                                            <td>14/5/2020</td>
+                                            <td>14/6/2020</td>
+                                            <td class="text-right"><strong class="badge badge-secondary ">3 Days</strong></td>
+                                            <td><strong><a href="../hr/hr_start-exit-process.html"><i class="fas fa-cogs"></i>Start Exit Process</a><span class="divline">|</span><a href="" data-toggle="modal" data-target="#rfc"><i class="fas fa-file-alt"></i>Record Resolution</a></strong></td>
+                                        </tr>
+                                        <tr>
+                                            <td>4</td>
+                                            <td>xxxx28</td>
+                                            <td>Deepak</td>
+                                            <td>Delhi</td>
+                                            <td>Department Name</td>
+                                            <td>Designation Name</td>
+                                            <td>14/5/2020</td>
+                                            <td>14/6/2020</td>
+                                            <td class="text-right"><strong class="badge badge-secondary ">3 Days</strong></td>
+                                            <td><strong><a href="../hr/hr_start-exit-process.html"><i class="fas fa-cogs"></i>Start Exit Process</a><span class="divline">|</span><a href="" data-toggle="modal" data-target="#rfc"><i class="fas fa-file-alt"></i>Record Resolution</a></strong></td>
+                                        </tr>
+                                        <tr>
+                                            <td>5</td>
+                                            <td>xxxx29</td>
+                                            <td>Rohit</td>
+                                            <td>Delhi</td>
+                                            <td>Department Name</td>
+                                            <td>Designation Name</td>
+                                            <td>14/5/2020</td>
+                                            <td>14/6/2020</td>
+                                            <td class="text-right"><strong class="badge badge-secondary ">3 Days</strong></td>
+                                            <td><strong><a href="../hr/hr_start-exit-process.html"><i class="fas fa-cogs"></i>Start Exit Process</a><span class="divline">|</span><a href="" data-toggle="modal" data-target="#rfc"><i class="fas fa-file-alt"></i>Record Resolution</a></strong></td>
+                                        </tr>
+                                        <tr>
+                                            <td>6</td>
+                                            <td>xxxx30</td>
+                                            <td>Raj</td>
+                                            <td>Delhi</td>
+                                            <td>Department Name</td>
+                                            <td>Designation Name</td>
+                                            <td>14/5/2020</td>
+                                            <td>14/6/2020</td>
+                                            <td class="text-right"><strong class="badge badge-secondary ">3 Days</strong></td>
+                                            <td><strong><a href="../hr/hr_start-exit-process.html"><i class="fas fa-cogs"></i>Start Exit Process</a><span class="divline">|</span><a href="" data-toggle="modal" data-target="#rfc"><i class="fas fa-file-alt"></i>Record Resolution</a></strong></td>
+                                        </tr>*@
+                                </tbody>
+                            </table>
+                        </div>
+                        <!-- End -->
+                    </div>
+                </div>
+            </div>
+            <div id="resolutionrecorded" class="card tab-pane fade" role="tabpanel" aria-labelledby="tab-d">
+                <div class="card-header" role="tab" id="heading-d">
+                    <h5 class="mb-0"> <a class="collapsed" data-toggle="collapse" href="#collapse-d" aria-expanded="false" aria-controls="collapse-d">Resolution Recorded<i class="fas fa-file-alt"></i></a> </h5>
+                </div>
+                <div id="collapse-d" class="collapse" role="tabpanel" data-parent="#content" aria-labelledby="heading-d">
+                    <!-- Start -->
+                    <div class="table-responsive">
+                        <table id="tabelresolution" class="table mt-0  table-bordered dt-responsive nowrap tbltick new_width">
+                            <thead>
+                                <tr>
+                                    <th width="33">S.No</th>
+                                    <th width="100">Employee Code</th>
+                                    <th>Employee Name</th>
+                                    <th width="100">Location</th>
+                                    <th width="100">Department</th>
+                                    <th width="100">Designation</th>
+                                    <th width="100">Request Date</th>
+                                    <th width="100">Relieving Date</th>
+                                    <th width="80">Action</th>
+                                </tr>
+                                <tr class="searchbar" role="row">
+                                    <th class="searchhide"></th>
+                                    <th></th>
+                                    <th></th>
+                                    <th></th>
+                                    <th></th>
+                                    <th></th>
+                                    <th></th>
+                                    <th></th>
+                                    <th class="searchhide"></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @*<tr>
+                                        <td>11</td>
+                                        <td>xxxx25</td>
+                                        <td>Rakesh</td>
+                                        <td>Delhi</td>
+                                        <td>Department Name</td>
+                                        <td>Designation Name</td>
+                                        <td>14/5/2020</td>
+                                        <td>14/6/2020</td>
+                                        <td><strong><a href="hr_start-exit-process-recod.html"><i class="fas fa-eye"></i> View</a></strong></td>
+                                    </tr>
+                                    <tr>
+                                        <td>12</td>
+                                        <td>xxxx26</td>
+                                        <td>Jitender</td>
+                                        <td>Delhi</td>
+                                        <td>Department Name</td>
+                                        <td>Designation Name</td>
+                                        <td>14/5/2020</td>
+                                        <td>14/6/2020</td>
+                                        <td><strong><a href="hr_start-exit-process-recod.html"><i class="fas fa-eye"></i> View</a></strong></td>
+                                    </tr>
+                                    <tr>
+                                        <td>13</td>
+                                        <td>xxxx27</td>
+                                        <td>Rohul</td>
+                                        <td>Delhi</td>
+                                        <td>Department Name</td>
+                                        <td>Designation Name</td>
+                                        <td>14/5/2020</td>
+                                        <td>14/6/2020</td>
+                                        <td><strong><a href="hr_start-exit-process-recod.html"><i class="fas fa-eye"></i> View</a></strong></td>
+                                    </tr>
+                                    <tr>
+                                        <td>14</td>
+                                        <td>xxxx28</td>
+                                        <td>Deepak</td>
+                                        <td>Delhi</td>
+                                        <td>Department Name</td>
+                                        <td>Designation Name</td>
+                                        <td>14/5/2020</td>
+                                        <td>14/6/2020</td>
+                                        <td><strong><a href="hr_start-exit-process-recod.html"><i class="fas fa-eye"></i> View</a></strong></td>
+                                    </tr>
+                                    <tr>
+                                        <td>15</td>
+                                        <td>xxxx29</td>
+                                        <td>Rohit</td>
+                                        <td>Delhi</td>
+                                        <td>Department Name</td>
+                                        <td>Designation Name</td>
+                                        <td>14/5/2020</td>
+                                        <td>14/6/2020</td>
+                                        <td><strong><a href="hr_start-exit-process-recod.html"><i class="fas fa-eye"></i> View</a></strong></td>
+                                    </tr>
+                                    <tr>
+                                        <td>16</td>
+                                        <td>xxxx30</td>
+                                        <td>Raj</td>
+                                        <td>Delhi</td>
+                                        <td>Department Name</td>
+                                        <td>Designation Name</td>
+                                        <td>14/5/2020</td>
+                                        <td>14/6/2020</td>
+                                        <td><strong><a href="hr_start-exit-process-recod.html"><i class="fas fa-eye"></i> View</a></strong></td>
+                                    </tr>*@
+                            </tbody>
+                        </table>
+                    </div>
+                    <!-- End -->
+                </div>
+            </div>
+            <div id="nocprocess" class="card tab-pane fade" role="tabpanel" aria-labelledby="tab-B">
+                <div class="card-header" role="tab" id="heading-B">
+                    <h5 class="mb-0"> <a class="collapsed" data-toggle="collapse" href="#collapse-B" aria-expanded="false" aria-controls="collapse-B">NOC Process <i class="fas fa-cogs"></i></a> </h5>
+                </div>
+                <div id="collapse-B" class="collapse" data-parent="#content" role="tabpanel" aria-labelledby="heading-B">
+                    <!-- Start -->
+                    <div class="table-responsive">
+                        <table id="tabelnocprocess" class="table mt-0  table-bordered dt-responsive nowrap tbltick new_width">
+                            <thead>
+                                <tr>
+                                    <th width="33">S.No</th>
+                                    <th width="100">Employee Code</th>
+                                    <th>Employee Name</th>
+                                    <th width="100">Location</th>
+                                    <th width="100">Department</th>
+                                    <th width="100">Designation</th>
+                                    <th width="100">HR <i data-toggle="tooltip" title="" data-original-title="Rohit, Delhi" class="fas fa-info-circle  float-right" data-placement="top"></i></th>
+                                    <th width="100">IT <i data-toggle="tooltip" title="" data-original-title="Rohit, Delhi" class="fas fa-info-circle  float-right" data-placement="top"></i></th>
+                                    <th width="100">Admin <i data-toggle="tooltip" title="" data-original-title="Rohit, Delhi" class="fas fa-info-circle  float-right" data-placement="top"></i></th>
+                                    <th width="100">Finance <i data-toggle="tooltip" title="" data-original-title="Rohit, Delhi" class="fas fa-info-circle  float-right" data-placement="top"></i></th>
+                                    <th width="100">Other</th>
+                                    <th width="100">Action</th>
+                                </tr>
+                                <tr class="searchbar" role="row">
+                                    <th class="searchhide"></th>
+                                    <th></th>
+                                    <th></th>
+                                    <th></th>
+                                    <th></th>
+                                    <th></th>
+                                    <th class="searchhide"></th>
+                                    <th class="searchhide"></th>
+                                    <th class="searchhide"></th>
+                                    <th class="searchhide"></th>
+                                    <th class="searchhide"></th>
+                                    <th class="searchhide"></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            </tbody>
+                        </table>
+                    </div>
+                    <!-- End -->
+                </div>
+            </div>
+
+            <div id="pendingpartb" class="card tab-pane fade " role="tabpanel" aria-labelledby="tab-A">
+                <div class="card-header" role="tab" id="heading-A">
+                    <h5 class="mb-0">
+                        <!-- Note: `data-parent` removed from here -->
+                        <a data-toggle="collapse" href="#collapse-A" aria-expanded="true" aria-controls="collapse-A">Pending for Part b (F&F)<i class="fas fa-clock"></i></a>
+                    </h5>
+                </div>
+
+                <!-- Note: New place of `data-parent` -->
+                <div id="collapse-A" class="collapse show" data-parent="#content" role="tabpanel" aria-labelledby="heading-A">
+                    <div class="card-body p-0">
+                        <!-- Start -->
+                        <div class="table-responsive">
+                            <table id="TabelPendingpartb" class="table mt-0  table-bordered dt-responsive nowrap tbltick new_width">
+                                <thead>
+                                    <tr>
+                                        <th width="33">S.No</th>
+                                        <th width="100">Employee Code</th>
+                                        <th>Employee Name</th>
+                                        <th width="100">Location</th>
+                                        <th width="100">Department</th>
+                                        <th width="100">Designation</th>
+                                        <th width="100">Request Date</th>
+                                        <th width="100">Relieving Date</th>
+                                        <th width="80">Days left	</th>
+                                        <th width="80">Deduction Value From Finance	</th>
+                                        <th width="80">Action</th>
+                                    </tr>
+                                    <tr class="searchbar" role="row">
+                                        <th class="searchhide"></th>
+                                        <th></th>
+                                        <th></th>
+                                        <th></th>
+                                        <th></th>
+                                        <th></th>
+                                        <th class="searchhide"></th>
+                                        <th class="searchhide"></th>
+                                        <th class="searchhide"></th>
+                                        <th class="searchhide"></th>
+                                        <th class="searchhide"></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                </tbody>
+                            </table>
+                        </div>
+                        <!-- End -->
+                    </div>
+                </div>
+            </div>
+
+
+        </div>
+
+        <!--- close tab --->
+    </div>
+    <div class="modal fade" id="rfc">
+        <div class="modal-dialog modal-dialog-centered modal-md">
+            <div class="modal-content ">
+                <input type="hidden" id="hdnUploadActualFileName" />
+                <input type="hidden" id="hdnUploadNewFileName" />
+                <input type="hidden" id="hdnUploadFileUrl" />
+                <input type="hidden" id="hdfid" value=" " />
+                <!-- Modal Header -->
+                <div class="modal-header">
+                    <h4 class="modal-title">Reason for Continuing</h4>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+
+                <!-- Modal body -->
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-sm-6 form-group">
+                            <label>Attachment</label>
+                            <input type="file" id="txtAttachment" class="form-control " value="" onchange="UploadDocument()">
+                            <input type="text" id="txtAttachmentfile" style="display:none" ; class="form-control" value="">
+                            <span id="sptxtAttachmentfile" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+
+                        </div>
+                        <div class="col-sm-12 form-group">
+                            <label>Reason<sup>*<sup></sup></label>
+                            <input type="text" id="txtReason" class="form-control Mandatory" value="" onchange="HideErrorMessage(this)">
+                            <span id="sptxtReason" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+                        </div>
+                    </div>
+                    <!-- Modal footer -->
+                    <div class="p-0 text-center ">
+                        <button type="button" class="btn cnl-btn ripplelink" data-dismiss="modal"><i class="fas fa-times"></i>Close</button>
+                        <button type="button" class="btn mtr-o-grn btn-l" onclick="SaveRecord()"><i class="fas fa-paper-plane"></i>Submit</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="hvAdmin">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content ">
+
+
+                <!-- Modal Header -->
+                <div class="modal-header">
+                    <h4 class="modal-title">Employee Name </h4>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+
+                <!-- Modal body -->
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-sm-12 form-group">
+                            <input type="hidden" id="hdfRid" value="" />
+                            <ul class="list-unstyled inline-li m-0 rqt-dtl">
+                                <li><label>Requested by</label><label id="labelsreqby"></label> </li>
+                                <li><label>Req No</label><label id="labelsreq"></label></li>
+                                <li><label>Location</label><label id="labelsloc"></label> </li>
+                                <li><label>Department</label><label id="labelsdept"></label></li>
+                                <li><label>Designation</label><label id="labelsdesg"></label> </li>
+                                <li><label>Requested Date</label><label id="labelsreqdate"></label></li>
+                                <li><label>Relieving Date	 </label><label id="labelsRdate"></label> </li>
+                            </ul>
+                        </div>
+                        <div class="col-sm-12" id="divTabelDataNOC">
+                            <div class="table-responsive">
+
+                                <table id="TabelDataNOC" class="table mt-0  table-bordered dt-responsive nowrap tbltick new_width">
+                                    <thead>
+                                        <tr>
+                                            <th width="33">S.No</th>
+                                            <th width="100">Asset ID</th>
+                                            <th width="100">Date of Return</th>
+                                            <th>Description</th>
+                                            <th width="100">Impact</th>
+                                            <th width="100">Status</th>
+                                            <th>Remarks</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                    </tbody>
+                                </table>
+                                <div id="divHR" style="display:none">
+                                    <div class="table-responsive">
+                                        <table class="table table-striped  mb-0 mt-0 vt-a">
+                                            <thead>
+                                                <tr>
+                                                    <th class="w-10 text-left">S.No</th>
+                                                    <th>Item</th>
+
+                                                    <th width="100">Impact of Deficiency</th>
+                                                    <th width="80">Status</th>
+                                                    <th width="100">Remark</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <td>1</td>
+                                                    <td><input type="text" placeholder="Enter" class="form-control" id="txtItem"></td>
+                                                    <td>
+                                                        <select class="form-control applyselect" id="ddlImpactdef">
+                                                            <option  selected="">Select</option>
+                                                            <option>Yes</option>
+                                                            <option>No</option>
+                                                        </select>
+                                                    </td>
+                                                    <td>
+                                                        <select class="form-control applyselect" id="ddlStatus">
+                                                            <option selected="">Select</option>
+                                                            <option >Received</option>
+                                                            <option>Not Received</option>
+                                                        </select>
+                                                    </td>
+                                                    <td>
+                                                        <textarea class="form-control" placeholder="Enter" id="txtRemark"></textarea>
+                                                    </td>
+                                                </tr>
+
+                                            </tbody>
+                                        </table>
+                                        <div class="col-sm-12 form-group text-right">
+                                            <button type="button" class="btn green-clr  m-0" onclick="AddRowData()"><i class="fas fa-plus"></i>Add</button>
+                                        </div>
+                                        <div id="tblnotify">
+
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-12 form-group">
+                                        <label>Remark</label>
+                                        <textarea class="form-control " placeholder="Enter Remark" id="txtRemarksSurvey"></textarea>
+                                    </div>
+                                    <div class="col-sm-12 form-group">
+                                        <label>Notify</label>
+                                        <select class="form-control applyselect" id="ddlNotify" multiple=''>
+                                        </select>
+
+                                    </div>
+                                    <div class="col-xl-3 col-sm-6 wh-575 form-group">
+                                        <label>Download Exit Survey by Employee</label>
+                                        <p class="h-38 p-ctr"><a href="#"  class="d-flex justify-content-between align-items-center green-clr"><strong>Download</strong><i class="fas fa-download float-right" data-toggle="tooltip" title="" data-original-title="Download"></i></a></p>
+                                    </div>
+                                    <div class="col-xl-3 col-sm-6 wh-575 form-group">
+                                        <label>Attachment</label>
+                                        <input type="file" id="txtAttachmentSurvey" class="form-control " value="" onchange="UploadDocumentSurvey()">
+                                        <input type="text" id="txtAttachmentfileSurvey" style="display:none" ; class="form-control" value="">
+                                        <input type="hidden" id="hdnUploadActualFileNameSurvey" />
+                                        <input type="hidden" id="hdnUploadNewFileNameSurvey" />
+                                        <input type="hidden" id="hdnUploadFileUrlSurvey" />
+                                        <input type="hidden" id="hdnUploadID" />
+                                        @*<input type="file" class="form-control">*@
+                                    </div>
+                                    <div class="col-xl-3 col-sm-6 wh-575 form-group">
+
+                                        <p class="h-38 p-ctr"><a href="#" onclick="DownloadFileRFP()" class="d-flex justify-content-between align-items-center green-clr"><strong>Download</strong><i class="fas fa-download float-right" data-toggle="tooltip" title="" data-original-title="Download"></i></a></p>
+                                    </div>
+                                    <div class="p-0 text-center ">
+                                        <button type="button" id="btnsave" class="btn mtr-o-grn btn-l " onclick="SavedataHR()"><i class="fas fa-save"></i>Save</button>
+                                        <button type="button" id="btnsubmit" class="btn mtr-o-grn btn-l " onclick="SubmitdataHR()"><i class="fas fa-paper-plane"></i>Submit</button>
+                                        <button type="button" class="btn cnl-btn ripplelink" data-dismiss="modal"><i class="fas fa-times"></i>Close</button>
+                                    </div>
+
+                                </div>
+
+                            </div>
+                        </div>
+                        <div class="col-sm-12" id="divTabelDataNOCFin">
+                            <div class="table-responsive">
+                                <table id="TabelDataNOCFin" class="table mt-0  table-bordered dt-responsive nowrap tbltick new_width">
+                                    <thead>
+                                        <tr>
+                                            <th width="33">S.No</th>
+                                            <th width="100">Department</th>
+                                            <th width="100">Asset ID</th>
+                                            <th width="100">Date of Return</th>
+                                            <th>Description</th>
+                                            <th width="100">Impact</th>
+                                            <th width="100">Status</th>
+                                            <th>Remarks</th>
+                                            <th>Recovered</th>
+                                            <th>
+                                                Amount of Recovery
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <div class="col-sm-12" id="divTabelDataNOCOther">
+                            <div class="table-responsive">
+                                <table id="TabelDataNOCOther" class="table mt-0  table-bordered dt-responsive nowrap tbltick new_width">
+                                    <thead>
+                                        <tr>
+                                            <th width="33">S.No</th>
+                                            <th width="100">Task</th>
+                                            <th width="100">Employee Name</th>
+                                            <th width="100">Priority</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+
+                    </div>
+                </div>
+                <!-- Modal footer -->
+                <div class="p-0 text-center ">
+
+                    <button type="button" class="btn cnl-btn ripplelink" data-dismiss="modal"><i class="fas fa-times"></i>Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="hvBandB">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content ">
+
+
+                <!-- Modal Header -->
+                <div class="modal-header">
+                    <h4 class="modal-title">Employee Name </h4>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+
+                <!-- Modal body -->
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-sm-12 form-group">
+                            <input type="hidden" id="hdfRid" value="" />
+                            <ul class="list-unstyled inline-li m-0 rqt-dtl">
+                                <li><label>Requested by</label><label id="labelssreqby"></label> </li>
+                                <li><label>Req No</label><label id="labelssreq"></label></li>
+                                <li><label>Location</label><label id="labelssloc"></label> </li>
+                                <li><label>Department</label><label id="labelssdept"></label></li>
+                                <li><label>Designation</label><label id="labelssdesg"></label> </li>
+                                <li><label>Requested Date</label><label id="labelssreqdate"></label></li>
+                                <li><label>Relieving Date	 </label><label id="labelssRdate"></label> </li>
+                            </ul>
+                        </div>
+
+                        <div class="col-sm-12">
+                            <div class="table-responsive">
+                                <table id="TabelDataNOCFinBandB" class="table mt-0  table-bordered dt-responsive nowrap tbltick new_width">
+                                    <thead>
+                                        <tr>
+                                            <th width="33">S.No</th>
+                                            <th width="100">Department</th>
+                                            <th width="100">Asset ID</th>
+                                            <th width="100">Date of Return</th>
+                                            <th>Description</th>
+                                            <th width="100">Impact</th>
+                                            <th width="100">Status</th>
+                                            <th>Remarks</th>
+                                            <th>Recovered</th>
+                                            <th>
+                                                Amount of Recovery
+                                            </th>
+                                            <th>
+                                                Write Off Amount
+                                            </th>
+                                            <th>
+                                                Component
+                                            </th>
+                                            <th>
+                                                Head Finance Remarks
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <div class="col-sm-12" >
+                            <div class="table-responsive">
+                                <table id="TabelDataNOCOtherFandF" class="table mt-0  table-bordered dt-responsive nowrap tbltick new_width">
+                                    <thead>
+                                        <tr>
+                                            <th width="33">S.No</th>
+                                            <th width="100">Item</th>
+                                            <th width="100">Impact of Deficiency</th>
+                                            <th width="100">Status</th>
+                                            <th width="100">Remarks</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="col-sm-3 form-group">
+                            <label>Upload Settlement Agreement</label>
+                            <input type="file" class="form-control" name="">
+                        </div>
+                        <div class="col-sm-3 form-group">
+                            <label>Upload Recommendation Letter</label>
+                            <input type="file" class="form-control" name="">
+                        </div>
+                        <div class="col-xl-3 col-sm-6 wh-575 form-group">
+                            <label>Upload Relieving Letter</label>
+                            <input type="file" class="form-control">
+                        </div>
+                        <div class="col-xl-3 col-sm-6 wh-575 form-group">
+                            <label>Issue Relieving Letter</label>
+                            <p class="h-38 p-ctr"><a href="" class="green-clr d-flex justify-content-between align-items-center"><strong>Download</strong><i class="fas fa-download float-right" data-toggle="tooltip" title="" data-original-title="Download"></i></a></p>
+                        </div>
+                        <div class="col-xl-3 col-sm-6 form-group">
+                            <label>Attachment</label>
+                            <p class="h-38 p-ctr"><a href="" class="d-flex justify-content-between align-items-center green-clr"><strong>Download</strong><i class="fas fa-download float-right" data-toggle="tooltip" title="" data-original-title="Download"></i></a></p>
+                        </div>
+                        <div class="col-xl-9 col-sm-6 form-group">
+                            <label>Remark</label>
+                            <p id="pHeadRemark"></p>
+                        </div>
+                    </div>
+                </div>
+                <!-- Modal footer -->
+                <div class="p-0 text-center ">
+                    <button type="submit" class="btn mtr-o-grn btn-l "><i class="fas fa-paper-plane"></i>Submit</button>
+                    <button type="button" id="btnFandF" style="display:none" onclick="ProceedFandF()" class="btn blk-gdn-btn btn-l "><i class="fas fa-arrow-circle-right"></i>Proceed to F &amp; F</button>
+                    <button type="button" class="btn cnl-btn ripplelink" data-dismiss="modal"><i class="fas fa-times"></i>Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    @section scripts    {
+        @System.Web.Optimization.Scripts.Render("~/bundle/unobtrusivejs")
+        @System.Web.Optimization.Scripts.Render("~/bundle/dataTablesjs")
+        <script src="~/assets/design/Scripts/AddInit.js?v=@clsApplicationSetting.GetWebConfigValue("Version")"></script>
+        <script src="~/assets/design/scripts/DevScriptExit/ExitProcess.js"></script>
+        <script>
+     function ViewResignation(id) {
+ debugger;
+ var mId = "";
+ var url = "";
+ ShowLoadingDialog();
+
+ // var menuId = "@ViewBag.MenuID";
+ mId = "@clsApplicationSetting.EncryptQueryString(ViewBag.MenuID.ToString() + "*/ExitEmployee/StartExitProcess")";
+         url = "/ExitEmployee/StartExitProcess?src=" + mId + "&id=" + id ;
+ window.location.href = url;
+
+
+
+
+
+ setTimeout(function () {
+ CloseLoadingDialog();
+ }, 4000);
+            }
+
+
+            function ViewRRResignation(id) {
+ debugger;
+ var mId = "";
+ var url = "";
+ ShowLoadingDialog();
+
+ // var menuId = "@ViewBag.MenuID";
+ mId = "@clsApplicationSetting.EncryptQueryString(ViewBag.MenuID.ToString() + "*/ExitEmployee/HRRecordResulation")";
+                url = "/ExitEmployee/HRRecordResulation?src=" + mId + "&id=" + id ;
+ window.location.href = url;
+
+
+
+
+
+ setTimeout(function () {
+ CloseLoadingDialog();
+ }, 4000);
+ }
+
+        </script>
+
+
+    }

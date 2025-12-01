@@ -1,0 +1,199 @@
+﻿@model IList<Mitr.Models.ATRAVELFARE>
+
+@{
+	List<Mitr.Models.City> CityList = new List<Mitr.Models.City>();
+
+	CityList = Mitr.CommonClass.ClsCommon.GetCityList();
+}
+
+
+@using (Ajax.BeginForm("ATravelFare", "Travel",
+	  new { src = clsApplicationSetting.EncryptQueryString(ViewBag.MenuID.ToString() + "*/Travel/ATravelFare*" + ViewBag.TravelREQID + "*" + ViewBag.Type) },
+	  new AjaxOptions { HttpMethod = "POST", OnSuccess = "ATravelFareSuccess", OnFailure = "ATravelFareSuccess" },
+  new { @id = "ATravelFareFrom", enctype = "multipart/form-data" })
+  )
+{
+
+	<table class="table mb-1 table-striped" id="tblTravelFare">
+		<thead>
+			<tr>
+				<th width="33">S.No.</th>
+				<th>Project </th>
+				<th width="120"><i class="far fa-calendar-alt"></i> Departure Date </th>
+				<th width="120"><i class="fas fa-map-marker"></i> From</th>
+				<th width="120"><i class="fas fa-map-marker"></i> To</th>
+				<th><i class="fas fa-ticket-alt"></i> Ticket Source</th>
+				<th><i class="fas fa-user-tag"></i> Mode of Source </th>
+				<th width="200"><i class="fas fa-ticket-alt"></i>Boarding Pass/Ticket </th>
+				<th width="100"><i class="fas fa-rupee-sign"></i>Amount(Rs.)</th>
+				<th width="50">Action</th>
+			</tr>
+		</thead>
+		<tbody>
+			@if (Model != null)
+			{
+				int countTravelFare = 0;
+				for (int i = 0; i < Model.Count; i++)
+				{
+					countTravelFare++;
+
+					if (Model[i].Isdefault == 1)
+					{
+						<tr class="fixRow">
+							<td>
+								@Html.HiddenFor(model => model[i].DetailsID)
+								@Html.HiddenFor(model => model[i].TRPN)
+								@Html.HiddenFor(model => model[i].Isdefault)
+								<label id="span_@countTravelFare" name="span_@countTravelFare">@countTravelFare </label>
+							</td>
+							<td  class="dividtraveller">
+								@Html.DropDownListFor(model => model[i].ProjectID, new SelectList(ViewBag.projectlist, "ProjectID", "LineItem", Model[i].ProjectID), new { @class = "form-control applyselect ddltravelProjectId" })
+								@Html.ValidationMessageFor(model => model[i].ProjectID, "", new { @class = "text-danger" })
+							</td>
+							<td>
+								@Html.TextBoxFor(model => model[i].Date, new { @class = "form-control datefare", @readonly = "readonly", @type = "date", @onchange = "checkDate(this)" })
+								@Html.ValidationMessageFor(model => model[i].Date, "", new { @class = "text-danger" })
+
+							</td>
+							<td>
+								@Html.DropDownListFor(model => model[i].FromCityID, new SelectList(CityList, "CityID", "CityName", Model[i].FromCityID), new { @class = "form-control applyselect", @readonly = "readonly" })
+								@Html.ValidationMessageFor(model => model[i].FromCityID, "", new { @class = "text-danger" })
+							</td>
+							<td>
+								@Html.DropDownListFor(model => model[i].ToCityID, new SelectList(CityList, "CityID", "CityName", Model[i].ToCityID), new { @class = "form-control applyselect", @readonly = "readonly" })
+								@Html.ValidationMessageFor(model => model[i].ToCityID, "", new { @class = "text-danger" })
+							</td>
+							<td>
+								@{
+									List<SelectListItem> AModeOfTransport = new List<SelectListItem>
+																																																																																																																																															{
+												new SelectListItem{Text="By Road",Value="By Road" },
+
+												new SelectListItem{Text="By Road(Self Arrange)",Value="By Road(Self Arrange)" },
+												new SelectListItem{Text="By Road(Office provided)",Value="By Road(Office provided)" },
+												new SelectListItem{Text="By Train",Value="By Train" },
+												new SelectListItem{Text="By Air",Value="By Air" }
+												};
+								}
+
+								@Html.DropDownListFor(model => model[i].TravelMode, new SelectList(AModeOfTransport, "Value", "text", Model[i].TravelMode), new { @class = "form-control applyselect", @readonly = "readonly" })
+								@Html.ValidationMessageFor(model => model[i].TravelMode, "", new { @class = "text-danger" })
+							</td>
+							<td>
+								@{
+									List<SelectListItem> AModeOfSource = new List<SelectListItem>
+																																																																																																																																															{
+												new SelectListItem{Text="By Travel Agent",Value="By Travel Agent" },
+												new SelectListItem{Text="By Travel Desk",Value="By Travel Desk" },
+												new SelectListItem{Text="By Staff",Value="By Staff" }
+												};
+								}
+								@Html.DropDownListFor(model => model[i].TravelSource, new SelectList(AModeOfSource, "Value", "text", Model[i].TravelSource), new { @class = "form-control applyselect ATravelSource", @readonly = "readonly" })
+								@Html.ValidationMessageFor(model => model[i].TravelSource, "", new { @class = "text-danger" })
+							</td>
+							<td>
+								@Html.TextBoxFor(model => model[i].ticket_bordcast, new { @class = "form-control", @placeholder = "Enter" })
+								@Html.ValidationMessageFor(model => model[i].ticket_bordcast, "", new { @class = "text-danger" })
+
+
+							</td>
+							<td>
+								<!-- only for code check old code is PerDiem_Amount -->
+								@*@Html.TextBoxFor(model => model[i].Currentperdiem_rate, new { @class = "form-control AAmount" })*@
+								@Html.TextBoxFor(model => model[i].PerDiem_Amount, new { @class = "form-control AAmount text-right" })
+								@Html.ValidationMessageFor(model => model[i].PerDiem_Amount, "", new { @class = "text-danger" })
+							</td>
+							<td></td>
+						</tr>
+					}
+					else
+					{
+						<tr>
+							<td>
+								@Html.HiddenFor(model => model[i].DetailsID)
+								@Html.HiddenFor(model => model[i].TRPN)
+								@Html.HiddenFor(model => model[i].Isdefault)
+								<label id="span_@countTravelFare" name="span_@countTravelFare">@countTravelFare </label>
+							</td>
+							<td class="dividtraveller">
+								@Html.DropDownListFor(model => model[i].ProjectID, new SelectList(ViewBag.projectlist, "ProjectID", "LineItem", Model[i].ProjectID), new { @class = "form-control applyselect ddltravelProjectId" })
+								@Html.ValidationMessageFor(model => model[i].ProjectID, "", new { @class = "text-danger" })
+							</td>
+							<td>
+								@Html.TextBoxFor(model => model[i].Date, new { @class = "form-control datefare", @type = "date", @onchange = "checkDate(this)" })
+								@Html.ValidationMessageFor(model => model[i].Date, "", new { @class = "text-danger" })
+
+							</td>
+							<td>
+								@Html.DropDownListFor(model => model[i].FromCityID, new SelectList(CityList, "CityID", "CityName", Model[i].FromCityID), new { @class = "form-control applyselect" })
+								@Html.ValidationMessageFor(model => model[i].FromCityID, "", new { @class = "text-danger" })
+							</td>
+							<td>
+								@Html.DropDownListFor(model => model[i].ToCityID, new SelectList(CityList, "CityID", "CityName", Model[i].ToCityID), new { @class = "form-control applyselect" })
+								@Html.ValidationMessageFor(model => model[i].ToCityID, "", new { @class = "text-danger" })
+							</td>
+							<td>
+								@{
+									List<SelectListItem> AModeOfTransport = new List<SelectListItem>
+																																																																																																																																														{
+												new SelectListItem{Text="By Road",Value="By Road" },
+												new SelectListItem{Text="By Train",Value="By Train" },
+												new SelectListItem{Text="By Air",Value="By Air" }
+												};
+								}
+
+								@Html.DropDownListFor(model => model[i].TravelMode, new SelectList(AModeOfTransport, "Value", "text", Model[i].TravelMode), new { @class = "form-control applyselect" })
+								@Html.ValidationMessageFor(model => model[i].TravelMode, "", new { @class = "text-danger" })
+							</td>
+							<td>
+								@{
+									List<SelectListItem> AModeOfSource = new List<SelectListItem>
+																																																																																																																																														{
+												new SelectListItem{Text="By Travel Agent",Value="By Travel Agent" },
+												new SelectListItem{Text="By Travel Desk",Value="By Travel Desk" },
+												new SelectListItem{Text="By Staff",Value="By Staff" }
+												};
+								}
+								@Html.DropDownListFor(model => model[i].TravelSource, new SelectList(AModeOfSource, "Value", "text", Model[i].TravelSource), new { @class = "form-control applyselect ATravelSource" })
+								@Html.ValidationMessageFor(model => model[i].TravelSource, "", new { @class = "text-danger" })
+							</td>
+							<td>
+								@Html.TextBoxFor(model => model[i].ticket_bordcast, new { @class = "form-control" })
+								@Html.ValidationMessageFor(model => model[i].ticket_bordcast, "", new { @class = "text-danger" })
+
+
+							</td>
+							<td>
+								@Html.TextBoxFor(model => model[i].PerDiem_Amount, new { @class = "form-control AAmount text-right" })
+								@Html.ValidationMessageFor(model => model[i].PerDiem_Amount, "", new { @class = "text-danger" })
+							</td>
+							<td>
+								<a onclick="DeletTravelFare(this)" data-toggle="tooltip" data-original-title="Delete Row" class="close"><i class="fas fa-window-close red-clr" aria-hidden="true"></i></a>
+							</td>
+						</tr>
+					}
+				}
+
+			}
+		</tbody>
+	</table>
+	<div class="text-right mb-2">
+
+		<label style="color:red"> * If line item save can not delete*</label>
+	</div>
+	<div class="text-right pr-2 pb-3">
+
+		<button type="submit" class="btn mtr-o-grn btn-l ripplelink " name="Command" value="ASave"> <i class="fas fa-save" aria-hidden="true"></i> Save </button>
+		<a class="btn mtr-g-grn btn-l ripplelink btnAddRowTravelFare">
+			<i class="fas fa-plus"></i> Add Row
+		</a>
+
+
+	</div>
+}
+
+@section scripts    {
+
+	@System.Web.Optimization.Scripts.Render("~/bundle/unobtrusivejs")
+	<script src="~/assets/design/Scripts/AddInit.js?v=@clsApplicationSetting.GetWebConfigValue("Version")"></script>
+}

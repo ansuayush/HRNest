@@ -1,0 +1,368 @@
+﻿@model Mitr.Models.ViewTravelRequest_ForDesk
+@{
+	Layout = null;
+	int IsBooked = 0;
+	string TicketAsPerrUle = "", HotelRequired = "", MixedMode = "", CheckMode = "";
+	IsBooked = Model.TravelDocumentsList.Select(x => x.isbooked).FirstOrDefault();
+	string MenuID = ViewBag.MenuID.ToString();
+}
+
+<html>
+
+<head>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+	<title></title>
+	<meta name="title" content="Mitr: ConsolidateActivityLog" />
+	<meta name="keywords" content="Mitr: ConsolidateActivityLog" />
+	<meta name="description" content="Mitr: ConsolidateActivityLog" />
+
+	<link href="https://fonts.googleapis.com/css?family=Roboto:300,400,700&display=swap" rel="stylesheet">
+
+	<link rel="shortcut icon" href="/assets/design/images/favicon.png" type="image/x-icon">
+	<link rel="icon" href="/assets/design/images/favicon.png" type="image/png" sizes="50x50">
+	<link href='/assets/design/css/icons.css?v=1.6' rel='stylesheet' />
+	<link href='/assets/design/css/bootstrap.min.css?v=1.6' rel='stylesheet' />
+	<link href='/assets/design/css/style.css?v=1.6' rel='stylesheet' />
+	<link href='/assets/design/css/custom.css?v=1.6' rel='stylesheet' />
+	<link href='/assets/design/css/responsive.css?v=1.6' rel='stylesheet' />
+	<link href="/assets/design/css/modelprint.css?v=1.6" rel="stylesheet" type="text/css" media="print">
+
+
+</head>
+<body>
+	<div class="print-header">
+		<div class="container">
+			<div class="row">
+				<div class="col-md-12 col-sm-12 mx-auto text-right">
+					<a onclick="window.print()" class="btn mtr-g-grn btn-l ripplelink ">
+						<i class="fa fa-print"></i>Print
+					</a>
+
+					@Html.CreateAnchor(MenuID, "/Travel/TravelDeskDashboard", "Back", "btn cnl-btn btn-l ripplelink", "Close", "fas fa-arrow-left", "")
+					@*<a href="../view-reimbursement-book.html" class="btn cnl-btn ripplelink ">
+						<i class="fas fa-times"></i>Close
+					</a>*@
+
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="container mt-5 pt-5">
+		<div class="inner-main">
+			<div class="bgbox">
+				<div class="row">
+					<div class="col-sm-2 mb-0 align-self-center">
+						<img src="/assets/design/images/c3.png" alt="">
+					</div>
+					<div class="col-sm-8 mb-0 text-center align-self-center">
+						<strong class="cntitle">Centre for Catalyzing Change</strong><br>
+						<small class="fn-md">C-27, 2nd Floor Qutab Institutional Area, New Delhi - 110 016</small>
+					</div>
+
+					<div class="col-sm-2 mb-0 align-self-center text-right">
+						<img src="/assets/design/images/mitr-logo.png" alt="">
+					</div>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-md-12 form-group text-center">
+					<h2 class="heading-one mb-0"><u>Travel Request</u></h2>
+				</div>
+				<div class="col-sm-8 mx-auto">
+					<table class="table tdbrd-none">
+						<tbody>
+							<tr>
+								<td>Employee Name</td>
+								<td>@(Model.RequestDetailList != null ? Model.RequestDetailList.Select(x => x.EMPName).FirstOrDefault() : "")</td>
+								<td width="200">Request No</td>
+								<td>@(Model.RequestDetailList != null ? Model.RequestDetailList.Select(x => x.ReqNo).FirstOrDefault() : "")</td>
+							</tr>
+							<tr>
+
+								<td>Request Date </td>
+								<td>@(Model.RequestDetailList != null ? Model.RequestDetailList.Select(x => x.req_date).FirstOrDefault() : "")</td>
+
+								<td>Request Type</td>
+								<td>	@(Model.RequestDetailList != null ? Model.RequestDetailList.Select(x => x.RequestType).FirstOrDefault() : "")</td>
+							</tr>
+							<tr>
+
+								<td>Departure Date</td>
+								<td>
+									@(Model.RequestDetailList != null ? Model.RequestDetailList.Select(x => x.DepartureDate).FirstOrDefault() : "")
+								</td>
+								<td>Approved On</td>
+								<td>
+									@(Model.RequestDetailList != null ? Model.RequestDetailList.Select(x => x.approved_date).FirstOrDefault() : "")
+								</td>
+							</tr>
+
+							<tr>
+
+								<td>Approved By</td>
+								<td>
+									@(Model.RequestDetailList != null ? Model.RequestDetailList.Select(x => x.approvedby).FirstOrDefault() : "")
+								</td>
+								<td>Project Code</td>
+								<td>
+									@(Model.RequestDetailList != null ? Model.RequestDetailList.Select(x => x.ProjectName).FirstOrDefault() : "")
+								</td>
+
+							</tr>
+
+							<tr>
+
+								<td>Exceptional Approved On</td>
+								<td>@(Model.RequestDetailList != null ? Model.RequestDetailList.Select(x => x.ExpectApproveddate).FirstOrDefault() : "")	</td>
+								<td>Exceptional Approved By</td>
+								<td>@(Model.RequestDetailList != null ? Model.RequestDetailList.Select(x => x.ExpName).FirstOrDefault() : "")</td>
+
+							</tr>
+
+							<tr>
+
+								<td>Nature of amendment</td>
+								<td colspan="4">@(Model.RequestDetailList != null ? Model.RequestDetailList.Select(x => x.AmendmentType).FirstOrDefault() : "")</td>
+
+							</tr>
+
+
+						</tbody>
+					</table>
+				</div>
+
+
+				<div class="col-md-12 form-group">
+					<hr>
+					<span class="hr-aps"><i class="fas fa-info-circle"></i>Travel Preference &amp; Other Details</span>
+				</div>
+
+				<div class="col-md-12 form-group">
+					<table class="table mt-0">
+
+						<tbody>
+							<tr>
+								<td width="250">Gender </td>
+								<td class="text-right">@(Model.RequestDetailList != null ? Model.RequestDetailList.Select(x => x.Gender).FirstOrDefault() : "")</td>
+							</tr>
+							<tr>
+								<td>Email Id </td>
+								<td class="text-right">@(Model.RequestDetailList != null ? Model.RequestDetailList.Select(x => x.EMPMail).FirstOrDefault() : "")</td>
+							</tr>
+							<tr>
+								<td>Telephone</td>
+								<td class="text-right">@(Model.RequestDetailList != null ? Model.RequestDetailList.Select(x => x.Telephone).FirstOrDefault() : "")</td>
+							</tr>
+							<tr>
+								<td>Date of birth</td>
+								<td class="text-right">@(Model.RequestDetailList != null ? Model.RequestDetailList.Select(x => x.Dateofbirth).FirstOrDefault() : "")</td>
+							</tr>
+							<tr>
+								<td>Frequent Flyer No. </td>
+								<td class="text-right">@(Model.RequestDetailList != null ? Model.RequestDetailList.Select(x => x.Flyername).FirstOrDefault() : "")</td>
+							</tr>
+							<tr>
+								<td>Meal preference</td>
+								<td class="text-right">@(Model.RequestDetailList != null ? Model.RequestDetailList.Select(x => x.Mealpreference).FirstOrDefault() : "")</td>
+							</tr>
+							<tr>
+								<td>Seat preference</td>
+								<td class="text-right">@(Model.RequestDetailList != null ? Model.RequestDetailList.Select(x => x.Seatpreference).FirstOrDefault() : "")</td>
+							</tr>
+							<tr>
+								<td width="250">Aadhaar No </td>
+								<td class="text-right">@(Model.RequestDetailList != null ? Model.RequestDetailList.Select(x => x.AdharNo).FirstOrDefault() : "")</td>
+							</tr>
+							<tr>
+								<td width="250">Pan No </td>
+								<td class="text-right">@(Model.RequestDetailList != null ? Model.RequestDetailList.Select(x => x.PanNo).FirstOrDefault() : "")</td>
+							</tr>
+
+
+
+						</tbody>
+					</table>
+				</div>
+
+				<div class="col-md-12 form-group">
+					<table class="table table-scroll act-table">
+						<thead>
+							<tr>
+								<th width="33">S.No.</th>
+								<th width="80">Travel Date</th>
+								<th>From</th>
+								<th>To</th>
+								<th>Mode</th>
+								<th>Ticket as per rule</th>
+								<th>Hotel</th>
+								<th>Travel Desk Name</th>
+								<th width="50">Select</th>
+
+								<th width="80">Transfer</th>
+							</tr>
+						</thead>
+						<tbody>
+							@if (Model.RequestDetailList != null)
+							{
+								int ssscount = 0;
+								foreach (var item in Model.RequestDetailList)
+								{
+									IsBooked = item.Isbooked;
+									ssscount++;
+									<tr>
+										<td class="hdfid">
+											@ssscount
+											<input type="hidden" name="TrDetId" value="@item.ID" />
+										</td>
+										<td class="hdfTraveldeskId">
+											@item.Travel_date
+											<input type="hidden" name="TrDeskEmpId" value="@item.TravelDeskEmployeeId" />
+										</td>
+										<td>@item.fromCity</td>
+										<td>@item.toCity</td>
+										<td>@item.Travel_mode</td>
+
+										<td>
+
+											@item.TicketBooking
+											<button style="@(item.TicketBooking=="No"?"":"display:none")" tabindex="0" type="button" class=" td-info" data-popover-content="#unique_@ssscount" data-toggle="popover" data-placement="right" data-original-title="" title=""> <i class="fas fa-info-circle"></i> </button>
+											<div id="unique_@ssscount" style="display:none;">
+												<div class="popover-body">
+													<div class="close">X</div>
+													<ul class="list-unstyled text-clr tr-pophover">
+														<li>
+															<strong>Preferred Airline/Time</strong><br>
+															<p>@item.ticketdetail</p>
+														</li>
+														<li>
+															<strong>Justification</strong><br>
+															<p>@item.justification</p>
+														</li>
+													</ul>
+												</div>
+											</div>
+
+
+										</td>
+
+										<td>@item.HotalName</td>
+										<td>@item.TraveldeskName</td>
+										<td class="text-center">
+											@if (item.Itemlinebooked == 1)
+											{
+												<input type="checkbox" class="newwidth selectedId sltchk" disabled checked id="@item.TravelDetailID" value="@item.TravelDetailID">
+											}
+											else
+											{
+												<input type="checkbox" class="newwidth selectedId sltchk" onchange="chkbox(this)" id="@item.TravelDetailID" value="@item.TravelDetailID">
+											}
+
+											<label for="@item.TravelDetailID" class="m-0"></label>
+										</td>
+
+										@if (item.TravelDeskEmployeeId == Convert.ToInt32(clsApplicationSetting.GetSessionValue("EMPID")))
+										{
+											<td class="text-center">
+											</td>
+										}
+										else
+										{
+
+
+											if (item.Travel_modeID == 3)
+											{
+												<td class="text-center">
+												</td>
+											}
+											else
+											{
+												if (item.TransferTravelDeskUserId == 0)
+												{
+													<td class="text-left ">
+														<button onclick="" class="btn-none green-clr ">
+															<i class="fa fa-check"></i>Transfer
+														</button>
+													</td>
+												}
+												else
+												{
+													<td class="text-left">
+														Transferred
+													</td>
+												}
+
+											}
+
+										}
+
+									</tr>
+								}
+							}
+
+
+						</tbody>
+					</table>
+				</div>
+
+				<div class="col-md-12 form-group">
+					<hr>
+					<span class="hr-aps"><i class="fas fa-info-circle"></i>Ticket as per rule	</span>
+				</div>
+
+				<div class="form-group col-sm-12">
+					<table class="table table-scroll act-table" id="tbltraveldoc">
+						<thead>
+							<tr>
+								<th>Travel Date</th>
+								<th width="110">From	</th>
+								<th width="110">To</th>
+								<th width="110">Hotal</th>
+								<th width="200">Preferred Airline/Time</th>
+								<th>Justification</th>
+
+
+							</tr>
+						</thead>
+						<tbody>
+							@if (Model.RequestDetailList != null)
+							{
+								int ssscount = 0;
+								foreach (var item in Model.RequestDetailList.Where(x=>x.TicketBooking=="No"))
+								{
+									IsBooked = item.Isbooked;
+									ssscount++;
+							<tr>
+								<td>@item.Travel_date</td>
+								<td>@item.fromCity</td>
+								<td>@item.toCity</td>
+								<td>@item.HotalName</td>
+								<td>@item.ticketdetail</td>
+								<td>@item.justification</td>
+
+							</tr>
+								}
+							}
+
+
+						</tbody>
+					</table>
+				</div>
+
+				<div class="form-group col-sm-12">
+					@{Html.RenderPartial("_ViewTravelDocuments", Model.TravelDocumentsList);}
+				</div>
+
+
+			</div>
+		</div>
+
+	</div>
+
+
+
+
+</body>
+</html>

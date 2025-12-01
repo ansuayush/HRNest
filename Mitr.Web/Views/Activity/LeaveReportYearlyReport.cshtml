@@ -1,0 +1,866 @@
+﻿@model Mitr.Models.LeaveReport
+@using System.Data;
+@{
+	DataSet ds = null;
+
+
+
+	string MenuID = ViewBag.MenuID.ToString();
+	string column1 = string.Empty, column2 = string.Empty, column3 = string.Empty, column4 = string.Empty, column5 = string.Empty, column6 = string.Empty, column7 = string.Empty, column8 = string.Empty, column9 = string.Empty, column10 = string.Empty, column11 = string.Empty, column12 = string.Empty;
+	 ds = Common_SPU.fnGetEmployeesYearlyLeaveReport(Model.Empid, Model.EmpCode, Model.FinId, Model.leaveType);
+
+}
+@{
+	ViewBag.Title = "LeaveReportYearlyReport";
+	Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+	<title>Mitr: ConsolidateActivityLog </title>
+	<meta name="title" content="Mitr: ConsolidateActivityLog" />
+	<meta name="keywords" content="Mitr: ConsolidateActivityLog" />
+	<meta name="description" content="Mitr: ConsolidateActivityLog" />
+
+	<link href="https://fonts.googleapis.com/css?family=Roboto:300,400,700&display=swap" rel="stylesheet">
+
+	<link rel="shortcut icon" href="/assets/design/images/favicon.png" type="image/x-icon">
+	<link rel="icon" href="~/assets/design/images/favicon.png" type="image/png" sizes="50x50">
+	<link href='~/assets/design/css/icons.css?v=1.6' rel='stylesheet' />
+	<link href='~/assets/design/css/bootstrap.min.css?v=1.6' rel='stylesheet' />
+	<link href='~/assets/design/css/style.css?v=1.6' rel='stylesheet' />
+	<link href='~/assets/design/css/custom.css?v=1.6' rel='stylesheet' />
+	<link href='~/assets/design/css/responsive.css?v=1.6' rel='stylesheet' />
+	<link href="~/assets/design/css/modelprint.css?v=1.6" rel="stylesheet" type="text/css" media="print">
+
+	<style type="text/css">
+		.tdbrd-none td {
+			border: 0px !important;
+			vertical-align: top !important;
+			padding: 3px 0px !important;
+		}
+	</style>
+</head>
+<body class=" header">
+	<div class="print-header" style="display:none">
+		<div class="container">
+			<div class="row">
+				<div class="col-md-12 col-sm-12 mx-auto text-right">
+
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="container-fluid print-none">
+		<div class="inner-main text-right">
+			@*<a onclick="window.print()" class="btn mtr-g-grn btn-l mb-0 ripplelink "> <i class="fa fa-print"></i>Print </a>*@
+			@Html.CreateAnchor(MenuID, "/Activity/LeaveReportYearly", "Back", "btn cnl-btn mb-0 btn-l ripplelink", "Close", "fas fa-arrow-left", "")
+			<button type="button" class="btn mtr-g-grn mb-0 btn-l ripplelink" onclick="exportReportToExcelAll()" value="Search"><i class="fas fa-file-excel"></i>Export</button>
+		</div>
+	</div>
+	<div class="container-fluid mt-5" id="exportable_table" name="exportable_table">
+		<div class="row">
+			<div class="col-sm-12 mx-auto">
+				<div class="inner-main">
+
+					<div class="bgbox">
+						<table style="background: #f2f2f2; padding: 10px; border-radius: 10px; margin-bottom: 10px;  text-align:center; width:100%;  padding:10px">
+							<tr>
+								<td width="120" style="padding:15px; vertical-align: middle;"><img src="http://mitr2.sahajapps.com//assets/design/images/c3.png" height="50" alt=""></td>
+								<td colspan="14" style="padding:10px; text-align:center; font-size:16px; vertical-align: middle;">
+                                    <strong style="font-size:16px">@ds.Tables[2].Rows[0]["CompanyName"] <small style="  display: block;text-align: center;font-weight: normal; font-size:14px">@ds.Tables[2].Rows[0]["Address"]</small></strong>
+
+								</td>
+							</tr>
+
+							<tr>
+								<td></td>
+								<td></td>
+								<td></td>
+								<td></td>
+								<td></td>
+								<td></td>
+								<td></td>
+								<td></td>
+								<td></td>
+								<td></td>
+								<td></td>
+								<td></td>
+								<td></td>
+								<td></td>
+								<td></td>
+							</tr>
+						</table>
+					</div>
+
+					<div class="col-sm-12">
+						<div class="table-responsive">
+							<table class="table mb-0">
+								<thead>
+									@{
+
+										 ds = Common_SPU.fnGetEmployeesYearlyLeaveReport(Model.Empid, Model.EmpCode, Model.FinId, Model.leaveType);
+
+										DataTable dt = ds.Tables[1];
+										DataTable dtHeader = ds.Tables[0];
+										var LeaveList = from myRow1 in ds.Tables[1].AsEnumerable()
+														select myRow1;
+										var Header = from myRow in ds.Tables[0].AsEnumerable()
+													 select myRow;
+										foreach (var item in Header)
+										{
+											column1 = Convert.ToString(item["Month1"].ToString());
+											column2 = Convert.ToString(item["Month2"].ToString());
+											column3 = Convert.ToString(item["Month3"].ToString());
+											column4 = Convert.ToString(item["Month4"].ToString());
+											column5 = Convert.ToString(item["Month5"].ToString());
+											column6 = Convert.ToString(item["Month6"].ToString());
+											column7 = Convert.ToString(item["Month7"].ToString());
+											column8 = Convert.ToString(item["Month8"].ToString());
+											column9 = Convert.ToString(item["Month9"].ToString());
+											column10 = Convert.ToString(item["Month10"].ToString());
+											column11 = Convert.ToString(item["Month11"].ToString());
+											column12 = Convert.ToString(item["Month12"].ToString());
+
+										}
+									}
+									<tr>
+										<th>Emp Code</th>
+										<th>Name</th>
+
+										<th width="100">Type of Leave</th>
+										<th>Hrs Rate	</th>
+										<th width="100" colspan="2" class="text-center">Opening Balance	</th>
+										<th colspan="4" class="text-center">@column1</th>
+										<th colspan="4" class="text-center">@column2</th>
+										<th colspan="4" class="text-center">@column3</th>
+										<th colspan="4" class="text-center">@column4</th>
+										<th colspan="4" class="text-center">@column5</th>
+										<th colspan="4" class="text-center">@column6</th>
+										<th colspan="4" class="text-center">@column7</th>
+										<th colspan="4" class="text-center">@column8</th>
+										<th colspan="4" class="text-center">@column9</th>
+										<th colspan="4" class="text-center">@column10</th>
+										<th colspan="4" class="text-center">@column11</th>
+										<th colspan="4" class="text-center">@column12</th>
+										<th class="text-center">Balance	Hrs</th>
+										<th class="text-center">Amount</th>
+
+
+									</tr>
+									<tr>
+										<th></th>
+										<th></th>
+										<th></th>
+										<th></th>
+										<th>Hrs</th>
+										<th>Amount</th>
+										<th colspan="2" class="text-center">Accrue</th>
+										<th colspan="2" class="text-center">Claimed</th>
+										<th colspan="2" class="text-center">Accrue</th>
+										<th colspan="2" class="text-center">Claimed</th>
+										<th colspan="2" class="text-center">Accrue</th>
+										<th colspan="2" class="text-center">Claimed</th>
+										<th colspan="2" class="text-center">Accrue</th>
+										<th colspan="2" class="text-center">Claimed</th>
+										<th colspan="2" class="text-center">Accrue</th>
+										<th colspan="2" class="text-center">Claimed</th>
+										<th colspan="2" class="text-center">Accrue</th>
+										<th colspan="2" class="text-center">Claimed</th>
+										<th colspan="2" class="text-center">Accrue</th>
+										<th colspan="2" class="text-center">Claimed</th>
+										<th colspan="2" class="text-center">Accrue</th>
+										<th colspan="2" class="text-center"> Claimed</th>
+										<th colspan="2" class="text-center">Accrue</th>
+										<th colspan="2" class="text-center">Claimed</th>
+										<th colspan="2" class="text-center">Accrue</th>
+										<th colspan="2" class="text-center">Claimed</th>
+										<th colspan="2" class="text-center">Accrue</th>
+										<th colspan="2" class="text-center">Claimed</th>
+										<th colspan="2" class="text-center">Accrue</th>
+										<th colspan="2" class="text-center">Claimed</th>
+										<th class="text-center"></th>
+										<th></th>
+
+									</tr>
+									<tr>
+										<th></th>
+										<th></th>
+										<th></th>
+										<th></th>
+										<th></th>
+										<th></th>
+										<th>Hrs	</th>
+										<th>Amount</th>
+										<th>Hrs	</th>
+										<th>Amount</th>
+										<th>Hrs	</th>
+										<th>Amount</th>
+										<th>Hrs	</th>
+										<th>Amount</th>
+										<th>Hrs	</th>
+										<th>Amount</th>
+										<th>Hrs	</th>
+										<th>Amount</th>
+										<th>Hrs	</th>
+										<th>Amount</th>
+										<th>Hrs	</th>
+										<th>Amount</th>
+										<th>Hrs	</th>
+										<th>Amount</th>
+										<th>Hrs	</th>
+										<th>Amount</th>
+										<th>Hrs	</th>
+										<th>Amount</th>
+										<th>Hrs	</th>
+										<th>Amount</th>
+										<th>Hrs	</th>
+										<th>Amount</th>
+										<th>Hrs	</th>
+										<th>Amount</th>
+										<th>Hrs	</th>
+										<th>Amount</th>
+										<th>Hrs	</th>
+										<th>Amount</th>
+										<th>Hrs	</th>
+										<th>Amount</th>
+										<th>Hrs	</th>
+										<th>Amount</th>
+										<th>Hrs	</th>
+										<th>Amount</th>
+										<th>Hrs	</th>
+										<th>Amount</th>
+										<th>Hrs	</th>
+										<th>Amount</th>
+										<th>Hrs	</th>
+										<th>Amount</th>
+										<th>Hrs	</th>
+										<th>Amount</th>
+										<th>Hrs	</th>
+										<th>Amount</th>
+										<th></th>
+										<th></th>
+
+									</tr>
+
+								</thead>
+								<tbody>
+									@{
+										int acm1, acm2, acm3, acm4, acm5, acm6, acm7, acm8, acm9, acm10, acm11, acm12 = 0;
+										int clm1, clm2, clm3, clm4, clm5, clm6, clm7, clm8, clm9, clm10, clm11, clm12 = 0;
+										int apr = 0;
+										int may = 0; int june = 0; int july = 0; int agust = 0; int sept = 0; int oct = 0; int nov = 0; int dec = 0; int jan = 0; int feb = 0; int march = 0;
+									}
+									@foreach (var item in LeaveList)
+									{
+										//long amt = Convert.ToInt64(item["AccAmount" + column1 + ""].ToString());
+
+										string CurrentMonth = String.Format("{0:MMMM}", DateTime.Now);
+										if (CurrentMonth == "April")
+										{
+											apr = 1;
+
+										}
+										else if (CurrentMonth == "May")
+										{
+											apr = 1;
+											may = 1;
+										}
+										else if (CurrentMonth == "June")
+										{
+											apr = 1;
+											may = 1;
+											june = 1;
+										}
+										else if (CurrentMonth == "July")
+										{
+											apr = 1;
+											may = 1;
+											june = 1;
+											july = 1;
+										}
+										else if (CurrentMonth == "August")
+										{
+											apr = 1;
+											may = 1;
+											june = 1;
+											july = 1;
+											agust = 1;
+										}
+										else if (CurrentMonth == "September")
+										{
+											apr = 1;
+											may = 1;
+											june = 1;
+											july = 1;
+											agust = 1;
+											sept = 1;
+										}
+										else if (CurrentMonth == "October")
+										{
+											apr = 1;
+											may = 1;
+											june = 1;
+											july = 1;
+											agust = 1;
+											sept = 1;
+											oct = 1;
+										}
+										else if (CurrentMonth == "November")
+										{
+											apr = 1;
+											may = 1;
+											june = 1;
+											july = 1;
+											agust = 1;
+											sept = 1;
+											oct = 1;
+											nov = 1;
+										}
+										else if (CurrentMonth == "December")
+										{
+											apr = 1;
+											may = 1;
+											june = 1;
+											july = 1;
+											agust = 1;
+											sept = 1;
+											oct = 1;
+											nov = 1;
+											dec = 1;
+										}
+										else if (CurrentMonth == "January")
+										{
+											apr = 1;
+											may = 1;
+											june = 1;
+											july = 1;
+											agust = 1;
+											sept = 1;
+											oct = 1;
+											nov = 1;
+											dec = 1;
+											jan = 1;
+										}
+										else if (CurrentMonth == "February")
+										{
+											apr = 1;
+											may = 1;
+											june = 1;
+											july = 1;
+											agust = 1;
+											sept = 1;
+											oct = 1;
+											nov = 1;
+											dec = 1;
+											jan = 1;
+											feb = 1;
+										}
+										else if (CurrentMonth == "March")
+										{
+											apr = 1;
+											may = 1;
+											june = 1;
+											july = 1;
+											agust = 1;
+											sept = 1;
+											oct = 1;
+											nov = 1;
+											dec = 1;
+											jan = 1;
+											feb = 1;
+											march = 1;
+										}
+										<tr>
+
+											<td>@item["EmpCode"].ToString() </td>
+
+
+											<td>@item["EmpName"].ToString()</td>
+
+
+											<td>@item["LeaveName"].ToString()</td>
+
+
+											<td>@item["HourlyRate"].ToString()</td>
+
+
+											<td>@item["OpeningHrs"].ToString()</td>
+
+
+											<td>
+												0
+												@*@item["OpeningAmount"].ToString()*@
+											</td>
+
+
+
+											<td>
+												@item["AccHrs" + column1 + ""].ToString()
+												@*@{
+													acm1 = Convert.ToInt32(item["AccHrs" + column1 + ""].ToString());
+												}*@
+											</td>
+
+
+											<td>
+												@*@item["AccAmount" + column1 + ""].ToString()*@
+												0
+
+											</td>
+
+
+											<td>
+												@item["ClaimHrs" + column1 + ""].ToString()
+												@*@{
+													clm1 = Convert.ToInt32(item["ClaimHrs" + column1 + ""].ToString());
+
+
+
+
+												}*@
+											</td>
+
+
+
+											<td>
+												0
+												@*@item["ClaimAmount" + column1 + ""].ToString()*@
+
+											</td>
+
+
+
+											<td>
+												@item["AccHrs" + column2 + ""].ToString()
+												@*@{
+
+
+													var acmay = Convert.ToInt32(item["AccHrs" + column2 + ""].ToString()) - Convert.ToInt32(item["AccHrs" + column1 + ""].ToString());
+													acm2 = Convert.ToInt32(acmay);
+
+
+
+
+												}
+												@if (may == 1)
+												{
+													@acmay
+												}*@
+
+											</td>
+											<td>
+												@*@item["AccAmount" + column2 + ""].ToString()*@
+												0
+											</td>
+											<td>
+												@item["ClaimHrs" + column2 + ""].ToString()
+												@*@{
+													var Claimmay = Convert.ToInt32(item["ClaimHrs" + column2 + ""].ToString()) - Convert.ToInt32(item["ClaimHrs" + column1 + ""].ToString());
+													clm2 = Convert.ToInt32(Claimmay);
+												}
+												@if (may == 1)
+												{
+													@Claimmay
+												}*@
+
+											</td>
+											<td>
+												0
+												@*@item["ClaimAmount" + column2 + ""].ToString()*@
+											</td>
+											<td>
+												@item["AccHrs" + column3 + ""].ToString()
+												@*@{
+													var acjune = Convert.ToInt32(item["AccHrs" + column3 + ""].ToString()) - Convert.ToInt32(item["AccHrs" + column2 + ""].ToString());
+													acm3 = Convert.ToInt32(acjune);
+
+
+												}
+												@if (june == 1)
+												{
+													@acjune
+												}*@
+
+											</td>
+											<td>
+												@*@item["AccAmount" + column3 + ""].ToString()*@
+												0
+											</td>
+											<td>
+												@item["ClaimHrs" + column3 + ""].ToString()
+												@*@{
+													var Claimjune = Convert.ToInt32(item["ClaimHrs" + column3 + ""].ToString()) - Convert.ToInt32(item["ClaimHrs" + column2 + ""].ToString());
+													clm3 = Convert.ToInt32(Claimjune);
+												}
+												@if (june == 1)
+												{
+													@Claimjune
+												}*@
+
+											</td>
+											<td>
+												0
+												@*@item["ClaimAmount" + column3 + ""].ToString()*@
+											</td>
+											<td>
+												@item["AccHrs" + column4 + ""].ToString()
+												@*@{
+													var acjuly = Convert.ToInt32(item["AccHrs" + column4 + ""].ToString()) - Convert.ToInt32(item["AccHrs" + column3 + ""].ToString());
+													acm4 = Convert.ToInt32(acjuly);
+
+
+												}
+												@if (july == 1)
+												{
+													@acjuly
+												}*@
+
+											</td>
+											<td>
+												@*@item["AccAmount" + column4 + ""].ToString()*@
+												0
+											</td>
+											<td>
+												@item["ClaimHrs" + column4 + ""].ToString()
+												@*@{
+													var Claimjuly = Convert.ToInt32(item["ClaimHrs" + column4 + ""].ToString()) - Convert.ToInt32(item["ClaimHrs" + column3 + ""].ToString());
+													clm4 = Convert.ToInt32(Claimjuly);
+												}
+												@if (july == 1)
+												{
+													@Claimjuly
+												}*@
+
+											</td>
+											<td>
+												0
+												@*@item["ClaimAmount" + column4 + ""].ToString()*@
+											</td>
+											<td>
+												@item["AccHrs" + column5 + ""].ToString()
+
+												@*@{
+													var acagust = Convert.ToInt32(item["AccHrs" + column5 + ""].ToString()) - Convert.ToInt32(item["AccHrs" + column4 + ""].ToString());
+													acm5 = Convert.ToInt32(acagust);
+												}
+												@if (agust == 1)
+												{
+													@acagust
+												}*@
+
+											</td>
+											<td>
+												@*@item["AccAmount" + column5 + ""].ToString()*@
+												0
+											</td>
+											<td>
+												@item["ClaimHrs" + column5 + ""].ToString()
+												@*@{
+													var Claimagust = Convert.ToInt32(item["ClaimHrs" + column5 + ""].ToString()) - Convert.ToInt32(item["ClaimHrs" + column4 + ""].ToString());
+													clm5 = Convert.ToInt32(Claimagust);
+												}
+												@if (agust == 1)
+												{
+													@Claimagust
+												}*@
+
+											</td>
+											<td>
+												0
+												@*@item["ClaimAmount" + column5 + ""].ToString()*@
+											</td>
+											<td>
+												@item["AccHrs" + column6 + ""].ToString()
+												@*@{
+
+													var acsept = Convert.ToInt32(item["AccHrs" + column6 + ""].ToString()) - Convert.ToInt32(item["AccHrs" + column5 + ""].ToString());
+													acm6 = Convert.ToInt32(acsept);
+
+
+												}
+												@if (sept == 1)
+												{
+													@acsept
+												}*@
+
+											</td>
+											<td>
+												@*@item["AccAmount" + column6 + ""].ToString()*@
+												0
+											</td>
+											<td>
+												@item["ClaimHrs" + column6 + ""].ToString()
+												@*@{
+													var Claimsept = Convert.ToInt32(item["ClaimHrs" + column6 + ""].ToString()) - Convert.ToInt32(item["ClaimHrs" + column5 + ""].ToString());
+													clm6 = Convert.ToInt32(Claimsept);
+												}
+												@if (sept == 1)
+												{
+													@Claimsept
+												}*@
+
+											</td>
+											<td>
+												0
+												@*@item["ClaimAmount" + column6 + ""].ToString()*@
+											</td>
+											<td>
+												@item["AccHrs" + column7 + ""].ToString()
+												@*@{
+													var acoct = Convert.ToInt32(item["AccHrs" + column7 + ""].ToString()) - Convert.ToInt32(item["AccHrs" + column6 + ""].ToString());
+													acm7 = Convert.ToInt32(acoct);
+
+
+												}
+												@if (oct == 1)
+												{
+													@acoct
+												}*@
+
+											</td>
+											<td>
+												@*@item["AccAmount" + column7 + ""].ToString()*@
+												0
+											</td>
+											<td>
+												@item["ClaimHrs" + column7 + ""].ToString()
+												@*@{
+													var Claimoct = Convert.ToInt32(item["ClaimHrs" + column7 + ""].ToString()) - Convert.ToInt32(item["ClaimHrs" + column6 + ""].ToString());
+													clm7 = Convert.ToInt32(Claimoct);
+												}
+												@if (oct == 1)
+												{
+													@Claimoct
+												}*@
+
+											</td>
+											<td>
+												0
+												@*@item["ClaimAmount" + column7 + ""].ToString()*@
+											</td>
+											<td>
+												@item["AccHrs" + column8 + ""].ToString()
+												@*@{
+													var acnov = Convert.ToInt32(item["AccHrs" + column8 + ""].ToString()) - Convert.ToInt32(item["AccHrs" + column7 + ""].ToString());
+													acm8 = Convert.ToInt32(acnov);
+
+
+												}
+												@if (nov == 1)
+												{
+													@acnov
+												}*@
+
+
+											</td>
+											<td>
+												@*@item["AccAmount" + column8 + ""].ToString()*@
+												0
+											</td>
+											<td>
+												@item["ClaimHrs" + column8 + ""].ToString()
+												@*@{
+													var Claimnov = Convert.ToInt32(item["ClaimHrs" + column8 + ""].ToString()) - Convert.ToInt32(item["ClaimHrs" + column7 + ""].ToString());
+													clm8 = Convert.ToInt32(Claimnov);
+												}
+												@if (nov == 1)
+												{
+													@Claimnov
+												}*@
+
+											</td>
+											<td>
+												0
+												@*@item["ClaimAmount" + column8 + ""].ToString()*@
+											</td>
+											<td>
+												@item["AccHrs" + column9 + ""].ToString()
+												@*@{
+													var acdec = Convert.ToInt32(item["AccHrs" + column9 + ""].ToString()) - Convert.ToInt32(item["AccHrs" + column8 + ""].ToString());
+													acm9 = Convert.ToInt32(acdec);
+
+
+												}
+												@if (dec == 1)
+												{
+													@acdec
+												}*@
+
+											</td>
+											<td>
+												@*@item["AccAmount" + column9 + ""].ToString()*@
+												0
+											</td>
+											<td>
+												@item["ClaimHrs" + column9 + ""].ToString()
+												@*@{
+													var Claimdec = Convert.ToInt32(item["ClaimHrs" + column9 + ""].ToString()) - Convert.ToInt32(item["ClaimHrs" + column8 + ""].ToString());
+													clm9 = Convert.ToInt32(Claimdec);
+												}
+												@if (dec == 1)
+												{
+													@Claimdec
+												}*@
+
+											</td>
+											<td>
+												0
+												@*@item["ClaimAmount" + column9 + ""].ToString()*@
+											</td>
+											<td>
+												@item["AccHrs" + column10 + ""].ToString()
+												@*@{
+													var acjan = Convert.ToInt32(item["AccHrs" + column10 + ""].ToString()) - Convert.ToInt32(item["AccHrs" + column9 + ""].ToString());
+													acm10 = Convert.ToInt32(acjan);
+
+
+												}
+												@if (jan == 1)
+												{
+													@acjan
+												}*@
+
+											</td>
+											<td>
+												@*@item["AccAmount" + column10 + ""].ToString()*@
+												0
+											</td>
+											<td>
+												@item["ClaimHrs" + column10 + ""].ToString()
+												@*@{
+													var Claimjan = Convert.ToInt32(item["ClaimHrs" + column10 + ""].ToString()) - Convert.ToInt32(item["ClaimHrs" + column9 + ""].ToString());
+													clm10 = Convert.ToInt32(Claimjan);
+												}
+												@if (jan == 1)
+												{
+													@Claimjan
+												}*@
+
+											</td>
+											<td>
+												0
+												@*@item["ClaimAmount" + column10 + ""].ToString()*@
+											</td>
+											<td>
+												@item["AccHrs" + column11 + ""].ToString()
+												@*@{
+													var acfeb = Convert.ToInt32(item["AccHrs" + column11 + ""].ToString()) - Convert.ToInt32(item["AccHrs" + column10 + ""].ToString());
+													acm11 = Convert.ToInt32(acfeb);
+
+
+												}
+												@if (feb == 1)
+												{
+													@acfeb
+												}*@
+
+											</td>
+											<td>
+												0
+												@*@item["AccAmount" + column11 + ""].ToString()*@
+											</td>
+											<td>
+												@item["ClaimHrs" + column11 + ""].ToString()
+												@*@{
+													var Claimfeb = Convert.ToInt32(item["ClaimHrs" + column11 + ""].ToString()) - Convert.ToInt32(item["ClaimHrs" + column10 + ""].ToString());
+													clm11 = Convert.ToInt32(Claimfeb);
+												}
+												@if (feb == 1)
+												{
+													@Claimfeb
+												}*@
+
+											</td>
+											<td>
+												@*@item["ClaimAmount" + column11 + ""].ToString()*@
+												0
+											</td>
+											<td>
+												@item["AccHrs" + column12 + ""].ToString()
+												@*@{
+													var acmarch = Convert.ToInt32(item["AccHrs" + column12 + ""].ToString()) - Convert.ToInt32(item["AccHrs" + column11 + ""].ToString());
+													acm12 = Convert.ToInt32(acmarch);
+
+
+												}
+												@if (march == 1)
+												{
+													@acmarch
+												}*@
+
+											</td>
+											<td>
+												@*@item["AccAmount" + column12 + ""].ToString()*@
+												0
+											</td>
+											<td>
+												@item["ClaimHrs" + column12 + ""].ToString()
+												@*@{
+													var Claimmarch = Convert.ToInt32(item["ClaimHrs" + column12 + ""].ToString()) - Convert.ToInt32(item["ClaimHrs" + column11 + ""].ToString());
+													clm12 = Convert.ToInt32(Claimmarch);
+												}
+												@if (march == 1)
+												{
+													@Claimmarch
+												}*@
+
+											</td>
+											<td>
+												@*@item["ClaimAmount" + column12 + ""].ToString()*@
+												0
+											</td>
+											<td class="text-right">
+												@item["BalanceHrs"].ToString()
+												@*@{
+													var bal1 = (Convert.ToInt32(item["OpeningHrs"].ToString()) + (acm1 + acm2 + acm3 + acm4 + acm5 + acm6 + acm7 + acm8 + acm9 + acm10 + acm11 + acm12));
+													var bal2 = clm12 + clm11 + clm10 + clm9 + clm8 + clm7 + clm6 + clm5 + clm4 + clm3 + clm2 + clm1;
+													var bal = (Convert.ToInt32(item["OpeningHrs"].ToString()) + (acm1 + acm2 + acm3 + acm4 + acm5 + acm6 + acm7 + acm8 + acm9 + acm10 + acm11 + acm12)) - (clm12 + clm11 + clm10 + clm9 + clm8 + clm7 + clm6 + clm5 + clm4 + clm3 + clm2 + clm1);
+												}
+												@bal*@
+
+											</td>
+											@*<td class="text-right">@item["BalanceHrrsAmount"].ToString()</td>*@
+											<td></td>
+										</tr>
+									}
+
+
+
+								</tbody>
+								<tfoot>
+								</tfoot>
+
+							</table>
+						</div>
+
+					</div>
+				</div>
+
+			</div>
+		</div>
+	</div>
+	</div>
+
+
+
+</body>
+</html>
+@section scripts    {
+	@System.Web.Optimization.Scripts.Render("~/bundle/dataTablesjs")
+	<script src="~/assets/design/Scripts/AddInit.js?v=@clsApplicationSetting.GetWebConfigValue("Version")"></script>
+	@System.Web.Optimization.Scripts.Render("~/bundle/unobtrusivejs");
+	<script src="~/assets/tableToExcel.js"></script>
+	<script>
+		    function exportReportToExcelAll() {
+
+         exportToExcelSahaj('exportable_table', 'LeaveReportYearly');
+        }
+	</script>
+}

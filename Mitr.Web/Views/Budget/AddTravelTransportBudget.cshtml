@@ -1,0 +1,251 @@
+﻿
+@{
+	ViewBag.Title = "AddTravelTransportBudget";
+	Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="inner-main mb-5">
+	<div class="row">
+		<div class="col-sm-4">
+			<h1 class="heading-one mb-3">Add Travel and Transportation  </h1>
+		</div>
+		<div class="col-sm-8 "><div class="hdbtn mb-2"> <a href="" data-toggle="modal" onclick="ViewEditTravel()" data-target="#tb" class="btn mtr-g-grn btn-l ripplelink btnAdd "><i class="fas fa-plus"></i>View/Edit Travel Budget</a> </div></div>
+
+		<div class="col-sm-3 col-md-2 col-lg-2 wf-575 form-group">
+			<label>Activity  </label>
+			<select class="form-control dpselect">
+				<option>Select</option>
+				<option>Activity  1</option>
+				<option>Activity  2</option>
+			</select>
+
+		</div>
+		<div class="col-sm-3 col-md-3 col-lg-2 wf-575 form-group">
+			<label>Sub Activity   </label>
+			<select class="form-control dpselect">
+				<option>Select</option>
+				<option>SubAct1.1: master trainers</option>
+				<option>SubAct1.2: Doctors</option>
+				<option>SubAct1.3: Nurses</option>
+				<option>SubAct1.4: Sub Activity 1.4</option>
+				<option>SubAct1.5: Sub Activity 1.5</option>
+			</select>
+
+		</div>
+		<div class="col-sm-3 col-md-3 col-lg-2 wf-575 form-group">
+			<label>Travel Category    </label>
+			<select class="form-control dpselect">
+				<option>Select</option>
+				<option>Travel to C3 Office</option>
+				<option>Travel to Metro Cities</option>
+			</select>
+		</div>
+
+		<div class="col-sm-3 wf-575 align-self-center">
+			<a href="" class="btn mtr-g-grn btn-l " onclick="AddTravel()" data-toggle="modal" data-target="#viewdetail"><i class="fas fa-plus"></i>Add </a>
+		</div>
+		<div class="col-sm-12 text-right align-self-end form-group">
+			<strong>Project Total Cost (INR) <span class="green-clr"> <i class="fas fa-rupee-sign ml-1"></i>37,68,717</span></strong>
+		</div>
+
+		<div class="col-sm-12">
+			<div class="table-responsive">
+				<table class="table  mt-0">
+					<thead>
+						<tr>
+							<th rowspan="3">Activity</th>
+							<th class="w-150" rowspan="3">Sub Activity</th>
+							<th class="w-150" rowspan="3">Travel Category</th>
+							<th class="text-center" colspan="8">2020-21	 </th>
+							<th class="text-center" colspan="8">2021-22	</th>
+							<th class=" text-center" colspan="8">2022-23	</th>
+
+							<th rowspan="4">Total</th>
+							<th rowspan="4"></th>
+						</tr>
+						<tr>
+							<th class="tw-80 text-center" colspan="4">Oct-Mar (Upto March}</th>
+
+							<th class="tw-80 text-center" colspan="4">Apr-Sept (After March)</th>
+							<th class="tw-80 text-center" colspan="4">Oct-Mar (Upto March)</th>
+
+							<th class="tw-80 text-center" colspan="4">Apr-Sept  (After March)</th>
+							<th class="tw-80 text-center" colspan="4">Oct-Mar (Upto March)</th>
+							<th class="tw-80 text-center" colspan="4">Apr-Sept (After March)</th>
+
+						</tr>
+
+						<tr>
+							<th>No. of trip days</th>
+							<th>No. of person trips</th>
+							<th>Amount</th>
+							<th>Total</th>
+							<th>No. of trip days</th>
+							<th>No. of person trips</th>
+							<th>Amount</th>
+							<th>Total</th>
+							<th>No. of trip days</th>
+							<th>No. of person trips</th>
+							<th>Amount</th>
+							<th>Total</th>
+							<th>No. of trip days</th>
+							<th>No. of person trips</th>
+							<th>Amount</th>
+							<th>Total</th>
+							<th>No. of trip days</th>
+							<th>No. of person trips</th>
+							<th>Amount</th>
+							<th>Total</th>
+							<th>No. of trip days</th>
+							<th>No. of person trips</th>
+							<th>Amount</th>
+							<th>Total</th>
+
+						</tr>
+					</thead>
+					<tbody>
+						<tr>
+							<td>Activity</td>
+							<td>SubAct1.1: master trainers</td>
+							<td>Travel to C3 Office</td>
+							<td class="text-right">1</td>
+							<td class="text-right">1</td>
+							<td class="text-right">17,125</td>
+							<td class="text-right">17,125</td>
+							<td class="text-right">1</td>
+							<td class="text-right">1</td>
+							<td class="text-right">17,225 </td>
+							<td class="text-right">17,225 </td>
+							<td class="text-right">1</td>
+							<td class="text-right">1</td>
+							<td class="text-right">17,225 </td>
+							<td class="text-right">34,450</td>
+							<td class="text-right">1</td>
+							<td class="text-right">1</td>
+							<td class="text-right">17,335 </td>
+							<td class="text-right">17,225 </td>
+							<td class="text-right">1</td>
+							<td class="text-right">1</td>
+							<td class="text-right">17,335</td>
+							<td class="text-right">34,670</td>
+							<td class="text-right">1</td>
+							<td class="text-right">1</td>
+							<td class="text-right">17,456</td>
+							<td class="text-right">52,126 </td>
+							<td class="text-right"><strong>1,38,371</strong> </td>
+							<td class="text-center"><a href="" data-toggle="modal" data-target="#viewdetail"><i class="fas fa-edit m-0 green-clr" data-toggle="tooltip" title="Edit"></i></a></td>
+
+
+
+
+
+					</tbody>
+				</table>
+			</div>
+		</div>
+	</div>
+
+
+
+	<div class="mt-3 text-center">
+		<button type="submit" class="btn mtr-o-grn " name="Command" value="Add"><i class="fas fa-save"></i>Save</button>
+		<button type="submit" class="btn mtr-o-grn " name="Command" value="Add"><i class="fas fa-paper-plane"></i>Submit</button>
+		<button type="button" class="btn cnl-btn"><i class="fas fa-times"></i> Close</button>
+	</div>
+</div>
+
+<div class="modal fade" id="viewdetail">
+	<div class="modal-dialog modal-lg">
+		<div class="modal-content">
+			<!-- Modal Header -->
+			<div class="modal-header">
+				<h4 class="modal-title">Add Travel and Transportation</h4>
+				<button type="button" class="close" data-dismiss="modal">×</button>
+			</div>
+			<div class="modal-body">
+				<div id="TagetDivAddTravel"></div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div class="modal fade" id="tb">
+	<div class="modal-dialog modal-lg">
+		<div class="modal-content">
+			<!-- Modal Header -->
+			<div class="modal-header">
+				<h4 class="modal-title">View/Edit Travel Budget</h4>
+				<button type="button" class="close" data-dismiss="modal">×</button>
+			</div>
+			<div class="modal-body">
+				<div id="TagetDivUpdate"></div>
+			</div>
+		</div>
+	</div>
+</div>
+
+@section scripts    {
+	@System.Web.Optimization.Scripts.Render("~/bundle/dataTablesjs")
+	@System.Web.Optimization.Scripts.Render("~/bundle/unobtrusivejs")
+	@Html.IncludeVersionedJs(Url.Content("~/assets/design/Scripts/AddInit.js"))
+	@Html.IncludeVersionedJs(Url.Content("~/assets/design/Scripts/ToolTip.js"))
+	<script type="text/javascript">
+		$(document).ready(function () {
+			$(".applyselect").select2();
+		});
+
+
+		function AddTravel() {
+				var empid = "1";
+			$.ajax({
+				url: "/Budget/_AddTravelTransportBudget",
+				type: "Get",
+				async: true,
+				data: { src: EncryptQueryStringJSON(@ViewBag.MenuID+"*" + "/Budget/_AddTravelTransportBudget" + "*" + empid) },
+				success: function (data) {
+					$("#TagetDivAddTravel").empty();
+					$("#TagetDivAddTravel").html(data);
+
+
+				},
+				error: function (er) {
+					alert(er);
+
+				}
+			});
+	}
+
+	     function ViewEditTravel() {
+				var empid = "1";
+			$.ajax({
+				url: "/Budget/_ViewEditTravelBudget",
+				type: "Get",
+				async: true,
+				data: { src: EncryptQueryStringJSON(@ViewBag.MenuID+"*" + "/Budget/_ViewEditTravelBudget" + "*" + empid) },
+				success: function (data) {
+					$("#TagetDivUpdate").empty();
+					$("#TagetDivUpdate").html(data);
+
+
+				},
+				error: function (er) {
+					alert(er);
+
+				}
+			});
+	}
+		function OnSuccess(obj) {
+			if (obj.Status) {
+				SuccessToaster(obj.SuccessMessage);
+				window.location.href = obj.RedirectURL
+
+			}
+			else {
+				CloseLoadingDialog();
+				FailToaster(obj.SuccessMessage);
+
+			}
+		}
+	</script>
+
+}

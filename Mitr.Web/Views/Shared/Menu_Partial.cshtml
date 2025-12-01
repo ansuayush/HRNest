@@ -1,0 +1,64 @@
+﻿@model IList<Mitr.Models.AdminModule>
+@using Mitr.CommonClass;
+@using Mitr.Models;
+@{ 
+    int MenuleftCount = 9;// Show submenu to left after MenuleftCount
+    int CountMenu = 0;
+}
+<!-- MENU Start -->
+<div class="stellarnav ">
+    <!-- Navigation Menu-->
+    <ul class="MenuListUl">
+        <li class="menu-list"><a href="/Dashboard" onclick="ShowLoadingDialog();" style="padding-top:8px"><i class="fas fa-home"></i></a></li>
+        @foreach (AdminModule item in Model)
+        {
+            CountMenu = CountMenu + 1;
+            <li class="menu-list @(CountMenu>=MenuleftCount ?"drop-left":"")">
+                <a href="javascripts:;"><img src="@item.ModuleIcon" alt="@item.ModuleName" width="20px" height="20px" /><span>@item.ModuleName</span></a>
+                <ul>
+                    @foreach (AdminMenu it in item.MainMenuList.Where(x => x.ParentMenuID == 0).OrderBy(x => x.MenuPriority).ThenBy(x => x.MenuName).ToList())
+                    {
+                        <li class="menu-list">
+                            @if (string.IsNullOrEmpty(it.MenuURL))
+                            {
+                                <a>@it.MenuName</a>
+                            }
+                            else
+                            {
+                                <a target="@it.Target" href="@(it.MenuURL+ "?src="+clsApplicationSetting.EncryptQueryString(it.MenuID.ToString()+"*"+it.MenuURL))">@it.MenuName</a>
+                            }
+                            @if (it.IsChild == "Y")
+                            {
+                                @ShowChild(it.ChildMenuList);
+                            }
+                        </li>
+                    }
+                </ul>
+            </li>
+        }
+    </ul>
+</div>
+
+@helper ShowChild(List<AdminMenu> ChildList)
+{
+    <ul>
+        @foreach (AdminMenu it in ChildList.OrderBy(x => x.MenuPriority).ThenBy(x => x.MenuName).ToList())
+        {
+            <li>
+                @if (string.IsNullOrEmpty(it.MenuURL))
+                {
+                    <a>@it.MenuName</a>
+                }
+                else
+                {
+                    <a target="@it.Target" href="@(it.MenuURL+ "?src="+clsApplicationSetting.EncryptQueryString(it.MenuID.ToString()+"*"+it.MenuURL))">@it.MenuName</a>
+                }
+
+                @if (it.IsChild == "Y")
+                {
+                    @ShowChild(it.ChildMenuList);
+                }
+            </li>
+        }
+    </ul>
+}

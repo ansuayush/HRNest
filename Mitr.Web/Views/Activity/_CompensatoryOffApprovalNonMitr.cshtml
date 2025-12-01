@@ -1,0 +1,119 @@
+﻿@using System.Data
+@model IList<Mitr.Models.CompensatoryOffList>
+
+
+
+@using (Ajax.BeginForm("_ActionOnCompensatoryOff", "Activity",
+        new { src = clsApplicationSetting.EncryptQueryString(ViewBag.MenuID.ToString() + "*/Activity/_ActionOnCompensatoryOff") },
+        new AjaxOptions { HttpMethod = "POST", OnSuccess = "OnSuccessCOAction", OnFailure = "OnSuccessCOAction" },
+    new { @id = "_ActionOnCompensatoryOffFrom" })
+    )
+{
+    @Html.AntiForgeryToken()
+
+    <div class="x_content table-currency mt-0">
+        <div class="table-responsive">
+            <table id="tableApprove" class="table table-striped table-bordered dt-responsive nowrap tbltick new_width" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
+                <thead>
+                    <tr>
+                        <th>S.No.</th>
+                        <th>Employee Code</th>
+                        <th>Employee Name</th>
+                        <th>Project Name	</th>
+                        @*<th>Description</th>*@
+                        <th>Leave Date</th>
+                        <th>Applied Compensatory Off Hours	</th>
+                        <th>Approved Compensatory Off Hours	</th>
+                        @if (ViewBag.Approve == "2")
+                        {
+                            <th>Reason	</th>
+                        }
+                        @if (ViewBag.Approve == "0")
+                        {
+                            <th>
+                                <input type="checkbox" class="newwidth" id="checkAll" name="ChkAll" value="All" />
+                                <label for="checkAll"></label>
+                            </th>
+                        }
+
+                    </tr>
+                    <tr class="searchbar">
+                        <th class="searchhide"> </th>
+                        <th></th>
+                        <th></th>
+                        <th></th>
+                        @*<th></th>*@
+                        <th></th>
+                        <th></th>
+                        <th></th>
+                        @if (ViewBag.Approve == "2")
+                        {
+                            <th>	</th>
+                        }
+                        @if (ViewBag.Approve == "0")
+                        {
+                            <th class="searchhide"> </th>
+                        }
+
+                    </tr>
+                </thead>
+                <tbody>
+                    @{ int Count = 0;}
+                    @for (int i = 0; i < Model.Count; i++)
+                    {
+
+                        Count++;
+                        <tr>
+                            <td>
+                                @Count
+                                @Html.HiddenFor(x => Model[i].CompensatoryOffID)
+                            </td>
+                            <td> @Model[i].Emp_Code</td>
+                            <td> @Model[i].Emp_name</td>
+                            <td> @Model[i].proj_name</td>
+                            @*<td> @Model[i].description</td>*@
+                            <td> @Model[i].Date</td>
+                            <td>
+                                @Model[i].hours
+                                @Html.HiddenFor(x => Model[i].hours, new { @class = "appliedhours" })
+                                @Html.HiddenFor(x => Model[i].Reason, new { @class = "txtReason" })
+                            </td>
+                            <td>
+                                @Html.TextBoxFor(model => model[i].Approve_hours, new { @class = "form-control aaprovedhours" })
+                                @Html.ValidationMessageFor(model => model[i].Approve_hours, "", new { @class = "text-danger" })
+
+                            </td>
+                            @if (ViewBag.Approve == "2")
+                            {
+                                <td>@Model[i].Reason</td>
+                            }
+                            @if (ViewBag.Approve == "0")
+                            {
+                                <td>
+                                    <input type="checkbox" class="newwidth chksingle" id="Chksingle_@Count" name="@Html.NameFor(x=>Model[i].CheckSelected)" />
+                                    <label for="Chksingle_@Count"></label>
+                                </td>
+                            }
+
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    if (Model.Count > 0 && ViewBag.Approve == "0")
+    {
+        <div class="row">
+            <div class="col-sm-12 text-center mt-3">
+                <button type="submit" class="btn mtr-g-grn btn-l ripplelink" name="Command" value="Approved"><i class="fa fa-check"></i>Approve</button>
+                <button type="button" class="btn red-clr-bg myResubmit"><i class="fas fa-sync-alt"></i>Reject</button>
+                <button type="submit" style="display:none" id="btnResubmit" name="Command" value="Resubmit"><i class="fa fa-paper-plane" aria-hidden="true"></i></button>
+                <button type="button" class="btn cnl-btn ripplelink  " data-dismiss="modal"><i class="fas fa-times"></i>Close</button>
+            </div>
+        </div>
+    }
+
+
+
+}

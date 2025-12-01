@@ -1,0 +1,16 @@
+                   --------------------- Error(2025-03-10 20:58:09.9564)SHUBH-------------------- 
+                   
+                   Exception Type:
+                   Exception Message:
+                   Stack Trace:
+                   Additional Info:Invalid object name 'MITRV1.dbo.Onboarding_preRegistration'.   at Mitr.BLL.OnboardingBAL.GetRecords(String globalXml, String screenId, Int32 roleId, Int32 userid, String operation, String& errorMessage) in E:\Code\HRSourceCode\Mitr.BLL\OnboardingBAL.cs:line 218
+   at Mitr.Areas.Onboarding.Controllers.OnboardingRequestController.BindUserOnboard(Int32 Id, Int32 inputData) in E:\Code\HRSourceCode\Mitr.Web\Areas\Onboarding\Controllers\OnboardingRequestController.cs:line 1147
+                   
+                   --------------------- Error(2025-03-10 20:58:10.1395)SHUBH-------------------- 
+                   
+                   Exception Type:
+                   Exception Message:
+                   Stack Trace:
+                   Additional Info:Invalid object name 'MITRV1.dbo.Onboarding_preRegistration'.
+
+                   

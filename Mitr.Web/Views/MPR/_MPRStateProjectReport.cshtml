@@ -1,0 +1,245 @@
+﻿@model IList<MPRReports.AchievementList>
+@{
+    //var lstState=Model.GroupBy("").tolis
+    var lstState = Model.GroupBy(x => x.StateName)
+        .Select(x => new
+        {
+            StateName = x.Select(ex => ex.StateName).FirstOrDefault(),
+            StateID = x.Select(ex => ex.StateID).FirstOrDefault()
+        }).ToList();   
+}
+<style>
+    :before, :after {
+        font-family: inherit;
+    }
+</style>
+<h1 class="heading-one ">State Project Achievement</h1>
+<div class="row">
+    <div class="col-md-12 col-sm-12 col-xs-12">
+        <div class="card p-0">
+            <div class="card-body p-0">
+                <div class="x_content table-currency mt-0">
+                    <div class="table-responsive">
+                        <table id="datatable-buttons" class="table table-striped table-bordered dt-responsive nowrap tbltick new_width" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
+                            <thead>
+                                <tr style="text-align:center">
+                                    <th  ></th>
+                                    @{ int colspan = 0; int columncount = 0;int TotalCols = 0; }
+                                    @foreach (var item in lstState)
+                                    {
+                                        colspan = 0;
+                                        //string colspan = Model.Where(x => x.StateID == item.StateID).Select(x => x.ProjectName).Distinct().ToList().Count.ToString();
+                                        foreach (var itemProject in Model.Where(x => x.StateID == item.StateID).Select(x => x.ProjectName).Distinct().ToList())
+                                        {
+                                            columncount= Convert.ToInt32(Model.Where(x => x.StateID == item.StateID && x.ProjectName == itemProject).Select(x => x.NoOfCol).FirstOrDefault());
+                                            if(columncount==2)
+                                            {
+                                                columncount = columncount + 1;
+                                            }
+                                            colspan = colspan + columncount;
+
+                                        }
+                                        colspan = colspan + columncount;
+                                        <th colspan="@colspan">@item.StateName</th>
+                                    }
+                                </tr>
+                                <tr style="text-align:center">
+                                    <th   ></th>
+                                    @foreach (var item in lstState)
+                                    {
+                                        colspan = 0;
+                                        foreach (var itemProject in Model.Where(x => x.StateID == item.StateID).Select(x => x.ProjectName).Distinct().ToList())
+                                        {
+                                            colspan = Convert.ToInt32(Model.Where(x => x.StateID == item.StateID && x.ProjectName == itemProject).Select(x => x.NoOfCol).FirstOrDefault());
+                                            if (colspan == 2)
+                                            {
+                                                colspan = colspan + 1;
+                                            }
+                                            <th colspan="@colspan">@itemProject</th>
+                                            TotalCols = TotalCols + colspan;
+                                        }
+                                        TotalCols = TotalCols + colspan;
+                                        <th colspan="@colspan">Total of All Projects</th>
+                                    }
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @{string header1 = "", header2 = "", header3 = "",NoofCol = ""; }
+                                @foreach (var lstCategory in Model.Select(x => x.SecName).Distinct().ToList())
+                                {
+                                    var data = TotalCols + 1;
+                                    <tr style="color:green;width:100px;font-size:small">
+                                        <td colspan="@data"><b> @lstCategory</b></td>
+                                    </tr>
+                                    foreach (var lstSubCategory in Model.Where(n => n.SecName == lstCategory).Select(x => x.SubSecName).Distinct().ToList())
+                                    {
+                            <tr>
+                                <td style="background-color:darkgoldenrod;width:100px"> @lstSubCategory</td>
+                                @foreach (var item in lstState)
+                                {
+                                    foreach (var itemProject in Model.Where(x => x.StateID == item.StateID).Select(x => x.ProjectID).Distinct().ToList())
+                                    {
+                                        var lstcols = Model.GroupBy(x => new { x.ColText1, x.ColText2, x.ColText3, x.ProjectID, x.StateID, x.SecName, x.SubSecName, x.NoOfCol })
+                                        .Select(b => new
+                                        {
+                                            StateID = b.Key.StateID,
+                                            ProjectID = b.Key.ProjectID,
+                                            SecName = b.Key.SecName,
+                                            SubSecName = b.Key.SubSecName,
+                                            ColText1 = b.Key.ColText1,
+                                            ColText2 = b.Key.ColText2,
+                                            ColText3 = b.Key.ColText3,
+                                            NoOfCol = b.Key.NoOfCol,
+                                        }).Where(n => n.StateID == item.StateID && n.ProjectID == itemProject && n.SecName == lstCategory && n.SubSecName == lstSubCategory);
+                                        foreach (var itemcols in lstcols)
+                                        {
+                                            header1 = itemcols.ColText1;
+                                            header2 = itemcols.ColText2;
+                                            header3 = itemcols.ColText3;
+                                            NoofCol = itemcols.NoOfCol;
+                                            if (itemcols.NoOfCol == "3" || itemcols.NoOfCol == "2")
+                                            {
+                                                <td><b>@header1 </b></td>
+                                                <td><b>@header2 </b></td>
+                                                <td><b>@header3 </b></td>
+                                            }
+                                            else
+                                            {
+                                                <td colspan="3"><b>@header1 </b></td>
+                                            }
+
+                                        }
+                                    }
+                                    if (NoofCol == "3" || NoofCol == "2")
+                                    {
+                                        <td><b>@header1 </b></td>
+                                        <td><b>@header2 </b></td>
+                                        <td><b>@header3 </b></td>
+                                    }
+                                    else
+                                    {
+                                        <td colspan="3"><b>@header1 </b></td>
+                                    }
+
+                                }
+
+                            </tr>
+                                        foreach (var lstIndicator in Model.Where(n => n.SecName == lstCategory && n.SubSecName== lstSubCategory).Select(x => x.IndicatorName).Distinct().ToList())
+                                        {
+                                            string ExValue1 = "", ExValue2 = "", ExValue3 = "",Coldatatype="", ExValue1Total = "", ExValue2Total = "", ExValue3Total = "",NoofColumn="";
+                            <tr>
+                                <td style="width:100px"> @lstIndicator</td>
+                                @foreach (var item in lstState)
+                                {
+                                    foreach (var itemProject in Model.Where(x => x.StateID == item.StateID).Select(x => x.ProjectID).Distinct().ToList())
+                                    {
+                                        var lstcols = Model.GroupBy(x => new { x.ColText1, x.ColText2, x.ColText3, x.ProjectID, x.StateID, x.SecName, x.SubSecName, x.ExecuterVal1, x.ExecuterVal2, x.ExecuterVal3, x.IndicatorName, x.ColDataType1, x.NoOfCol })
+                                        .Select(b => new
+                                        {
+                                            StateID = b.Key.StateID,
+                                            ProjectID = b.Key.ProjectID,
+                                            SecName = b.Key.SecName,
+                                            SubSecName = b.Key.SubSecName,
+                                            ColText1 = b.Key.ColText1,
+                                            ColText2 = b.Key.ColText2,
+                                            ColText3 = b.Key.ColText3,
+                                            ExecuterVal1 = b.Key.ExecuterVal1,
+                                            ExecuterVal2 = b.Key.ExecuterVal2,
+                                            ExecuterVal3 = b.Key.ExecuterVal3,
+                                            IndicatorName = b.Key.IndicatorName,
+                                            ColDataType1 = b.Key.ColDataType1,
+                                            NoOfCol = b.Key.NoOfCol,
+                                        }).Where(n => n.StateID == item.StateID && n.ProjectID == itemProject && n.SecName == lstCategory && n.SubSecName == lstSubCategory && n.IndicatorName == lstIndicator);
+                                        foreach (var itemcols in lstcols)
+                                        {
+                                            ExValue1 = itemcols.ExecuterVal1;
+                                            ExValue2 = itemcols.ExecuterVal2;
+                                            ExValue3 = itemcols.ExecuterVal3;
+                                            NoofColumn = itemcols.NoOfCol;
+
+                                            if (itemcols.ColDataType1 == "Number")
+                                            {
+                                                if (ExValue1 !="")
+                                                {
+                                                    ExValue1Total = (Convert.ToInt32(string.IsNullOrEmpty(ExValue1Total) ? "0" : ExValue1Total) + Convert.ToInt32(ExValue1)).ToString();
+                                                }
+                                                if (ExValue2 != "")
+                                                {
+                                                    if(itemcols.ColText2 == "Percentage")
+                                                    {
+                                                        ExValue2Total = null;
+                                                    }
+                                                    else
+                                                    {
+                                                        ExValue2Total = (Convert.ToInt32(string.IsNullOrEmpty(ExValue2Total) ? "0" : ExValue2Total) + Convert.ToInt32(ExValue2)).ToString();
+
+                                                    }
+                                                }
+                                                else
+                                                {
+                                                    ExValue2Total = "";
+                                                }
+                                                if (ExValue3 != "")
+                                                {
+                                                    ExValue3Total = (Convert.ToInt32(string.IsNullOrEmpty(ExValue3Total) ? "0" : ExValue3Total) + Convert.ToInt32(ExValue3)).ToString();
+                                                }
+                                                else
+                                                {
+                                                    ExValue3Total = "";
+                                                }
+
+                                            }
+                                            else
+                                            {
+                                                ExValue1Total = "";
+                                                ExValue2Total = "";
+                                                ExValue3Total = "";
+                                            }
+                                            if (itemcols.NoOfCol == "3" || itemcols.NoOfCol == "2")
+                                            {
+                                                <td>@ExValue1</td>
+                                                <td>@ExValue2</td>
+                                                <td>@ExValue3</td>
+                                            }
+                                            else
+                                            {
+                                                <td colspan="3"><b>@ExValue1 </b></td>
+
+                                            }
+
+                                        }
+
+                                    }
+                                    if (NoofColumn == "3" || NoofColumn == "2")
+                                    {
+                                        <td>@ExValue1Total</td>
+                                        <td>@ExValue2Total</td>
+                                        <td>@ExValue3Total</td>
+                                    }
+                                    else
+                                    {
+                                        <td colspan="3"><b>@ExValue1Total </b></td>
+
+                                    }
+
+                                    ExValue1Total = "";
+                                    ExValue2Total = "";
+                                    ExValue3Total = "";
+                                }
+                            </tr>
+                                        }
+                                }
+
+                                }
+
+                               
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+</div>

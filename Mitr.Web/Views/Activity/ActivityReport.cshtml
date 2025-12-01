@@ -1,0 +1,798 @@
+﻿@model Mitr.Models.ActivityReport
+@using System.Data;
+@{
+	ViewBag.Title = "Generate Monthly Log";
+	var ReportData = TempData["dsdata"];
+	DataSet ds = (DataSet)ReportData;
+	string ReportType = Convert.ToString(TempData["Reporttype"]);
+	string MonthName = ""; string YearName = "";
+	string CompanyName = "", Address = "";
+	if (ds != null)
+	{
+		try
+		{
+			MonthName = ds.Tables[0].Rows[0]["MonthName"].ToString();
+			YearName = ds.Tables[0].Rows[0]["YearName"].ToString();
+			CompanyName = ds.Tables[0].Rows[0]["CompanyName"].ToString();
+			Address = ds.Tables[0].Rows[0]["CompanyAddress"].ToString();
+		}
+		catch
+		{
+		}
+
+	}
+}
+@Html.Partial("HeaderMsg_Partial")
+<div class="inner-main defult-height">
+	<h1 class="heading-one">Generate Monthly Log</h1>
+	@Html.ValidationSummary(false, "Please fix the following error and then submit the form")
+	@using (Html.BeginForm("ActivityReport", "Activity",
+  new { src = ViewBag.src }, FormMethod.Post,
+  new
+  {
+	  name = "ActivityReportForm",
+	  id = "ActivityReportForm",
+	  enctype = "multipart/form-data"
+  }))
+	{
+
+		<div class="row">
+			<div class="col-sm-3 hf-575 form-group">
+				<label class="lbl-abs">Month</label>
+				@Html.TextBoxFor(model => model.Date, new { @class = "form-control actdate h-30", @type = "month" })
+				@Html.ValidationMessageFor(model => model.Date, "", new { @class = "text-danger" })
+			</div>
+			<div class="col-sm-3 hf-575 form-group">
+				<label class="lbl-abs"> Mitr/Non Mitr </label>
+				@Html.EnumDropDownListFor(model => model.MitrUser, "All", htmlAttributes: new { @class = "form-control applyselect" })
+			</div>
+			<div class="col-sm-12 form-group" style="display:none">
+				<div class="table-responsive activitytable mb-3">
+					@if (ds != null)
+					{
+						if (ReportType == "SALARYALLOCATION" || ReportType == "PWAFIXEDBENEFIT" || ReportType == "PFALLOCATION" || ReportType == "ALALLOCATION")
+						{
+							<div id="table-scroll" class="table-scroll  ">
+								<div class="table-wrap">
+									@{
+										var Projects = from myRow in ds.Tables[2].AsEnumerable()
+													   select myRow;
+										var Employee = from myRow in ds.Tables[0].AsEnumerable()
+													   select myRow;
+										var EmployeeP = from myRow in ds.Tables[1].AsEnumerable()
+														select myRow;
+									}
+									@if (ReportType == "SALARYALLOCATION" || ReportType == "PWAFIXEDBENEFIT")
+									{
+										decimal[] Projwh = new decimal[Projects.ToList().Count];
+										decimal[] Projth = new decimal[Projects.ToList().Count];
+										decimal[] Projvalue = new decimal[Projects.ToList().Count];
+										decimal OTHours = 0; long OTValue = 0; decimal ALHours = 0; long ALValue = 0; decimal PaidHours = 0; decimal GrossSalary = 0; decimal LWP = 0; decimal MonthHours = 0; ; decimal FixedMonthlyBenefit = 0;
+
+										<table id="tblProjectWiseSalary" name="tblProjectWiseSalary">
+											<thead>
+												<tr>
+													<th class="text-center" style="font-size:medium" colspan="10"><img src="~/assets/design/images/c3.png" /></th>
+													<th class="text-center" style="font-size:medium" colspan="20">@CompanyName <br />@Address</th>
+													<th class="text-center" style="font-size:medium" colspan="10"></th>
+
+												</tr>
+												@if (ReportType == "SALARYALLOCATION")
+												{
+													<tr>
+														<th class="text-center" style="font-size:medium" colspan="50">Projectwise allocation of Salary for the Month of @MonthName @YearName</th>
+													</tr>
+												}
+												else
+												{
+													<tr>
+														<th class="text-center" style="font-size:medium" colspan="50">Projectwise allocation of Fixed Benefits for the Month of @MonthName @YearName</th>
+													</tr>
+
+												}
+												<tr style="font-weight:bold">
+													<th class="text-center">Code</th>
+													<th class="text-center">Name</th>
+													<th class="text-center">Employment Type</th>
+													<th class="text-center">Sub Category</th>
+													@if (ReportType == "SALARYALLOCATION")
+													{
+														<th class="text-center">Hourly Rate</th>
+													}
+													else if (ReportType == "PWAFIXEDBENEFIT")
+													{
+														<th class="text-center">Fixed monthly Benefit</th>
+													}
+
+													@foreach (var item in Projects)
+													{
+														<th colspan="3" class="text-center">@item["doc_no"]</th>
+													}
+													@if (ReportType == "SALARYALLOCATION")
+													{
+														<th class="text-center" colspan="2">Overtime</th>
+														<th class="text-center" colspan="2">Anual Leave</th>
+														<th class="text-center">Paid Hours</th>
+														<th class="text-center">Gross Salary</th>
+														<th class="text-center">LWP</th>
+														<th class="text-center">Month Hours</th>
+													}
+
+													<th class="text-center">Remark</th>
+												</tr>
+												<tr>
+													<th></th>
+													<th></th>
+													<th></th>
+													<th></th>
+													<th></th>
+													@foreach (var item in Projects)
+													{
+														<th>BH</th>
+														<th>WH</th>
+														<th>Amount</th>
+													}
+													@if (ReportType == "SALARYALLOCATION")
+													{
+														<th>Hours</th>
+														<th>Amount</th>
+														<th>Hours</th>
+														<th>Amount</th>
+
+														<th></th>
+														<th></th>
+														<th></th>
+														<th></th>
+													}
+
+													<th></th>
+
+												</tr>
+											</thead>
+											<tbody>
+												<tr>
+													<td colspan="100"></td>
+												</tr>
+												@{ int count = 0; int countproj = 0;}
+												@foreach (var item in Employee)
+												{
+													countproj = 0;
+													<tr>
+														<td>@item["emp_code"]</td>
+														<td>@item["emp_name"]</td>
+														<td>@item["emptype"]</td>
+														<td>@item["subcategory"]</td>
+														@if (ReportType == "SALARYALLOCATION")
+														{
+															<td>@item["HourlyRate"]</td>
+														}
+														else if (ReportType == "PWAFIXEDBENEFIT")
+														{
+															<td>@Convert.ToDouble(item["FixedBenefits"]).ToString("#,##0")</td>
+															FixedMonthlyBenefit = FixedMonthlyBenefit + Convert.ToDecimal(item["FixedBenefits"]);
+														}
+
+														@foreach (var itemP in Projects)
+														{
+															var EmployeeDetailP = from myRow in ds.Tables[1].AsEnumerable()
+																				  where myRow.Field<int>("proj_id") == Convert.ToInt32(itemP["proj_id"]) && myRow.Field<int>("emp_id") == Convert.ToInt32(item["id"])
+																				  select myRow;
+															if (EmployeeDetailP.ToList().Count > 0)
+															{
+																foreach (var itemD in EmployeeDetailP)
+																{
+																	Projwh[countproj] = Projwh[countproj] + Convert.ToDecimal(itemD["work_hours"]);
+																	Projvalue[countproj] = Projvalue[countproj] + Convert.ToDecimal(itemD["work_value"]);
+																	<td></td>
+																	<td>@itemD["work_hours"]</td>
+																	<td>@Convert.ToDouble(itemD["work_value"]).ToString("#,##0")</td>
+																}
+															}
+															else
+															{
+																<td></td>
+																<td></td>
+																<td></td>
+															}
+															countproj = countproj + 1;
+														}
+														@if (ReportType == "SALARYALLOCATION")
+														{
+															<td>@item["ot_hours"]</td>
+															@*<td>@Convert.ToDecimal(item["ot_hoursVal"])</td>*@ // coment by shailendra date 03092024
+															<td>@Convert.ToInt64(item["ot_hoursVal"]).ToString() </td>
+															<td>@item["al_hours"]</td>
+															@*<td>@Convert.ToDouble(item["al_hoursVal"]).ToString("#,##0")</td>*@ // coment by shailendra date 03092024
+															<td>@Convert.ToInt64(item["al_hoursVal"]).ToString() </td>
+
+															<td>@item["paid_hours"]</td>
+															<td>@Convert.ToDouble(item["GrossSalary"]).ToString("#,##0")</td>
+															<td>@item["Lwp"]</td>
+															<td>@item["total_hours"]</td>
+														}
+														<td>@item["remark"]</td>
+														@{
+															OTHours = OTHours + Convert.ToDecimal(item["ot_hours"]);
+															//OTValue = OTValue + Convert.ToDecimal(item["ot_hoursVal"]); code comment by shailendra 04092024
+															OTValue = OTValue + Convert.ToInt64(item["ot_hoursVal"]);
+															ALHours = ALHours + Convert.ToDecimal(item["al_hours"]);
+															//ALValue = ALValue + Convert.ToDecimal(item["al_hoursVal"]); code comment by shailendra 04092024
+															ALValue = ALValue + Convert.ToInt64(item["al_hoursVal"]);
+															PaidHours = PaidHours + Convert.ToDecimal(item["paid_hours"]);
+															GrossSalary = GrossSalary + Convert.ToDecimal(item["GrossSalary"]);
+															LWP = LWP + Convert.ToDecimal(item["Lwp"]);
+															MonthHours = MonthHours + Convert.ToDecimal(item["total_hours"]);
+														}
+													</tr>
+												}
+
+											</tbody>
+											<tfoot>
+												<tr><td></td></tr>
+												<tr style="background-color:lightgrey">
+													<td></td>
+													<td colspan="3">Grand Total</td>
+													<td>@(ReportType == "PWAFIXEDBENEFIT" ? FixedMonthlyBenefit.ToString() : "")</td>
+													@{countproj = 0; }
+													@foreach (var itemP in Projects)
+													{
+														<td></td>
+														<td>@Projwh[countproj]</td>
+														<td>@Convert.ToDouble(Projvalue[countproj]).ToString("#,##0")</td>
+														countproj = countproj + 1;
+													}
+													@if (ReportType == "SALARYALLOCATION")
+													{
+														<td>@OTHours</td>
+														<td>@Convert.ToDouble(OTValue).ToString("#,##0")</td>
+														@*<td>@OTValue</td>*@ // comment by shailendra rtemove decimal on date 03092024
+														<td>@ALHours</td>
+														<td>@Convert.ToDouble(ALValue).ToString("#,##0")</td>
+														<td>@PaidHours</td>
+														<td>@Convert.ToDouble(GrossSalary).ToString("#,##0")</td>
+														<td>@LWP</td>
+														<td>@MonthHours</td>
+													}
+													<td></td>
+												</tr>
+											</tfoot>
+										</table>
+									}
+									else if (ReportType == "PFALLOCATION" || ReportType == "ALALLOCATION")
+									{
+										<table id="tblProjectWisePF" name="tblProjectWisePF" class="main-table table processActivity">
+											<thead>
+												<tr>
+													<th class="text-center" style="font-size:medium" colspan="10"><img src="~/assets/design/images/c3.png" /></th>
+													<th class="text-center" style="font-size:medium" colspan="20">@CompanyName <br />@Address</th>
+													<th class="text-center" style="font-size:medium" colspan="10"></th>
+												</tr>
+												@if (ReportType == "PFALLOCATION")
+												{
+													<tr>
+														<th class="text-center" style="font-size:medium" colspan="50">Projectwise allocation of Provident Fund contribution for the Month of @MonthName @YearName</th>
+													</tr>
+												}
+												else
+												{
+													<tr>
+														<th class="text-center" style="font-size:medium" colspan="50">Projectwise allocation of Annual Leave contribution for the Month of @MonthName @YearName</th>
+													</tr>
+												}
+												<tr>
+													<th class="text-center">Code</th>
+													<th class="text-center">Name</th>
+													<th class="text-center">Employment Type</th>
+													<th class="text-center">Sub Category</th>
+													<th class="text-center">Hourly Rate</th>
+													<th class="text-center">Basic Salary</th>
+													@if (ReportType == "PFALLOCATION")
+													{
+														<th class="text-center">Basic Salary for PF</th>
+														<th class="text-center">PF Amount</th>
+														<th class="text-center">Admin PF</th>
+														<th class="text-center">Charges EDLI</th>
+													}
+													else if (ReportType == "ALALLOCATION")
+													{
+														<th class="text-center">AL Amount</th>
+													}
+													@foreach (var item in Projects)
+													{
+														<th class="text-center">@item["doc_no"]</th>
+													}
+												</tr>
+											</thead>
+											<tbody>
+
+												@{ int count = 0;
+													decimal[] ProjVal = new decimal[Projects.ToList().Count];
+													decimal Basic = 0; decimal BasicPFAmount = 0; decimal Amount = 0; decimal AdminPF = 0; decimal EDLI = 0;
+												}
+												@foreach (var item in Employee)
+
+												{
+													Basic = Basic + Convert.ToDecimal(item["Basic"]);
+													<tr>
+														<td>@item["emp_code"]</td>
+														<td>@item["emp_name"]</td>
+														<td>@item["emptype"]</td>
+														<td>@item["subcategory"]</td>
+														<td>@item["HourlyRate"]</td>
+														<td>@Convert.ToDouble(item["Basic"]).ToString("#,##0")</td>
+														@if (ReportType == "PFALLOCATION")
+														{
+															BasicPFAmount = BasicPFAmount + Convert.ToDecimal(item["BasicPFAmount"]);
+															Amount = Amount + Convert.ToDecimal(item["PFAmount"]);
+															AdminPF = AdminPF + Convert.ToDecimal(item["AdminPF"]);
+															EDLI = EDLI + Convert.ToDecimal(item["EDLI"]);
+															<td>@Convert.ToDouble(item["BasicPFAmount"]).ToString("#,##0")</td>
+															<td>@Convert.ToDouble(item["PFAmount"]).ToString("#,##0")</td>
+															<td>@Convert.ToDouble(item["AdminPF"]).ToString("#,##0")</td>
+															<td>@Convert.ToDouble(item["EDLI"]).ToString("#,##0")</td>
+														}
+														else if (ReportType == "ALALLOCATION")
+														{
+															Amount = Amount + Convert.ToDecimal(item["ALAmount"]);
+															<td>@Convert.ToDouble(item["ALAmount"]).ToString("#,##0")</td>
+														}
+														@{ count = 0; }
+														@foreach (var itemP in Projects)
+														{
+															var EmployeeDetailP = from myRow in ds.Tables[1].AsEnumerable()
+																				  where myRow.Field<int>("proj_id") == Convert.ToInt32(itemP["proj_id"]) && myRow.Field<int>("emp_id") == Convert.ToInt32(item["id"])
+																				  select myRow;
+															if (EmployeeDetailP.ToList().Count > 0)
+															{
+																foreach (var itemD in EmployeeDetailP)
+																{
+																	if (ReportType == "PFALLOCATION")
+																	{
+																		<td>@Convert.ToDouble(itemD["PFValue"]).ToString("#,##0")</td>
+																		ProjVal[count] = ProjVal[count] + Convert.ToDecimal(itemD["PFValue"]);
+																	}
+																	else if (ReportType == "ALALLOCATION")
+																	{
+																		<td>@Convert.ToDouble(itemD["ALValue"]).ToString("#,##0")</td>
+																		ProjVal[count] = ProjVal[count] + Convert.ToDecimal(itemD["ALValue"]);
+																	}
+																}
+															}
+															else
+															{
+																<td></td>
+															}
+															count = count + 1;
+														}
+													</tr>
+												}
+											</tbody>
+											<tfoot>
+												<tr>  <td colspan="100"></td></tr>
+												<tr style="background-color:lightgrey">
+													<td></td>
+													<td colspan="3">Grand Total</td>
+													<td></td>
+													<td>@Convert.ToDouble(Basic).ToString("#,##0")</td>
+													@if (ReportType == "PFALLOCATION")
+													{
+														<td>@Convert.ToDouble(BasicPFAmount).ToString("#,##0")</td>
+														<td>@Convert.ToDouble(Amount).ToString("#,##0")</td>
+														<td>@Convert.ToDouble(AdminPF).ToString("#,##0")</td>
+														<td>@Convert.ToDouble(EDLI).ToString("#,##0")</td>
+													}
+													else if (ReportType == "ALALLOCATION")
+													{
+														<td>@Convert.ToDouble(Amount).ToString("#,##0")</td>
+													}
+													@{count = 0; }
+													@foreach (var itemP in Projects)
+													{
+														<td>@ProjVal[count]</td>
+														count = count + 1;
+													}
+												</tr>
+											</tfoot>
+
+										</table>
+									}
+
+
+								</div>
+							</div>
+						}
+						else if (ReportType == "PF")
+						{
+							<div id="table-scroll" class="table-scroll">
+								<div class="table-wrap">
+									@Html.Partial("_PFReport", ds);
+								</div>
+							</div>
+
+						}
+						else if (ReportType == "PTAX")
+						{
+							<div id="table-scroll" class="table-scroll">
+								<div class="table-wrap">
+									@Html.Partial("_PTaxReport", ds);
+								</div>
+							</div>
+
+						}
+
+						else if (ReportType == "BonusReport")
+						{
+							<div id="table-scroll" class="table-scroll">
+								<div class="table-wrap">
+									@Html.Partial("_BonusReport", ds);
+								</div>
+							</div>
+
+						}
+						else if (ReportType == "BankReport")
+						{
+							<div id="table-scroll" class="table-scroll">
+								<div class="table-wrap">
+									@Html.Partial("_BankReport", ds);
+								</div>
+							</div>
+
+						}
+
+					}
+
+
+
+
+
+				</div>
+			</div>
+		</div>
+
+		<div class="row">
+			<div class="col-md-6">
+				<div class="reportlist row">
+					<div class="plans col-sm-4">
+						<label class="plan basic-plan" onclick="show2();" for="aos">
+							<input type="radio" class="newwidth chksingle" id="aos" value="3" name="@Html.NameFor(x => Model.RadioButton)" />
+							<div class="plan-content">
+								<img loading="lazy" src="~/assets/images/icon/report-icon/projectwise-allocation-of-salary.svg" alt="" />
+								<div class="plan-details">Allocation of Salary</div>
+							</div>
+						</label>
+					</div>
+					<div class="plans col-sm-4">
+						<label class="plan basic-plan" onclick="show2();" for="apf">
+							<input type="radio" class="newwidth chksingle" id="apf" value="4" name="@Html.NameFor(x => Model.RadioButton)" />
+							<div class="plan-content">
+								<img loading="lazy" src="~/assets/images/icon/report-icon/projectwise-allocation-of-pf.svg" alt="" />
+								<div class="plan-details">Allocation of PF</div>
+							</div>
+						</label>
+					</div>
+					<div class="plans col-sm-4">
+						<label class="plan basic-plan" onclick="show2();" for="paofb">
+							<input type="radio" class="newwidth chksingle" id="paofb" value="11" name="@Html.NameFor(x => Model.RadioButton)" />
+							<div class="plan-content">
+								<img loading="lazy" src="~/assets/images/icon/report-icon/fixed-benefits.svg" alt="" />
+								@*<div class="plan-details">Projectwise Allocation of Fixed Benefits</div>*@
+								<div class="plan-details"> Allocation of Fixed Benefits</div>
+							</div>
+						</label>
+					</div>
+					<div class="plans col-sm-4">
+						<label class="plan basic-plan" onclick="show2();" for="pafa">
+							<input type="radio" class="newwidth chksingle" id="pafa" value="10" name="@Html.NameFor(x => Model.RadioButton)" />
+							<div class="plan-content">
+								<img loading="lazy" src="~/assets/images/icon/report-icon/projectwise-allocation-of-al.svg" alt="" />
+								@*<div class="plan-details">Projectwise Allocation of AL</div>*@
+								<div class="plan-details"> Allocation of AL</div>
+							</div>
+						</label>
+					</div>
+					<div class="plans col-sm-4">
+						<a href="@Url.Action("ConsolidatedSalaryReport",new { src = clsApplicationSetting.EncryptQueryString(ViewBag.MenuID.ToString()+"*/Activity/ConsolidatedSalaryReport*") })">
+							<label class="plan basic-plan">
+
+								<div class="plan-content">
+									<img loading="lazy" src="~/assets/images/icon/report-icon/fixed-benefits.svg" alt="" />
+									<div class="plan-details">Consolidated Salary Report </div>
+								</div>
+							</label>
+						</a>
+					</div>
+					<div class="plans col-sm-4">
+						<label class="plan basic-plan" onclick="show2();" for="paoPF">
+							<input type="radio" class="newwidth chksingle" id="paoPF" value="6" name="@Html.NameFor(x => Model.RadioButton)" />
+							<div class="plan-content">
+								<img loading="lazy" src="~/assets/images/icon/report-icon/fixed-benefits.svg" alt="" />
+								<div class="plan-details">PF Report</div>
+							</div>
+						</label>
+					</div>
+					<div class="plans col-sm-4">
+						<label class="plan basic-plan" onclick="show2();" for="paoPTax">
+							<input type="radio" class="newwidth chksingle" id="paoPTax" value="7" name="@Html.NameFor(x => Model.RadioButton)" />
+							<div class="plan-content">
+								<img loading="lazy" src="~/assets/images/icon/report-icon/fixed-benefits.svg" alt="" />
+								<div class="plan-details">PTAX Report</div>
+							</div>
+						</label>
+					</div>
+
+					<div class="plans col-sm-4">
+						<label class="plan basic-plan" onclick="show2();" for="paoBank">
+							<input type="radio" class="newwidth chksingle" id="paoBank" value="13" name="@Html.NameFor(x => Model.RadioButton)" />
+							<div class="plan-content">
+								<img loading="lazy" src="~/assets/images/icon/report-icon/fixed-benefits.svg" alt="" />
+								<div class="plan-details">Bank Report</div>
+							</div>
+						</label>
+					</div>
+
+
+					<div class="plans col-sm-4">
+						<label class="plan basic-plan" onclick="show2();" for="paoBonus">
+							<input type="radio" class="newwidth chksingle" id="paoBonus" value="12" name="@Html.NameFor(x => Model.RadioButton)" />
+							<div class="plan-content">
+								<img loading="lazy" src="~/assets/images/icon/report-icon/fixed-benefits.svg" alt="" />
+								<div class="plan-details">Bonus Report</div>
+							</div>
+						</label>
+					</div>
+
+
+
+					<div class="plans col-sm-4">
+						<label class="plan basic-plan" onclick="show2();" for="lar">
+							<input type="radio" class="newwidth chksingle" id="lar" value="2" name="@Html.NameFor(x => Model.RadioButton)" />
+							<div class="plan-content">
+								<img loading="lazy" src="~/assets/images/icon/report-icon/leave-availed.svg" alt="" />
+								<div class="plan-details">Leave Availed Report</div>
+							</div>
+						</label>
+					</div>
+
+					<div class="plans col-sm-4">
+						<a href="@Url.Action("LeaveReport",new { src = clsApplicationSetting.EncryptQueryString(ViewBag.MenuID.ToString()+"*/Activity/LeaveReport*") })">
+							<label class="plan basic-plan">
+
+								<div class="plan-content">
+									<img loading="lazy" src="~/assets/images/icon/report-icon/fixed-benefits.svg" alt="" />
+									<div class="plan-details">Leave Report</div>
+								</div>
+							</label>
+						</a>
+					</div>
+					<div class="plans col-sm-4">
+						<label class="plan basic-plan" onclick="show2();" for="ts">
+							<input type="radio" class="newwidth chksingle" id="ts" value="5" name="@Html.NameFor(x => Model.RadioButton)" />
+							<div class="plan-content">
+								<img loading="lazy" src="~/assets/images/icon/report-icon/time-sheet.svg" alt="" />
+								<div class="plan-details">Time Sheet</div>
+							</div>
+						</label>
+					</div>
+					<div class="plans col-sm-4">
+						<a href="@Url.Action("LeaveReportYearly",new { src = clsApplicationSetting.EncryptQueryString(ViewBag.MenuID.ToString()+"*/Activity/LeaveReportYearly*") })">
+							<label class="plan basic-plan">
+
+								<div class="plan-content">
+									<img loading="lazy" src="~/assets/images/icon/report-icon/fixed-benefits.svg" alt="" />
+									<div class="plan-details">Leave Report Yearly</div>
+								</div>
+							</label>
+						</a>
+					</div>
+
+					<div class="plans col-sm-4">
+						<a href="@Url.Action("CustomizedReport",new { src = clsApplicationSetting.EncryptQueryString(ViewBag.MenuID.ToString()+"*/Activity/CustomizedReport*") })">
+							<label class="plan basic-plan">
+
+								<div class="plan-content">
+									<img loading="lazy" src="~/assets/images/icon/report-icon/fixed-benefits.svg" alt="" />
+									<div class="plan-details">Staff salary and benefits report of a project</div>
+								</div>
+							</label>
+						</a>
+					</div>
+
+					<div class="plans col-sm-4">
+						<a href="@Url.Action("CustomizedReportProject",new { src = clsApplicationSetting.EncryptQueryString(ViewBag.MenuID.ToString()+"*/Activity/CustomizedReportProject*") })">
+							<label class="plan basic-plan">
+
+								<div class="plan-content">
+									<img loading="lazy" src="~/assets/images/icon/report-icon/fixed-benefits.svg" alt="" />
+									<div class="plan-details">Project Wise Customized Report</div>
+								</div>
+							</label>
+						</a>
+					</div>
+
+					<div class="plans col-sm-4">
+						<a href="@Url.Action("CustomizedReportStaffWise",new { src = clsApplicationSetting.EncryptQueryString(ViewBag.MenuID.ToString()+"*/Activity/CustomizedReportStaffWise*") })">
+							<label class="plan basic-plan">
+
+								<div class="plan-content">
+									<img loading="lazy" src="~/assets/images/icon/report-icon/fixed-benefits.svg" alt="" />
+									<div class="plan-details">Individual Staff Salary and Benefit report</div>
+								</div>
+							</label>
+						</a>
+					</div>
+
+					<div class="plans col-sm-4">
+						<a href="@Url.Action("ConsolidatedStaffSalaryReport",new { src = clsApplicationSetting.EncryptQueryString(ViewBag.MenuID.ToString()+"*/Activity/ConsolidatedStaffSalaryReport*") })">
+							<label class="plan basic-plan">
+
+								<div class="plan-content">
+									<img loading="lazy" src="~/assets/images/icon/report-icon/fixed-benefits.svg" alt="" />
+									<div class="plan-details">Consolidated Staff Salary and Benefit report</div>
+								</div>
+							</label>
+						</a>
+					</div>
+					<div class="plans col-sm-4">
+						<a href="@Url.Action("ComponentWiseReport",new { src = clsApplicationSetting.EncryptQueryString(ViewBag.MenuID.ToString()+"*/Activity/ComponentWiseReport*") })">
+							<label class="plan basic-plan">
+
+								<div class="plan-content">
+									<img loading="lazy" src="~/assets/images/icon/report-icon/fixed-benefits.svg" alt="" />
+									<div class="plan-details">Component wise report</div>
+								</div>
+							</label>
+						</a>
+					</div>
+				</div>
+				@*<div class="plans">
+						<label class="plan basic-plan" onclick="show2();" for="pafa">
+							<input type="radio" class="newwidth chksingle" id="pafa" value="10" name="@Html.NameFor(x => Model.RadioButton)" />
+							<div class="plan-content">
+								<img loading="lazy" src="~/assets/images/icon/report-icon/projectwise-allocation-of-al.svg" alt="" />
+								<div class="plan-details">Projectwise Allocation of AL</div>
+							</div>
+						</label>
+					</div>*@
+
+				@*<div class="plans">
+						<a href="@Url.Action("RequiredSkillReport",new { src = clsApplicationSetting.EncryptQueryString(ViewBag.MenuID.ToString()+"*/Activity/RequiredSkillReport*") })">
+							<label class="plan basic-plan">
+
+								<div class="plan-content">
+									<img loading="lazy" src="~/assets/images/icon/report-icon/fixed-benefits.svg" alt="" />
+									<div class="plan-details">Required skill  Report</div>
+								</div>
+							</label>
+						</a>
+					</div>*@
+				<ul class="list-unstyled scroll mdl-lst-chk mb-2" style="display:none">
+
+					@*<li class="radio">
+							<input type="radio" class="newwidth chksingle" id="Chksingle_1" checked value="1" name="@Html.NameFor(x => Model.RadioButton)" />
+							<label for="Chksingle_1" class="radio-label">Status of Activity Log</label>
+						</li>*@
+					@*<li class="radio">
+							<input type="radio" class="newwidth chksingle" id="Chksingle_2" value="2" name="@Html.NameFor(x => Model.RadioButton)" />
+							<label for="Chksingle_2" class="radio-label">Leave Availed Report</label>
+						</li>*@
+					@*<li class="radio">
+							<input type="radio" class="newwidth chksingle" id="Chksingle_3" value="3" name="@Html.NameFor(x => Model.RadioButton)" />
+							<label for="Chksingle_3" class="radio-label">Projectwise Allocation of Salary</label>
+						</li>*@
+					@*<li class="radio">
+							<input type="radio" class="newwidth chksingle" id="Chksingle_4" value="4" name="@Html.NameFor(x => Model.RadioButton)" />
+							<label for="Chksingle_4" class="radio-label">Projectwise Allocation of PF</label>
+						</li>*@
+					@*<li class="radio">
+							<input type="radio" class="newwidth chksingle" id="Chksingle_10" value="10" name="@Html.NameFor(x => Model.RadioButton)" />
+							<label for="Chksingle_10" class="radio-label">Projectwise Allocation of AL</label>
+						</li>*@
+					@*<li class="radio">
+							<input type="radio" class="newwidth chksingle" id="Chksingle_5" value="5" name="@Html.NameFor(x => Model.RadioButton)" />
+							<label for="Chksingle_5" class="radio-label">Time Sheet</label>
+						</li>*@
+
+					@*<li class="radio">
+							<input type="radio" class="newwidth chksingle" id="Chksingle_6" value="6" name="@Html.NameFor(x => Model.RadioButton)" />
+							<label for="Chksingle_6" class="radio-label">Transfer Data to E-Pay</label>
+						</li>
+						<li class="radio">
+							<input type="radio" class="newwidth chksingle" id="Chksingle_7" value="7" name="@Html.NameFor(x => Model.RadioButton)" />
+							<label for="Chksingle_7" class="radio-label">Unclaimed Benefits</label>
+						</li>
+						<li class="radio">
+							<input type="radio" class="newwidth chksingle" id="Chksingle_8" value="8" name="@Html.NameFor(x => Model.RadioButton)" />
+							<label for="Chksingle_8" class="radio-label">Annual Package Details of Staff</label>
+						</li>*@
+					@*<li class="radio">
+							<input type="radio" class="newwidth chksingle" id="Chksingle_9" value="9" name="@Html.NameFor(x => Model.RadioButton)" />
+							<label for="Chksingle_9" class="radio-label">Leave Availed/Lapsed</label>
+						</li>*@
+					@*<li class="radio">
+							<input type="radio" class="newwidth chksingle" id="Chksingle_11" value="11" name="@Html.NameFor(x => Model.RadioButton)" />
+							<label for="Chksingle_11" class="radio-label">Projectwise allocation of Fixed Benefits</label>
+						</li>*@
+
+				</ul>
+				<div class=" mt-2 col-sm-12 text-center">
+					<button type="submit" class="btn mtr-g-grn mb-0" name="Command" value="Download"><i class="fas fa-download"></i> Download</button><button type="submit" class="btn mtr-g-grn mb-0" name="Command" value="Download"><i class="fas fa-print"></i> Print</button>
+				</div>
+			</div>
+
+			<div class="col-md-6 text-center">
+				<img src="~/assets/images/generate-monthly-log-reports.jpg" class="reportimg" alt="">
+
+			</div>
+		</div>
+
+	}
+
+</div>
+
+@section scripts    {
+	@System.Web.Optimization.Scripts.Render("~/bundle/dataTablesjs")
+	<script src="~/assets/design/Scripts/AddInit.js?v=@clsApplicationSetting.GetWebConfigValue("Version")"></script>
+	@System.Web.Optimization.Scripts.Render("~/bundle/unobtrusivejs");
+	<script src="~/assets/tableToExcel.js"></script>
+	<script>
+        $(document).ready(function () {
+            var MonthName = '@MonthName' +'@YearName';
+		debugger;
+            if ("@ReportType" == "SALARYALLOCATION") {
+                exportToExcelSahaj('tblProjectWiseSalary', 'ProjectWiseSalaryAllocation_' + MonthName +'');
+               // exportReportToExcel('ProjectWiseSalaryAllocation', 'ProjectWiseSalaryAllocation.xlsx');
+            }
+            else if ("@ReportType" == "PFALLOCATION")
+            {
+                 exportToExcelSahaj('tblProjectWisePF', 'ProjectWisePFAllocation_' + MonthName +'');
+
+               // exportReportToExcel('ProjectWisePFAllocation', 'ProjectWisePFAllocation.xlsx');
+            }
+            else if ("@ReportType" == "ALALLOCATION")
+            {
+                 exportToExcelSahaj('tblProjectWisePF', 'ProjectWiseALAllocation_' + MonthName +'');
+               // exportReportToExcel('ProjectWiseALAllocation', 'ProjectWiseALAllocation.xlsx');
+            }
+            else if ("@ReportType" == "PWAFIXEDBENEFIT")
+            {
+                 exportToExcelSahaj('tblProjectWiseSalary', 'PWAFIXEDBENEFIT_' + MonthName +'');
+                //exportReportToExcel('PWAFIXEDBENEFIT', 'PWAFIXEDBENEFIT.xlsx');
+			}
+			else if ("@ReportType" == "PF")
+            {
+				exportToExcelSahaj('tblPF', 'PF_' + MonthName +'');
+			}
+			else if ("@ReportType" == "PTAX")
+            {
+				exportToExcelSahaj('tblPTax', 'PTax_' + MonthName +'');
+            }
+		    else if ("@ReportType" == "BonusReport")
+            {
+				exportToExcelSahaj('tblBonus', 'Bonus');
+            }
+		  else if ("@ReportType" == "BankReport")
+            {
+				exportToExcelSahaj('tblBankReport', 'BankReport');
+            }
+		
+            //$("#btn_excel").click(function (e) {
+            //    window.open('data:application/vnd.ms-   excel,' + encodeURIComponent($('#content').html())); // content is the id of the DIV element
+            //    e.preventDefault();
+            //});
+        });
+        function exportReportToExcel(Sheet, ReportName) {
+
+            let table = document.getElementsByTagName("table"); // you can use document.getElementById('tableId') as well by providing id to the table tag
+           // let table = document.getElementById("tblProjectWiseSalary");
+            //let table = document.getElementsByClassName('tblProjectWiseSalary');
+            TableToExcel.convert(table[0], { // html code may contain multiple tables so here we are refering to 1st table tag
+                name: ReportName, // fileName you could use any name
+                sheet: {
+                    name: Sheet // sheetName
+                }
+		
+            });
+        }
+
+	</script>
+}

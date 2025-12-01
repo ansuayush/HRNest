@@ -1,0 +1,102 @@
+﻿@model PMS
+
+<div class="inner-main pb-0">
+	<div class="page-ctn">
+		@Html.Partial("ListHeader_Partial", "CMC Appraisal Entry")
+
+		@using (Ajax.BeginForm("_CMCAppraisalList", "PMS",
+				new { src = clsApplicationSetting.EncryptQueryString(ViewBag.MenuID.ToString() + "*/PMS/_CMCAppraisalList*" + ViewBag.Tab.ToString()) },
+				  new AjaxOptions { HttpMethod = "POST", OnFailure = "CloseLoadingDialog()", OnSuccess = "BindTarget", OnBegin = "ShowLoadingDialog()" },
+			new { @id = "_CMCAppraisalListFrom" })
+			)
+		{
+			<div class="row">
+
+				<div class="col-lg-2 col-md-2 col-sm-2 slt-srh form-group">
+					<label class="lbl-abs">Select Year</label>
+					@Html.DropDownListFor(x => Model.FYID, new SelectList(ViewBag.FinYearList, "ID", "Year", Model.FYID), "Select Year",
+			new { @class = "form-control  applyselect ddapplyaction" })
+					@Html.ValidationMessageFor(model => Model.FYID, "", new { @class = "text-danger" })
+				</div>
+				
+				<div style="display:none">
+					<button type="submit" class="btn mtr-g-grn btn-l ripplelink" id="btnSearch" name="Command" value="Search"><i class="fas fa-search"></i>Search</button>
+				</div>
+			</div>
+		}
+
+		<div id="TargetDiv">@Html.Partial("_Loading")</div>
+	</div>
+</div>
+@section scripts    {
+	@System.Web.Optimization.Scripts.Render("~/bundle/unobtrusivejs")
+	@Html.IncludeVersionedJs(Url.Content("~/assets/design/Scripts/ToolTip.js"))
+	@System.Web.Optimization.Scripts.Render("~/assets/design/Scripts/AddInit.js")
+
+<script>
+			$(document).ready(function () {
+				$("#btnSearch").click();
+			});
+
+			$('.ddapplyaction').bind("change", function () {
+				$("#btnSearch").click();
+			});
+
+
+			function BindTarget(args) {
+				CloseLoadingDialog();
+				$("#TargetDiv").empty();
+				$("#TargetDiv").html(args);
+				$('[data-toggle="tooltip"]').tooltip();
+
+				$(".applyselect").select2();
+				var form = $("form")
+					.removeData("validator")
+					.removeData("unobtrusiveValidation");
+				$.validator.unobtrusive.parse(form);
+			}
+		   function BindEdit(obj) {
+			var I = $(obj).closest("tr").find("input:hidden[name=I]").val();
+			var URL = "/PMS/CMCAppraisal?src=" + EncryptQueryStringJSON(@ViewBag.MenuID+"*" + "/PMS/CMCAppraisal*" + I);
+			ShowLoadingDialog();
+			window.location = URL;
+		}
+		   function BindReport(obj) {
+            var I = $(obj).closest("tr").find("input:hidden[name=EMPID]").val();
+            var EMPCode = $(obj).closest("tr").find("input:hidden[name=EMPCode]").val();
+            var Approved = $(obj).closest("tr").find("input:hidden[name=Approved]").val();
+
+            if (Approved == "7") {
+                GetPAReport(I, EMPCode);
+            }
+            else {
+                swal("Not Approved yet, can't view Report.", '');
+            }
+
+        }
+
+	        function GetPAReport(Empid, Empcode) {
+				ShowLoadingDialog();
+				var FYID = $("#FYID").val();
+
+               $.ajax({
+                   url: "/PMS/PerformanceAppraisalReport",
+					type: "Get",
+                   data: { src: EncryptQueryStringJSON(@ViewBag.MenuID+"*" + "/PMS/PerformanceAppraisalReport" + "*" + Empid + "*" + FYID) },
+				   success: function (data) {
+
+                       var format = ".pdf";
+                       downloadURI("Appraisal_Report_" + Empcode + format + "", "PA_Report_" + Empcode + format + "");
+                       CloseLoadingDialog();
+
+					},
+					error: function (er) {
+						alert(er);
+
+					}
+				});
+            }
+
+</script>
+
+}

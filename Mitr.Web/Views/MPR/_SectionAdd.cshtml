@@ -1,0 +1,53 @@
+﻿
+@model MPR.Section.SecAdd
+
+
+@using (Ajax.BeginForm("_SectionAdd", "MPR",
+        new { src = ViewBag.src },
+        new AjaxOptions { HttpMethod = "POST", OnSuccess = "OnMPRSECSuccess" },
+    new { @id = "_SectionAddFrom" })
+    )
+{
+
+    @Html.AntiForgeryToken()
+    @Html.HiddenFor(x => Model.MPRSID)
+
+    <div class="row">
+
+        <div class="col-lg-9 form-group">
+            <label>Name<sup>*</sup></label>
+            @Html.TextBoxFor(model => model.SecName, new { @class = "form-control", @placeholder="Enter Name" })
+            @Html.ValidationMessageFor(model => model.SecName, "", new { @class = "text-danger" })
+        </div>
+        <div class="col-lg-3 form-group">
+            <label>Priority<sup>*</sup></label>
+            @Html.TextBoxFor(model => model.Priority, new { @class = "form-control", @placeholder="Enter Priority" })
+            @Html.ValidationMessageFor(model => model.Priority, "", new { @class = "text-danger" })
+        </div>
+        <div class="col-lg-12 form-group">
+            <label>Description</label>
+            @Html.TextBoxFor(model => model.SecDesc, new { @class = "form-control", @placeholder="Enter Description" })
+            @Html.ValidationMessageFor(model => model.SecDesc, "", new { @class = "text-danger" })
+        </div>
+
+    </div>
+
+    <div class="row">
+
+        @if (Model.MPRSID > 0)
+        {
+
+
+
+            <button type="submit" class="btn  mtr-g-grn btn-l ripplelink pull-right" name="Command" value="Add"><i class="fa fa-paper-plane" aria-hidden="true"></i> Update</button>
+        }
+        else
+        {
+
+            <button type="submit" class="btn  mtr-o-grn" name="Command" value="Add"><i class="fa fa-paper-plane" aria-hidden="true"></i> Submit</button>
+        }
+        <button type="button" id="btnClr" class="btn cnl-btn"><i class="fas fa-times"></i> Clear</button>
+    </div>
+
+
+}

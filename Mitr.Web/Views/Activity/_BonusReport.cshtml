@@ -1,0 +1,72 @@
+﻿
+@using System.Data
+@model DataSet
+@{
+	string MonthName = ""; string YearName = "";
+	string CompanyName = "", Address = "";
+	if (Model != null)
+	{
+		try
+		{
+			MonthName = Model.Tables[0].Rows[0]["MonthName"].ToString();
+			YearName = Model.Tables[0].Rows[0]["YearName"].ToString();
+			CompanyName = Model.Tables[0].Rows[0]["CompanyName"].ToString();
+			Address = Model.Tables[0].Rows[0]["CompanyAddress"].ToString();
+		}
+		catch
+		{
+		}
+	}
+}
+<table id="tblBonus" name="tblBonus">
+	<thead>
+		<tr>
+			<th class="text-center" style="font-size:medium" colspan="4"><img src="~/assets/design/images/c3.png" /></th>
+			<th class="text-center" style="font-size:medium" colspan="6">@CompanyName <br />@Address</th>
+		</tr>
+		<tr>
+			<th class="text-center" style="font-size:medium" colspan="4"></th>
+			<th class="text-center" style="font-size:medium" colspan="6">Bonus Report </th>
+		</tr>
+		<tr style="font-weight:bold">
+			@*<th class="text-center">S.No</th>*@
+			<th class="text-center">Emp Code</th>
+			<th class="text-center">Emp Name</th>
+			<th class="text-center">Category</th>
+			<th class="text-center">Effective Date</th>
+			<th class="text-center">Subcategory</th>
+			<th class="text-center">HourlyRate</th>
+			<th class="text-center">LWPLeaveCount</th>
+			<th class="text-center">Total Hrs</th>
+			<th class="text-center">Salary Amount</th>
+			<th class="text-center">Bonus Amount</th>
+		</tr>
+
+	</thead>
+	<tbody>
+		@{
+			var Employee = from myRow in Model.Tables[0].AsEnumerable()
+						   select myRow;
+			int count = 0;
+		}
+		@foreach (var item in Employee)
+		{
+			count++;
+		<tr>
+			@*<td>@(count)</td>*@
+			<td>@item["EMPCODE"]</td>
+			<td>@item["EMPNAME"]</td>
+			<td>@item["CATEGORY"]</td>
+			<td>@item["effectivedate"]</td>
+			<td>@item["Subcategory"]</td>
+			@*<td>@Convert.ToDouble(item["HourlyRate"]).ToString("#,##0")</td>*@
+			<td>@Convert.ToDouble(item["HourlyRate"])</td>
+			<td>@item["LWPLeaveCount"]</td>
+			<td>@Convert.ToDouble(item["TotalHours"]).ToString("#,##0")</td>
+			<td>@Convert.ToDouble(item["SalaryAmount"]).ToString("#,##0")</td>
+			<td>@Convert.ToDouble(item["EntitleAmount"]).ToString("#,##0")</td>
+
+		</tr>
+		}
+	</tbody>
+</table>

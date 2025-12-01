@@ -1,0 +1,114 @@
+﻿
+@model Mitr.Models.CompanyUpload
+
+
+
+@using (Ajax.BeginForm("_CompanyUploadAdd", "Master",
+        new { src = ViewBag.src },
+        new AjaxOptions { HttpMethod = "POST", OnSuccess = "OnSuccess" },
+    new { @id = "_CompanyUploadAddFrom", @enctype = "multipart/form-data" })
+    )
+{
+
+    @Html.AntiForgeryToken()
+    @Html.HiddenFor(x => Model.CompanyUploadID)
+    <div class="row">
+        <div class="col-lg-6 col-md-6 col-sm-6 form-group">
+            <label>Category<sup>*</sup></label>
+            @Html.DropDownListFor(model => model.CategoryID, new SelectList(Model.CategoryList, "ID", "Name", Model.CategoryID), "select", new { @class = "form-control " })
+            @Html.ValidationMessageFor(model => model.CategoryID, "", new { @class = "text-danger" })
+        </div>
+
+        <div class="col-lg-6 col-md-6 col-sm-6 form-group">
+            <label>Upload Profile </label>
+            @Html.HiddenFor(modal => modal.AttachmentID)
+            <div id="divAttachmentShow" style="@(Model.AttachmentID > 0 ? "" : "display:none")">
+
+                <a class="achor-link" target="_blank" href="@Model.URL">@Model.FileName</a>
+
+                <a style="color:red;cursor:pointer;" onclick="DeleteFile(@Model.AttachmentID);"><i class="fa fa-times" aria-hidden="true"></i></a>
+
+            </div>
+
+            <div id="divAttachmentUpload" style="@(Model.AttachmentID > 0 ? "display:none" : "")">
+                @Html.TextBoxFor(model => model.UploadAttachement, new { @class = "form-control", @type = "file", @onchange = "ValidateFiles('UploadAttachement')" })
+                @Html.ValidationMessageFor(model => model.UploadAttachement, "", new { @class = "text-danger" })
+            </div>
+        </div>
+        <div class="col-lg-6 col-md-6 col-sm-6 form-group">
+            <label>From Date<sup>*</sup></label>
+            @Html.TextBoxFor(model => model.FromDate, new { @class = "form-control", @type = "date" })
+            @Html.ValidationMessageFor(model => model.FromDate, "", new { @class = "text-danger" })
+        </div>
+        <div class="col-lg-6 col-md-6 col-sm-6 form-group">
+            <label>To Date<sup>*</sup></label>
+            @Html.TextBoxFor(model => model.ToDate, new { @class = "form-control", @type = "date" })
+            @Html.ValidationMessageFor(model => model.ToDate, "", new { @class = "text-danger" })
+        </div>
+
+        <div class="col-lg-6 col-md-6 col-sm-6 form-group">
+            <label>Priority<sup>*</sup></label>
+            @Html.TextBoxFor(model => model.Priority, new { @class = "form-control" })
+            @Html.ValidationMessageFor(model => model.Priority, "", new { @class = "text-danger" })
+        </div>
+        <div class="col-lg-12 col-md-12 col-sm-6 form-group">
+            <label>Description<sup>*</sup></label>
+            @Html.TextAreaFor(model => model.Description, new { @class = "form-control" })
+            @Html.ValidationMessageFor(model => model.Description, "", new { @class = "text-danger" })
+        </div>
+
+    </div>
+
+    <div class="row">
+
+        @if (Model.CompanyUploadID > 0)
+        {
+            <button type="submit" class="btn mtr-o-grn btn-l ripplelink pull-right" name="Command" value="Add"><i class="fa fa-paper-plane" aria-hidden="true"></i> Update</button>
+        }
+        else
+        {
+            <button type="submit" class="btn mtr-o-grn btn-l ripplelink pull-right" name="Command" value="Add"><i class="fa fa-paper-plane" aria-hidden="true"></i> Submit</button>
+        }
+    </div>
+
+}
+
+<script>
+    function ValidateFiles(inputId) {
+      debugger
+    const input = document.getElementById(inputId);
+    if (!input || !input.files || input.files.length === 0) return false;
+
+    const file = input.files[0];
+    const name = file.name;
+    const size = file.size;
+
+    // List of allowed file types based on your requirements
+    const allowedExtensions = [
+      ".pdf", ".ppt", ".pptx", ".pps", ".ppsx", // PowerPoint
+      ".xls", ".xlsx", ".xlsm", ".csv",         // Excel
+      ".doc", ".docx", ".dot", ".dotx",         // Word
+      ".jpg", ".jpeg", ".png", ".gif", ".bmp", ".tiff", ".tif", ".svg", ".webp" // Images
+    ];
+
+    // Check if the file has a valid extension
+    const fileExtension = name.substring(name.lastIndexOf('.')).toLowerCase();
+    if (!allowedExtensions.includes(fileExtension)) {
+      const allowedList = allowedExtensions.join(', ');
+      FailToaster("Invalid file type. ");
+      input.value = '';  // Clear the file input
+      return false;
+    }
+
+    // Max size from server config (bytes)
+    const maxBytes = @clsApplicationSetting.GetWebConfigValue("AllowedFileUploadSize");
+    if (size > maxBytes) {
+      // Custom message for file size validation
+      FailToaster('File size should be less than @clsApplicationSetting.AllowedFileSize("File")');
+      input.value = '';  // Clear the file input
+      return false;
+    }
+
+    return true; // File passed all checks
+  }
+</script>

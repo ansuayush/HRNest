@@ -1,0 +1,116 @@
+﻿@{
+	ViewBag.Title = "Onboard";
+	Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<script src="~/assets/design/js/wow.js"></script>
+<script src="~/assets/design/js/wow.min.js"></script>
+@section scripts    {
+	@System.Web.Optimization.Scripts.Render("~/bundle/unobtrusivejs")
+	@System.Web.Optimization.Scripts.Render("~/bundle/dataTablesjs")
+	<script src="~/assets/design/Scripts/AddInit.js?v=@clsApplicationSetting.GetWebConfigValue("Version")"></script>
+	<script>
+    var virtualPath = "@System.Configuration.ConfigurationManager.AppSettings["VirtualPath"]";
+    var baseURL= "@System.Configuration.ConfigurationManager.AppSettings["BaseURL"]";
+	</script>
+	<script src="~/Areas/Onboarding/DevScript/Onboard.js"></script>
+	<script>
+        var CandidateId = '@ViewBag.RequestId';
+		var IsEDUser = '@ViewBag.IsED';
+        var loggedinUserid = '@ViewBag.UserId';
+		var loggedinUserName = '@ViewBag.UserName';
+		var UserGrade = '@ViewBag.Grade';
+		var IsPM = '@ViewBag.IsPM';
+		var IPAddress = '@ViewBag.IPAddress';
+	</script>
+	<script>
+	
+	function SubmitMasterEmployee(obj) {
+		//if (candodate_Status != true) {
+			var count = 0;
+			if ($("#hdnAddUrl").val()) {
+				window.location.href = virtualPath + 'OnboardingEmployee/RegistrationDetails' + '?src=' + EncryptQueryStringJSON(@ViewBag.MenuID + "*" + "/OnboardingEmployee/RegistrationDetails" + "*" + obj);
+			}
+			else {
+				CloseLoadingDialog();
+				FailToaster("Link not found");
+			}
+		//}
+}
+	function ViewApplication(obj) {
+		var AppIID = obj;// $(obj).closest("tr").find("input:hidden[name=AppIID]").val();
+		$.ajax({
+			url: "/Onboarding/_ViewApplications",
+			type: "Get",
+			data: { src: EncryptQueryStringJSON(@ViewBag.MenuID + "*" + "/Onboarding/_ViewApplications" + "*" + AppIID) },
+			success: function (args) {
+				//CloseLoadingDialog();
+				$("#DivViewApp").empty();
+				$("#DivViewApp").html(args);
+				$("#ViewAppModal").modal('show');
+				return false;
+			},
+			error: function (er) {
+				CloseLoadingDialog()
+			}
+		});
+			return false;
+}
+	</script>
+}
+<div class="mb-100">
+	<!---->
+	<input type="hidden" id="hdnAddUrl" name="hdnAddUrl" value="@Url.Action("ExternalMemberAdd",new { src = clsApplicationSetting.EncryptQueryString(ViewBag.MenuID.ToString() + "*/Grievance/ExternalMemberAdd*0") })" />
+	<h1 class="heading-one ">Onboard</h1>
+	<div class="inner-main mb-5 defult-height">
+		<div class="tab-main mb-5">
+			<ul id="tabs" class="nav nav-tabs " role="tablist">
+				<li class="nav-item"> <a id="tab-A" href="#active-log" onClick="BindOnboardUserOnboardPending();" class="nav-link active ripplelink" data-toggle="tab" role="tab"><i class="fas fa-clock"></i>Pending</a> </li>
+				<li class="nav-item"> <a id="tab-B" href="#leaves" onClick="BindOnboardUserCompleted();" class="nav-link ripplelink" data-toggle="tab" role="tab"><i class="fas fa-check"></i>Approved </a></li>
+			</ul>
+			<div id="content" class="tab-content p-0" role="tablist">
+				<div id="active-log" class="card tab-pane fade show active" role="tabpanel" aria-labelledby="tab-A">
+					<div class="card-header" role="tab" id="heading-A">
+						<h5 class="mb-0">
+							<!-- Note: `data-parent` removed from here -->
+							<a data-toggle="collapse" href="#collapse-A" aria-expanded="true" aria-controls="collapse-A"> <i class="fas fa-ticket-alt"></i> Pending </a>
+						</h5>
+					</div>
+
+					<!-- Note: New place of `data-parent` -->
+
+					<div id="tblUserOnboardPending">
+
+					</div>
+
+				</div>
+				<div id="leaves" class="card tab-pane fade" role="tabpanel" aria-labelledby="tab-B">
+					<div class="card-header" role="tab" id="heading-B">
+						<h5 class="mb-0"> <a class="collapsed" data-toggle="collapse" href="#collapse-B" aria-expanded="false" aria-controls="collapse-B"><i class="fa fa-check" aria-hidden="true"></i> Resolved</a> </h5>
+					</div>
+					<div id="tblUserOnboardCompleted">
+
+					</div>
+				</div>
+
+			</div>
+		</div>
+
+
+	</div>
+	<div class="modal fade pop-dgn" id="ViewAppModal">
+		<div class="modal-dialog modal-lg">
+			<div class="modal-content">
+
+				<div class="modal-header blk-gdn-btn">
+					<h4 class="modal-title">Application Form</h4>
+					<div class="close" data-dismiss="modal">&times;</div>
+				</div>
+				<div class="modal-body">
+					<div id="DivViewApp"></div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+

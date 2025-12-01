@@ -1,0 +1,186 @@
+﻿@model PMS
+
+<div class="inner-main mb-5 pb-0">
+	<div class="row">
+		<div class="col-sm-5"><h1 class="heading-one mb-3">Hierarchy Master </h1></div>
+		<div class="col-sm-7 text-right">
+			@*<a class="btn mtr-g-grn btn-l ripplelink " href="">
+				<i class="fas fa-file-excel"></i> Export to Excel
+		</a>*@
+			@*<button type="button" class="btn mtr-g-grn btn-l ripplelink" onclick="exportReportToExcelAll()" value="Search"><i class="fas fa-file-excel"></i>Export</button>*@
+			<span id="divpending">
+				@Html.EJS().Button("excelpending").Content("Export To Excel").IsPrimary(true).Render()
+			</span>
+			<span id="divupdate" style="display:none">
+				@Html.EJS().Button("excel").Content("Export To Excel").IsPrimary(true).Render()
+			</span>
+
+			<a class="btn blk-gdn-btn btn-l ripplelink btnsysEMP">
+				<i class="fa fa-sync"></i>Load Employees
+			</a>
+		</div>
+	</div>
+	@using (Ajax.BeginForm("_Hierarchy", "PMS",
+			new { src = clsApplicationSetting.EncryptQueryString(ViewBag.MenuID.ToString() + "*/PMS/_Hierarchy") },
+			  new AjaxOptions { HttpMethod = "POST", OnSuccess = "BindTarget", OnBegin = "ShowLoadingDialog()" },
+		new { @id = "__HierarchyFrom" })
+		)
+	{
+		<div class="row">
+
+			<div class="col-lg-2 col-md-2 col-sm-2 slt-srh form-group">
+				<label class="lbl-abs">Select Appraisal Period</label>
+				@Html.DropDownListFor(x => Model.FYID, new SelectList(ViewBag.FinYearList, "ID", "Year", Model.FYID), "Select Appraisal Period",
+		new { @class = "form-control  applyselect ddapplyaction" })
+				@Html.ValidationMessageFor(model => Model.FYID, "", new { @class = "text-danger" })
+			</div>
+			<div class="col-sm-10 align-self-center text-right">
+
+			</div>
+			<div style="display:none">
+				<button type="submit" class="btn mtr-g-grn btn-l ripplelink" id="btnSearch" name="Command" value="Search"><i class="fas fa-search"></i>Search</button>
+			</div>
+		</div>
+	}
+
+	<div id="TargetDiv">@Html.Partial("_Loading")</div>
+</div>
+
+<div class="modal fade pop-dgn" id="AddModal">
+	<div class="modal-dialog modal-md">
+		<div class="modal-content">
+
+			<div class="modal-header blk-gdn-btn">
+				<h4 class="modal-title">
+					<i class="fas fa-user-tie"></i><span id="spnHead"></span>
+				</h4>
+				<div class="close" data-dismiss="modal">&times;</div>
+			</div>
+			<!-- Modal body -->
+			<div class="modal-body">
+				<div id="TagetDivAdd"></div>
+			</div>
+		</div>
+	</div>
+</div>
+
+
+@section scripts    {
+	@System.Web.Optimization.Scripts.Render("~/bundle/unobtrusivejs")
+	@Html.IncludeVersionedJs(Url.Content("~/assets/design/Scripts/ToolTip.js"))
+	@System.Web.Optimization.Scripts.Render("~/assets/design/Scripts/AddInit.js")
+	@Html.IncludeVersionedJs(Url.Content("~/assets/tableToExcel.js"))
+
+	<script>
+		function showtable(tabname) {
+		if(tabname==1){
+		$("#divpending").show();
+		$("#divupdate").hide();
+		}
+		else{
+		$("#divupdate").show();
+		$("#divpending").hide();
+		}
+		}
+		$(document).ready(function () {
+			$("#btnSearch").click();
+		});
+
+		$('.ddapplyaction').bind("change", function () {
+			$("#btnSearch").click();
+		});
+
+
+		function BindTarget(args) {
+			CloseLoadingDialog();
+			$("#TargetDiv").empty();
+			$("#TargetDiv").html(args);
+			$('[data-toggle="tooltip"]').tooltip();
+			$(".applyselect").select2();
+		}
+
+		function OnSuccessApproveHierarchy(obj) {
+			CloseLoadingDialog();
+			if (obj.Status) {
+				SuccessToaster(obj.SuccessMessage);
+				$("#btnSearch").click();
+			}
+			else {
+				FailToaster(obj.SuccessMessage);
+			}
+		}
+
+
+
+		function _ModifyHierarchy(obj) {
+			var I = $(obj).closest("tr").find("input:hidden[name=I]").val();
+			var N = $(obj).closest("tr").find("input:hidden[name=EN]").val();
+			if (I)
+			{
+				$.ajax({
+					url: "/PMS/_ModifyHierarchy",
+					type: "Get",
+					data: { src: EncryptQueryStringJSON(@ViewBag.MenuID+"*" + "/PMS/_ModifyHierarchy" + "*" + I) },
+					success: function (data) {
+					$("#spnHead").html(N);
+						$("#TagetDivAdd").empty();
+						$("#TagetDivAdd").html(data);
+						$("#AddModal").modal("show");
+
+						$(".applyselect").select2();
+						var form = $("form")
+							.removeData("validator")
+							.removeData("unobtrusiveValidation");
+						$.validator.unobtrusive.parse(form);
+
+					},
+					error: function (er) {
+						console.log(er);
+					}
+				});
+			}
+		}
+		function OnSuccessModifyHierarchy(obj) {
+			CloseLoadingDialog();
+			if (obj.Status) {
+				SuccessToaster(obj.SuccessMessage);
+				$("#AddModal").modal("hide");
+				$("#btnSearch").click();
+			}
+			else {
+				FailToaster(obj.SuccessMessage);
+			}
+		}
+
+		$(".btnsysEMP").on('click', function (e) {
+			e.preventDefault();
+			SysEMP();
+		});
+
+		function SysEMP() {
+			ShowLoadingDialog();
+			var FYID = $("#FYID").val();
+			$.ajax({
+				url: "/CommonAjax/AutoSync_EMPwithPMSJson",
+				type: "get",
+				data: { src: EncryptQueryStringJSON(MenuID + "*" + "/CommonAjax/AutoSync_EMPwithPMSJson"), FYID: FYID },
+				success: function (data) {
+					if (data.Status) {
+						SuccessToaster(data.SuccessMessage);
+						$("#btnSearch").click();
+					}
+					else {
+						FailToaster(data.SuccessMessage);
+					}
+					CloseLoadingDialog();
+				},
+				error: function (er) {
+					CloseLoadingDialog();
+				}
+			});
+
+		}
+	
+	</script>
+
+}

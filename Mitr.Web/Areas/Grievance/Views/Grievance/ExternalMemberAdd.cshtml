@@ -1,0 +1,151 @@
+﻿@model Mitr.Models.ExternalMember
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@using (Html.BeginForm("ExternalMemberAdd", "Grievance", new { src = ViewBag.src }, FormMethod.Post,
+    new
+    {
+        name = "ExternalMemberAddForm",
+        id = "ExternalMemberAddForm",
+        @class = "form-horizontal form-label-left input_mask",
+        enctype = "multipart/form-data"
+    }))
+{
+    @Html.AntiForgeryToken()
+    @Html.HiddenFor(x => Model.ID)
+    @Html.ValidationSummary(true)
+    @*@Html.HiddenFor(x => Model.table_name)*@
+
+    <div class="row">
+        <div class="col-lg-3 col-md-3 col-sm-3 form-group">
+            <label>External Code<sup>*</sup></label>
+            @Html.TextBoxFor(model => model.ExternalCode, new { @class = "form-control", @placeholder = "Enter", @readonly = "true" }) @*,@readonly="false"*@
+            @Html.ValidationMessageFor(model => model.ExternalCode, "", new { @class = "text-danger" })
+        </div>
+        <div class="col-lg-6 col-md-6 col-sm-6 form-group">
+            <label>External Member<sup>*</sup></label>
+            @Html.TextAreaFor(model => model.External_Member, new { @class = "form-control", @placeholder = "Enter" })
+            @Html.ValidationMessageFor(model => model.External_Member, "", new { @class = "text-danger" })
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-lg-3 col-md-3 col-sm-3 form-group">
+            <label>Date Of Joining<sup>*</sup></label>
+            @Html.TextBoxFor(model => model.DOJ, new { @class = "form-control", @type = "date", @placeholder = "Enter" })
+            @Html.ValidationMessageFor(model => model.DOJ, "", new { @class = "text-danger" })
+        </div>
+
+        <div class="col-lg-3 col-md-3 col-sm-3 form-group">
+            <label>Date Of Leaving</label>
+            @Html.TextBoxFor(model => model.DOL, "{0:dd/MM/yyyy}", new { @class = "form-control", @type = "date", @placeholder = "Enter" })
+            @Html.ValidationMessageFor(model => model.DOL, "", new { @class = "text-danger" })
+        </div>
+        <div class="col-lg-3 col-md-3 col-sm-3 form-group">
+            <label>Mobile<sup>*</sup></label>
+            @Html.TextBoxFor(model => model.Mobile, new
+            {
+            @class = "form-control",
+            @maxlength = "10",
+            @placeholder = "Enter",
+            onkeypress = "if(isNaN(this.value + String.fromCharCode(event.keyCode) )) return false;"
+            })
+            @Html.ValidationMessageFor(model => model.Mobile, "", new { @class = "text-danger" })
+        </div>
+        <div class="col-lg-3 col-md-3 col-sm-3 form-group">
+            <label>Email Id<sup>*</sup></label>
+            @Html.TextBoxFor(model => model.EmailId, new { @class = "form-control", @placeholder = "Enter" })
+            @Html.ValidationMessageFor(model => model.EmailId, "", new { @class = "text-danger" })
+        </div>
+    </div>
+    <div class="col-sm-12 form-group">
+        <hr>
+        <span class="hr-aps lgt-text font-sm">Address</span>
+    </div>
+    <div class="row">
+        <div class="col-sm-6">
+            <div class="row">
+                <div class="col-sm-12 form-group">
+                    <label>Address Line 1</label>
+                    @Html.TextAreaFor(model => model.Address1, new { @class = "form-control", @placeholder = "Enter" })
+                    @Html.ValidationMessageFor(model => model.Address1, "", new { @class = "text-danger" })
+                </div>
+                <div class="col-sm-3 form-group">
+                    <label>PIN </label>
+                    @Html.TextBoxFor(model => model.Pin, new { @class = "form-control", @placeholder = "Enter", @maxlength = "6", onkeypress = "if(isNaN(this.value + String.fromCharCode(event.keyCode) )) return false;" })
+                    @Html.ValidationMessageFor(model => model.Pin, "", new { @class = "text-danger" })
+                </div>
+                <div class="col-sm-3 form-group">
+                    <label>Country</label>
+                    @Html.DropDownListFor(model => model.CountryId, new SelectList(ViewBag.CountryList, "CountryID", "CountryName", Model.CountryId), "select", new { @class = "form-control applyselect" })
+                </div>
+                <div class="col-sm-3 form-group">
+                    <label>State</label>
+                    @Html.DropDownListFor(model => model.StateId, new SelectList(Model.StateList, "ID", "Name", Model.StateId), "select", new { @class = "form-control applyselect" })
+                </div>
+                <div class="col-sm-3 form-group">
+                    <label>City</label>
+                    @Html.DropDownListFor(model => model.CityId, new SelectList(Model.CityList, "ID", "Name", Model.CityId), "select", new { @class = "form-control applyselect" })
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-6">
+            <div class="row">
+                <div class="col-sm-12 form-group">
+                    <label>Address Line 2</label>
+                    @Html.TextAreaFor(model => model.Address2, new { @class = "form-control", @placeholder = "Enter" })
+                    @Html.ValidationMessageFor(model => model.Address2, "", new { @class = "text-danger" })
+                </div>
+                <div class="col-sm-3 form-group">
+                    <label>Mobile  </label>
+                    @Html.TextBoxFor(model => model.Address_Mobile, new { @class = "form-control", @placeholder = "Enter", @maxlength = "10", onkeypress = "if(isNaN(this.value + String.fromCharCode(event.keyCode) )) return false;" })
+                    @Html.ValidationMessageFor(model => model.Address_Mobile, "", new { @class = "text-danger" })
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <div class="text-center">
+        <button type="button" class="btn cnl-btn ripplelink  pull-right" onclick="ShowLoadingDialog();window.location='@Url.Action("ExternalMemberList", new { src=clsApplicationSetting.EncryptQueryString(ViewBag.MenuID.ToString() + "*/Grievance/ExternalMemberList*0" ) })';"><i class="fas fa-times"></i> Cancel</button>
+        @if (Model.ID > 0)
+        {
+            <button type="submit" class="btn mtr-o-grn btn-l ripplelink pull-right" name="Command" value="Add"><i class="fa fa-paper-plane" aria-hidden="true"></i> Update</button>
+        }
+        else
+        {
+            <button type="submit" class="btn mtr-o-grn btn-l ripplelink pull-right" name="Command" value="Add"><i class="fa fa-paper-plane" aria-hidden="true"></i> Submit</button>
+        }
+    </div>
+
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/jqueryval")
+    @Scripts.Render("~/bundles/bootstrap")
+
+    @section scripts    {
+        <script src="~/assets/design/scripts/AddInit.js"></script>
+        @System.Web.Optimization.Scripts.Render("~/bundle/unobtrusivejs")
+
+        @System.Web.Optimization.Scripts.Render("~/bundle/dataTablesjs")
+        @System.Web.Optimization.Scripts.Render("~/bundle/unobtrusivejs")
+
+        <script src="~/assets/design/Scripts/AddInit.js?v=@clsApplicationSetting.GetWebConfigValue("Version")"></script>
+        <script src="~/assets/design/scripts/AddInit.js"></script>
+        <script language="javascript">
+            $(document).ready(function () {
+                $(function () {
+
+                    //$('#DOJ').datepicker({
+                    //    //changeMonth: true,
+                    //    //changeYear: true,
+                    //    //dateFormat: "dd-mm-yy",
+                    //    //yearRange: "-90:+10",
+                    //    minDate: 0
+                    //});
+
+                });
+            });
+        </script>
+    }
+}
+

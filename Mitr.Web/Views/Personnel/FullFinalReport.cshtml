@@ -1,0 +1,127 @@
+﻿@model ListTabs
+@section style{
+	@System.Web.Optimization.Styles.Render("~/bundle/dataTablecss")
+}
+@{
+	Layout = "~/Views/Shared/_Layout.cshtml";
+	string MenuID = "0";
+	if (ViewBag.MenuID != null)
+	{
+		MenuID = ViewBag.MenuID;
+	}
+}
+<div class="inner-main defult-height">
+		
+	<div class="row">
+		<div class="col-sm-5 align-self-center"><h1 class="heading-one mb-0">Full Final Report</h1></div>
+	</div>
+
+
+	<div class="right_col" role="main">
+
+		<div class="row">
+			<div class="col-lg-2 col-md-2 align-self-end slt-srh form-group">
+				<label class="lbl-abs">Select Year</label>
+				@Html.DropDownListFor(x => Model.FYID, new SelectList(ViewBag.FinYearList, "ID", "Year", Model.FYID), new { @class = "form-control  applyselect ddapplyaction" })
+				@Html.ValidationMessageFor(model => Model.FYID, "", new { @class = "text-danger" })
+			</div>
+		</div>
+
+
+		@using (Ajax.BeginForm("_FullFinalReport", "Personnel",
+		   new { src = clsApplicationSetting.EncryptQueryString(ViewBag.MenuID.ToString() + "*/Personnel/_FullFinalReport") },
+		   new AjaxOptions { HttpMethod = "POST", OnSuccess = "BindTarget" },
+	   new { @id = "_FullFinalReportForm" })
+	   )
+		{
+
+			<div class="tab-main ">
+				<div class="row text-clr">
+					<div class="col-md-12">
+						<ul id="tabs" class="nav nav-tabs " role="tablist">
+							<li class="nav-item"> <a tabvalue="0" class="nav-link active ripplelink AnchorApproval" data-toggle="tab" role="tab"><i class="far fa-clock"></i>Pending</a> </li>
+							<li class="nav-item"> <a tabvalue="1" class="nav-link ripplelink AnchorApproval" data-toggle="tab" role="tab"><i class="fas fa-database"></i>Approved</a> </li>
+						</ul>
+					</div>
+					<div style="display:none">
+						@Html.HiddenFor(model => model.Approve)
+						@if (Model.FYID > 0)
+						{
+							Model.SetFYID = Model.FYID;
+							@Html.HiddenFor(model => model.SetFYID)
+						}
+						else
+						{
+							@Html.HiddenFor(model => model.SetFYID)
+						}
+
+						<button type="submit" class="btn mtr-g-grn btn-l ripplelink" id="btnSearch" name="Command" value="Search">
+							<i class="fas fa-search"></i>Search
+						</button>
+					</div>
+				</div>
+			</div>
+
+		}
+
+		<div id="TargetDiv"></div>
+	</div>
+</div>
+
+
+@section scripts    {
+	@System.Web.Optimization.Scripts.Render("~/bundle/unobtrusivejs")
+	@Html.IncludeVersionedJs(Url.Content("~/assets/design/Scripts/ToolTip.js"))
+	@Html.IncludeVersionedJs(Url.Content("~/assets/design/Scripts/SyncScripts.js"))
+<script>
+        $(document).ready(function () {
+	debugger;
+	   
+	        ShowLoadingDialog();
+            $("#btnSearch").click();
+        });
+        $('.AnchorApproval').on('click', function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+            var att = $(this).attr("tabvalue");
+            $(".AnchorApproval.active").removeClass("active");
+            $(this).addClass("active");
+            $("#Approve").val(att);
+            ShowLoadingDialog();
+            $("#btnSearch").click();
+        });
+
+		$("#FYID").change(function () {
+		    var FYId = parseInt($("#FYID option:selected").val());
+		    if(FYId>0){
+	        $("#SetFYID").val(FYId);
+	        ShowLoadingDialog();
+            $("#btnSearch").click();
+	     }
+
+		});
+        function BindTarget(args) {
+            CloseLoadingDialog();
+            $("#TargetDiv").empty();
+            $("#TargetDiv").html(args);
+	        $(".applyselect").select2();
+		}
+
+	         function BindEditPay(obj) {
+				var ID =  $(obj).closest("tr").find("input:hidden[name=I]").val();
+				var MenuID = Number('@MenuID');
+                ShowLoadingDialog();
+                var url = "/Personnel/FullFinalEntry?src=" + EncryptQueryStringJSON(MenuID + "*" + "/Personnel/FullFinalEntry" + "*" + ID);
+                window.location.href = url;
+	          }
+			   function BindEditView(obj) {
+				var ID =  $(obj).closest("tr").find("input:hidden[name=I]").val();
+				var MenuID = Number('@MenuID');
+                ShowLoadingDialog();
+                var url = "/Personnel/FNFReport?src=" + EncryptQueryStringJSON(MenuID + "*" + "/Personnel/FNFReport" + "*" + ID);
+                window.location.href = url;
+	           }
+
+
+</script>
+}

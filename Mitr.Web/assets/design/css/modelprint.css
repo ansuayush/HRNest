@@ -1,0 +1,68 @@
+﻿@media screen {
+		#printSection {display: none;}
+	}
+
+
+	@media print {
+		body{background: #fff;}
+      div.divFooter {
+          position: fixed;
+          bottom: 20px;
+          width: 100%;
+      }
+
+      div.divFooter img{
+        width: 80% !important;
+        margin: 0px auto;
+        display: table;
+      }
+		/**body * {visibility: hidden;		}**/
+		.modal-backdrop.show {opacity: 1;background: #fff;}
+		@page { size: auto;  margin: 10mm; }
+
+		.anexlist{
+			margin-top: 100px; 
+		}
+
+
+		#printSection, #printSection * {visibility: visible;}
+		#printSection {position: absolute;left: 0;top: 0;}
+		.p-center, .p-center p.text-right{text-align: center !important;}
+		.form-group p, .form-control:disabled, .form-control[readonly]{padding: 10px !important}
+		.p-none{display: none}
+		.modal .inner-main, .inner-main {border: 0px;padding: 0px 15px 0px 15px !important; }
+		.inner-main, .inner-main {box-shadow: 0 0px 0px rgb(0 0 0 / 4%), 0 0px 0px rgb(0 0 0 / 4%)}
+		.modal-content {border-radius: 0px;border: 0px;}
+		.bgbox img {width: 200px;}
+		.bgbox {padding: 10px 66px 10px 10px;}
+		.heading-one{margin-top: 40px}
+		.form-group p, td, th, .hr-aps, strong, .form-group label {font-size: 14px !important;}
+		.cntitle {font-size: 30px !important;}
+		.bgbox .fn-md {font-size: 18px !important;}
+		.heading-one {font-size: 16px;}
+		.c-media__content h5, .emp-info h4, body, .fc td, .form-group label, .trl-rq {color: #000;}
+		.table-scroll th, .table-scroll td, .table td, .table th, .successmgs-dgn, #DivLeaveRequestTable, .table-currency .btn-secondary, .table-bordered td, .table-bordered th, .modal .alert, .heading-three {
+    	border-color: #000;}
+    	.table-scroll th, .lg-table th {background: #c5c5c5 !important;	}
+    	.form-group p {padding: 5px;}
+    	.bgbox img{width: 120px}
+		.mt-5{margin: 0px  !important;}
+      .pt-5{padding:0px !important}
+		.modalprintdgn .modal-dialog.modal-xl {
+			max-width: 100%;
+			background: #000;
+			margin-top: 0px !important;
+			min-height: auto;
+		}
+
+		.modalprintdgn .btn {
+			display: none;
+		}
+
+		header, .l-sideNav, .print-none{display: none}
+		.l-contents {top: 0;left: 0;    width: calc(100% - 0px);}
+
+		.print-header, button, .no-print{display: none !important}
+		
+		
+    }

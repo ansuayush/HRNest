@@ -1,0 +1,145 @@
+﻿
+@{
+    ViewBag.Title = "ReferralTask";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@{
+    var Modify = clsApplicationSetting.GetSessionValue("Modify");
+}
+@{
+    string MenuID = "0";
+    if (ViewBag.MenuID != null)
+    {
+        MenuID = ViewBag.MenuID;
+    }
+}
+<div class="inner-main">
+@Html.Partial("ListHeader_Partial", "Referral Task")
+<div class="tab-main  mb-3">
+    <ul id="tabs" class="nav nav-tabs " role="tablist">
+        <li class="nav-item"> <a id="tab-C" onclick="GetList('PENDING')" href="#asset" class="nav-link ripplelink active" data-toggle="tab" role="tab"><i class="fas fa-user-times"></i>Pending</a> </li>
+        <li class="nav-item"> <a id="tab-A" onclick="GetList('INTERESTED')" href="#active-log" class="nav-link ripplelink " data-toggle="tab" role="tab" aria-selected="true"><i class="fas fa-user-tag"></i>Interested</a> </li>
+        <li class="nav-item"> <a id="tab-dA" onclick="GetList('NOT_INTERESTED')" href="#ni" class="nav-link ripplelink " data-toggle="tab" role="tab" aria-selected="true"><i class="fas fa-user-tag"></i>Not Interested</a> </li>
+    </ul>
+    <div id="content" class="tab-content mt-2 shadow-box p-0" role="tablist">
+        <div id="asset" class="card tab-pane active show fade" role="tabpanel" aria-labelledby="tab-C">
+            <div class="card-header" role="tab" id="heading-C">
+                <h5 class="mb-0"> <a class="collapsed" data-toggle="collapse" href="#collapse-C" aria-expanded="false" aria-controls="collapse-C">Pending<i class="fas fa-cogs"></i></a> </h5>
+            </div>
+            <div id="collapse-C" class="collapse" role="tabpanel" data-parent="#content" aria-labelledby="heading-C">
+                <!-- Start -->
+                <div id="TagetDiv_PENDING">
+                </div>
+            </div>
+            <!-- End -->
+        </div>
+        <div id="active-log" class="card tab-pane fade " role="tabpanel" aria-labelledby="tab-A">
+            <div class="card-header" role="tab" id="heading-A">
+                <h5 class="mb-0">
+                    <!-- Note: `data-parent` removed from here -->
+                    <a data-toggle="collapse" href="#collapse-A" aria-expanded="true" aria-controls="collapse-A">Interested<i class="fas fa-clock"></i></a>
+                </h5>
+            </div>
+
+            <!-- Note: New place of `data-parent` -->
+            <div id="collapse-A" class="collapse show" data-parent="#content" role="tabpanel" aria-labelledby="heading-A">
+                <div class="card-body p-0">
+                    <!-- Start -->
+                    <div id="TagetDiv_INTERESTED">
+                    </div>
+
+                </div>
+                <!-- End -->
+            </div>
+        </div>
+
+        <div id="ni" class="card tab-pane fade " role="tabpanel" aria-labelledby="tab-d">
+            <div class="card-header" role="tab" id="heading-d">
+                <h5 class="mb-0">
+                    <!-- Note: `data-parent` removed from here -->
+                    <a data-toggle="collapse" href="#collapse-d" aria-expanded="true" aria-controls="collapse-d">Not Interested<i class="fas fa-clock"></i></a>
+                </h5>
+            </div>
+
+            <!-- Note: New place of `data-parent` -->
+            <div id="collapse-d" class="collapse show" data-parent="#content" role="tabpanel" aria-labelledby="heading-d">
+                <div class="card-body p-0">
+                    <!-- Start -->
+
+                    <div id="TagetDiv_NOT_INTERESTED">
+                    </div>
+                </div>
+                <!-- End -->
+            </div>
+        </div>
+
+    </div>
+</div>
+</div>
+
+@section scripts    {
+    @System.Web.Optimization.Scripts.Render("~/bundle/dataTablesjs")
+    @System.Web.Optimization.Scripts.Render("~/bundle/unobtrusivejs")
+    @Html.IncludeVersionedJs(Url.Content("~/assets/design/Scripts/AddInit.js"))
+    @Html.IncludeVersionedJs(Url.Content("~/assets/design/Scripts/ToolTip.js"))
+<script>
+        $(document).ready(function () {
+            GetList("PENDING");
+        });
+    function GetList(Tab) {
+        var Src = EncryptQueryStringJSON(@ViewBag.MenuID+"*" + "/FundRaising/_ReferralTask" + "*" + '0')
+                    var menuid =@ViewBag.MenuID;
+                    $.ajax({
+                        url: "/FundRaising/_ReferralTask",
+                        type: "Post",
+                        async: true,
+                        data: { src: Src, status: Tab},
+                        success: function (data) {
+                            $("#TagetDiv_" + Tab).empty();
+                            $("#TagetDiv_" + Tab).html(data);
+                            $(".applyselect").select2();
+                            DatatableScriptsWithColumnSearch("table_" + Tab);
+                        },
+                        error: function (er) {
+                            alert(er);
+
+                        }
+                    });
+    }
+    function UpdateStatus(Obj, ID) {
+        var Val = $(Obj).val();        
+        $.ajax({
+            url: "/CommonAjax/UpdateFR_ReferralStatusJSon",
+            type: "Post",
+            async: true,
+            data: { ID: ID, Status: Val},
+            success: function (data) {
+                if (data.Status) {                   
+                    SuccessToaster(data.SuccessMessage);
+                    GetList("PENDING");
+                }
+                else {
+                    FailToaster(data.SuccessMessage);
+                }
+
+            },
+            error: function (er) {
+                console.log(er);
+            }
+        });
+    }
+        function OnSuccess(obj) {
+            if (obj.Status) {
+                SuccessToaster(obj.SuccessMessage);
+                window.location.reload();
+            }
+            else {
+                CloseLoadingDialog();
+                FailToaster(obj.SuccessMessage);
+
+            }
+        }
+
+</script>
+}
+

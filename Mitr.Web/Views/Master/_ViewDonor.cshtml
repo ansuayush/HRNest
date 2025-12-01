@@ -1,0 +1,173 @@
+﻿@model Donor.View
+
+
+<div class="row">
+
+    <div class="col-sm-3 form-group">
+        <label>Source Type  </label>
+        <p>@Model.SourceType</p>
+    </div>
+    <div class="col-sm-3 form-group">
+        <label>Donor Name  </label>
+        <p>@Model.donor_name</p>
+
+    </div>
+    <div class="col-sm-3 form-group">
+        <label>Donor Type  </label>
+        <p>@Model.DonorType</p>
+
+    </div>
+    <div class="col-sm-3 form-group">
+        <label>Website  </label>
+        <p>@Model.website</p>
+    </div>
+
+
+
+    @if (Model.LocalAddress != null)
+    {
+        <div class="col-sm-12 form-group">
+            <hr>
+            <span class="hr-aps lgt-text font-sm">Registered Office </span>
+        </div>
+        <div class="col-sm-12 form-group">
+                <label>Address Line 1</label>
+                <p>@Model.LocalAddress.lane1</p>
+        </div>
+        <div class="col-lg-3 col-md-6 form-group hw-575">
+                <label>Country </label>
+                <p>@Model.LocalAddress.Country_Name</p>
+        </div>
+        <div class="col-lg-3 col-md-6 form-group hw-575">
+                <label>State </label>
+                <p>@Model.LocalAddress.State_Name</p>
+        </div>
+        <div class="col-lg-3 col-md-6 form-group hw-575">
+                <label>City </label>
+                <p>@Model.LocalAddress.City_Name</p>
+        </div>
+        <div class="col-lg-3 col-md-6 form-group hw-575">
+                <label>PIN </label>
+                <p>@Model.LocalAddress.zip_code</p>
+        </div>
+
+    }
+
+
+
+    @if (Model.PermanentAddress != null)
+    {
+
+        <div class="col-sm-12 form-group">
+            <hr>
+            <span class="hr-aps lgt-text font-sm">Country Office </span>
+        </div>
+        
+        <div class="col-sm-12 form-group">
+                <label>Address Line 1</label>
+                <p>@Model.PermanentAddress.lane1</p>
+
+            </div>
+
+
+            <div class="col-lg-3 form-group hw-575">
+                <label>Country </label>
+                <p>@Model.PermanentAddress.Country_Name</p>
+
+            </div>
+            <div class="col-lg-3 form-group hw-575">
+                <label>State </label>
+                <p>@Model.PermanentAddress.State_Name</p>
+
+
+            </div>
+            <div class="col-lg-3 form-group hw-575">
+                <label>City </label>
+                <p>@Model.PermanentAddress.City_Name</p>
+
+            </div>
+
+            <div class="col-lg-3 form-group hw-575">
+                <label>PIN </label>
+                <p>@Model.PermanentAddress.zip_code</p>
+
+            </div>
+
+    }
+
+
+    <div class="col-sm-12 form-group">
+        <hr>
+        <span class="hr-aps lgt-text font-sm">Contact Details </span>
+    </div>
+
+    <div class="col-sm-12 form-group">
+
+        <table id="TableDonorDetailsList" class="table table-stripted lg-table mb-0 mt-0">
+            <thead>
+                <tr>
+                    <th width="33" class="text-center">S.No.</th>
+                    <th>Name </th>
+                    <th width="100" >Designation</th>
+                    <th width="100">Location</th>
+                    <th width="100">Phone</th>
+                    <th width="100">Email</th>
+                    <th width="50">Primary</th>
+
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model.DonorDetailsList != null)
+                {
+                    int Rcount = 0;
+                    for (int i = 0; i < Model.DonorDetailsList.Count; i++)
+                    {
+                        Rcount++;
+                        <tr>
+                            <td class="text-center">
+
+                                <label id="span_@Rcount" name="span_@Rcount">@Rcount </label>
+                            </td>
+                            <td>
+                                @Model.DonorDetailsList[i].person_name
+
+
+                            </td>
+                            <td>
+                                @Model.DonorDetailsList[i].designation
+
+
+                            </td>
+                            <td>
+                                @Model.DonorDetailsList[i].location
+                            </td>
+                            <td>
+                                @Model.DonorDetailsList[i].phone_no
+
+                            </td>
+                            <td>
+                                @Model.DonorDetailsList[i].email
+
+                            </td>
+                            <td class="text-center">
+                                @if (Model.DonorDetailsList[i].Isdefault == 1)
+                                {
+                                    <i class="fa fa-check checkgreen" aria-hidden="true"></i>
+                                }
+
+                            </td>
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>
+
+    </div>
+
+
+
+</div>
+
+<div class="text-center">
+<button type="button" class="btn cnl-btn ripplelink" data-dismiss="modal"><i class="fas fa-times"></i>Close</button>
+</div>

@@ -1,0 +1,349 @@
+﻿@model Mitr.Models.BudgetMaster.SetTentativePeriodofBudget
+@{
+	ViewBag.Title = "TentativeperiodofBudget";
+	Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="empmenu navsky">
+	<a class="logo" href="">Tentative Period of  Budget</a>
+	<input id="nav" type="checkbox">
+	<label for="nav"></label>
+	<nav>
+		<ul class="navbar-scd list-unstyled ">
+			@if (ViewBag.menulock == "New")
+			{
+				<li> <a href="#"> <span class="btn btn-default btn-circle">1</span> Outcomes & <span class="d-block">Activities</span> </a> </li>
+				<li> <a href="#"> <span class="btn btn-default btn-circle">2</span>Enter Sub-Activity & <span class="d-block">Map Outcome</span> </a> </li>
+				<li class="active"> <a href="#"> <span class="btn btn-default btn-circle">2</span>Tentative Period of  <span class="d-block">Budget</span> </a> </li>
+			}
+			else
+			{
+				<li> <a href="@Url.Action("Outcomesactivities", new { src = clsApplicationSetting.EncryptQueryString(ViewBag.MenuID+"*"+"/Budget/Outcomesactivities*"+Model.BudgetId+"*"+Model.ProjectId+"*"+"Edit"+"*") })"> <span class="btn btn-default btn-circle">1</span> Outcomes & <span class="d-block">Activities</span> </a> </li>
+				<li> <a href="@Url.Action("Entersubactivity", new { src = clsApplicationSetting.EncryptQueryString(ViewBag.MenuID.ToString() + "*/Budget/Entersubactivity*0"+Model.BudgetId+"*"+"Edit"+"*")  })"> <span class="btn btn-default btn-circle">2</span>Enter Sub-Activity & <span class="d-block">Map Outcome</span> </a> </li>
+				<li class="active"> <a href="@Url.Action("TentativeperiodofBudget", new { src = clsApplicationSetting.EncryptQueryString(ViewBag.MenuID.ToString() + "*/Budget/TentativeperiodofBudget*0"+Model.BudgetId+"*"+"Edit"+"*")  })"> <span class="btn btn-default btn-circle">2</span>Tentative Period of  <span class="d-block">Budget</span> </a> </li>
+			}
+
+		</ul>
+	</nav>
+</div>
+
+@using (Ajax.BeginForm("TentativeperiodofBudget", "Budget", new { src = ViewBag.src }, new AjaxOptions { HttpMethod = "POST", OnSuccess = "OnSuccess", OnBegin = "ShowLoadingDialog()" }, new { @id = "TentativeperiodofBudget" }))
+{
+	
+	@Html.HiddenFor(model => model.BudgetId)
+	@Html.HiddenFor(model => model.Id)
+	<div class="mb-100">
+		<div class="inner-main bgt-height">
+			<div class="row">
+				<!---->
+
+				<div class="col-md-2 wf-575 col-sm-4 form-group">
+					<label>Start Date</label>
+					@Html.TextBoxFor(model => model.StartDate, new { @class = "form-control", @disabled = "disabled" })
+				</div>
+				<div class="col-md-2 col-sm-4 wf-575 form-group">
+					<label>End Date</label>
+					@Html.TextBoxFor(model => model.EndDate, new { @class = "form-control", @disabled = "disabled" })
+				</div>
+
+				<div class="col-sm-12 form-group">
+					<hr>
+					<span class="hr-aps lgt-text font-sm"><i class="fas fa-rupee-sign"></i>Set inflation rate for the project</span>
+				</div>
+
+				<div class="col-md-6 col-sm-6 form-group">
+					This is annual (financial year) inflation rate
+					<table class="table mt-2 mb-0">
+						<thead>
+						<th>Ledger</th>
+						<th width="100">Inflation Rate %</th>
+						</thead>
+						@if (Model.ListinflationDetails != null)
+						{
+							for (int i = 0; i < Model.ListinflationDetails.Count; i++)
+							{
+
+								<tr>
+									<td>
+										<strong>  @Model.ListinflationDetails[i].Ledger</strong>
+										@Html.HiddenFor(model => model.ListinflationDetails[i].Id)
+										@Html.HiddenFor(model => model.ListinflationDetails[i].Ledgerid)
+										@Html.HiddenFor(model => model.ListinflationDetails[i].Ledger)
+										@Html.HiddenFor(model => model.ListinflationDetails[i].BudgetId)
+									</td>
+									<td>
+										@Html.TextBoxFor(model => model.ListinflationDetails[i].Rate, new { @class = "form-control text-right", @onkeypress = "return isNumberKey(event,this)" })
+
+									</td>
+								</tr>
+							}
+
+						}
+
+
+					</table>
+
+				</div>
+				<div class="col-sm-12 m-0"></div>
+				<div class="col-md-6 col-sm-6 form-group">
+					<label>Justification for change in inflation for salary line item</label>
+					@Html.TextAreaFor(modal => modal.ReasonInflationRate, new { @class = "form-control h-100", @placeholder = "Enter" })
+					@*@Html.ValidationMessageFor(model => model.ReasonInflationRate, "", new { @class = "text-danger" })*@
+				</div>
+
+				<div class="col-sm-12 form-group">
+					<hr>
+					<span class="hr-aps lgt-text font-sm"><i class="fas fa-list"></i>Fringe Benefits</span>
+				</div>
+				<div class="col-md-3 col-sm-6 form-group">
+					<strong>Fringe Benefit Rate</strong>
+
+					<table class="table tbl-o mt-2 mb-0 w-250">
+						<tbody>
+							<tr>
+								<td width="50"><strong>Core</strong></td>
+								<td width="100" class="text-right">
+									@Html.TextBoxFor(modal => modal.FringeRateCore, new { @class = "form-control text-right inp575-50 float-right", @onkeypress = "return isNumberKey(event,this)" })
+									@Html.ValidationMessageFor(model => model.FringeRateCore, "", new { @class = "text-danger" })
+								</td>
+								<td width="5">%</td>
+							</tr>
+							<tr>
+								<td><strong>Term</strong></td>
+								<td class="text-right">
+									@Html.TextBoxFor(modal => modal.FringeRateTerm, new { @class = "form-control text-right inp575-50 float-right", @onkeypress = "return isNumberKey(event,this)" })
+									@Html.ValidationMessageFor(model => model.FringeRateTerm, "", new { @class = "text-danger" })
+								</td>
+								<td>%</td>
+							</tr>
+						</tbody>
+
+					</table>
+				</div>
+				<div class="col-sm-12 m-0"></div>
+
+				<div class="col-md-6 col-sm-6 form-group">
+					<label>Reason for less fringe benefit rate <i class="fas fa-info-circle" data-toggle="tooltip" data-original-title="You cannot increase the fringe benefit rate"></i><small></small></label>
+					@Html.TextAreaFor(modal => modal.ReasonFringeRate, new { @class = "form-control h-100", @placeholder = "Enter" })
+					@*@Html.ValidationMessageFor(model => model.ReasonFringeRate, "", new { @class = "text-danger" })*@
+				</div>
+				<div class="col-sm-12 m-0"></div>
+				<div class="col-sm-2 form-group">
+					<label>Fringe benefit be shown as</label>
+					@Html.DropDownListFor(modal => modal.FringeShownAs, new List<SelectListItem>
+
+				{
+				   new SelectListItem{ Text="Select", Value = "" },
+				   new SelectListItem{ Text="As Fixed %", Value = "As Fixed %" },
+				   new SelectListItem{ Text="On Actual", Value = "On Actual" }
+				}, new { @class = "form-control dpselect" })
+					@Html.ValidationMessageFor(model => model.FringeShownAs, "", new { @class = "text-danger" })
+				</div>
+
+				<div class="col-sm-12 form-group">
+					<hr>
+					<span class="hr-aps lgt-text font-sm"><i class="fas fa-rupee-sign"></i>Indirect Cost</span>
+				</div>
+
+				<div class="col-sm-2 form-group">
+					<label>How to apply indirect cost</label>
+					@Html.DropDownListFor(modal => modal.IndirectCost, new List<SelectListItem>
+
+		{
+		  new SelectListItem{ Text="Select", Value = "" },
+		   new SelectListItem{ Text="On Line Item", Value = "On Line Item" },
+		   new SelectListItem{ Text="On Subline Item", Value = "On Subline Item" }
+		}, new { @class = "form-control dpselect" })
+					@Html.ValidationMessageFor(model => model.IndirectCost, "", new { @class = "text-danger" })
+				</div>
+				<div class="col-sm-12 m-0"></div>
+
+				<div class="col-md-6 col-sm-6 form-group">
+					Set default rates, irrespective of line item wise or sub line item wise
+					<table class="table mt-2 mb-0">
+						<thead>
+						<th>Line Items</th>
+						<th width="120">Indirect Cost Rate %</th>
+						</thead>
+						@if (Model.ListindirectDetails != null)
+						{
+							for (int j = 0; j < Model.ListindirectDetails.Count; j++)
+							{
+								<tr>
+									<td>
+										<strong>  @Model.ListindirectDetails[j].Ledger</strong>
+										@Html.HiddenFor(model => model.ListindirectDetails[j].Id)
+										@Html.HiddenFor(model => model.ListindirectDetails[j].Ledgerid)
+										@Html.HiddenFor(model => model.ListindirectDetails[j].Ledger)
+										@Html.HiddenFor(model => model.ListindirectDetails[j].BudgetId)
+									</td>
+									<td>
+										@Html.TextBoxFor(model => model.ListindirectDetails[j].Rate, new { @class = "form-control text-right", @onkeypress = "return isNumberKey(event,this)" })
+
+									</td>
+								</tr>
+							}
+
+						}
+					</table>
+
+				</div>
+				<div class="col-sm-12 m-0"></div>
+				<div class="col-md-6 col-sm-6 form-group">
+					<label>Reason for change in indirect rate</label>
+					@Html.TextAreaFor(modal => modal.ReasonIndirectRate, new { @class = "form-control h-100", @placeholder = "Enter" })
+					@Html.ValidationMessageFor(model => model.ReasonIndirectRate, "", new { @class = "text-danger" })
+				</div>
+				@if (Model.OtherCurrencyid > 0)
+				{
+					<div class="col-md-12">
+						<input type="checkbox" id="chkBudget" checked class="checktxt" name="1">
+						<label for="chkBudget"> Budget in other currency</label>
+
+					</div>
+
+					<div class="col-md-2 col-sm-2 wf-575 form-group inpshow" >
+						<label>Currency</label>
+						@Html.DropDownListFor(model => model.OtherCurrencyid, new SelectList(@ViewBag.Currency, "id", "field_name"), "Select", new { @class = "form-control applyselect" })
+						@Html.ValidationMessageFor(model => model.OtherCurrencyRate, "", new { @class = "text-danger" })
+					</div>
+
+					<div class="col-md-3 col-sm-4 wf-575 form-group inpshow" >
+						<label>Exchange Rate</label>
+						@Html.TextBoxFor(modal => modal.OtherCurrencyRate, new { @class = "form-control w-100", @onkeypress = "return isNumberKey(event,this)" })
+						@Html.ValidationMessageFor(model => model.OtherCurrencyRate, "", new { @class = "text-danger" })
+					</div>
+				}
+				else
+				{
+					<div class="col-md-12">
+						<input type="checkbox" id="chkBudget" class="checktxt" name="1">
+						<label for="chkBudget"> Budget in other currency</label>
+					</div>
+
+					<div class="col-md-2 col-sm-2 wf-575 form-group inpshow" style="display: none">
+						<label>Currency</label>
+						@Html.DropDownListFor(model => model.OtherCurrencyid, new SelectList(@ViewBag.Currency, "id", "field_name"), "Select", new { @class = "form-control applyselect" })
+						@Html.ValidationMessageFor(model => model.OtherCurrencyRate, "", new { @class = "text-danger" })
+					</div>
+
+					<div class="col-md-3 col-sm-4 wf-575 form-group inpshow" style="display: none">
+						<label>Exchange Rate</label>
+					
+						@Html.TextBoxFor(modal => modal.OtherCurrencyRate, new { @class = "form-control w-100", @onkeypress = "return isNumberKey(event,this)" })
+						@Html.ValidationMessageFor(model => model.OtherCurrencyRate, "", new { @class = "text-danger" })
+					</div>
+				}
+
+
+				@Html.HiddenFor(modal => modal.OutcomeWiseBudget)
+				<div class="col-md-12">
+					@if (Model.OutcomeWiseBudget == 1)
+					{
+						<input type="checkbox" id="owb" checked class="checktxt" value="1">
+						<label for="owb"> Do you require outcome wise budget?</label>
+					}
+					else
+					{
+						<input type="checkbox" id="owb" class="checktxt" value="1">
+						<label for="owb"> Do you require outcome wise budget?</label>
+					}
+
+
+				</div>
+
+
+
+				<!---->
+			</div>
+		</div>
+
+	</div>
+
+	<div class="ftr-btn">
+		@if (ViewBag.menulock == "New")
+		{
+			<a href="@Url.Action("Entersubactivity", new { src = clsApplicationSetting.EncryptQueryString(ViewBag.MenuID.ToString() + "*/Budget/Entersubactivity*0"+Model.BudgetId+"*"+"New"+"*")  })" class="btn blk-gdn-btn" name="Command" value="" data-toggle="tooltip" title="" data-original-title="Enter Subactivity and Map Outcome"><i class="fas fa-angle-double-left m-0"></i> Previous</a>
+			@*<button type="button" class="btn blk-gdn-btn " name="Command" onclick="ShowLoadingDialog();window.location='@Url.Action("Entersubactivity", new { src = clsApplicationSetting.EncryptQueryString(ViewBag.MenuID.ToString() + "*/Budget/Entersubactivity*0"+Model.BudgetId+"*"+"New"+"*")  })" value="Add"><i class="fas fa-paper-plane"></i> Previous<i class="fas fa-angle-double-left m-0"></i></button>*@
+		}
+		else
+		{
+			<a href="@Url.Action("Entersubactivity", new { src = clsApplicationSetting.EncryptQueryString(ViewBag.MenuID.ToString() + "*/Budget/Entersubactivity*0"+Model.BudgetId+"*"+"Edit"+"*")  })" class="btn blk-gdn-btn" name="Command" value="" data-toggle="tooltip" title="" data-original-title="Enter Subactivity and Map Outcome"><i class="fas fa-angle-double-left m-0"></i> Previous</a>
+		}
+
+		<button type="submit" class="btn mtr-o-grn " name="Command" value="Save"><i class="fas fa-save"></i>Save</button>
+		<button type="submit" class="btn mtr-o-grn " name="Command" value="Submit"><i class="fas fa-paper-plane"></i>Submit</button>
+
+
+	</div>
+	@*@Html.Partial("_Listbudgetfooter")*@
+}
+
+@section scripts    {
+
+
+	@System.Web.Optimization.Scripts.Render("~/bundle/dataTablesjs")
+	@System.Web.Optimization.Scripts.Render("~/bundle/unobtrusivejs")
+	@Html.IncludeVersionedJs(Url.Content("~/assets/design/Scripts/AddInit.js"))
+	@Html.IncludeVersionedJs(Url.Content("~/assets/design/Scripts/ToolTip.js"))
+	@Html.IncludeVersionedJs(Url.Content("~/assets/design/scripts/CustomValidate.js"))
+
+
+
+	<script>
+	
+
+	$(function () {
+			$("#chkBudget").click(function () {
+				if ($(this).is(":checked")) {
+					$(".inpshow").show();
+				} else {
+					$(".inpshow").hide();
+
+				}
+			});
+
+			$("#owb").change(function () {
+			
+				if (this.checked) {
+					var data = $(this).val();
+					$("#OutcomeWiseBudget").val(parseInt(data));
+				}
+				else {
+					$("#OutcomeWiseBudget").val(parseInt(0));
+
+				}
+			});
+
+		});
+		function OnSuccess(obj) {
+			if (obj.Status) {
+				SuccessToaster(obj.SuccessMessage);
+				window.location.href = obj.RedirectURL
+			}
+			else {
+				CloseLoadingDialog();
+				FailToaster(obj.SuccessMessage);
+			}
+		}
+		var txt = document.getElementById('OtherCurrencyRate');
+		txt.addEventListener('keyup', myFunc);
+		function myFunc(e) {
+			var val = this.value;
+			var re = /^([0-9]+[\.]?[0-9]?[0-9]?|[0-9]+)$/g;
+			var re1 = /^([0-9]+[\.]?[0-9]?[0-9]?|[0-9]+)/g;
+			if (re.test(val)) {
+				//do something here
+
+			} else {
+				val = re1.exec(val);
+				if (val) {
+					this.value = val[0];
+				} else {
+					this.value = "";
+				}
+			}
+		}
+	</script>
+
+}

@@ -1,0 +1,72 @@
+﻿
+@model Mitr.Models.Country
+
+
+
+@using (Ajax.BeginForm("_CountryAdd", "Master",
+        new { src = ViewBag.src },
+        new AjaxOptions { HttpMethod = "POST", OnSuccess = "OnSuccess" },
+    new { @id = "_AddCountryFrom" })
+    )
+{
+
+    @Html.AntiForgeryToken()
+    @Html.HiddenFor(x => Model.CountryID)
+<div class="row">
+    <div class="col-lg-6 col-md-6 col-sm-6 form-group">
+        <label>Country Name<sup>*</sup></label>
+        @Html.TextBoxFor(model => model.CountryName, new { @class = "form-control" })
+        @Html.ValidationMessageFor(model => model.CountryName, "", new { @class = "text-danger" })
+    </div>
+
+
+    <div class="col-lg-6 col-md-6 col-sm-6 form-group">
+        <label>Country Time(GMT+/-) </label>
+        <div class="row">
+            <div class="col-md-6">
+                <select class="form-control" id="@Html.IdFor(x=>Model.CountryHours)" name="@Html.NameFor(x=>Model.CountryHours)">
+                    @for (int i = 0; i <= 12; i++)
+                    {
+                        <option @(Model.CountryHours == i ? "selected" : "") value="@i">@i</option>
+                    }
+
+                </select>
+            </div>
+            <div class="col-md-6">
+                <select class="form-control" id="@Html.IdFor(x=>Model.CountryMinutes)" name="@Html.NameFor(x=>Model.CountryMinutes)">
+                    @for (int i = 0; i <= 60; i++)
+                    {
+                        <option @(Model.CountryMinutes == i ? "selected" : "") value="@i">@i</option>
+                    }
+                </select>
+            </div>
+        </div>
+
+
+    </div>
+    <div class="col-lg-6 col-md-6 col-sm-6 form-group">
+        <label>Priority </label>
+        @Html.TextBoxFor(model => model.Priority, new { @class = "form-control" })
+        @Html.ValidationMessageFor(model => model.Priority, "", new { @class = "text-danger" })
+    </div>
+
+    <div class="col-lg-12 col-md-12 col-sm-12 form-group">
+        <label>Description</label>
+        @Html.TextAreaFor(model => model.Description, new { @class = "form-control" })
+        @Html.ValidationMessageFor(model => model.Description, "", new { @class = "text-danger" })
+    </div>
+</div>
+
+    <div class="row">
+
+        @if (Model.CountryID > 0)
+        {
+            <button type="submit" class="btn mtr-o-grn btn-l ripplelink pull-right" name="Command" value="Add"><i class="fa fa-paper-plane" aria-hidden="true"></i> Update</button>
+        }
+        else
+        {
+            <button type="submit" class="btn mtr-o-grn btn-l ripplelink pull-right" name="Command" value="Add"><i class="fa fa-paper-plane" aria-hidden="true"></i> Submit</button>
+        }
+    </div>
+
+}

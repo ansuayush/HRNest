@@ -1,0 +1,134 @@
+﻿@using System.Data
+@model Mitr.Models.Recruit.Tabs
+
+@section style{
+	@System.Web.Optimization.Styles.Render("~/bundle/dataTablecss")
+}
+@{
+	string MenuID = "0";
+	if (ViewBag.MenuID != null)
+	{
+		MenuID = ViewBag.MenuID;
+	}
+}
+<div class="inner-main">
+	<div class="right_col" role="main">
+		@Html.Partial("HeaderMsg_Partial")
+		<h1 class="heading-one">
+			Recruitment Requests
+		</h1>
+
+		@using (Ajax.BeginForm("_Requests", "Recruit",
+		   new { src = clsApplicationSetting.EncryptQueryString(ViewBag.MenuID.ToString() + "*/Recruit/_Requests") },
+		   new AjaxOptions { HttpMethod = "POST", OnSuccess = "BindTarget" },
+	   new { @id = "_RequestsFrom" })
+	   )
+		{
+
+			<div class="tab-main ">
+				<div class="row text-clr">
+					<div class="col-md-12">
+
+						<ul id="tabs" class="nav nav-tabs " role="tablist">
+							<li class="nav-item"> <a tabvalue="0" class="nav-link active ripplelink AnchorApproval" data-toggle="tab" role="tab"><i class="far fa-clock"></i>Pending</a> </li>
+							<li class="nav-item"> <a tabvalue="3" class="nav-link ripplelink AnchorApproval" data-toggle="tab" role="tab"><i class="fas fa-database"></i>Processed</a> </li>
+							<li class="nav-item"> <a tabvalue="1" class="nav-link ripplelink AnchorApproval" data-toggle="tab" role="tab"><i class="fas fa-check"></i>Completed</a> </li>
+							<li class="nav-item"> <a tabvalue="2" class="nav-link ripplelink AnchorApproval" data-toggle="tab" role="tab"><i class="fas fa-ban"></i>Rejected</a> </li>
+						</ul>
+					</div>
+
+					<div style="display:none">
+						@Html.HiddenFor(model => model.Approve)
+						<button type="submit" class="btn mtr-g-grn btn-l ripplelink" id="btnSearch" name="Command" value="Search">
+							<i class="fas fa-search"></i>Search
+						</button>
+					</div>
+
+				</div>
+			</div>
+
+		}
+
+		<div id="TargetDiv"></div>
+
+	</div>
+
+	<div class="modal fade pop-dgn" id="ViewModal">
+		<div class="modal-dialog modal-md">
+			<div class="modal-content">
+
+				<div class="modal-header blk-gdn-btn">
+					<h4 class="modal-title"><i class="fas fa-print"></i>Budget Details ( <span id="spnHead"></span> )	</h4>
+					<div class="close" data-dismiss="modal">&times;</div>
+				</div>
+				<!-- Modal body -->
+				<div class="modal-body">
+					<div id="ModalTagetDiv"></div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+</div>
+
+@section scripts    {
+	@System.Web.Optimization.Scripts.Render("~/bundle/dataTablesjs")
+	<script src="~/assets/design/Scripts/AddInit.js?v=@clsApplicationSetting.GetWebConfigValue("Version")"></script>
+	@System.Web.Optimization.Scripts.Render("~/bundle/unobtrusivejs");
+
+
+	<script>
+        $(document).ready(function () {
+            $("#btnSearch").click();
+        });
+        $('.AnchorApproval').on('click', function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+            var att = $(this).attr("tabvalue");
+            $(".AnchorApproval.active").removeClass("active");
+            $(this).addClass("active");
+            $("#Approve").val(att);
+            ShowLoadingDialog();
+            $("#btnSearch").click();
+        });
+
+
+        function BindTarget(args) {
+            CloseLoadingDialog();
+            $("#TargetDiv").empty();
+            $("#TargetDiv").html(args);
+        }
+
+		function ListAdd(ID) {
+				var ID = Number(ID);
+				var MenuID = Number('@MenuID');
+                ShowLoadingDialog();
+			var url = "/Recruit/FillRequests?src=" + EncryptQueryStringJSON(MenuID + "*" + "/Recruit/FillRequests" + "*" + ID);
+                window.location.href = url;
+	}
+
+           function GetBudgetPartial(obj) {
+		var MenuID = Number('@MenuID');
+			   var ID = $(obj).closest("tr").find("input:hidden[name=PID]").val();
+		var N = $(obj).closest("tr").find("input:hidden[name=N]").val();
+		$.ajax({
+			url: "/Recruit/_ViewBudget",
+			type: "Post",
+			data: {
+				src: EncryptQueryStringJSON(MenuID + "*" + "/Recruit/_ViewBudget*" + ID)
+			},
+			success: function (data) {
+				$("#ModalTagetDiv").empty();
+				$("#ModalTagetDiv").html(data);
+				$("#spnHead").html(N);
+				$("#ViewModal").modal('show');
+			},
+			error: function (er) {
+				alert(er);
+
+			}
+		});
+	}
+
+	</script>
+}

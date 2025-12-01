@@ -1,0 +1,543 @@
+﻿@{
+	ViewBag.Title = "DeclarationDetails";
+	Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@section scripts    {
+	@System.Web.Optimization.Scripts.Render("~/bundle/unobtrusivejs")
+	@System.Web.Optimization.Scripts.Render("~/bundle/dataTablesjs")
+	<script src="~/assets/design/Scripts/AddInit.js?v=@clsApplicationSetting.GetWebConfigValue("Version")"></script>
+	<script src="~/Areas/Onboarding/DevScript/OnboardingDeclaration.js"></script>
+	<script>
+        var CandidateId = '@ViewBag.RequestId';
+		var IsEDUser = '@ViewBag.IsED';
+        var loggedinUserid = '@ViewBag.UserId';
+		var loggedinUserName = '@ViewBag.UserName';
+		var UserGrade = '@ViewBag.Grade';
+		var IsPM = '@ViewBag.IsPM';
+
+		function RedirectToOnboard() {
+			window.location.href = virtualPath + 'Onboarding/HRScreenOnboard';
+		}
+
+	</script>
+}
+
+<div class="container-fluid text-clr">
+	<!-- Start -->
+	<div class="inner-main defult-height pb-0">
+		<h1 class="heading-one ">HR Process</h1>
+
+		<ul class="tab-thrid">
+			<li class="dnactive" onclick="RedirectToClick('Offer');"><a>Offer</a></li>
+			<li class="dnactive" onclick="RedirectToClick('Joiningkit');"><a>Joining Kit</a></li>
+			<li class="dnactive" onclick="RedirectToClick('PreRegistration');"><a>Pre-Registration</a></li>
+			<li class="dnactive" onclick="RedirectToClick('OrientationSchedule');"><a>Orientation Schedule</a></li>
+			<li class="dnactive" onclick="RedirectToClick('Registration');"><a>Registration</a></li>
+			<li class="dnactive" onclick="RedirectToClick('Attachment');"><a>Attachment</a></li>
+			<li class="dnactive" onclick="RedirectToClick('UserOnboarding');"><a>Onboarding</a></li>
+			<li class="active" onclick="RedirectToClick('DeclarationDetails');"><a>Declaration</a> </li>
+			<li class="dnactive" onclick="RedirectToClick('Orientation');"><a>Orientation</a></li>
+		</ul>
+
+		<!------->
+		<div class="tab-main mb-5">
+			<ul id="tabs" class="nav nav-tabs " role="tablist">
+				@*<li class="nav-item"> <a id="tab-A" href="#pending" class="nav-link ripplelink active" data-toggle="tab" role="tab" aria-selected="true"><i class="fas fa-clock"></i>Pending<span class="ink animate" style="height: 116px; width: 116px; left: 10px; top: -40px;"></span></a> </li>
+					<li class="nav-item"> <a id="tab-B" href="#submitted" class="nav-link ripplelink" data-toggle="tab" role="tab" aria-selected="false"><i class="fas fa-check"></i>Submitted<span class="ink animate" style="height: 128px; width: 128px; left: 12px; top: -44px;"></span></a></li>*@
+				<li class="nav-item"> <a id="tab-A" href="#active-log" onClick="showtable(1);" class="nav-link active ripplelink" data-toggle="tab" role="tab"><i class="fas fa-clock"></i>Pending</a> </li>
+				<li class="nav-item"> <a id="tab-B" href="#leaves" onClick="showtable(2);" class="nav-link ripplelink" data-toggle="tab" role="tab"><i class="fas fa-check"></i>Approved </a></li>
+			
+			</ul>
+			<div id="content" class="tab-content p-0" role="tablist">
+				<div id="active-log" class="card tab-pane fade show active" role="tabpanel" aria-labelledby="tab-A">
+					<div class="card-header" role="tab" id="heading-A">
+						<h5 class="mb-0">
+							<!-- Note: `data-parent` removed from here -->
+							<a data-toggle="collapse" href="#collapse-A" aria-expanded="true" aria-controls="collapse-A"> <i class="fas fa-ticket-alt"></i> Pending </a>
+						</h5>
+					</div>
+
+					<!-- Note: New place of `data-parent` -->
+
+					<div id="TargetDiv">
+
+					</div>
+
+				</div>
+				<div id="leaves" class="card tab-pane fade" role="tabpanel" aria-labelledby="tab-B">
+					<div class="card-header" role="tab" id="heading-B">
+						<h5 class="mb-0"> <a class="collapsed" data-toggle="collapse" href="#collapse-B" aria-expanded="false" aria-controls="collapse-B"><i class="fa fa-check" aria-hidden="true"></i> Resolved</a> </h5>
+					</div>
+					<div id="TargetDivApproved">
+
+					</div>
+				</div>
+
+			</div>
+		</div>
+		<!------->
+
+
+
+	</div>
+
+	<!----End start-->
+</div>
+<div class="modal fade pop-dgn" id="ViewModal">
+	<div class="modal-dialog  modal-lg">
+		<div class="modal-content ">
+
+			<!-- Modal Header -->
+			<div class="modal-header">
+				<h4 class="modal-title"><i class="fas fa-sticky-note"></i><label id="lbldcname"></label></h4>
+				<button type="button" class="close" data-dismiss="modal">&times;</button>
+			</div>
+			<input type="hidden" value="" id="hdfId" />
+			<input type="hidden" value="" id="hdfAccept" />
+			<input type="hidden" value="" id="hdfStatus" />
+			<!-- Modal body -->
+			<div class="modal-body pl-2 pr-2">
+
+				<div class="row">
+					<div class="col-sm-12">
+						<div class="scroll mxh-264 " id="divContent"></div>
+					</div>
+					<div class="col-sm-12 form-group " style="display:none" id="divrdb">
+						<ul class="list-unstyled radio-btn rdo-block">
+
+							<li class="radio">
+								<input type="radio" onclick="CheckRadio()" id="nothing" class="form-control" name="Status" value="1" />
+								<label for="nothing" class="radio-label">I have nothing to declare</label>
+							</li>
+							<li class="radio">
+								<input type="radio" onclick="CheckRadio()" id="declare" class="form-control" name="Status" value="2" />
+								<label for="declare" class="radio-label">I declare the following interests on behalf of myself and/or my family member:</label>
+							</li>
+						</ul>
+
+					</div>
+				</div>
+				<!-- Modal footer -->
+				<div class="ftr-shw">
+
+
+					<div class="row" id="submit_buttonsdw">
+						<div class="form-group col-sm-12" id="divremark">
+							@*<label>Remark</label>*@
+							<textarea class="form-control h-150 maxSize[200]" id="txtremark" placeholder="Enter"></textarea>
+						</div>
+
+
+						<div class="col-sm-12" id="divchk">
+							<input type="checkbox" class="newwidth acceptchksdw chknew" id="acceptchksdw" name="">
+							<label for="acceptchksdw">I acknowledge that I have read the above policy and declaration and understand that abiding by the terms of the policy is a condition of my employment at C3 and any violation of the term(s) of the above policy may result in disciplinary action, which may include termination.</label>
+						</div>
+						<div class="col-sm-12 text-center" id="divbutton">
+							<button type="button" id="btnconfirm" onclick="btnconfirm()" class="btn mtr-o-grn btn-l m-0 checkbtnsdw"><i class="fas fa-paper-plane"></i>Submit</button>
+						</div>
+					</div>
+				</div>
+
+			</div>
+		</div>
+	</div>
+	@*@section scripts    {
+		@System.Web.Optimization.Scripts.Render("~/bundle/unobtrusivejs")
+		@Html.IncludeVersionedJs(Url.Content("~/assets/design/scripts/AddInit.js"))
+		@Html.IncludeVersionedJs(Url.Content("~/assets/design/Scripts/AddInit.js"))
+		@Html.IncludeVersionedJs(Url.Content("~/assets/design/Scripts/ToolTip.js"))
+		@Html.IncludeVersionedJs(Url.Content("~/assets/design/Scripts/ckeditor.js"))*@
+
+	<script>
+	
+
+		function showtable(tabname) {
+			if (iScandidateStatus == true) {
+				if (tabname == "1") {
+					ShowLoadingDialog();
+					$.ajax({
+						url: "/Onboarding/_PendingDeclaration",
+						type: "Get",
+						async: true,
+						data: { src: EncryptQueryStringJSON(@ViewBag.MenuID+"*" + "/Onboarding/_PendingDeclaration" + "*" + empId + "*" + userId) },
+						success: function (data) {
+							$("#TargetDiv").empty();
+							$("#TargetDiv").html(data);
+							CloseLoadingDialog();
+						},
+						error: function (er) {
+							alert(er);
+						}
+					});
+				}
+				else if (tabname == "2") {
+					ShowLoadingDialog();
+					$.ajax({
+						url: "/Onboarding/_ApproveDeclaration",
+						type: "Get",
+						async: true,
+						data: { src: EncryptQueryStringJSON(@ViewBag.MenuID+"*" + "/Onboarding/_ApproveDeclaration" + "*" + empId + "*" + userId) },
+						success: function (data) {
+							$("#TargetDivApproved").empty();
+							$("#TargetDivApproved").html(data);
+							CloseLoadingDialog();
+							//DatatableScriptsWithColumnSearch("ApprovedTable");
+						},
+						error: function (er) {
+							alert(er);
+						}
+					});
+				}
+			}
+	    }
+	$(".acceptchksdw").change(function () {
+
+		if ($(this).is(":checked")) {
+			$("#hdfAccept").val(1);
+		}
+		else {
+			$("#hdfAccept").val(0);
+		}
+	});
+	function btnconfirm() {
+		var Id = $("#hdfId").val();
+		var Accept = parseInt($("#hdfAccept").val());
+		var Remark = $("#txtremark").val();
+		var status = $("#hdfStatus").val();
+		var currentDate = new Date();
+		var year = currentDate.getFullYear();
+		var month = ('0' + (currentDate.getMonth() + 1)).slice(-2); // Months are zero-indexed, so we add 1
+		var day = ('0' + currentDate.getDate()).slice(-2);
+		// Form the desired date string in "yyyy-MM-dd" format
+		var DueDate = year + '-' + month + '-' + day;
+		if (isNaN(Accept)) {
+			 Accept = 0;
+		}
+		if (parseInt(Id) > 0) {
+			//if (Accept > 0) {
+				$.ajax({
+					url: "/CommonAjax/HRDeclrationApproved",
+					type: "Get",
+					async: true,
+					data: { ID: Id, Accept: Accept, Remark: Remark, status: status, UserId: userId, EmpId: empId, DueDate: DueDate },
+					success: function (data) {
+						if (data == 1) {
+							SuccessToaster('Declaration Approved successfully');
+							window.location.reload();
+						}
+						else {
+							FailToaster('Can not Approved.')
+						}
+					},
+					error: function (er) {
+						alert(er);
+					}
+				});
+			//}
+			//else {
+			//	SuccessToaster('Please Select check box');
+			//	//window.location.reload();
+			//}
+
+		}
+	}
+	function CheckRadio() {
+		var Radio = $("input[name='Status']:checked").val()
+		$("#hdfStatus").val(Radio);
+		if (Radio == "1") {
+			$('#divremark').hide();
+			$('#divchk').hide();
+		}
+		else if (Radio == "2") {
+			$('#divremark').show();
+			$('#divchk').hide();
+		}
+	}
+
+		function ShowData(obj) {
+			if (candodate_Status != true) {
+				$("#nothing").prop('checked', false);
+				$("#declare").prop('checked', false);
+				$('#divremark').show();
+				$('#divchk').show();
+				$('#lbldcname').text("");
+				$("#divbutton").show();
+				$("#txtremark").val();
+				$("#hdfId").val();
+				$("#hdfStatus").val();
+				$("#acceptchksdw" + name).prop('checked', false);
+				$("#txtremark").val("");
+				$("#hdfAccept").val();
+				var ID = parseInt($(obj).closest('tr').find("td.hdftableid input[type='hidden']").val());
+				var Name = $(obj).closest('tr').find("td.hdftableName input[type='hidden']").val();
+				var RemarkName = $(obj).closest('tr').find("td.hdftableReqRemark input[type='hidden']").val();
+				if (ID > 0) {
+					$('#lbldcname').text(Name);
+					$("#ViewModal").modal("show");
+					$("#hdfId").val(ID)
+					$('#divContent').html("");
+					if (RemarkName == "1") {
+						$('#divrdb').show();
+						$('#divremark').hide();
+						$('#divchk').hide();
+					}
+					else {
+						$('#divremark').hide();
+					}
+				}
+				$.ajax({
+					url: "/CommonAjax/ShowDeclarationContent",
+					type: "Get",
+					async: true,
+					data: { ID: ID },
+					success: function (data) {
+						$("#btnconfirm").prop('disabled', false);
+						$('#divContent').html(data);
+					},
+					error: function (er) {
+						alert(er);
+					}
+				});
+			}
+			else {
+				alert('Candidate has been rejected.')
+			}
+	}
+	function ShowApprovedData(obj) {
+		$('#lbldcname').text("");
+		$("#txtremark").val();
+		$("#hdfId").val();
+		$("#hdfAccept").val();
+		$("#acceptchksdw" + name).prop('checked', false);
+		$("#nothing").prop('checked', false);
+		$("#declare").prop('checked', false);
+		var ID = parseInt($(obj).closest('tr').find("td.hdftableid input[type='hidden']").val());
+		var Name = $(obj).closest('tr').find("td.hdftableName input[type='hidden']").val();
+
+		if (ID > 0) {
+			$('#lbldcname').text(Name);
+			$("#ViewModal").modal("show");
+			$("#hdfId").val(ID)
+			$('#divContent').html("");
+		}
+		$.ajax({
+			url: "/CommonAjax/ShowDeclarationApprovedContent",
+			type: "Get",
+			async: true,
+			data: { ID: ID },
+			success: function (data) {
+				$('#divContent').html(data.Content);
+				$("#txtremark").val(data.Remark);
+				if (data.Accept == 1) {
+					$('#divremark').hide();
+					$('#divchk').hide();
+					$("#divchk").show();
+					$("#acceptchksdw" + name).prop('checked', true);
+
+				}
+				else if (data.Status == "1") {
+					$("#nothing").prop('checked', true);
+					$('#divremark').hide();
+					$('#divchk').hide();
+					$("#divrdb").show();
+
+				}
+				else if (data.Status == "2") {
+
+					$("#divrdb").show();
+					$("#declare").prop('checked', true);
+					$('#divchk').hide();
+
+				}
+				$("#divbutton").hide();
+				//$("#btnconfirm").prop('disabled', true);
+			},
+			error: function (er) {
+				alert(er);
+			}
+		});
+	}
+	function OnSuccess(obj) {
+		if (obj.Status) {
+			SuccessToaster(obj.SuccessMessage);
+			window.location.reload();
+		}
+		else {
+			FailToaster(obj.SuccessMessage);
+			CloseLoadingDialog();
+		}
+
+	}
+	</script>
+	@*}*@
+
+	<!-- The Modal -->
+	<div class="modal" id="dcl2">
+		<div class="modal-dialog modal-md">
+			<div class="modal-content ">
+
+				<!-- Modal Header -->
+				<div class="modal-header">
+					<h4 class="modal-title"><i class="fas fa-paperclip"></i>Upload Attachment - NDA</h4>
+					<button type="button" class="close" data-dismiss="modal">×</button>
+				</div>
+
+				<!-- Modal body -->
+				<div class="modal-body p-0">
+					<div class="p-2">
+						<div class="row">
+							<div class="col-sm-12 form-group">
+								<label>Attachment</label>
+								<div class="file-input">
+									<input type="file">
+									<span class="button">Choose</span>
+									<span class="label" data-js-label="">
+										No file selected
+									</span>
+								</div>
+							</div>
+
+							<div class="col-sm-12 text-center mt-2">
+								<button type="button" data-dismiss="modal" class="btn cnl-btn ripplelink  pull-right"><i class="fas fa-times"></i> Close</button>
+								<button type="submit" class="btn mtr-o-grn btn-l ripplelink pull-right" name="Command" value="Add"><i class="fas fa-paper-plane"></i>Submit</button>
+							</div>
+
+						</div>
+
+						<!-- Modal footer -->
+
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- The Modal -->
+	<div class="modal" id="dcl">
+		<div class="modal-dialog modal-lg">
+			<div class="modal-content ">
+
+				<!-- Modal Header -->
+				<div class="modal-header">
+					<h4 class="modal-title"><i class="fas fa-sticky-note"></i>NDA</h4>
+					<button type="button" class="close" data-dismiss="modal">×</button>
+				</div>
+
+				<!-- Modal body -->
+				<div class="modal-body p-0">
+					<div class="scroll p-2">
+						<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer porttitor arcu augue.Ut feugiat mi non lorem tincidunt efficitur. Phasellus eget arcu sed enim mollis placerat quis at leo. Nunc consequat mi ac lorem ullamcorper aliquam. Quisque convallis ante turpis, sed pretium dui ultrices eu. Vestibulum in libero a elit condimentum rutrum elementum ultrices nunc. Mauris consequat rhoncus enim, eu rutrum quam congue ac. Praesent condimentum neque vitae lectus pulvinar, nec maximus purus ultrices. Donec vulputate sem consectetur, mattis massa sed, auctor nisi. Vestibulum lacinia ac lectus id malesuada. Duis enim orci, bibendum eu eros vel, venenatis pharetra purus.</p>
+						<p>Maecenas vitae tortor varius, ullamcorper velit at, vehicula dolor. Nulla vel magna viverra, cursus tellus id, molestie leo. Vivamus consequat sollicitudin diam, et gravida lorem tincidunt a. Aliquam erat volutpat. Integer ac luctus dolor. Donec leo magna, hendrerit ut tortor sed, commodo ornare tellus. Nulla facilisi. Mauris quis faucibus arcu.</p>
+						<p>Pellentesque mollis dui et nulla eleifend commodo. Sed rhoncus ipsum eget pharetra tristique. Proin vel nulla a felis rhoncus accumsan id eu erat. Vivamus metus dolor, aliquet nec elementum et, finibus a lectus. Aliquam vel tortor nec felis tempor venenatis. Quisque tincidunt neque quis placerat vehicula. Fusce blandit, lorem vel ornare ultrices, purus nulla finibus justo, quis imperdiet tortor nisi a est. Mauris ut mi mattis sapien suscipit pulvinar sed sit amet ex.</p>
+						<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer porttitor arcu augue.Ut feugiat mi non lorem tincidunt efficitur. Phasellus eget arcu sed enim mollis placerat quis at leo. Nunc consequat mi ac lorem ullamcorper aliquam. Quisque convallis ante turpis, sed pretium dui ultrices eu. Vestibulum in libero a elit condimentum rutrum elementum ultrices nunc. Mauris consequat rhoncus enim, eu rutrum quam congue ac. Praesent condimentum neque vitae lectus pulvinar, nec maximus purus ultrices. Donec vulputate sem consectetur, mattis massa sed, auctor nisi. Vestibulum lacinia ac lectus id malesuada. Duis enim orci, bibendum eu eros vel, venenatis pharetra purus.</p>
+						<p>Maecenas vitae tortor varius, ullamcorper velit at, vehicula dolor. Nulla vel magna viverra, cursus tellus id, molestie leo. Vivamus consequat sollicitudin diam, et gravida lorem tincidunt a. Aliquam erat volutpat. Integer ac luctus dolor. Donec leo magna, hendrerit ut tortor sed, commodo ornare tellus. Nulla facilisi. Mauris quis faucibus arcu.</p>
+						<p>Pellentesque mollis dui et nulla eleifend commodo. Sed rhoncus ipsum eget pharetra tristique. Proin vel nulla a felis rhoncus accumsan id eu erat. Vivamus metus dolor, aliquet nec elementum et, finibus a lectus. Aliquam vel tortor nec felis tempor venenatis. Quisque tincidunt neque quis placerat vehicula. Fusce blandit, lorem vel ornare ultrices, purus nulla finibus justo, quis imperdiet tortor nisi a est. Mauris ut mi mattis sapien suscipit pulvinar sed sit amet ex.</p>
+					</div>
+
+					<!-- Modal footer -->
+					<div class="p-2 ftr-shw">
+
+						<div class="row">
+							<div class="col-sm-8 align-self-center">
+
+
+							</div>
+							<div class="col-sm-4 text-right">
+								<button type="button" class="btn mtr-g-grn btn-l m-0 "><i class="fas fa-check"></i>Accept</button>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- The Modal -->
+	<div class="modal" id="vdcl">
+		<div class="modal-dialog modal-lg">
+			<div class="modal-content ">
+
+				<!-- Modal Header -->
+				<div class="modal-header">
+					<h4 class="modal-title"><i class="fas fa-sticky-note"></i>Statement of drug-free workplace</h4>
+					<button type="button" class="close" data-dismiss="modal">×</button>
+				</div>
+
+				<!-- Modal body -->
+				<div class="modal-body p-0">
+					<div class="scroll p-2">
+						<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer porttitor arcu augue.Ut feugiat mi non lorem tincidunt efficitur. Phasellus eget arcu sed enim mollis placerat quis at leo. Nunc consequat mi ac lorem ullamcorper aliquam. Quisque convallis ante turpis, sed pretium dui ultrices eu. Vestibulum in libero a elit condimentum rutrum elementum ultrices nunc. Mauris consequat rhoncus enim, eu rutrum quam congue ac. Praesent condimentum neque vitae lectus pulvinar, nec maximus purus ultrices. Donec vulputate sem consectetur, mattis massa sed, auctor nisi. Vestibulum lacinia ac lectus id malesuada. Duis enim orci, bibendum eu eros vel, venenatis pharetra purus.</p>
+						<p>Maecenas vitae tortor varius, ullamcorper velit at, vehicula dolor. Nulla vel magna viverra, cursus tellus id, molestie leo. Vivamus consequat sollicitudin diam, et gravida lorem tincidunt a. Aliquam erat volutpat. Integer ac luctus dolor. Donec leo magna, hendrerit ut tortor sed, commodo ornare tellus. Nulla facilisi. Mauris quis faucibus arcu.</p>
+						<p>Pellentesque mollis dui et nulla eleifend commodo. Sed rhoncus ipsum eget pharetra tristique. Proin vel nulla a felis rhoncus accumsan id eu erat. Vivamus metus dolor, aliquet nec elementum et, finibus a lectus. Aliquam vel tortor nec felis tempor venenatis. Quisque tincidunt neque quis placerat vehicula. Fusce blandit, lorem vel ornare ultrices, purus nulla finibus justo, quis imperdiet tortor nisi a est. Mauris ut mi mattis sapien suscipit pulvinar sed sit amet ex.</p>
+						<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer porttitor arcu augue.Ut feugiat mi non lorem tincidunt efficitur. Phasellus eget arcu sed enim mollis placerat quis at leo. Nunc consequat mi ac lorem ullamcorper aliquam. Quisque convallis ante turpis, sed pretium dui ultrices eu. Vestibulum in libero a elit condimentum rutrum elementum ultrices nunc. Mauris consequat rhoncus enim, eu rutrum quam congue ac. Praesent condimentum neque vitae lectus pulvinar, nec maximus purus ultrices. Donec vulputate sem consectetur, mattis massa sed, auctor nisi. Vestibulum lacinia ac lectus id malesuada. Duis enim orci, bibendum eu eros vel, venenatis pharetra purus.</p>
+						<p>Maecenas vitae tortor varius, ullamcorper velit at, vehicula dolor. Nulla vel magna viverra, cursus tellus id, molestie leo. Vivamus consequat sollicitudin diam, et gravida lorem tincidunt a. Aliquam erat volutpat. Integer ac luctus dolor. Donec leo magna, hendrerit ut tortor sed, commodo ornare tellus. Nulla facilisi. Mauris quis faucibus arcu.</p>
+						<p>Pellentesque mollis dui et nulla eleifend commodo. Sed rhoncus ipsum eget pharetra tristique. Proin vel nulla a felis rhoncus accumsan id eu erat. Vivamus metus dolor, aliquet nec elementum et, finibus a lectus. Aliquam vel tortor nec felis tempor venenatis. Quisque tincidunt neque quis placerat vehicula. Fusce blandit, lorem vel ornare ultrices, purus nulla finibus justo, quis imperdiet tortor nisi a est. Mauris ut mi mattis sapien suscipit pulvinar sed sit amet ex.</p>
+					</div>
+
+					<!-- Modal footer -->
+					<div class="p-2 ftr-shw">
+
+						<div class="row">
+							<div class="col-sm-8 align-self-center">
+
+							</div>
+							<div class="col-sm-4 text-right">
+								<button type="button" class="btn cnl-btn m-0 ripplelink" data-dismiss="modal"><i class="fas fa-times"></i>Close</button>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- Modal Fullscreen lg -->
+	<div class="modal modal-fullscreen-lg" id="modal-fullscreen-lg" tabindex="-1" role="dialog" aria-hidden="true">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title">Modal title</h5>
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+						<span aria-hidden="true">×</span>
+					</button>
+				</div>
+				<div class="modal-body">
+					<p>Cras mattis consectetur purus sit amet fermentum. Cras justo odio, dapibus ac facilisis in, egestas eget quam. Morbi leo risus, porta ac consectetur ac, vestibulum at eros.</p>
+					<p>Praesent commodo cursus magna, vel scelerisque nisl consectetur et. Vivamus sagittis lacus vel augue laoreet rutrum faucibus dolor auctor.</p>
+					<p>Aenean lacinia bibendum nulla sed consectetur. Praesent commodo cursus magna, vel scelerisque nisl consectetur et. Donec sed odio dui. Donec ullamcorper nulla non metus auctor fringilla.</p>
+					<p>Cras mattis consectetur purus sit amet fermentum. Cras justo odio, dapibus ac facilisis in, egestas eget quam. Morbi leo risus, porta ac consectetur ac, vestibulum at eros.</p>
+					<p>Praesent commodo cursus magna, vel scelerisque nisl consectetur et. Vivamus sagittis lacus vel augue laoreet rutrum faucibus dolor auctor.</p>
+					<p>Aenean lacinia bibendum nulla sed consectetur. Praesent commodo cursus magna, vel scelerisque nisl consectetur et. Donec sed odio dui. Donec ullamcorper nulla non metus auctor fringilla.</p>
+					<p>Cras mattis consectetur purus sit amet fermentum. Cras justo odio, dapibus ac facilisis in, egestas eget quam. Morbi leo risus, porta ac consectetur ac, vestibulum at eros.</p>
+					<p>Praesent commodo cursus magna, vel scelerisque nisl consectetur et. Vivamus sagittis lacus vel augue laoreet rutrum faucibus dolor auctor.</p>
+					<p>Aenean lacinia bibendum nulla sed consectetur. Praesent commodo cursus magna, vel scelerisque nisl consectetur et. Donec sed odio dui. Donec ullamcorper nulla non metus auctor fringilla.</p>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+					<button type="button" class="btn btn-primary">Save changes</button>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- Modal Fullscreen xl -->
+	<div class="modal modal-fullscreen-xl" id="vdc2" tabindex="-1" role="dialog" aria-hidden="true">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h4 class="modal-title"><i class="fas fa-paperclip"></i>Attachment - Conflict of Interest</h4>
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+						<span aria-hidden="true">×</span>
+					</button>
+				</div>
+				<div class="modal-body">
+					<div class="row">
+						<div class="col-lg-8 mx-auto">
+							<img src="~/assets/design/images/login-bg.jpg" style="width: 100%"/>
+						</div>
+					</div>
+				</div>
+				<div class="modal-footer p-2 ftr-shw">
+					<button type="button" data-dismiss="modal" class="btn cnl-btn ripplelink  pull-right"><i class="fas fa-times"></i> Close</button>
+
+				</div>
+			</div>
+		</div>
+	</div>
+</div>

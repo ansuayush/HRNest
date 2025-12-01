@@ -1,0 +1,76 @@
+﻿
+@model PTC.ObjectivesperiodNew
+
+<div class="row text-clr">
+
+
+
+
+	@using (Ajax.BeginForm("_ProbationObjectives", "ProbationtoConfirmation",
+							new { src = ViewBag.src },
+							new AjaxOptions { HttpMethod = "POST", OnSuccess = "OnSuccess", OnBegin = "ShowLoadingDialog()" },
+						new { @id = "_ModifyHierarchyFromTest" })
+						)
+	{
+
+		@Html.AntiForgeryToken()
+		@Html.HiddenFor(model => model.Id)
+		@Html.HiddenFor(model => model.PBID)
+		@Html.HiddenFor(model => model.EMPID)
+
+		<div class="row text-clr">
+			<div class="col-sm-4 form-group">
+				<label>KPA <sup>*</sup></label>
+				@Html.DropDownListFor(x => Model.KPAID, new SelectList(Model.kPALists, "ID", "KPAName", Model.KPAID), "Select",
+	new { @class = "form-control  applyselect" })
+				@Html.ValidationMessageFor(model => model.KPAID, "", new { @class = "text-danger" })
+			</div>
+			<div class="col-sm-4 form-group">
+				<label>UOM <sup>*</sup></label>
+				@Html.DropDownListFor(x => Model.UOMId, new SelectList(Model.uMLists, "ID", "Name", Model.UOMId), "Select",
+	new { @class = "form-control  applyselect" })
+				@Html.ValidationMessageFor(model => model.UOMId, "", new { @class = "text-danger" })
+			</div>
+
+
+			<div class="col-lg-10 form-group">
+				<label>Probation Objective <sup>*</sup></label>
+
+				@Html.TextAreaFor(model => model.ProbationObjective, new { @class = "form-control h-100 maxSize[1200]", @maxlength = "1200", @placeholder = "Enter Comment", onkeypress = "return blockSpecialChar(event)" })
+				@Html.ValidationMessageFor(model => model.ProbationObjective, "", new { @class = "text-danger" })
+			</div>
+			<div class="col-lg-2 form-group">
+				<label>Weightage <sup>*</sup></label>
+				@Html.TextBoxFor(model => model.Weights, new { @class = "form-control allownumericwithoutdecimal", @Type = "number" })
+				@Html.ValidationMessageFor(model => model.Weights, "", new { @class = "text-danger" })
+
+			</div>
+
+			<div class="col-lg-12 form-group">
+				<label>Remarks</label>
+
+				@Html.TextAreaFor(model => model.Remarks, new { @class = "form-control h-100 maxSize[1200]", @maxlength = "1200", @placeholder = "Enter Comment", onkeypress = "return blockSpecialChar(event)" })
+
+			</div>
+
+
+			<div class="col-lg-12 text-center mt-3">
+				<button type="button" data-dismiss="modal" class="btn cnl-btn ripplelink  pull-right"><i class="fas fa-times"></i>Close</button>
+
+				<button type="submit" class="btn mtr-g-grn btn-l ripplelink "><i class="fa fa-plus" aria-hidden="true"></i> Save</button>
+			</div>
+		</div>
+	}
+
+
+
+</div>
+<script>
+	  $(".allownumericwithoutdecimal").on("keypress keyup blur",function (event) {   
+		
+           $(this).val($(this).val().replace(/[^\d].+/, ""));
+            if ((event.which < 48 || event.which > 57)) {
+                event.preventDefault();
+            }
+        });
+</script>

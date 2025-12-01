@@ -1,0 +1,121 @@
+﻿
+
+@model List<Exit.NOC_Dashboard.List>
+
+@{
+    string MenuID = "0";
+    if (ViewBag.MenuID != null)
+    {
+        MenuID = ViewBag.MenuID;
+    }
+    var Modify = clsApplicationSetting.GetSessionValue("Modify");
+}
+<div class="control-section">
+    @if (ViewBag.Approve == 0)
+    {
+        @Html.EJS().Grid("FlatGrid").DataSource((List<Exit.NOC_Dashboard.List>)Model).GridLines(Syncfusion.EJ2.Grids.GridLine.Both).Columns(col =>
+   {
+       col.Field("Exit_ID").Visible(false).Add();
+       col.Field("EMP_ID").Visible(false).Add();
+       col.Field("Admin").Visible(false).Add();
+       col.Field("IT").Visible(false).Add();
+       col.Field("Finance").Visible(false).Add();
+       col.Field("HR").Visible(false).Add();
+       col.Field("Task").Visible(false).Add();
+
+       col.Field("RowNum").HeaderText("S.No").Width("50").Add();
+       col.Field("Req_No").HeaderText("Req No").Width("50").Add();
+       col.Field("Req_Date").HeaderText("Request Date").Width("80").Add();
+       col.Field("RelievingDate").HeaderText("Relieving Date").Width("80").Add();
+       col.Field("emp_code").HeaderText("EMP Code").Width("80").Add();
+       col.Field("emp_name").HeaderText("EMP Name").Width("100").Add();
+       col.HeaderText("Admin").TextAlign(Syncfusion.EJ2.Grids.TextAlign.Center).Template("#tmpAdmin").Width("50").Add();
+       col.HeaderText("IT").TextAlign(Syncfusion.EJ2.Grids.TextAlign.Center).Template("#tmpIT").Width("50").Add();
+       col.HeaderText("Finance").TextAlign(Syncfusion.EJ2.Grids.TextAlign.Center).Template("#tmpFinance").Width("50").Add();
+       col.HeaderText("HR").TextAlign(Syncfusion.EJ2.Grids.TextAlign.Center).Template("#tmpHR").Width("50").Add();
+       col.HeaderText("Task").TextAlign(Syncfusion.EJ2.Grids.TextAlign.Center).Template("#tmpTask").Width("80").Add();
+
+   }).AllowPaging().PageSettings(page => page.PageCount(10)).Toolbar(new List<string>() { "Search" }).Render()
+    }
+    else
+    {
+        @Html.EJS().Grid("FlatGrid").DataSource((List<Exit.NOC_Dashboard.List>)Model).GridLines(Syncfusion.EJ2.Grids.GridLine.Both).Columns(col =>
+   {
+       col.Field("Exit_ID").Visible(false).Add();
+       col.Field("Req_No").Visible(false).Add();
+       col.Field("EMP_ID").Visible(false).Add();
+
+       col.Field("Admin").Visible(false).Add();
+       col.Field("IT").Visible(false).Add();
+       col.Field("Finance").Visible(false).Add();
+       col.Field("HR").Visible(false).Add();
+       col.Field("Task").Visible(false).Add();
+
+       col.Field("RowNum").HeaderText("S.No").Width("50").Add();
+       col.Field("Req_No").HeaderText("Req No").Width("50").Add();
+       col.Field("Req_Date").HeaderText("Request Date").Width("80").Add();
+       col.Field("RelievingDate").HeaderText("Relieving Date").Width("80").Add();
+       col.Field("emp_code").HeaderText("EMP Code").Width("80").Add();
+       col.Field("emp_name").HeaderText("EMP Name").Width("100").Add();
+       col.HeaderText("Admin").TextAlign(Syncfusion.EJ2.Grids.TextAlign.Center).Template("#tmpAdmin").Width("50").Add();
+       col.HeaderText("IT").TextAlign(Syncfusion.EJ2.Grids.TextAlign.Center).Template("#tmpIT").Width("50").Add();
+       col.HeaderText("Finance").TextAlign(Syncfusion.EJ2.Grids.TextAlign.Center).Template("#tmpFinance").Width("50").Add();
+       col.HeaderText("HR").TextAlign(Syncfusion.EJ2.Grids.TextAlign.Center).Template("#tmpHR").Width("50").Add();
+       col.HeaderText("Task").TextAlign(Syncfusion.EJ2.Grids.TextAlign.Center).Template("#tmpTask").Width("80").Add();
+
+   }).AllowPaging().PageSettings(page => page.PageCount(10)).Toolbar(new List<string>() { "Search" }).Render()
+    }
+</div>
+
+
+
+<script id="tmpAdmin" type="text/x-template">
+    ${if(Admin === 'Completed')}
+    <a class="color-green"><i class="far fa-clock"></i>${Admin} </a>
+    ${else}
+    <a class="color-red"><i class="far fa-clock"></i>${Admin} </a>
+    ${/if}
+</script>
+<script id="tmpIT" type="text/x-template">
+   
+    ${if(IT === 'Completed')}
+    <a class="color-green"><i class="far fa-clock"></i>${IT} </a>
+    ${else}
+    <a class="color-red"><i class="far fa-clock"></i>${IT} </a>
+    ${/if}
+</script>
+<script id="tmpFinance" type="text/x-template">
+   
+    ${if(Finance === 'Completed')}
+    <a class="color-green"><i class="far fa-clock"></i>${Finance} </a>
+    ${else}
+    <a class="color-red"><i class="far fa-clock"></i>${Finance} </a>
+    ${/if}
+</script>
+<script id="tmpHR" type="text/x-template">
+   
+    ${if(HR === 'Completed')}
+    <a class="color-green"><i class="far fa-clock"></i>${HR} </a>
+    ${else}
+    <a class="color-red"><i class="far fa-clock"></i>${HR} </a>
+    ${/if}
+</script>
+<script id="tmpTask" type="text/x-template">
+    <input type="hidden" name="I" value="${Exit_ID}" />
+    <input type="hidden" name="N" value="${Req_No}" />
+    ${if(Task === 'Not Assigned')}
+    <a class="color-blue"><i class="far fa-clock"></i>${Task} </a>
+    ${else}
+    ${if(Task === 'Completed')}
+    <a class="color-green" onclick="GetTaskList(this)"><i class="far fa-clock"></i>${Task} </a>
+    ${else}
+    <a class="color-red" onclick="GetTaskList(this)"><i class="far fa-clock"></i>${Task} </a>
+    ${/if}
+    ${/if}
+
+
+</script>
+
+@Html.IncludeVersionedJs(Url.Content("~/assets/design/Scripts/SyncScripts.js"))
+
+@(Html.EJS().ScriptManager())

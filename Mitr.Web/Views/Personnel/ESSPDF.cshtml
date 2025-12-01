@@ -1,0 +1,118 @@
+﻿
+@using System.Data
+@model DataSet
+@{
+	ViewBag.Title = "ESSPDF";
+}
+
+@section style{
+	@System.Web.Optimization.Styles.Render("~/bundle/dataTablecss")
+}
+@{
+	string Text = "";
+	string Action = "";
+	if (!string.IsNullOrEmpty(ViewBag.Doctype))
+	{
+		switch (ViewBag.Doctype)
+		{
+			case "S":
+				Text = "Salary Slip";
+				Action = "SalarySlip";
+				break;
+			case "SR":
+				Text = "Salary Register";
+				Action = "SalaryRegister";
+				break;
+			case "C":
+				Text = "Computation";
+				Action = "Computation";
+				break;
+			case "F":
+				Text = "Form 16";
+				break;
+			default:
+				break;
+		}
+
+	}
+}
+
+<div class="inner-main mb-2">
+	<h1 class="heading-one">@Text</h1>
+	
+	@*<p><i class="fas fa-info-circle red-clr"></i> Please click on open to generate required   @Text</p>*@
+	<div class="x_content table-currency">
+		<div class="row">
+			<div class="col-sm-8 mx-auto">
+				<div class="table-responsive">
+					<table id="datatable" class="table table-striped table-bordered dt-responsive nowrap tbltick new_width">
+						<thead>
+							<tr>
+								<th width="10">S.No.</th>
+								<th><i class="far fa-calendar-alt"></i>Month</th>
+								<th width="120" class="text-center">Action</th>
+							</tr>
+						</thead>
+						<tbody>
+							@{ int Count = 0;}
+							@foreach (DataRow item in Model.Tables[0].Rows)
+							{
+								Count++;
+								<tr>
+									<td>@Count</td>
+									<td>@item["MonthYear"]</td>
+									<td class="fn-bold">
+										<a target="_blank" href="/Personnel/@Action?src=@(clsApplicationSetting.EncryptQueryString(ViewBag.MenuID+"*" + "/Personnel/"+ Action + "*" + item["DOC_DATE"] + "*Mitr") )"><i class="fas fa-folder-open"></i>Open </a>
+										@if (Action == "SalarySlip" && item["TeamCount"].ToString()!="0")
+										{
+											<span class="divline">|</span>											
+											<a target="_blank" href="/Personnel/@Action?src=@(clsApplicationSetting.EncryptQueryString(ViewBag.MenuID+"*" + "/Personnel/"+ Action + "*" + item["DOC_DATE"] + "*NonMitr") )"><i class="fas fa-folder-open"></i>NonMitr </a>
+										}
+									</td>
+								</tr>
+							}
+						</tbody>
+					</table>
+				</div>
+			</div>
+
+		</div>
+	</div>
+	<div class="text-center">
+		<button type="button" class="btn cnl-btn ripplelink " onclick="ShowLoadingDialog();window.location='@Url.Action("EssPortal", new { src = clsApplicationSetting.EncryptQueryString(ViewBag.MenuID.ToString()+"*/Personnel/EssPortal") })';"><i class="fas fa-angle-double-left"></i>Back</button>
+	</div>
+
+</div>
+@section scripts    {
+	@System.Web.Optimization.Scripts.Render("~/bundle/dataTablesjs")
+	<script>
+        $(document).ready(function () {
+            DatatableScripts();
+
+        });
+    function FnView(dt) {
+        ShowLoadingDialog();
+        var url;
+          // var Doctype = $("#Doctype").val();
+          var MitrUser ='0'// $("#MitrUser").val();
+        ShowLoadingDialog();
+        url = EncryptQueryStringJSON(@ViewBag.MenuID+"*" + "/Personnel/SalarySlip" + "*" + dt + "*" + MitrUser);
+
+         //window.open('/Personnel/SalarySlip?src=' + url, "PopupWindow", 'width=800px,height=800px,top=150,left=250');
+			$.ajax({
+                url: "/Personnel/SalarySlip",
+				type: "Get",
+                data: { src: EncryptQueryStringJSON(@ViewBag.MenuID+"*" + "/Personnel/SalarySlip" + "*" + dt + "*" + MitrUser) },
+                success: function (data)
+                {
+                    CloseLoadingDialog();
+
+				},
+				error: function (er) {
+					alert(er);
+
+				}
+			});
+    }
+	</script>
+}

@@ -1,0 +1,28 @@
+﻿@model  IList<Exit.LevelApprovers_Details>
+
+<div class="table-responsive">
+    <table class="table">
+        <thead>
+            <tr>
+                <th class="w-50">Level</th>
+                <th class="w-100">Name</th>
+                <th class="w-100">Suggested Relieving Date</th>
+                <th>Reason for Declining Notice Period</th>
+                <th>Comment on Resignation</th>
+
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (Exit.LevelApprovers_Details item in Model)
+            {
+                <tr>
+                    <td>@item.Doctype</td>
+                    <td>@item.ApproverName</td>
+                    <td>@item.Suggested_RDate</td>
+                    <td>@item.NA_Reason</td>
+                    <td>@item.Comment</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

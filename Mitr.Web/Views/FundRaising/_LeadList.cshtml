@@ -1,0 +1,57 @@
+﻿@model IList<Mitr.Models.FundRaising.Lead.List>
+@{
+    var Modify = clsApplicationSetting.GetSessionValue("Modify");
+}
+<div class="row">
+
+    <div class="col-sm-12">
+
+        <div class="control-section">
+            @Html.EJS().Grid("Grid").DataSource((List<FundRaising.Lead.List>)Model).GridLines(Syncfusion.EJ2.Grids.GridLine.Both).Columns(col =>
+       {
+           col.Field("Id").Visible(false).Add();
+           col.Field("RowNum").HeaderText("SNo.").Width("30").Add();
+           col.Field("DocNo").HeaderText("Lead No.").Width("80").Add();
+           col.Field("DocDate").HeaderText("Lead Date").Width("80").Add();
+           col.Field("NickName").HeaderText("Lead Name").Width("80").Add();
+           col.Field("C3Fit").HeaderText("Nature of lead").Width("80").Add();
+           col.Field("Responsible").HeaderText("Responsible By").Width("80").Add();
+           col.Field("ProspectName").HeaderText("Prospect Name").Width("120").Add();
+           //col.Field("proj_name").HeaderText("Last Comm Date").Width("120").Add();
+           col.Field("ContactPerson").HeaderText("Contact Person").Width("80").Add();
+           col.Field("StageLevel").HeaderText("Stage").Width("80").Add();
+           col.HeaderText("Action").TextAlign(Syncfusion.EJ2.Grids.TextAlign.Center).Template("#tmpAction").Width("60").Add();
+
+       }).AllowPaging().PageSettings(page => page.PageSize(10)).Created("created").Toolbar(new List<string>() { "Search" }).Render()
+
+        </div>
+
+
+
+    </div>
+</div>
+<script id="tmpAction" type="text/x-template">
+    ${if('@Modify' === 'True')}
+    <input type="hidden" name="I" value="${Id}" />
+    <a onclick="BindEdit(this)"><i class="fas fa-eye"></i>View </a>
+    ${/if}
+</script>
+<script>
+    function search() {
+        // Grid - > id of the Grid component you can set based on you requirement
+        document.getElementById("FlatGrid_searchbar").addEventListener('keyup', function (event) {
+            var value = event.target.value;
+            gridObj = document.getElementById('FlatGrid').ej2_instances[0];
+            gridObj.search(value)
+        })
+    }
+    function created() {
+        var grid = document.getElementById("Grid").ej2_instances[0];
+        document.getElementById(grid.element.id + "_searchbar").addEventListener('keyup', () => {
+            grid.search(event.target.value)
+        });
+    }
+</script>
+@Html.IncludeVersionedJs(Url.Content("~/assets/design/Scripts/SyncScripts.js"))
+
+@(Html.EJS().ScriptManager())

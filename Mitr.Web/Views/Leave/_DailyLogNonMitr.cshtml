@@ -1,0 +1,266 @@
+﻿@model DailyLogNonMitr
+@{
+	DateTime SelectedDate = ViewBag.SelectedDate;
+	DateTime StartDate = new DateTime(SelectedDate.Year, SelectedDate.Month, 1);
+	DateTime EndDate = StartDate.AddMonths(1).AddDays(-1);
+	string MonthYear = StartDate.ToString("yyyy-MM");
+	string[] COlor = new string[32];
+	string[] HolidayType = new string[32];
+	string[] Description = new string[32];
+	string[] ClassName = new string[32];
+	//string[] ValidHours = new string[32];
+	string[] FixHoliday = new string[32];
+	int LastWorkingday = EndDate.Day;
+
+}
+@using (Ajax.BeginForm("_SaveDailyLog", "Leave",
+new { src = clsApplicationSetting.EncryptQueryString(ViewBag.MenuID.ToString() + "*/Leave/_SaveDailyLog*" + ViewBag.SelectedDate) },
+new AjaxOptions { HttpMethod = "POST", OnSuccess = "AfterOnSuccess", OnBegin = "ShowLoadingDialog();", OnFailure = "CloseLoadingDialog();" },
+new
+{
+    name = "_SaveDailyLogForm",
+    id = "_SaveDailyLogForm",
+    @class = "form-horizontal form-label-left input_mask",
+    enctype = "multipart/form-data"
+}))
+{
+    if (Model.LstHoliday.Count > 0)
+    {
+        for (int i = 0; i < Model.LstHoliday.Count; i++)
+        {
+            @Html.HiddenFor(x => x.LstHoliday[i].Date)
+            @Html.HiddenFor(x => x.LstHoliday[i].HolidayType)
+            @Html.HiddenFor(x => x.LstHoliday[i].Name)
+            @Html.HiddenFor(x => x.LstHoliday[i].Empid)
+        }
+    }
+    <div class="table-scrollable">
+        <table class="table table-scroll act-table">
+            <thead>
+                <tr>
+                    <th class="text-center" width="33" data-toggle="tooltip" data-placement="right" title="" data-original-title="Select All" aria-describedby="tooltip211254">
+                        <input type="checkbox" id="lg0" class="selectall" name="AdvanceRequired">
+                        <label for="lg0" class="selectall"></label>
+                    </th>
+                    <th><div class="w-110">Employee Name</div></th>
+                    <th class="text-left" width="100">Project </th>
+                    <th class="text-left" width="100">Activity</th>
+                    <th></th>
+                    @{ int arr = 0; }
+                    @for (DateTime date = StartDate; date <= EndDate; date = date.AddDays(1))
+                    {
+                        arr = arr + 1;
+                        <th class="text-center" width="25">@Convert.ToInt32(date.ToString("dd")) <span> @date.ToString("ddd") </span></th>
+                        FixHoliday[arr] = @date.ToString("dddd");
+
+                    }
+                </tr>
+            </thead>
+            <tbody>
+
+                @if (Model != null)
+                {
+                    int count = 0, EmpidOld = 0, EmpidNew = 0, rowspan = 1;
+
+                    for (int i = 0; i < Model.LstDailyLog.Count; i++)
+                    {
+                        @Html.HiddenFor(x => x.LstDailyLog[i].emp_id)
+                        @Html.HiddenFor(x => x.LstDailyLog[i].WorkingHours)
+                        @Html.HiddenFor(x => x.LstDailyLog[i].DailyLogID)
+                        @Html.HiddenFor(x => x.LstDailyLog[i].month)
+                        @Html.HiddenFor(x => x.LstDailyLog[i].year)
+                        @Html.HiddenFor(x => x.LstDailyLog[i].Doj)
+                        @Html.HiddenFor(x => x.LstDailyLog[i].LastWorkingDay)
+                        @Html.HiddenFor(x => x.LstDailyLog[i].FixHoliday)
+						if (Model.LstDailyLog[i].LastWorkingDay.Month == StartDate.Month && Model.LstDailyLog[i].LastWorkingDay.Year == StartDate.Year)
+						{
+							LastWorkingday = Model.LstDailyLog[i].LastWorkingDay.Day;
+
+						}
+						EmpidNew = Convert.ToInt32(Model.LstDailyLog[i].emp_id);
+						count++;
+                        <tr>
+                            @if (EmpidNew != EmpidOld)
+                            {
+                                for (DateTime date = StartDate; date <= EndDate; date = date.AddDays(1))
+                                {
+                                    ClassName[Convert.ToInt32(date.ToString("dd"))] = (Model.LstDailyLog[i].FixHoliday.Contains(date.ToString("dddd")) ? "fixholidaycolor" : "");
+
+                                    if (Model.LstHoliday.Any(x => x.Date == date.ToString("dd/MM/yyyy") && (x.Empid == EmpidNew || x.Empid == 0)))
+                                    {
+                                        COlor[Convert.ToInt32(date.ToString("dd"))] = Model.LstHoliday.Where(x => x.Date == date.ToString("dd/MM/yyyy") && (x.Empid == EmpidNew || x.Empid == 0)).Select(x => x.Color).FirstOrDefault();
+                                        //HolidayType[Convert.ToInt32(date.ToString("dd"))] = LeaveList.Where(x => x.Date == date.ToString("dd/MM/yyyy")).Select(x => x.HolidayType).FirstOrDefault();
+                                        //Description[Convert.ToInt32(date.ToString("dd"))] = LeaveList.Where(x => x.Date == date.ToString("dd/MM/yyyy")).Select(x => x.Description).FirstOrDefault();
+                                        ClassName[Convert.ToInt32(date.ToString("dd"))] = ClassName[Convert.ToInt32(date.ToString("dd"))] + " " + Model.LstHoliday.Where(x => x.Date == date.ToString("dd/MM/yyyy") && (x.Empid == EmpidNew || x.Empid == 0)).Select(x => x.ClassName).FirstOrDefault();
+                                        // ValidHours[Convert.ToInt32(date.ToString("dd"))] = (string.IsNullOrEmpty(LeaveList.Where(x => x.Date == date.ToString("dd/MM/yyyy")).Select(x => x.ClassName).FirstOrDefault()) ? "validatehours" : "");
+                                    }
+
+                                }
+                                rowspan = Model.LstDailyLog.Where(n => n.emp_id == EmpidNew).ToList().Count;
+                                <td class="text-center top" rowspan="@rowspan">
+                                    <input type="hidden" value="0" name="@Html.NameFor(x => Model.LstDailyLog[i].isSelect)" id="[@i].isSelect" class="isSelect" />
+                                    <input type="checkbox" id="dl_@i" name="dl_@i" class="selectedId">
+                                    <label for="dl_@i" class="m-0"></label>
+                                </td>
+                                <td rowspan="@rowspan" class="top"><strong>@Model.LstDailyLog[i].EmpName</strong></td>
+                            }
+                            <td class="top">
+                                <select id="@Html.IdFor(x => Model.LstDailyLog[i].proj_id)" name="@Html.NameFor(x => Model.LstDailyLog[i].proj_id)" class="form-control dpselect" data-val-required="You missed" data-val="true">
+                                    <option value="0">Select</option>
+                                    @foreach (var item in ViewBag.ProjectList)
+                                    {
+                                        <option @(item.ID == Model.LstDailyLog[i].proj_id ? "selected" : "") value="@item.ID">@item.ProjectName</option>
+                                    }
+                                </select>
+                            </td>
+                            <td class="top">
+                                <select id="@Html.IdFor(x => Model.LstDailyLog[i].ActivityID)" name="@Html.NameFor(x => Model.LstDailyLog[i].ActivityID)" class="form-control dpselect" data-val-required="You missed" data-val="true">
+                                    <option value="0">Select</option>
+                                    @foreach (var item in ViewBag.ActivityList)
+                                    {
+                                        <option @(item.ID == Model.LstDailyLog[i].ActivityID ? "selected" : "") value="@item.ID">@item.Name</option>
+                                    }
+                                </select>
+                            </td>
+                            <td class="top">
+                                <button type="button" class="tdbtn-icon" data-toggle="tooltip" data-original-title="Add Row"><i class="fas fa-plus green-clr"></i></button>
+                            </td>
+                            <td class="@ClassName[1] workclass @COlor[1]">
+                                <input type="number" @(Model.LstDailyLog[i].Doj >= Convert.ToDateTime(MonthYear + "-01") ? "readonly" : "") id="@Html.IdFor(x => Model.LstDailyLog[i].Day1)" name="@Html.NameFor(x => Model.LstDailyLog[i].Day1)" class="text-center form-control hrinp dayshours_1" onfocus="if(this.value == '0') { this.value=''}" onblur="if(this.value==''){this.value='0'} else{CheckLeaveHoursNew(this,@Model.LstDailyLog[i].Day1)}" value="@Model.LstDailyLog[i].Day1">
+                            </td>
+                            <td class="@ClassName[2] workclass @COlor[2]">
+                                <input type="number" @(Model.LstDailyLog[i].Doj >= Convert.ToDateTime(MonthYear + "-02") || LastWorkingday < 2 ? "readonly" : "") id="@Html.IdFor(x => Model.LstDailyLog[i].Day2)" name="@Html.NameFor(x => Model.LstDailyLog[i].Day2)" class="text-center form-control hrinp dayshours_2" onfocus="if(this.value == '0') { this.value=''}" onblur="if(this.value==''){this.value='0'} else{CheckLeaveHoursNew(this,@Model.LstDailyLog[i].Day2)}" value="@Model.LstDailyLog[i].Day2">
+                            </td>
+                            <td class="@ClassName[3] workclass @COlor[3]">
+                                <input type="number" @(Model.LstDailyLog[i].Doj >= Convert.ToDateTime(MonthYear + "-03") || LastWorkingday < 3 ? "readonly" : "") id="@Html.IdFor(x => Model.LstDailyLog[i].Day3)" name="@Html.NameFor(x => Model.LstDailyLog[i].Day3)" class="text-center form-control hrinp dayshours_3" onfocus="if(this.value == '0') { this.value=''}" onblur="if(this.value==''){this.value='0'} else{CheckLeaveHoursNew(this,@Model.LstDailyLog[i].Day3)}" value="@Model.LstDailyLog[i].Day3">
+                            </td>
+                            <td class="@ClassName[4] workclass @COlor[4]">
+                                <input type="number" @(Model.LstDailyLog[i].Doj >= Convert.ToDateTime(MonthYear + "-04") || LastWorkingday < 4 ? "readonly" : "") id="@Html.IdFor(x => Model.LstDailyLog[i].Day4)" name="@Html.NameFor(x => Model.LstDailyLog[i].Day4)" class="text-center form-control hrinp dayshours_4" onfocus="if(this.value == '0') { this.value=''}" onblur="if(this.value==''){this.value='0'} else{CheckLeaveHoursNew(this,@Model.LstDailyLog[i].Day4)}" value="@Model.LstDailyLog[i].Day4">
+                            </td>
+                            <td class="@ClassName[5] workclass @COlor[5]">
+                                <input type="number" @(Model.LstDailyLog[i].Doj >= Convert.ToDateTime(MonthYear + "-05") || LastWorkingday < 5 ? "readonly" : "") id="@Html.IdFor(x => Model.LstDailyLog[i].Day5)" name="@Html.NameFor(x => Model.LstDailyLog[i].Day5)" class="text-center form-control hrinp dayshours_5" onfocus="if(this.value == '0') { this.value=''}" onblur="if(this.value==''){this.value='0'} else{CheckLeaveHoursNew(this,@Model.LstDailyLog[i].Day5)}" value="@Model.LstDailyLog[i].Day5">
+                            </td>
+                            <td class="@ClassName[6] workclass @COlor[6]">
+                                <input type="number" @(Model.LstDailyLog[i].Doj >= Convert.ToDateTime(MonthYear + "-06") || LastWorkingday < 6 ? "readonly" : "") id="@Html.IdFor(x => Model.LstDailyLog[i].Day6)" name="@Html.NameFor(x => Model.LstDailyLog[i].Day6)" class="text-center form-control hrinp dayshours_6" onfocus="if(this.value == '0') { this.value=''}" onblur="if(this.value==''){this.value='0'} else{CheckLeaveHoursNew(this,@Model.LstDailyLog[i].Day6)}" value="@Model.LstDailyLog[i].Day6">
+                            </td>
+                            <td class="@ClassName[7] workclass @COlor[7]">
+                                <input type="number" @(Model.LstDailyLog[i].Doj >= Convert.ToDateTime(MonthYear + "-07") || LastWorkingday < 7? "readonly" : "") id="@Html.IdFor(x => Model.LstDailyLog[i].Day7)" name="@Html.NameFor(x => Model.LstDailyLog[i].Day7)" class="text-center form-control hrinp dayshours_7" onfocus="if(this.value == '0') { this.value=''}" onblur="if(this.value==''){this.value='0'} else{CheckLeaveHoursNew(this,@Model.LstDailyLog[i].Day7)}" value="@Model.LstDailyLog[i].Day7">
+                            </td>
+                            <td class="@ClassName[8] workclass @COlor[8]">
+                                <input type="number" @(Model.LstDailyLog[i].Doj >= Convert.ToDateTime(MonthYear + "-08") || LastWorkingday < 8? "readonly" : "") id="@Html.IdFor(x => Model.LstDailyLog[i].Day8)" name="@Html.NameFor(x => Model.LstDailyLog[i].Day8)" class="text-center form-control hrinp dayshours_8" onfocus="if(this.value == '0') { this.value=''}" onblur="if(this.value==''){this.value='0'} else{CheckLeaveHoursNew(this,,@Model.LstDailyLog[i].Day8)}" value="@Model.LstDailyLog[i].Day8">
+                            </td>
+                            <td class="@ClassName[9] workclass @COlor[9]">
+                                <input type="number" @(Model.LstDailyLog[i].Doj >= Convert.ToDateTime(MonthYear + "-09") || LastWorkingday < 9? "readonly" : "") id="@Html.IdFor(x => Model.LstDailyLog[i].Day9)" name="@Html.NameFor(x => Model.LstDailyLog[i].Day9)" class="text-center form-control hrinp dayshours_9" onfocus="if(this.value == '0') { this.value=''}" onblur="if(this.value==''){this.value='0'} else{CheckLeaveHoursNew(this,@Model.LstDailyLog[i].Day9)}" value="@Model.LstDailyLog[i].Day9">
+                            </td>
+                            <td class="@ClassName[10] workclass @COlor[10]">
+                                <input type="number" @(Model.LstDailyLog[i].Doj >= Convert.ToDateTime(MonthYear + "-10") || LastWorkingday < 10? "readonly" : "") id="@Html.IdFor(x => Model.LstDailyLog[i].Day10)" name="@Html.NameFor(x => Model.LstDailyLog[i].Day10)" class="text-center form-control hrinp dayshours_10" onfocus="if(this.value == '0') { this.value=''}" onblur="if(this.value==''){this.value='0'} else{CheckLeaveHoursNew(this,@Model.LstDailyLog[i].Day10)}" value="@Model.LstDailyLog[i].Day10">
+                            </td>
+                            <td class="@ClassName[11] workclass @COlor[11]">
+                                <input type="number" @(Model.LstDailyLog[i].Doj >= Convert.ToDateTime(MonthYear + "-11") || LastWorkingday < 11? "readonly" : "") id="@Html.IdFor(x => Model.LstDailyLog[i].Day11)" name="@Html.NameFor(x => Model.LstDailyLog[i].Day11)" class="text-center form-control hrinp dayshours_11" onfocus="if(this.value == '0') { this.value=''}" onblur="if(this.value==''){this.value='0'} else{CheckLeaveHoursNew(this,@Model.LstDailyLog[i].Day11)}" value="@Model.LstDailyLog[i].Day11">
+                            </td>
+                            <td class="@ClassName[12] workclass @COlor[12]">
+                                <input type="number" @(Model.LstDailyLog[i].Doj >= Convert.ToDateTime(MonthYear + "-12") || LastWorkingday < 12? "readonly" : "") id="@Html.IdFor(x => Model.LstDailyLog[i].Day12)" name="@Html.NameFor(x => Model.LstDailyLog[i].Day12)" class="text-center form-control hrinp dayshours_12" onfocus="if(this.value == '0') { this.value=''}" onblur="if(this.value==''){this.value='0'} else{CheckLeaveHoursNew(this,@Model.LstDailyLog[i].Day12)}" value="@Model.LstDailyLog[i].Day12">
+                            </td>
+                            <td class="@ClassName[13] workclass @COlor[13]">
+                                <input type="number" @(Model.LstDailyLog[i].Doj >= Convert.ToDateTime(MonthYear + "-13") || LastWorkingday < 13? "readonly" : "") id="@Html.IdFor(x => Model.LstDailyLog[i].Day13)" name="@Html.NameFor(x => Model.LstDailyLog[i].Day13)" class="text-center form-control hrinp dayshours_13" onfocus="if(this.value == '0') { this.value=''}" onblur="if(this.value==''){this.value='0'} else{CheckLeaveHoursNew(this,@Model.LstDailyLog[i].Day13)}" value="@Model.LstDailyLog[i].Day13">
+                            </td>
+                            <td class="@ClassName[14] workclass @COlor[14]">
+                                <input type="number" @(Model.LstDailyLog[i].Doj >= Convert.ToDateTime(MonthYear + "-14") || LastWorkingday < 14? "readonly" : "") id="@Html.IdFor(x => Model.LstDailyLog[i].Day14)" name="@Html.NameFor(x => Model.LstDailyLog[i].Day14)" class="text-center form-control hrinp dayshours_14" onfocus="if(this.value == '0') { this.value=''}" onblur="if(this.value==''){this.value='0'} else{CheckLeaveHoursNew(this,@Model.LstDailyLog[i].Day14)}" value="@Model.LstDailyLog[i].Day14">
+                            </td>
+                            <td class="@ClassName[15] workclass @COlor[15]">
+                                <input type="number" @(Model.LstDailyLog[i].Doj >= Convert.ToDateTime(MonthYear + "-15") || LastWorkingday < 15? "readonly" : "") id="@Html.IdFor(x => Model.LstDailyLog[i].Day15)" name="@Html.NameFor(x => Model.LstDailyLog[i].Day15)" class="text-center form-control hrinp dayshours_15" onfocus="if(this.value == '0') { this.value=''}" onblur="if(this.value==''){this.value='0'} else{CheckLeaveHoursNew(this,@Model.LstDailyLog[i].Day15)}" value="@Model.LstDailyLog[i].Day15">
+                            </td>
+                            <td class="@ClassName[16] workclass @COlor[16]">
+                                <input type="number" @(Model.LstDailyLog[i].Doj >= Convert.ToDateTime(MonthYear + "-16") || LastWorkingday < 16? "readonly" : "") id="@Html.IdFor(x => Model.LstDailyLog[i].Day16)" name="@Html.NameFor(x => Model.LstDailyLog[i].Day16)" class="text-center form-control hrinp dayshours_16" onfocus="if(this.value == '0') { this.value=''}" onblur="if(this.value==''){this.value='0'} else{CheckLeaveHoursNew(this,@Model.LstDailyLog[i].Day16)}" value="@Model.LstDailyLog[i].Day16">
+                            </td>
+                            <td class="@ClassName[17] workclass @COlor[17]">
+                                <input type="number" @(Model.LstDailyLog[i].Doj >= Convert.ToDateTime(MonthYear + "-17") || LastWorkingday < 17? "readonly" : "") id="@Html.IdFor(x => Model.LstDailyLog[i].Day17)" name="@Html.NameFor(x => Model.LstDailyLog[i].Day17)" class="text-center form-control hrinp dayshours_17" onfocus="if(this.value == '0') { this.value=''}" onblur="if(this.value==''){this.value='0'} else{CheckLeaveHoursNew(this,@Model.LstDailyLog[i].Day17)}" value="@Model.LstDailyLog[i].Day17">
+                            </td>
+                            <td class="@ClassName[18] workclass @COlor[18]">
+                                <input type="number" @(Model.LstDailyLog[i].Doj >= Convert.ToDateTime(MonthYear + "-18") || LastWorkingday < 18? "readonly" : "") id="@Html.IdFor(x => Model.LstDailyLog[i].Day18)" name="@Html.NameFor(x => Model.LstDailyLog[i].Day18)" class="text-center form-control hrinp dayshours_18" onfocus="if(this.value == '0') { this.value=''}" onblur="if(this.value==''){this.value='0'} else{CheckLeaveHoursNew(this,@Model.LstDailyLog[i].Day18)}" value="@Model.LstDailyLog[i].Day18">
+                            </td>
+                            <td class="@ClassName[19] workclass @COlor[19]">
+                                <input type="number" @(Model.LstDailyLog[i].Doj >= Convert.ToDateTime(MonthYear + "-19") || LastWorkingday < 19? "readonly" : "") id="@Html.IdFor(x => Model.LstDailyLog[i].Day19)" name="@Html.NameFor(x => Model.LstDailyLog[i].Day19)" class="text-center form-control hrinp dayshours_19" onfocus="if(this.value == '0') { this.value=''}" onblur="if(this.value==''){this.value='0'} else{CheckLeaveHoursNew(this,@Model.LstDailyLog[i].Day19)}" value="@Model.LstDailyLog[i].Day19">
+                            </td>
+                            <td class="@ClassName[20] workclass @COlor[20]">
+                                <input type="number" @(Model.LstDailyLog[i].Doj >= Convert.ToDateTime(MonthYear + "-20") || LastWorkingday < 20? "readonly" : "") id="@Html.IdFor(x => Model.LstDailyLog[i].Day20)" name="@Html.NameFor(x => Model.LstDailyLog[i].Day20)" class="text-center form-control hrinp dayshours_20" onfocus="if(this.value == '0') { this.value=''}" onblur="if(this.value==''){this.value='0'} else{CheckLeaveHoursNew(this,@Model.LstDailyLog[i].Day20)}" value="@Model.LstDailyLog[i].Day20">
+                            </td>
+                            <td class="@ClassName[21] workclass @COlor[21]">
+                                <input type="number" @(Model.LstDailyLog[i].Doj >= Convert.ToDateTime(MonthYear + "-21") || LastWorkingday < 21? "readonly" : "") id="@Html.IdFor(x => Model.LstDailyLog[i].Day21)" name="@Html.NameFor(x => Model.LstDailyLog[i].Day21)" class="text-center form-control hrinp dayshours_21" onfocus="if(this.value == '0') { this.value=''}" onblur="if(this.value==''){this.value='0'} else{CheckLeaveHoursNew(this,@Model.LstDailyLog[i].Day21)}" value="@Model.LstDailyLog[i].Day21">
+                            </td>
+                            <td class="@ClassName[22] workclass @COlor[22]">
+                                <input type="number" @(Model.LstDailyLog[i].Doj >= Convert.ToDateTime(MonthYear + "-22") || LastWorkingday < 22? "readonly" : "") id="@Html.IdFor(x => Model.LstDailyLog[i].Day22)" name="@Html.NameFor(x => Model.LstDailyLog[i].Day22)" class="text-center form-control hrinp dayshours_22" onfocus="if(this.value == '0') { this.value=''}" onblur="if(this.value==''){this.value='0'} else{CheckLeaveHoursNew(this,@Model.LstDailyLog[i].Day22)}" value="@Model.LstDailyLog[i].Day22">
+                            </td>
+                            <td class="@ClassName[23] workclass @COlor[23]">
+                                <input type="number" @(Model.LstDailyLog[i].Doj >= Convert.ToDateTime(MonthYear + "-23") || LastWorkingday < 23? "readonly" : "") id="@Html.IdFor(x => Model.LstDailyLog[i].Day23)" name="@Html.NameFor(x => Model.LstDailyLog[i].Day23)" class="text-center form-control hrinp dayshours_23" onfocus="if(this.value == '0') { this.value=''}" onblur="if(this.value==''){this.value='0'} else{CheckLeaveHoursNew(this,@Model.LstDailyLog[i].Day23)}" value="@Model.LstDailyLog[i].Day23">
+                            </td>
+                            <td class="@ClassName[24] workclass @COlor[24]">
+                                <input type="number" @(Model.LstDailyLog[i].Doj >= Convert.ToDateTime(MonthYear + "-24") || LastWorkingday < 24? "readonly" : "") id="@Html.IdFor(x => Model.LstDailyLog[i].Day24)" name="@Html.NameFor(x => Model.LstDailyLog[i].Day24)" class="text-center form-control hrinp dayshours_24" onfocus="if(this.value == '0') { this.value=''}" onblur="if(this.value==''){this.value='0'} else{CheckLeaveHoursNew(this,@Model.LstDailyLog[i].Day24)}" value="@Model.LstDailyLog[i].Day24">
+                            </td>
+                            <td class="@ClassName[25] workclass @COlor[25]">
+                                <input type="number" @(Model.LstDailyLog[i].Doj >= Convert.ToDateTime(MonthYear + "-25") || LastWorkingday < 25? "readonly" : "") id="@Html.IdFor(x => Model.LstDailyLog[i].Day25)" name="@Html.NameFor(x => Model.LstDailyLog[i].Day25)" class="text-center form-control hrinp dayshours_25" onfocus="if(this.value == '0') { this.value=''}" onblur="if(this.value==''){this.value='0'} else{CheckLeaveHoursNew(this,@Model.LstDailyLog[i].Day25)}" value="@Model.LstDailyLog[i].Day25">
+                            </td>
+                            <td class="@ClassName[26] workclass @COlor[26]">
+                                <input type="number" @(Model.LstDailyLog[i].Doj >= Convert.ToDateTime(MonthYear + "-26") || LastWorkingday < 26? "readonly" : "") id="@Html.IdFor(x => Model.LstDailyLog[i].Day26)" name="@Html.NameFor(x => Model.LstDailyLog[i].Day26)" class="text-center form-control hrinp dayshours_26" onfocus="if(this.value == '0') { this.value=''}" onblur="if(this.value==''){this.value='0'} else{CheckLeaveHoursNew(this,@Model.LstDailyLog[i].Day26)}" value="@Model.LstDailyLog[i].Day26">
+                            </td>
+                            <td class="@ClassName[27] workclass @COlor[27]">
+                                <input type="number" @(Model.LstDailyLog[i].Doj >= Convert.ToDateTime(MonthYear + "-27") || LastWorkingday < 27? "readonly" : "") id="@Html.IdFor(x => Model.LstDailyLog[i].Day27)" name="@Html.NameFor(x => Model.LstDailyLog[i].Day27)" class="text-center form-control hrinp dayshours_27" onfocus="if(this.value == '0') { this.value=''}" onblur="if(this.value==''){this.value='0'} else{CheckLeaveHoursNew(this,@Model.LstDailyLog[i].Day27)}" value="@Model.LstDailyLog[i].Day27">
+                            </td>
+                            <td class="@ClassName[28] workclass @COlor[28]">
+                                <input type="number" @(Model.LstDailyLog[i].Doj >= Convert.ToDateTime(MonthYear + "-28") || LastWorkingday < 28? "readonly" : "") id="@Html.IdFor(x => Model.LstDailyLog[i].Day28)" name="@Html.NameFor(x => Model.LstDailyLog[i].Day28)" class="text-center form-control hrinp dayshours_28" onfocus="if(this.value == '0') { this.value=''}" onblur="if(this.value==''){this.value='0'} else{CheckLeaveHoursNew(this)},@Model.LstDailyLog[i].Day28" value="@Model.LstDailyLog[i].Day28">
+                            </td>
+                            @if (EndDate.Day >= 29)
+                            {
+                                <td class="@ClassName[29] workclass @COlor[29]">
+                                    <input type="number" @(Model.LstDailyLog[i].Doj >= Convert.ToDateTime(MonthYear + "-29") || LastWorkingday < 29? "readonly" : "") id="@Html.IdFor(x => Model.LstDailyLog[i].Day29)" name="@Html.NameFor(x => Model.LstDailyLog[i].Day29)" class="text-center form-control hrinp dayshours_29" onfocus="if(this.value == '0') { this.value=''}" onblur="if(this.value==''){this.value='0'} else{CheckLeaveHoursNew(this,@Model.LstDailyLog[i].Day29)}" value="@Model.LstDailyLog[i].Day29">
+                                </td>
+                            }
+                            @if (EndDate.Day >= 30)
+                            {
+                                <td class="@ClassName[30] workclass @COlor[30]">
+                                    <input type="number" @(Model.LstDailyLog[i].Doj >= Convert.ToDateTime(MonthYear + "-30") || LastWorkingday < 30? "readonly" : "") id="@Html.IdFor(x => Model.LstDailyLog[i].Day30)" name="@Html.NameFor(x => Model.LstDailyLog[i].Day30)" class="text-center form-control hrinp dayshours_30" onfocus="if(this.value == '0') { this.value=''}" onblur="if(this.value==''){this.value='0'} else{CheckLeaveHoursNew(this,@Model.LstDailyLog[i].Day30)}" value="@Model.LstDailyLog[i].Day30">
+                                </td>
+                            }
+                            @if (EndDate.Day >= 31)
+                            {
+                                <td class="@ClassName[31] workclass @COlor[31]">
+                                    <input type="number" @(Model.LstDailyLog[i].Doj >= Convert.ToDateTime(MonthYear + "-31") || LastWorkingday < 31? "readonly" : "") id="@Html.IdFor(x => Model.LstDailyLog[i].Day31)" name="@Html.NameFor(x => Model.LstDailyLog[i].Day31)" class="text-center form-control hrinp dayshours_31" onfocus="if(this.value == '0') { this.value=''}" onblur="if(this.value==''){this.value='0'} else{CheckLeaveHoursNew(this,,@Model.LstDailyLog[i].Day31)}" value="@Model.LstDailyLog[i].Day31">
+                                </td>
+                            }
+
+
+                        </tr>
+                        EmpidOld = EmpidNew;
+                    }
+                }
+
+            </tbody>
+        </table>
+    </div>
+    <div class="text-center mt-3">
+        <button type="submit" class="btn cnl-btn ripplelink   btnbackToDailLog" name="Command" value="Back"><i class="fas fa-angle-double-left"></i>Back</button>
+        <button type="submit" id="btnsave" class="btn mtr-o-grn btn-l ripplelink " name="Command" value="Save">Save & Next <i class="fas fa-angle-double-right m-0"></i></button>
+        <a href="/Dashboard" onclick="ShowLoadingDialog();" class="btn cnl-btn ripplelink btnNext"><i class="fas fa-times"></i>Close</a>
+    </div>
+}
+<script type="text/javascript">
+    $(document).ready(function () {
+        
+        $('.selectall').click(function () {
+            var ischecked = 0;
+            if (this.checked) { ischecked = 1; }
+            $('.isSelect').val(ischecked);
+            $('.selectedId').prop('checked', this.checked);
+        });
+
+        $('.selectedId').change(function () {
+            var ischecked = 0;
+            if (this.checked) { ischecked = 1; }
+            $(this).closest("tr").find(".isSelect").val(ischecked);
+            var check = ($('.selectedId').filter(":checked").length == $('.selectedId').length);
+            $('.selectall').prop("checked", check);
+        });
+
+      //  $('#lg0').click();
+    });
+</script>

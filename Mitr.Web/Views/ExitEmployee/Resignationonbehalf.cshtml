@@ -1,0 +1,179 @@
+﻿@model Mitr.Models.EmployeeExit.ResignationRequest
+@{
+    string MenuID = ViewBag.MenuID.ToString();
+
+
+}
+
+
+
+
+    <div class="inner-main defult-height p-3 pb-0">
+        <h1 class="heading-one mb-3">Resignation on behalf of</h1>
+        <div class="row">
+			<div class="col-sm-6">
+
+				@using (Ajax.BeginForm("_Resignationonbehalf", "ExitEmployee",
+		 new { src = clsApplicationSetting.EncryptQueryString(ViewBag.MenuID.ToString() + "*/ExitEmployee/_Resignationonbehalf") },
+		   new AjaxOptions { HttpMethod = "POST", OnSuccess = "BindTarget", OnBegin = "ShowLoadingDialog()" },
+	 new { @id = "_Resignationonbehalf" })
+	 )
+				{
+				<div class="row">
+					<div class="col-sm-4 wh-575 form-group">
+						<label>Request No</label>
+						<p>@Model.sRequestno</p>
+					</div>
+
+					<div class="col-sm-4 wh-575 form-group">
+						<label>Request Date</label>
+						<p>@Model.sRequestdate</p>
+					</div>
+					<div class="col-sm-12 mb-0"></div>
+					<div class="col-sm-8 form-group">
+						<label>Employee Name</label>
+						@Html.DropDownListFor(model => model.lEmpid, new SelectList(ViewBag.EmpList, "EMPID", "EMPName", Model.lEmpid), "select", new { @class = "form-control applyselect " })
+				
+					</div>
+
+
+					<div style="display:none">
+						<button type="submit" class="btn mtr-g-grn btn-l ripplelink" id="btnSearch" name="Command" value="Search"><i class="fas fa-search"></i>Search</button>
+					</div>
+				</div>
+						}
+
+						<div id="TargetDiv"></div>
+					</div>
+				</div>
+        </div>
+    </div>
+
+   
+
+
+
+@section scripts    {
+
+
+    @System.Web.Optimization.Scripts.Render("~/bundle/dataTablesjs")
+    @System.Web.Optimization.Scripts.Render("~/bundle/unobtrusivejs")
+    @Html.IncludeVersionedJs(Url.Content("~/assets/design/Scripts/AddInit.js"))
+    @Html.IncludeVersionedJs(Url.Content("~/assets/design/Scripts/ToolTip.js"))
+    <script>
+        function Submitdata() {
+
+            $("#btnsubmit").click();
+
+        }
+        $("#lEmpid").change(function () {
+            debugger;
+            let id = parseInt($("#lEmpid").val());
+            if (id > 0) {
+                $("#btnSearch").click();
+            }
+            else {
+                $("#TargetDiv").empty();
+            }
+       
+       });
+        	function BindTarget(args) {
+			CloseLoadingDialog();
+			$("#TargetDiv").empty();
+			$("#TargetDiv").html(args);
+			$('[data-toggle="tooltip"]').tooltip();
+			$(".applyselect").select2();
+		}
+		    function ListHeaderAdd(CMSID) {
+        if (CMSID == undefined)
+        {
+            CMSID = 0;
+        }
+			$.ajax({
+                url: "/ExitEmployee/_ResignationHistory",
+				type: "Get",
+                data: { src: EncryptQueryStringJSON(@ViewBag.MenuID+"*" + "/ExitEmployee/_ResignationHistory" + "*" + CMSID) },
+                success: function (data)
+                {
+					$("#TagetDiv").empty();
+                    $("#TagetDiv").html(data);
+                    $("#ViewModal").modal("show");
+                            var form = $("form")
+                .removeData("validator")
+                .removeData("unobtrusiveValidation");
+                    $.validator.unobtrusive.parse(form);
+
+
+
+				},
+				error: function (er) {
+					alert(er);
+
+				}
+			});
+            }
+
+
+	  function FnReleivingDay() {
+
+            var RequestDate, Relievingdate;
+            RequestDate = new Date($('#sRequestdate').val());
+            Relievingdate = new Date(($('#sNReleivingdate').val()));
+            var dt = $('#sReleivingdate').val();
+            var Difference_In_Days = Math.round((Relievingdate - RequestDate) / (1000 * 3600 * 24), 0) + 1;
+
+                    if (Difference_In_Days < 0) {
+                        swal('', 'Enter Correct Relieving Date');
+                        $('#sReleivingdate').val('');
+                        //Relievingdate = new Date(Model.sReleivingdate) + 1);
+                        //alert(Relievingdate);
+                    }
+                    else {
+                        $('#iRelievingDay').val(Difference_In_Days);
+                    }
+
+
+        }
+     function Fnnoticeperiod() {
+            // var  RequestDate = new Date($('#sRequestdate').val());
+
+            var checkAll = $("#rdonoticeperiodY").is(":checked");
+            if (checkAll) {
+                $('#DivReasonNoticePeriod').hide();
+              $('#div2').show();
+              $('#divasperpolcy').show();
+                $('#sReleivingdate').attr("disabled", "disabled");
+                $('#iNoticePeriodServe').val('1');
+
+
+
+            }
+            else {
+                $('#DivReasonNoticePeriod').show();
+               $('#div2').hide();
+
+        $('#divasperpolcy').hide();
+                $('#iNoticePeriodServe').val('0');
+
+
+            }
+
+            FnReleivingDay();
+            // $('.sReleivingdate').attr('min','2020-03-05');
+        }
+            function OnSuccess(obj) {
+            if (obj.Status) {
+                SuccessToaster(obj.SuccessMessage);
+                window.location.reload();
+            }
+            else {
+                CloseLoadingDialog();
+                FailToaster(obj.SuccessMessage);
+
+            }
+        }
+    </script>
+
+
+}
+

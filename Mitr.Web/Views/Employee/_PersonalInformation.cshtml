@@ -1,0 +1,1204 @@
+﻿@model  Employee.PersonalUpdateAll
+<div class="tab-pane fade show active" id="pi" role="tabpanel" aria-labelledby="profile-tab">
+
+	<table class="table td-border-none th-bg-none   m-0">
+		<thead>
+			<tr>
+				<th width="350"></th>
+				@if (ViewBag.status == 1)
+				{
+
+					<th class="lgt-clr">OLD</th>
+
+				}
+				else
+				{
+					<th width="250" class="lgt-clr">OLD</th>
+					<th class="lgt-clr">NEW</th>
+				}
+				<th width="10" class="text-center"></th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr>
+				<td colspan="3"><h2 class="headingtwo"></h2></td>
+
+			</tr>
+			@*<tr>
+					<td>Gender 	</td>
+					<td>@Model.PersonalDetails.gender</td>
+					@if (Model.PersonalDetailsnew.Personal.gendernew != null && Model.PersonalDetailsnew.Personal.HRVGender == 0)
+					{
+						<td class="fn-bold">@Model.PersonalDetailsnew.Personal.gendernew </td>
+					}
+					else
+					{
+						<td class="fn-bold">-</td>
+					}
+					@if (Model.PersonalDetailsnew.Personal.HRVGender == 0)
+					{
+						<td class="text-center">
+							<input class="cbx-group-c selectedId" id="s1" type="checkbox" value="PersonalDetails_Gender_@Model.PersonalDetails.id+@Model.PersonalDetailsnew.Personal.gender+@Model.PersonalDetailsnew.Personal.MUID" />
+							<label class="m-0" for="s1"></label>
+						</td>
+					}
+
+				</tr>*@
+			<tr>
+				<td>Marital Status	</td>
+				@if (ViewBag.status == 0)
+				{
+					<td>@Model.PersonalDetails.marital_status</td>
+				}
+
+				@if (Model.PersonalDetailsnew.Personal.marital_statusnew != null)
+				{
+					<td class="fn-bold">@Model.PersonalDetailsnew.Personal.marital_statusnew </td>
+				}
+				else
+				{
+					<td class="fn-bold">-</td>
+				}
+
+				@if (Model.PersonalDetailsnew.Personal.HRVMartialStatus == 0)
+				{
+					<td class="text-center">
+						<input class="cbx-group-c selectedId" id="s2" type="checkbox" value="PersonalDetails_maritalstatus_@Model.PersonalDetails.id+@Model.PersonalDetailsnew.Personal.marital_statusnew+@Model.PersonalDetails.MUID" />
+						<label class="m-0" for="s2"></label>
+					</td>
+				}
+				else
+				{
+					<td class="text-center">
+						<input class="cbx-group-c" id="s2" type="checkbox" checked value="PersonalDetails_maritalstatus_@Model.PersonalDetails.id+@Model.PersonalDetailsnew.Personal.marital_statusnew+@Model.PersonalDetails.MUID" />
+						<label class="m-0" for="s2"></label>
+					</td>
+				}
+
+			</tr>
+			<tr>
+				<td>Spouse's Name</td>
+				@if (ViewBag.status == 0)
+				{
+
+					<td>@Model.PersonalDetails.SpouseName</td>
+				}
+
+				@if (Model.PersonalDetailsnew.Personal.SpouseName != null)
+				{
+					<td class="fn-bold">@Model.PersonalDetailsnew.Personal.SpouseName </td>
+				}
+				else
+				{
+					<td class="fn-bold">-</td>
+				}
+				@if (Model.PersonalDetailsnew.Personal.HRVSpouseName == 0)
+				{
+					<td class="text-center">
+						<input class="cbx-group-c selectedId" id="s3" type="checkbox" value="PersonalDetails_SpouseName_@Model.PersonalDetails.id+@Model.PersonalDetailsnew.Personal.SpouseName+@Model.PersonalDetails.MUID" />
+						<label class="m-0" for="s3"></label>
+					</td>
+				}
+				else
+				{
+					<td class="text-center">
+						<input class="cbx-group-c" id="s3" checked type="checkbox" value="PersonalDetails_SpouseName_@Model.PersonalDetails.id+@Model.PersonalDetailsnew.Personal.SpouseName+@Model.PersonalDetails.MUID" />
+						<label class="m-0" for="s3"></label>
+					</td>
+				}
+
+			</tr>
+			<tr>
+				<td>Partner's Name</td>
+
+				@if (ViewBag.status == 0)
+				{
+
+					<td>@Model.PersonalDetails.PartnerName</td>
+				}
+				@if (Model.PersonalDetailsnew.Personal.PartnerName != null)
+				{
+					<td class="fn-bold">@Model.PersonalDetailsnew.Personal.PartnerName </td>
+				}
+				else
+				{
+					<td class="fn-bold">-</td>
+				}
+				@if (Model.PersonalDetailsnew.Personal.HRVParterName == 0)
+				{
+					<td class="text-center">
+						<input class="cbx-group-c selectedId" id="s4" type="checkbox" value="PersonalDetails_PartnerName_@Model.PersonalDetails.id+@Model.PersonalDetailsnew.Personal.PartnerName+@Model.PersonalDetails.MUID" />
+						<label class="m-0" for="s4"></label>
+					</td>
+				}
+				else
+				{
+					<td class="text-center">
+						<input class="cbx-group-c" checked id="s4" type="checkbox" value="PersonalDetails_PartnerName_@Model.PersonalDetails.id+@Model.PersonalDetailsnew.Personal.PartnerName+@Model.PersonalDetails.MUID" />
+						<label class="m-0" for="s4"></label>
+					</td>
+				}
+
+			</tr>
+			<tr>
+				<td>Nominee Name</td>
+
+				@if (ViewBag.status == 0)
+				{
+
+					<td>@Model.PersonalDetails.NomineeName</td>
+				}
+				@if (Model.PersonalDetailsnew.Personal.NomineeName != null)
+				{
+					<td class="fn-bold">@Model.PersonalDetailsnew.Personal.NomineeName </td>
+				}
+				else
+				{
+					<td class="fn-bold">-</td>
+				}
+				@if (Model.PersonalDetailsnew.Personal.HRVNomineeName == 0)
+				{
+					<td class="text-center">
+						<input class="cbx-group-c selectedId" id="s5" type="checkbox" value="PersonalDetails_NomineeName_@Model.PersonalDetails.id+@Model.PersonalDetailsnew.Personal.NomineeName+@Model.PersonalDetails.MUID" />
+						<label class="m-0" for="s5"></label>
+					</td>
+				}
+				else
+				{
+					<td class="text-center">
+						<input class="cbx-group-c" checked id="s5" type="checkbox" value="PersonalDetails_NomineeName_@Model.PersonalDetails.id+@Model.PersonalDetailsnew.Personal.NomineeName+@Model.PersonalDetails.MUID" />
+						<label class="m-0" for="s5"></label>
+					</td>
+				}
+
+			</tr>
+
+			<tr>
+				<td>Nominee Relationship	 </td>
+
+				@if (ViewBag.status == 0)
+				{
+
+					<td>@Model.PersonalDetails.NomineeRelation</td>
+				}
+				@if (Model.PersonalDetailsnew.Personal.NomineeRelation != null)
+				{
+					<td class="fn-bold">@Model.PersonalDetailsnew.Personal.NomineeRelation </td>
+				}
+				else
+				{
+					<td class="fn-bold">-</td>
+				}
+				@if (Model.PersonalDetailsnew.Personal.HRVNomineeRelation == 0)
+				{
+					<td class="text-center">
+						<input class="cbx-group-c selectedId" id="s6" type="checkbox" value="PersonalDetails_NomineeRelation_@Model.PersonalDetails.id+@Model.PersonalDetailsnew.Personal.NomineeRelation+@Model.PersonalDetails.MUID" />
+						<label class="m-0" for="s6"></label>
+					</td>
+				}
+				else
+				{
+					<td class="text-center">
+						<input class="cbx-group-c" checked id="s6" type="checkbox" value="PersonalDetails_NomineeRelation_@Model.PersonalDetails.id+@Model.PersonalDetailsnew.Personal.NomineeRelation+@Model.PersonalDetails.MUID" />
+						<label class="m-0" for="s6"></label>
+					</td>
+				}
+
+			</tr>
+			<tr>
+				<td>No. of Child</td>
+				@if (ViewBag.status == 0)
+				{
+
+					<td>@Model.PersonalDetails.children</td>
+				}
+
+				@if (Model.PersonalDetailsnew.Personal.children > 0)
+				{
+					<td class="fn-bold">@Model.PersonalDetailsnew.Personal.children </td>
+				}
+				else
+				{
+					<td class="fn-bold">-</td>
+				}
+				@if (Model.PersonalDetailsnew.Personal.HRVChildren == 0)
+				{
+					<td class="text-center">
+						<input class="cbx-group-c selectedId" id="s7" type="checkbox" value="PersonalDetails_children_@Model.PersonalDetails.id+@Model.PersonalDetailsnew.Personal.children+@Model.PersonalDetails.MUID" />
+						<label class="m-0" for="s7"></label>
+					</td>
+				}
+				else
+				{
+					<td class="text-center">
+						<input class="cbx-group-c" id="s7" type="checkbox" checked value="PersonalDetails_children_@Model.PersonalDetails.id+@Model.PersonalDetailsnew.Personal.children+@Model.PersonalDetails.MUID" />
+						<label class="m-0" for="s7"></label>
+					</td>
+				}
+
+			</tr>
+
+
+			<tr>
+				<td colspan="3">
+					<h2 class="headingtwo">
+						<i class="fas fa-map-marker-alt"></i>Local Address
+					</h2>
+				</td>
+				@if (ViewBag.status == 0)
+				{
+					<td class="text-center">
+						<input class="cbx-select-group selectallLocalAddress" id="selectallLocalAddress" type="checkbox" value="d" />
+						<label class="m-0" for="selectallLocalAddress" data-toggle="tooltip" title="Select All"></label>
+					</td>
+				}
+			</tr>
+			<tr>
+				<td>Address Line 1</td>
+				@if (ViewBag.status == 0)
+				{
+					if (Model.PersonalDetails.LocalAddress != null && Model.PersonalDetails.LocalAddress.lane1 != null)
+					{
+						<td class="fn-bold">@Model.PersonalDetails.LocalAddress.lane1 </td>
+					}
+					else
+					{
+						<td class="fn-bold">-</td>
+					}
+
+				}
+				@if (Model.PersonalDetailsnew.LocalAddress.lane1 != null)
+				{
+					<td class="fn-bold">@Model.PersonalDetailsnew.LocalAddress.lane1 </td>
+				}
+				else
+				{
+					<td class="fn-bold">-</td>
+				}
+
+				@if (Model.PersonalDetailsnew.LocalAddress.HRVlane1 == 0)
+				{
+					<td class="text-center">
+						<input class="cbx-group-d selectedLocId" id="cbx-group-b-21" type="checkbox" disabled value="Local_lane1_@Model.PersonalDetails.id+@Model.PersonalDetailsnew.LocalAddress.lane1+@Model.PersonalDetails.MUID" />
+						<label class="m-0 ipbdr-none" for="cbx-group-b-21"></label>
+					</td>
+				}
+				else
+				{
+					<td class="text-center">
+						<input class="cbx-group-d" checked id="cbx-group-b-21" type="checkbox" disabled value="Local_lane1_@Model.PersonalDetails.id+@Model.PersonalDetailsnew.LocalAddress.lane1+@Model.PersonalDetails.MUID" />
+						<label class="m-0 ipbdr-none" for="cbx-group-b-21"></label>
+					</td>
+				}
+
+			</tr>
+			<tr>
+				<td>Address Line 2</td>
+				@if (ViewBag.status == 0)
+				{
+					if (Model.PersonalDetails.LocalAddress != null && Model.PersonalDetails.LocalAddress.lane2 != null)
+					{
+						<td class="fn-bold">@Model.PersonalDetails.LocalAddress.lane2 </td>
+					}
+					else
+					{
+						<td class="fn-bold">-</td>
+					}
+
+				}
+				@if (Model.PersonalDetailsnew.LocalAddress.lane2 != null)
+				{
+					<td class="fn-bold">@Model.PersonalDetailsnew.LocalAddress.lane2 </td>
+				}
+				else
+				{
+					<td class="fn-bold">-</td>
+				}
+
+				@if (Model.PersonalDetailsnew.LocalAddress.HRVlane2 == 0)
+				{
+					<td class="text-center">
+						<input class="cbx-group-d selectedLocId" id="cbx-group-b-22" disabled type="checkbox" value="Local_lane2_@Model.PersonalDetails.id+@Model.PersonalDetailsnew.LocalAddress.lane2+@Model.PersonalDetails.MUID" />
+						<label class="m-0 ipbdr-none" for="cbx-group-b-22"></label>
+					</td>
+				}
+				else
+				{
+					<td class="text-center">
+						<input class="cbx-group-d" checked id="cbx-group-b-22" disabled type="checkbox" value="Local_lane2_@Model.PersonalDetails.id+@Model.PersonalDetailsnew.LocalAddress.lane2+@Model.PersonalDetails.MUID" />
+						<label class="m-0 ipbdr-none" for="cbx-group-b-22"></label>
+					</td>
+				}
+
+			</tr>
+
+			<tr>
+				<td>PIN</td>
+				@if (ViewBag.status == 0)
+				{
+					if (Model.PersonalDetails.LocalAddress != null && Model.PersonalDetails.LocalAddress.zip_code != null)
+					{
+						<td class="fn-bold">@Model.PersonalDetails.LocalAddress.zip_code </td>
+					}
+					else
+					{
+						<td class="fn-bold">-</td>
+					}
+				}
+
+				@if (Model.PersonalDetailsnew.LocalAddress.zip_code != null)
+				{
+					<td class="fn-bold">@Model.PersonalDetailsnew.LocalAddress.zip_code </td>
+				}
+				else
+				{
+					<td class="fn-bold">-</td>
+				}
+				@if (Model.PersonalDetailsnew.LocalAddress.HRVzip_code == 0)
+				{
+					<td class="text-center">
+						<input class="cbx-group-d selectedLocId" id="cbx-group-b-221" disabled type="checkbox" value="Local_zipcode_@Model.PersonalDetails.id+@Model.PersonalDetailsnew.LocalAddress.zip_code+@Model.PersonalDetails.MUID" />
+						<label class="m-0 ipbdr-none" for="cbx-group-b-221"></label>
+					</td>
+				}
+				else
+				{
+					<td class="text-center">
+						<input class="cbx-group-d" checked id="cbx-group-b-221" disabled type="checkbox" value="Local_zipcode_@Model.PersonalDetails.id+@Model.PersonalDetailsnew.LocalAddress.zip_code+@Model.PersonalDetails.MUID" />
+						<label class="m-0 ipbdr-none" for="cbx-group-b-221"></label>
+					</td>
+				}
+
+			</tr>
+
+			<tr>
+				<td>Country</td>
+				@if (ViewBag.status == 0)
+				{
+					if (Model.PersonalDetails.LocalAddress != null && Model.PersonalDetails.LocalAddress.country_Name != null)
+					{
+						<td class="fn-bold">@Model.PersonalDetails.LocalAddress.country_Name </td>
+					}
+					else
+					{
+						<td class="fn-bold">-</td>
+					}
+				}
+				@if (Model.PersonalDetailsnew.LocalAddress.country_Name != null)
+				{
+					<td class="fn-bold">@Model.PersonalDetailsnew.LocalAddress.country_Name </td>
+				}
+				else
+				{
+					<td class="fn-bold">-</td>
+				}
+				@if (Model.PersonalDetailsnew.LocalAddress.HRVCountryID == 0)
+				{
+					<td class="text-center">
+						<input class="cbx-group-d selectedLocId" id="cbx-group-b-23" disabled type="checkbox" value="Local_countryId_@Model.PersonalDetails.id+@Model.PersonalDetailsnew.LocalAddress.CountryID+@Model.PersonalDetails.MUID" />
+						<label class="m-0 ipbdr-none" for="cbx-group-b-23"></label>
+					</td>
+				}
+				else
+				{
+					<td class="text-center">
+						<input class="cbx-group-d" checked id="cbx-group-b-23" disabled type="checkbox" value="Local_countryId_@Model.PersonalDetails.id+@Model.PersonalDetailsnew.LocalAddress.CountryID+@Model.PersonalDetails.MUID" />
+						<label class="m-0 ipbdr-none" for="cbx-group-b-23"></label>
+					</td>
+				}
+
+
+			</tr>
+
+			<tr>
+				<td>State</td>
+				@if (ViewBag.status == 0)
+				{
+					if (Model.PersonalDetails.LocalAddress != null && Model.PersonalDetails.LocalAddress.state_Name != null)
+					{
+						<td class="fn-bold">@Model.PersonalDetails.LocalAddress.state_Name </td>
+					}
+					else
+					{
+						<td class="fn-bold">-</td>
+					}
+
+				}
+				@if (Model.PersonalDetailsnew.LocalAddress.state_Name != null)
+				{
+					<td class="fn-bold">@Model.PersonalDetailsnew.LocalAddress.state_Name </td>
+				}
+				else
+				{
+					<td class="fn-bold">-</td>
+				}
+				@if (Model.PersonalDetailsnew.LocalAddress.HRVStateID == 0)
+				{
+					<td class="text-center">
+						<input class="cbx-group-d selectedLocId" id="cbx-group-b-24" disabled type="checkbox" value="Local_stateId_@Model.PersonalDetails.id+@Model.PersonalDetailsnew.LocalAddress.StateID+@Model.PersonalDetails.MUID" />
+						<label class="m-0 ipbdr-none" for="cbx-group-b-24"></label>
+					</td>
+				}
+				else
+				{
+					<td class="text-center">
+						<input class="cbx-group-d" checked id="cbx-group-b-24" disabled type="checkbox" value="Local_stateId_@Model.PersonalDetails.id+@Model.PersonalDetailsnew.LocalAddress.StateID+@Model.PersonalDetails.MUID" />
+						<label class="m-0 ipbdr-none" for="cbx-group-b-24"></label>
+					</td>
+				}
+
+			</tr>
+
+			<tr>
+				<td>City</td>
+				@if (ViewBag.status == 0)
+				{
+					if (Model.PersonalDetails.LocalAddress != null && Model.PersonalDetails.LocalAddress.city_Name != null)
+					{
+						<td class="fn-bold">@Model.PersonalDetails.LocalAddress.city_Name </td>
+					}
+					else
+					{
+						<td class="fn-bold">-</td>
+					}
+				}
+				@if (Model.PersonalDetailsnew.LocalAddress.city_Name != null)
+				{
+					<td class="fn-bold">@Model.PersonalDetailsnew.LocalAddress.city_Name </td>
+				}
+				else
+				{
+					<td class="fn-bold">-</td>
+				}
+				@if (Model.PersonalDetailsnew.LocalAddress.HRVCityID == 0)
+				{
+					<td class="text-center">
+						<input class="cbx-group-d selectedLocId" id="cbx-group-b-25" disabled type="checkbox" value="Local_cityId_@Model.PersonalDetails.id+@Model.PersonalDetailsnew.LocalAddress.CityID+@Model.PersonalDetails.MUID" />
+						<label class="m-0 ipbdr-none" for="cbx-group-b-25"></label>
+					</td>
+				}
+				else
+				{
+					<td class="text-center">
+						<input class="cbx-group-d " checked id="cbx-group-b-25" disabled type="checkbox" value="Local_cityId_@Model.PersonalDetails.id+@Model.PersonalDetailsnew.LocalAddress.CityID+@Model.PersonalDetails.MUID" />
+						<label class="m-0 ipbdr-none" for="cbx-group-b-25"></label>
+					</td>
+				}
+
+			</tr>
+
+			<tr>
+				<td>Mobile </td>
+				@if (ViewBag.status == 0)
+				{
+					if (Model.PersonalDetails.LocalAddress != null && Model.PersonalDetails.LocalAddress.phone_no != null)
+					{
+						<td class="fn-bold">@Model.PersonalDetails.LocalAddress.phone_no </td>
+					}
+					else
+					{
+						<td class="fn-bold">-</td>
+					}
+				}
+				@if (Model.PersonalDetailsnew.LocalAddress.phone_no != null)
+				{
+					<td class="fn-bold">@Model.PersonalDetailsnew.LocalAddress.phone_no </td>
+				}
+				else
+				{
+					<td class="fn-bold">-</td>
+				}
+				@if (Model.PersonalDetailsnew.LocalAddress.HRVphone_no == 0)
+				{
+					<td class="text-center">
+						<input class="cbx-group-d selectedLocId" id="cbx-group-b-26" disabled type="checkbox" value="Local_phoneno_@Model.PersonalDetails.id+@Model.PersonalDetailsnew.LocalAddress.phone_no+@Model.PersonalDetails.MUID" />
+						<label class="m-0 ipbdr-none" for="cbx-group-b-26"></label>
+					</td>
+				}
+				else
+				{
+					<td class="text-center">
+						<input class="cbx-group-d" checked id="cbx-group-b-26" disabled type="checkbox" value="Local_phoneno_@Model.PersonalDetails.id+@Model.PersonalDetailsnew.LocalAddress.phone_no+@Model.PersonalDetails.MUID" />
+						<label class="m-0 ipbdr-none" for="cbx-group-b-26"></label>
+					</td>
+				}
+
+			</tr>
+
+
+			<tr>
+				<td colspan="3">
+					<h2 class="headingtwo">
+						<i class="fas fa-map-marker-alt"></i>Permanent Address
+					</h2>
+				</td>
+				<td class="text-center">
+					@if (ViewBag.status == 0)
+					{
+						<input class="cbx-select-group selectallPermanentAddress" id="selectallPermanentAddress" type="checkbox" value="pa" />
+						<label class="m-0" for="selectallPermanentAddress" data-toggle="tooltip" title="Select All"></label>
+					}
+				</td>
+			</tr>
+			<tr>
+				<td>Address Line 1</td>
+				@if (ViewBag.status == 0)
+				{
+					if (Model.PersonalDetails.PermanentAddress != null && Model.PersonalDetails.PermanentAddress.lane1 != null)
+					{
+						<td class="fn-bold">@Model.PersonalDetails.PermanentAddress.lane1 </td>
+					}
+					else
+					{
+						<td class="fn-bold">-</td>
+					}
+				}
+				@if (Model.PersonalDetailsnew.PermanentAddress.lane1 != null)
+				{
+					<td class="fn-bold">@Model.PersonalDetailsnew.PermanentAddress.lane1 </td>
+				}
+				else
+				{
+					<td class="fn-bold">-</td>
+				}
+				@if (Model.PersonalDetailsnew.PermanentAddress.HRVlane1 == 0)
+				{
+					<td class="text-center">
+						<input class="cbx-group-pa selectedPerId" id="cbx-group-pa-2111" disabled type="checkbox" value="Permanent_lane1_@Model.PersonalDetails.id+@Model.PersonalDetailsnew.PermanentAddress.lane1+@Model.PersonalDetails.MUID" />
+						<label class="m-0 ipbdr-none" for="cbx-group-pa-2111"></label>
+					</td>
+				}
+				else
+				{
+					<td class="text-center">
+						<input class="cbx-group-pa " id="cbx-group-pa-2111" checked type="checkbox" value="Permanent_lane1_@Model.PersonalDetails.id+@Model.PersonalDetailsnew.PermanentAddress.lane1+@Model.PersonalDetails.MUID" />
+						<label class="m-0 ipbdr-none" for="cbx-group-pa-2111"></label>
+					</td>
+				}
+
+			</tr>
+			<tr>
+				<td>Address Line 2</td>
+				@if (ViewBag.status == 0)
+				{
+					if (Model.PersonalDetails.PermanentAddress != null && Model.PersonalDetails.PermanentAddress.lane2 != null)
+					{
+						<td class="fn-bold">@Model.PersonalDetails.PermanentAddress.lane2 </td>
+					}
+					else
+					{
+						<td class="fn-bold">-</td>
+					}
+				}
+				@if (Model.PersonalDetailsnew.PermanentAddress.lane2 != null)
+				{
+					<td class="fn-bold">@Model.PersonalDetailsnew.PermanentAddress.lane2 </td>
+				}
+				else
+				{
+					<td class="fn-bold">-</td>
+				}
+				@if (Model.PersonalDetailsnew.PermanentAddress.HRVlane2 == 0)
+				{
+					<td class="text-center">
+						<input class="cbx-group-pa selectedPerId" id="cbx-group-pa-2222" disabled type="checkbox" value="Permanent_lane2_@Model.PersonalDetails.id+@Model.PersonalDetailsnew.PermanentAddress.lane2+@Model.PersonalDetails.MUID" />
+						<label class="m-0 ipbdr-none" for="cbx-group-pa-2222"></label>
+					</td>
+				}
+				else
+				{
+					<td class="text-center">
+						<input class="cbx-group-pa " checked id="cbx-group-pa-2222" disabled type="checkbox" value="Permanent_lane2_@Model.PersonalDetails.id+@Model.PersonalDetailsnew.PermanentAddress.lane2+@Model.PersonalDetails.MUID" />
+						<label class="m-0 ipbdr-none" for="cbx-group-pa-2222"></label>
+					</td>
+				}
+
+			</tr>
+
+			<tr>
+				<td>PIN</td>
+				@if (ViewBag.status == 0)
+				{
+					if (Model.PersonalDetails.PermanentAddress != null && Model.PersonalDetails.PermanentAddress.zip_code != null)
+					{
+						<td class="fn-bold">@Model.PersonalDetails.PermanentAddress.zip_code </td>
+					}
+					else
+					{
+						<td class="fn-bold">-</td>
+					}
+				}
+
+				@if (Model.PersonalDetailsnew.PermanentAddress.zip_code != null)
+				{
+					<td class="fn-bold">@Model.PersonalDetailsnew.PermanentAddress.zip_code </td>
+				}
+				else
+				{
+					<td class="fn-bold">-</td>
+				}
+				@if (Model.PersonalDetailsnew.PermanentAddress.HRVzip_code == 0)
+				{
+					<td class="text-center">
+						<input class="cbx-group-pa selectedPerId" id="cbx-group-pa-2211" disabled type="checkbox" value="Permanent_zipcode_@Model.PersonalDetails.id+@Model.PersonalDetailsnew.PermanentAddress.zip_code+@Model.PersonalDetails.MUID" />
+						<label class="m-0 ipbdr-none" for="cbx-group-pa-2211"></label>
+					</td>
+				}
+				else
+				{
+					<td class="text-center">
+						<input class="cbx-group-pa " checked id="cbx-group-pa-2211" disabled type="checkbox" value="Permanent_zipcode_@Model.PersonalDetails.id+@Model.PersonalDetailsnew.PermanentAddress.zip_code+@Model.PersonalDetails.MUID" />
+						<label class="m-0 ipbdr-none" for="cbx-group-pa-2211"></label>
+					</td>
+				}
+
+			</tr>
+
+			<tr>
+				<td>Country</td>
+				@if (ViewBag.status == 0)
+				{
+					if (Model.PersonalDetails.PermanentAddress != null && Model.PersonalDetails.PermanentAddress.country_Name != null)
+					{
+						<td class="fn-bold">@Model.PersonalDetails.PermanentAddress.country_Name </td>
+					}
+					else
+					{
+						<td class="fn-bold">-</td>
+					}
+				}
+				@if (Model.PersonalDetailsnew.PermanentAddress.country_Name != null)
+				{
+					<td class="fn-bold">@Model.PersonalDetailsnew.PermanentAddress.country_Name </td>
+				}
+				else
+				{
+					<td class="fn-bold">-</td>
+				}
+				@if (Model.PersonalDetailsnew.PermanentAddress.HRVCountryID == 0)
+				{
+
+					<td class="text-center">
+						<input class="cbx-group-pa selectedPerId" id="cbx-group-pa-23" disabled type="checkbox" value="Permanent_countryId_@Model.PersonalDetails.id+@Model.PersonalDetailsnew.PermanentAddress.CountryID+@Model.PersonalDetails.MUID" />
+						<label class="m-0 ipbdr-none" for="cbx-group-pa-23"></label>
+					</td>
+				}
+				else
+				{
+					<td class="text-center">
+						<input class="cbx-group-pa" checked id="cbx-group-pa-23" disabled type="checkbox" value="Permanent_countryId_@Model.PersonalDetails.id+@Model.PersonalDetailsnew.PermanentAddress.CountryID+@Model.PersonalDetails.MUID" />
+						<label class="m-0 ipbdr-none" for="cbx-group-pa-23"></label>
+					</td>
+				}
+			</tr>
+
+			<tr>
+				<td>State</td>
+				@if (ViewBag.status == 0)
+				{
+					if (Model.PersonalDetails.PermanentAddress != null && Model.PersonalDetails.PermanentAddress.state_Name != null)
+					{
+						<td class="fn-bold">@Model.PersonalDetails.PermanentAddress.state_Name </td>
+					}
+					else
+					{
+						<td class="fn-bold">-</td>
+					}
+				}
+
+				@if (Model.PersonalDetailsnew.PermanentAddress.state_Name != null)
+				{
+					<td class="fn-bold">@Model.PersonalDetailsnew.PermanentAddress.state_Name </td>
+				}
+				else
+				{
+					<td class="fn-bold">-</td>
+				}
+				@if (Model.PersonalDetailsnew.PermanentAddress.HRVStateID == 0)
+				{
+					<td class="text-center">
+						<input class="cbx-group-pa selectedPerId" id="cbx-group-pa-24" disabled type="checkbox" value="Permanent_stateId_@Model.PersonalDetails.id+@Model.PersonalDetailsnew.PermanentAddress.StateID+@Model.PersonalDetails.MUID" />
+						<label class="m-0 ipbdr-none" for="cbx-group-pa-24"></label>
+					</td>
+				}
+				else
+				{
+					<td class="text-center">
+						<input class="cbx-group-pa" checked id="cbx-group-pa-24" disabled type="checkbox" value="Permanent_stateId_@Model.PersonalDetails.id+@Model.PersonalDetailsnew.PermanentAddress.StateID+@Model.PersonalDetails.MUID" />
+						<label class="m-0 ipbdr-none" for="cbx-group-pa-24"></label>
+					</td>
+				}
+
+			</tr>
+
+			<tr>
+				<td>City</td>
+				@if (ViewBag.status == 0)
+				{
+					if (Model.PersonalDetails.PermanentAddress != null && Model.PersonalDetails.PermanentAddress.city_Name != null)
+					{
+						<td class="fn-bold">@Model.PersonalDetails.PermanentAddress.city_Name </td>
+					}
+					else
+					{
+						<td class="fn-bold">-</td>
+					}
+				}
+
+				@if (Model.PersonalDetailsnew.PermanentAddress.city_Name != null)
+				{
+					<td class="fn-bold">@Model.PersonalDetailsnew.PermanentAddress.city_Name </td>
+				}
+				else
+				{
+					<td class="fn-bold">-</td>
+				}
+				@if (Model.PersonalDetailsnew.PermanentAddress.HRVCityID == 0)
+				{
+					<td class="text-center">
+						<input class="cbx-group-pa selectedPerId" id="cbx-group-pa-25" disabled type="checkbox" value="Permanent_cityId_@Model.PersonalDetails.id+@Model.PersonalDetailsnew.PermanentAddress.CityID+@Model.PersonalDetails.MUID" />
+						<label class="m-0 ipbdr-none" for="cbx-group-pa-25"></label>
+					</td>
+				}
+				else
+				{
+					<td class="text-center">
+						<input class="cbx-group-pa" checked id="cbx-group-pa-25" disabled type="checkbox" value="Permanent_cityId_@Model.PersonalDetails.id+@Model.PersonalDetailsnew.PermanentAddress.CityID+@Model.PersonalDetails.MUID" />
+						<label class="m-0 ipbdr-none" for="cbx-group-pa-25"></label>
+					</td>
+				}
+
+			</tr>
+
+			<tr>
+				<td>Mobile </td>
+				@if (ViewBag.status == 0)
+				{
+					if (Model.PersonalDetails.PermanentAddress != null && Model.PersonalDetails.PermanentAddress.phone_no != null)
+					{
+						<td class="fn-bold">@Model.PersonalDetails.PermanentAddress.phone_no </td>
+					}
+					else
+					{
+						<td class="fn-bold">-</td>
+					}
+				}
+
+				@if (Model.PersonalDetailsnew.PermanentAddress.phone_no != null)
+				{
+					<td class="fn-bold">@Model.PersonalDetailsnew.PermanentAddress.phone_no </td>
+				}
+				else
+				{
+					<td class="fn-bold">-</td>
+				}
+
+				@if (Model.PersonalDetailsnew.PermanentAddress.HRVphone_no == 0)
+				{
+					<td class="text-center">
+						<input class="cbx-group-pa selectedPerId" id="cbx-group-pa-251" disabled type="checkbox" value="Permanent_phoneno_@Model.PersonalDetails.id+@Model.PersonalDetailsnew.PermanentAddress.phone_no+@Model.PersonalDetails.MUID" />
+						<label class="m-0 ipbdr-none" for="cbx-group-pa-251"></label>
+					</td>
+				}
+				else
+				{
+					<td class="text-center">
+						<input class="cbx-group-pa" checked id="cbx-group-pa-251" disabled type="checkbox" value="Permanent_phoneno_@Model.PersonalDetails.id+@Model.PersonalDetailsnew.PermanentAddress.phone_no+@Model.PersonalDetails.MUID" />
+						<label class="m-0 ipbdr-none" for="cbx-group-pa-251"></label>
+					</td>
+				}
+
+			</tr>
+
+
+			<tr>
+				<td colspan="3">
+					<h2 class="headingtwo">
+						<i class="fas fa-briefcase-medical"></i>Medical Details
+					</h2>
+				</td>
+				<td class="text-center">
+					@if (ViewBag.status == 0)
+					{
+						<input class="cbx-select-group selectallMedical" id="selectallMedical" type="checkbox" value="e" />
+						<label class="m-0" for="selectallMedical" data-toggle="tooltip" title="Select All"></label>
+					}
+
+				</td>
+			</tr>
+			<tr>
+				<td>Special Ability </td>
+				@if (ViewBag.status == 0)
+				{
+					<td>@Model.PersonalDetails.SpecialAbility</td>
+				}
+
+				@if (Model.PersonalDetailsnew.Medical.SpecialAbility != null)
+				{
+					<td class="fn-bold">@Model.PersonalDetailsnew.Medical.SpecialAbility </td>
+				}
+				else
+				{
+					<td class="fn-bold">-</td>
+				}
+				@if (Model.PersonalDetailsnew.Medical.HRVSpecialAbility == 0)
+				{
+					<td class="text-center">
+						<input class="cbx-group-e selectedMedId" id="cbx-group-b-261" disabled type="checkbox" value="Medical_SpecialAbility_@Model.PersonalDetails.id+@Model.PersonalDetailsnew.Medical.SpecialAbility+@Model.PersonalDetails.MUID" />
+						<label class="m-0 ipbdr-none" for="cbx-group-b-261"></label>
+					</td>
+				}
+				else
+				{
+					<td class="text-center">
+						<input class="cbx-group-e " checked id="cbx-group-b-261" disabled type="checkbox" value="Medical_SpecialAbility_@Model.PersonalDetails.id+@Model.PersonalDetailsnew.Medical.SpecialAbility+@Model.PersonalDetails.MUID" />
+						<label class="m-0 ipbdr-none" for="cbx-group-b-261"></label>
+					</td>
+				}
+
+			</tr>
+			<tr>
+				<td>Any special medical condition that C3 must be aware of </td>
+				@if (ViewBag.status == 0)
+				{
+					<td>@Model.PersonalDetails.AnyMedicalCondition</td>
+				}
+
+				@if (Model.PersonalDetailsnew.Medical.AnyMedicalCondition != null)
+				{
+					<td class="fn-bold">@Model.PersonalDetailsnew.Medical.AnyMedicalCondition </td>
+				}
+				else
+				{
+					<td class="fn-bold">-</td>
+				}
+				@if (Model.PersonalDetailsnew.Medical.HRVAnyMedicalCondition == 0)
+				{
+					<td class="text-center">
+						<input class="cbx-group-e selectedMedId" id="cbx-group-b-271" disabled type="checkbox" value="Medical_AnyMedicalCondition_@Model.PersonalDetails.id+@Model.PersonalDetailsnew.Medical.AnyMedicalCondition+@Model.PersonalDetails.MUID" />
+						<label class="m-0 ipbdr-none" for="cbx-group-b-271"></label>
+					</td>
+				}
+				else
+				{
+					<td class="text-center">
+						<input class="cbx-group-e" checked id="cbx-group-b-271" disabled type="checkbox" value="Medical_AnyMedicalCondition_@Model.PersonalDetails.id+@Model.PersonalDetailsnew.Medical.AnyMedicalCondition+@Model.PersonalDetails.MUID" />
+						<label class="m-0 ipbdr-none" for="cbx-group-b-271"></label>
+					</td>
+				}
+
+			</tr>
+
+
+			<tr>
+				<td>Hospital /Physician's Name</td>
+				@if (ViewBag.status == 0)
+				{
+					<td>@Model.PersonalDetails.PhysicianName</td>
+
+				}
+
+				@if (Model.PersonalDetailsnew.Medical.PhysicianName != null)
+				{
+					<td class="fn-bold">@Model.PersonalDetailsnew.Medical.PhysicianName </td>
+				}
+				else
+				{
+					<td class="fn-bold">-</td>
+				}
+				@if (Model.PersonalDetailsnew.Medical.HRVPhysicianName == 0)
+				{
+					<td class="text-center">
+						<input class="cbx-group-e selectedMedId" id="cbx-group-b-28" disabled type="checkbox" value="Medical_PhysicianName_@Model.PersonalDetails.id+@Model.PersonalDetailsnew.Medical.PhysicianName+@Model.PersonalDetails.MUID" />
+						<label class="m-0 ipbdr-none" for="cbx-group-b-28"></label>
+					</td>
+				}
+				else
+				{
+					<td class="text-center">
+						<input class="cbx-group-e" checked id="cbx-group-b-28" disabled type="checkbox" value="Medical_PhysicianName_@Model.PersonalDetails.id+@Model.PersonalDetailsnew.Medical.PhysicianName+@Model.PersonalDetails.MUID" />
+						<label class="m-0 ipbdr-none" for="cbx-group-b-28"></label>
+					</td>
+				}
+
+			</tr>
+
+
+
+			<tr>
+				<td>Phone Number</td>
+				@if (ViewBag.status == 0)
+				{
+					<td>@Model.PersonalDetails.PhysicianNumber</td>
+				}
+
+				@if (Model.PersonalDetailsnew.Medical.PhysicianNumber != null)
+				{
+					<td class="fn-bold">@Model.PersonalDetailsnew.Medical.PhysicianNumber </td>
+				}
+				else
+				{
+					<td class="fn-bold">-</td>
+				}
+				@if (Model.PersonalDetailsnew.Medical.HRVPhysicianNumber == 0)
+				{
+					<td class="text-center">
+						<input class="cbx-group-e selectedMedId" id="cbx-group-b-2910" disabled type="checkbox" value="Medical_PhysicianNumber_@Model.PersonalDetails.id+@Model.PersonalDetailsnew.Medical.PhysicianNumber+@Model.PersonalDetails.MUID" />
+						<label class="m-0 ipbdr-none" for="cbx-group-b-2910"></label>
+					</td>
+				}
+				else
+				{
+					<td class="text-center">
+						<input class="cbx-group-e" checked id="cbx-group-b-2910" disabled type="checkbox" value="Medical_PhysicianNumber_@Model.PersonalDetails.id+@Model.PersonalDetailsnew.Medical.PhysicianNumber+@Model.PersonalDetails.MUID" />
+						<label class="m-0 ipbdr-none" for="cbx-group-b-2910"></label>
+					</td>
+				}
+
+			</tr>
+
+			<tr>
+				<td>Alternative Mobile Number(s)</td>
+				@if (ViewBag.status == 0)
+				{
+					<td>@Model.PersonalDetails.PhysicianAlternate_No</td>
+				}
+
+				@if (Model.PersonalDetailsnew.Medical.PhysicianAlternate_No != null)
+				{
+					<td class="fn-bold">@Model.PersonalDetailsnew.Medical.PhysicianAlternate_No </td>
+				}
+				else
+				{
+					<td class="fn-bold">-</td>
+				}
+				@if (Model.PersonalDetailsnew.Medical.HRVPhysicianAlternate_No == 0)
+				{
+					<td class="text-center">
+						<input class="cbx-group-e selectedMedId" id="cbx-group-b-2921" disabled type="checkbox" value="Medical_PhysicianAlternateNo_@Model.PersonalDetails.id+@Model.PersonalDetailsnew.Medical.PhysicianAlternate_No+@Model.PersonalDetails.MUID" />
+						<label class="m-0 ipbdr-none" for="cbx-group-b-2921"></label>
+					</td>
+				}
+				else
+				{
+					<td class="text-center">
+						<input class="cbx-group-e" checked id="cbx-group-b-2921" disabled type="checkbox" value="Medical_PhysicianAlternateNo_@Model.PersonalDetails.id+@Model.PersonalDetailsnew.Medical.PhysicianAlternate_No+@Model.PersonalDetails.MUID" />
+						<label class="m-0 ipbdr-none" for="cbx-group-b-2921"></label>
+					</td>
+				}
+
+			</tr>
+
+			<tr>
+				<td>Emergency Contact Name</td>
+				@if (ViewBag.status == 0)
+				{
+					<td>@Model.PersonalDetails.emergContact_Name</td>
+				}
+
+				@if (Model.PersonalDetailsnew.Medical.emergContact_Name != null)
+				{
+					<td class="fn-bold">@Model.PersonalDetailsnew.Medical.emergContact_Name </td>
+				}
+				else
+				{
+					<td class="fn-bold">-</td>
+				}
+				@if (Model.PersonalDetailsnew.Medical.HRVemergContact_Name == 0)
+				{
+					<td class="text-center">
+						<input class="cbx-group-e selectedMedId" id="cbx-group-b-30" disabled type="checkbox" value="Medical_emergContactName_@Model.PersonalDetails.id+@Model.PersonalDetailsnew.Medical.emergContact_Name+@Model.PersonalDetails.MUID" />
+						<label class="m-0 ipbdr-none" for="cbx-group-b-30"></label>
+					</td>
+				}
+				else
+				{
+					<td class="text-center">
+						<input class="cbx-group-e " checked id="cbx-group-b-30" disabled type="checkbox" value="Medical_emergContactName_@Model.PersonalDetails.id+@Model.PersonalDetailsnew.Medical.emergContact_Name+@Model.PersonalDetails.MUID" />
+						<label class="m-0 ipbdr-none" for="cbx-group-b-30"></label>
+					</td>
+				}
+
+			</tr>
+
+			<tr>
+				<td>Emergency Contact Number</td>
+				@if (ViewBag.status == 0)
+				{
+					<td>@Model.PersonalDetails.emergContact_no</td>
+				}
+
+				@if (Model.PersonalDetailsnew.Medical.emergContact_no != null)
+				{
+					<td class="fn-bold">@Model.PersonalDetailsnew.Medical.emergContact_no </td>
+				}
+				else
+				{
+					<td class="fn-bold">-</td>
+				}
+				@if (Model.PersonalDetailsnew.Medical.HRVemergContact_no == 0)
+				{
+					<td class="text-center">
+						<input class="cbx-group-e selectedMedId" id="cbx-group-b-31" disabled type="checkbox" value="Medical_emergContactno_@Model.PersonalDetails.id+@Model.PersonalDetailsnew.Medical.emergContact_no+@Model.PersonalDetails.MUID" />
+						<label class="m-0 ipbdr-none" for="cbx-group-b-31"></label>
+					</td>
+				}
+				else
+				{
+					<td class="text-center">
+						<input class="cbx-group-e " checked id="cbx-group-b-31" disabled type="checkbox" value="Medical_emergContactno_@Model.PersonalDetails.id+@Model.PersonalDetailsnew.Medical.emergContact_no+@Model.PersonalDetails.MUID" />
+						<label class="m-0 ipbdr-none" for="cbx-group-b-31"></label>
+					</td>
+				}
+
+			</tr>
+
+			<tr>
+				<td>Emergency Contact Relationship</td>
+				@if (ViewBag.status == 0)
+				{
+					<td>@Model.PersonalDetails.emergContact_Relation</td>
+				}
+
+				@if (Model.PersonalDetailsnew.Medical.emergContact_Relation != null)
+				{
+					<td class="fn-bold">@Model.PersonalDetailsnew.Medical.emergContact_Relation </td>
+				}
+				else
+				{
+					<td class="fn-bold">-</td>
+				}
+				@if (Model.PersonalDetailsnew.Medical.HRVemergContact_Relation == 0)
+				{
+					<td class="text-center">
+						<input class="cbx-group-e selectedMedId" id="cbx-group-b-32" disabled type="checkbox" value="Medical_emergContactRelation_@Model.PersonalDetails.id+@Model.PersonalDetailsnew.Medical.emergContact_Relation+@Model.PersonalDetails.MUID" />
+						<label class="m-0 ipbdr-none" for="cbx-group-b-32"></label>
+					</td>
+				}
+				else
+				{
+					<td class="text-center">
+						<input class="cbx-group-e" checked id="cbx-group-b-32" disabled type="checkbox" value="Medical_emergContactRelation_@Model.PersonalDetails.id+@Model.PersonalDetailsnew.Medical.emergContact_Relation+@Model.PersonalDetails.MUID" />
+						<label class="m-0 ipbdr-none" for="cbx-group-b-32"></label>
+					</td>
+				}
+
+			</tr>
+
+			<tr>
+				<td colspan="3">
+					<h2 class="headingtwo">
+						<i class="fas fa-graduation-cap"></i>Educational and Professional Qualifications
+					</h2>
+				</td>
+				<td class="text-center">
+					<input class="cbx-select-group selectallEducational" id="selectallEducational" type="checkbox" value="f" />
+					<label class="m-0" for="selectallEducational" data-toggle="tooltip" title="Select All"></label>
+				</td>
+			</tr>
+			<tr>
+				<td colspan="4">
+					<div class="table-responsive">
+						<table class="table table-striped m-0">
+							<thead>
+								<tr>
+									<th width="33">S.No.</th>
+									<th width="200">Name of the Course</th>
+									<th>Name of the Collage/University</th>
+									<th width="100">Location</th>
+									<th width="120">Years Attended</th>
+									<th></th>
+								</tr>
+							</thead>
+							<tbody>
+								@if (Model.PersonalDetailsnew.QualificationList != null)
+								{
+									int count = 0;
+									foreach (var item in Model.PersonalDetailsnew.QualificationList)
+									{
+										count++;
+										<tr>
+											<td>@count</td>
+
+											<td>
+												@item.Course
+												<input type="hidden" value="@item.Course" id="txthdfcourse_@count" />
+											</td>
+
+											<td>
+												@item.University
+												<input type="hidden" value="@item.University" id="txthdfUniversity_@count" />
+											</td>
+
+											<td>
+												@item.Location
+												<input type="hidden" value="@item.Location" id="txthdfLocation_@count" />
+											</td>
+
+											<td>
+												@item.Year
+												<input type="hidden" value="@item.Year" id="txthdfYear_@count" />
+											</td>
+
+											<td>
+												@if (item.HRVQualification == 0)
+												{
+													<input class="cbx-group-f selectedEducation" id="s_@count" type="checkbox" value="Qualification_@item.Course+@item.University+@item.Location+@item.Year+@item.EMPID+@item.QID" />
+													<label class="m-0 ipbdr-none" for="s_@count"></label>
+												}
+												else
+												{
+													<input class="cbx-group-f" checked id="s_@count" type="checkbox" value="Qualification_@item.Course+@item.University+@item.Location+@item.Year+@item.EMPID+@item.QID" />
+													<label class="m-0 ipbdr-none" for="s_@count"></label>
+												}
+
+
+											</td>
+										</tr>
+									}
+
+								}
+
+
+							</tbody>
+						</table>
+					</div>
+				</td>
+			</tr>
+
+		</tbody>
+	</table>
+
+</div>
+
+
+
+<script>
+	$('#selectallLocalAddress').click(function () {
+		var someObj = {};
+		someObj.NochkId = [];
+		someObj.ChkId = [];
+		$('.selectedLocId').prop('checked', this.checked);
+	});
+	$('#selectallPermanentAddress').click(function () {
+		var someObj = {};
+		someObj.NochkId = [];
+		someObj.ChkId = [];
+		$('.selectedPerId').prop('checked', this.checked);
+	});
+	$('#selectallMedical').click(function () {
+		var someObj = {};
+		someObj.NochkId = [];
+		someObj.ChkId = [];
+		$('.selectedMedId').prop('checked', this.checked);
+	});
+	$('#selectallEducational').click(function () {
+		var someObj = {};
+		someObj.NochkId = [];
+		someObj.ChkId = [];
+		$('.selectedEducation').prop('checked', this.checked);
+	});
+
+
+
+</script>

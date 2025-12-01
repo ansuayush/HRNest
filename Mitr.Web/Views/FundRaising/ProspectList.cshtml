@@ -1,0 +1,196 @@
+﻿@model IList<Mitr.Models.FundRaising.Prospect.List>
+@using System.Data
+@*@section style{
+        @System.Web.Optimization.Styles.Render("~/bundle/dataTablecss")
+    }*@
+@{
+    var Modify = clsApplicationSetting.GetSessionValue("Modify");
+    var Delete = clsApplicationSetting.GetSessionValue("Delete");
+}
+@{
+    string MenuID = "0";
+    DataSet ds = ViewBag.ExportList;
+    if (ViewBag.MenuID != null)
+    {
+        MenuID = ViewBag.MenuID;
+    }
+}
+<div class="inner-main mb-5 pb-0">
+    @Html.Partial("ListHeader_Partial", "Prospect Master")
+    <input type="hidden" id="hdnAddUrl" name="hdnAddUrl" value="@Url.Action("AddProspect",new { src = clsApplicationSetting.EncryptFriendly(ViewBag.MenuID+"*"+"/FundRaising/AddProspect*0") })" />
+    <div class="row">
+        <table id="tblExportData" class="table table-striped table-bordered dt-responsive nowrap tbltick new_width" style="border-collapse: collapse; border-spacing: 0; width: 100%; display:none ">
+            <thead>
+                <tr>
+                    @foreach (DataColumn item in ds.Tables[0].Columns)
+                    {
+                        <th>@item</th>
+
+                    }
+                </tr>
+            </thead>
+            <tbody>
+                @{ int count = 0;}
+                @if (ds.Tables[0].Rows.Count > 0)
+                {
+                    foreach (DataRow dtRow in ds.Tables[0].Rows)
+                    {
+                        count++;
+                        <tr>
+                            @foreach (DataColumn dc in ds.Tables[0].Columns)
+                            {
+                                <td>@dtRow[dc].ToString()</td>
+                            }
+                        </tr>
+                    }
+                }
+
+            </tbody>
+        </table>
+        <table id="tblExportFormat" class="table table-striped table-bordered dt-responsive nowrap tbltick new_width" style="border-collapse: collapse; border-spacing: 0; width: 100%;display:none ">
+            <thead>
+                <tr>
+                    @foreach (DataColumn item in ds.Tables[0].Columns)
+                    {
+                        <th>@item</th>
+
+                    }
+                </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+    </div>
+    <div class="row">
+        <div class="col-md-4 col-sm-12 col-xs-12">
+            <input type="file" id="FileAttachment" name="UploadedFile" class="file-inp" accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet/.xls" />
+
+        </div>
+        <div class="col-md-6 col-sm-12 col-xs-12 align-self-center">
+            @*<a class="btn clsbtn" onclick="saveAttachment()">test</a>*@
+            <button type="button" class="btn mtr-g-grn" onclick="saveAttachment()"><i class="fas fa-file-alt"></i>Import</button>
+            <button type="button" id="btnExportAll" class="btn mtr-g-grn"><i class="fas fa-download"></i>Export All</button>
+            @*<button type="button" id="btnExportFormat" class="btn mtr-g-grn"><i class="fas fa-download"></i>Export Format</button>*@
+            <a href="~/Attachments/Templates/ProspectFormat.xlsx" download="Prospect_Format" class="btn mtr-g-grn"><i class="fas fa-download"></i>Export Format</a>            
+        </div>
+        <div class="col-md-12 col-sm-12 col-xs-12">
+            @Html.EJS().Grid("Grid").DataSource((List<FundRaising.Prospect.List>)Model).GridLines(Syncfusion.EJ2.Grids.GridLine.Both).Columns(col =>
+       {
+           col.Field("Id").Visible(false).Add();
+           col.Field("RowNum").HeaderText("SNo.").Width("30").Add();
+
+           col.Field("ProspectName").HeaderText("Prospect Name").Width("160").Add();
+           col.Field("Category").HeaderText("Sector").Width("60").Add();
+           col.Field("Company").HeaderText("Company").Width("80").Add();
+           col.Field("Country").HeaderText("Country").Width("80").Add();
+           col.Field("State").HeaderText("State").Width("80").Add();
+           col.Field("ContactPerson").HeaderText("Contact Name").Width("80").Add();
+           col.Field("ContactNo").HeaderText("Contact No").Width("80").Add();
+           col.Field("Designation").HeaderText("Designation").Width("80").Add();
+           col.HeaderText("Action").TextAlign(Syncfusion.EJ2.Grids.TextAlign.Center).Template("#tmpAction").Width("60").Add();
+
+       }).AllowPaging().PageSettings(page => page.PageSize(10)).Created("created").Toolbar(new List<string>() { "Search" }).Render()
+
+
+
+        </div>
+    </div>
+</div>
+
+<script id="tmpAction" type="text/x-template">
+    ${if('@Modify' === 'True')}
+    <input type="hidden" name="I" class="I" value="${Id}" />
+    <a onclick="BindEdit(this)"><i class="fas fa-eye"></i>View </a>
+    <a onclick="DelRecord_Prospect(this)" class="red-clr"><i class="fas fa-trash"></i>Delete </a>
+    ${/if}
+</script>
+<script>
+    function created() {
+        var grid = document.getElementById("Grid").ej2_instances[0];
+        document.getElementById(grid.element.id + "_searchbar").addEventListener('keyup', () => {
+            grid.search(event.target.value)
+        });
+    }
+</script>
+@Html.IncludeVersionedJs(Url.Content("~/assets/design/Scripts/SyncScripts.js"))
+
+@(Html.EJS().ScriptManager())
+
+@section scripts    {
+    @System.Web.Optimization.Scripts.Render("~/bundle/unobtrusivejs")
+
+    @Html.IncludeVersionedJs(Url.Content("~/assets/design/Scripts/ToolTip.js"))
+
+    @Html.IncludeVersionedJs(Url.Content("~/assets/design/Scripts/SyncScripts.js"))
+    @Html.IncludeVersionedJs(Url.Content("~/assets/tableToExcel.js"))    
+    <script>
+        $("#btnExportAll").click(function (e) {
+            exportReportToExcelAll()
+        });
+        $("#btnExportFormat").click(function (e) {
+            exportReportToExcelFormat()
+        });
+         function exportReportToExcelAll() {
+             let table = document.getElementsByTagName("table"); // you can use document.getElementById('tableId') as well by providing id to the table tag
+        TableToExcel.convert(table[0], { // html code may contain multiple tables so here we are refering to 1st table tag
+            name: `ProspectList.xlsx`, // fileName you could use any name
+            sheet: {
+                name: 'Sheet 1' // sheetName
+            }
+        });
+    }
+    function exportReportToExcelFormat() {
+        let table = document.getElementsByTagName("table"); // you can use document.getElementById('tableId') as well by providing id to the table tag
+        TableToExcel.convert(table[1], { // html code may contain multiple tables so here we are refering to 1st table tag
+            name: `ProspectFormat.xlsx`, // fileName you could use any name
+            sheet: {
+                name: 'Sheet 1' // sheetName
+            }
+        });
+    }
+        function ListAdd(ID) {
+            var ID = Number(ID);
+            var MenuID = Number('@MenuID');
+            ShowLoadingDialog();
+            var url = "/FundRaising/AddProspect?src=" + EncryptQueryStringJSON(MenuID + "*" + "/FundRaising/AddProspect" + "*" + ID);
+            window.location.href = url;
+    }
+    function saveAttachment() {
+        var fileUpload = $("#FileAttachment").get(0);
+        var files = fileUpload.files;
+        // Create FormData object
+        if (files.length == 0) {
+            // showAndDismissAlert("danger","Please Choose File First.")
+            $("#FileAttachment").focus();
+            return
+        }
+        var fileData = new FormData();
+        if (files.length > 0) {
+            fileData.append("FileAttachment", files[0]);
+            ShowLoadingDialog();
+            $.ajax({
+                url: "/CommonAjax/UploadProspect",
+                type: "POST",
+                processData: false,
+                contentType: false,
+                data: fileData,
+                success: function (response) {
+                    $("#FileAttachment").val(null);
+                      //  window.location.reload();
+                    //alert(response.SuccessMessage);
+                    CloseLoadingDialog();
+                    swal('', response.SuccessMessage);
+                    if (response.ID != "0") {
+                        $("#FileAttachment").val(null);
+                        window.location.reload();
+                    }
+                }
+            });
+        }
+    }
+    </script>
+
+
+
+}
+

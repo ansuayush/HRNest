@@ -1,0 +1,314 @@
+﻿@model Mitr.Models.EXRecruit.Final_ConfirmedCV
+@{
+    string MenuID = ViewBag.MenuID.ToString();
+}
+
+<div class="inner-main mb-5 pb-0">
+    <h1 class="heading-one ">Finish Confirmed CV</h1>
+
+    @{
+        Html.RenderAction("_EViewRequests", "Recruit", new
+        {
+            src = clsApplicationSetting.EncryptQueryString(MenuID + " */Recruit/_EViewRequests*" + ViewBag.REC_ReqID + "*Y")
+        });
+    }
+
+    <h2 class="header-two"><i class="fas fa-info-circle"></i>Resume List</h2>
+
+    @using (Ajax.BeginForm("FinishConfirmedCV", "Recruit",
+           new { src = clsApplicationSetting.EncryptQueryString(ViewBag.MenuID.ToString() + "*/Recruit/FinishConfirmedCV*" + ViewBag.REC_ReqID) },
+           new AjaxOptions { HttpMethod = "POST", OnSuccess = "BindTarget", OnBegin = "ShowLoadingDialog();", OnFailure = "CloseLoadingDialog();" },
+           new { @id = "FinishConfirmedCVForm" })
+           )
+    {
+        <div class="row">
+            <div class="col-sm-12">
+                <strong>Confirm CVs</strong>
+                <div class="table-responsive">
+                    <table class="table mt-2">
+                        <thead>
+                            <tr>
+                                <th class="w-33">Sno.</th>
+                                <th>Candidate Name</th>
+                                <th class="w-180">View</th>
+                                @foreach (var item in Model.ApplicationList.Select(x => x.ApproverName).Distinct())
+                                {
+                                    <th class="w-150">@item</th>
+                                }
+                                <th class="w-50">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @{
+                                int Count = 0;
+                                var DistinctList = Model.ApplicationList.GroupBy(x => x.REC_AppID)
+                                    .Select(x => new
+                                    {
+                                        REC_AppID = x.Key,
+                                        Name = x.Select(ex => ex.Name).FirstOrDefault(),
+                                        Mobile = x.Select(ex => ex.Mobile).FirstOrDefault(),
+                                        EmailID = x.Select(ex => ex.EmailID).FirstOrDefault(),
+                                        CVAttachID = x.Select(ex => ex.CVAttachID).FirstOrDefault(),
+                                        CVPath = x.Select(ex => ex.CVPath).FirstOrDefault(),
+                                        Selected = x.Select(ex => ex.Selected).FirstOrDefault(),
+                                    }).ToList();
+                            }
+
+                            @foreach (var myitem in DistinctList)
+                            {
+                                Count++;
+                                <tr>
+                                    <td>
+                                        <input type="hidden" name="AppIID" value="@myitem.REC_AppID" />
+                                        @Count
+                                    </td>
+                                    <td>@myitem.Name</td>
+                                    <td>
+                                        <a data-toggle="tooltip" data-original-title="View" onclick="ViewApplication(this)" class="blk-clr mr-2"><i class="fas fa-eye"></i>View</a>
+                                        <a href="@myitem.CVPath" target="_blank" class="green-clr mr-2"><i class="fas fa-download"></i>Download CV</a>
+                                    </td>
+                                    @foreach (var item in Model.ApplicationList.Select(x => x.ApproverName).Distinct())
+                                    {
+                                        string Comment = Model.ApplicationList.Where(x => x.ApproverName == item && x.REC_AppID == myitem.REC_AppID).Select(x => x.Comment).FirstOrDefault();
+                                        int Approved = Model.ApplicationList.Where(x => x.ApproverName == item && x.REC_AppID == myitem.REC_AppID).Select(x => x.Approved).FirstOrDefault();
+                                        <td>
+                                            @Html.Raw(Approved == 2 ? "<span class='red-clr'>Rejected</span>" : "<span class='green-clr'>Selected</span>")
+                                            @if (!string.IsNullOrEmpty(Comment))
+                                            {
+                                                <i class="fas fa-info-circle td-info" data-toggle="tooltip" data-placement="right" data-original-title="@Comment"></i>
+                                            }
+                                        </td>
+                                    }
+                                    <td class="text-center">
+                                        @if (Model.IsBtnVisible)
+                                        {
+                                            if (myitem.Selected == 0)
+                                            {
+                                                <input type="checkbox" class="srcheck" id="slt_@Count" name="ApproveCandidate" value="@myitem.REC_AppID">
+                                                <label for="slt_@Count"></label>
+                                            }
+                                            else if (myitem.Selected == 1)
+                                            {
+                                                <span class='green-clr'>Confirmed</span>
+                                            }
+                                            else if (myitem.Selected == 2)
+                                            {
+                                                <span class='red-clr'>Dropped</span>
+                                            }
+                                        }
+                                        else
+                                        {
+                                            if (myitem.Selected == 0)
+                                            {
+                                                <input type="checkbox" class="srcheck" id="slt_@Count" name="ApproveCandidate" value="@myitem.REC_AppID">
+                                                <label for="slt_@Count"></label>
+                                            }
+                                            else if (myitem.Selected == 1)
+                                            {
+                                                <span class='green-clr'>Confirmed</span>
+                                            }
+                                            else if (myitem.Selected == 2)
+                                            {
+                                                <span class='red-clr'>Dropped</span>
+                                            }
+                                        }
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+
+                </div>
+            </div>
+        </div>
+        if (Model != null)
+        {
+            if (Model.IsBtnVisible)
+            {
+                <div class="row">
+                    <div class="col-lg-12 text-center mb-2 mt-2">
+                        <button type="submit" class="btn mtr-o-grn btn-l ripplelink pull-right" name="Command" value="Confirm">
+                            <i class="fa fa-paper-plane" aria-hidden="true"></i> Confirm List
+                        </button>
+                        <button type="button" class="btn red-clr-bg btn-l ripplelink pull-right" onclick="checkSelectedCandidates()">
+                            <i class="fa fa-paper-plane" aria-hidden="true"></i> Drop Candidate
+                        </button>
+
+                        <button type="button" class="btn cnl-btn ripplelink pull-right">
+                            <i class="fas fa-times"></i> Cancel
+                        </button>
+                    </div>
+
+                </div>
+            }
+        }
+
+
+        <div class="modal fade pop-dgn" id="rejected">
+            <div class="modal-dialog mdl-sm">
+                <div class="modal-content">
+                    <div class="modal-header blk-gdn-btn">
+                        <h4 class="modal-title">Reason</h4>
+                        <div class="close" data-dismiss="modal">&times;</div>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row text-clr">
+                            <div class="col-lg-12 form-group">
+                                <label>Reason</label>
+                                <textarea class="form-control" placeholder="Enter Reason" name="Reason" id="reasonTextArea"></textarea>
+                                <span id="reasonError" style="color: red; display: none;"></span> <!-- Error message span -->
+                            </div>
+                            <div class="col-lg-12 text-center mt-3">
+                                <button type="button" class="btn blk-gdn-btn btn-l ripplelink pull-right" onclick="submitReason('MoveToPool')">
+                                    <i class="fas fa-arrows-alt"></i> Move to Talent Pool
+                                </button>
+                                <button type="button" class="btn mtr-o-grn btn-l ripplelink pull-right" onclick="submitReason('Drop')">
+                                    <i class="fas fa-save"></i> Drop Candidate
+                                </button>
+                                <button type="button" class="btn cnl-btn ripplelink pull-right" data-dismiss="modal"><i class="fas fa-times"></i> Cancel</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="modal fade pop-dgn" id="ViewAppModal">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header blk-gdn-btn">
+                        <h4 class="modal-title"></h4>
+                        <div class="close" data-dismiss="modal">&times;</div>
+                    </div>
+                    <div class="modal-body">
+                        <div id="DivViewApp"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        @section scripts {
+            @System.Web.Optimization.Scripts.Render("~/bundle/unobtrusivejs")
+            <script src="~/assets/design/Scripts/AddInit.js?v=@clsApplicationSetting.GetWebConfigValue("Version")"></script>
+            <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+            <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+            <script>
+
+                      function checkSelectedCandidates() {
+                          var selectedCandidates = [];
+                          $('input[name="ApproveCandidate"]:checked').each(function() {
+                              selectedCandidates.push($(this).val());
+                          });
+
+                          if (selectedCandidates.length === 0) {
+                              Swal.fire({
+                                  icon: 'warning',
+                                  title: 'No Candidates Selected',
+                                  text: 'Please select at least one candidate.',
+                                  confirmButtonText: 'OK'
+                              });
+                              return;
+                          }
+                          $('#rejected').modal('show');
+                      }
+                         function submitReason(action) {
+                             var reason = $('#reasonTextArea').val();
+                             var selectedCandidates = [];
+                             $('input[name="ApproveCandidate"]:checked').each(function() {
+                                 selectedCandidates.push($(this).val());
+                             });
+                             if (selectedCandidates.length === 0) {
+                                 alert("Please select at least one candidate.");
+                                 return;
+                               }
+                                   if (!reason.trim()) {
+                           $('#reasonError').text("Reason cannot be blank.").show(); // Show error message
+                           return;
+                       } else {
+                           $('#reasonError').hide(); // Hide error message if valid
+                       }
+                         	var REC_AppIDs = [];
+                             var REC_ReqIDs = [];
+                             selectedCandidates.forEach(candidate => {
+                                 var parts = candidate.split(',');
+                                 REC_AppIDs.push(parts[0]);
+                                 REC_ReqIDs.push(parts[1]);
+                             });
+
+                  $.ajax({
+                      url: '/Recruit/_MoveToPoolConfirmCV',
+                      type: 'POST',
+                      data: {
+                          src: '@clsApplicationSetting.EncryptQueryString(MenuID + "*/Recruit/_MoveToPoolConfirmCV*")',
+                          Command: action,
+                          Modal: {
+                              ChkMove: selectedCandidates.join(','),
+                              REC_AppID: REC_AppIDs.join(','),
+                              REC_ReqID: REC_ReqIDs.join(','),
+                              Reason: reason
+                          }
+                      },
+                      success: function(response) {
+                          if (response.Status) {
+                              SuccessToaster(response.SuccessMessage);
+                              window.location.reload();
+                              $('#rejected').modal('hide');
+                               ClearFormControl();
+                          } else {
+                              FailToaster(response.SuccessMessage);
+								   $('#rejected').modal('hide');
+                                window.location.reload();
+                                  ClearFormControl();
+                                $('input[name="ApproveCandidate"]:checked').prop('checked', false);
+                          }
+                      },
+                      error: function() {
+                          FailToaster("An error occurred while processing your request.");
+                      }
+                  });
+			 }
+            </script>
+
+            <script>
+                 function ClearFormControl() {
+                  $('#reasonTextArea').val('');
+                      }
+
+                            function BindTarget(obj) {
+                                if (obj.Status) {
+                                    SuccessToaster(obj.SuccessMessage);
+                                    window.location.href = obj.RedirectURL;
+                                } else {
+                                    CloseLoadingDialog();
+                                    FailToaster(obj.SuccessMessage);
+                                }
+                            }
+
+                            function ViewApplication(obj) {
+                                var AppIID = $(obj).closest("tr").find("input:hidden[name=AppIID]").val();
+                                $.ajax({
+                                    url: "/Recruit/_ViewApplications",
+                                    type: "GET",
+                                    data: {
+                                        src: EncryptQueryStringJSON('@ViewBag.MenuID+' + "*"+ '/Recruit/_ViewApplications' + '*' + AppIID)
+                                    },
+                                    success: function(args) {
+                                        CloseLoadingDialog();
+                                        $("#DivViewApp").empty().html(args);
+                                        $("#ViewAppModal").modal('show');
+                                    },
+                                    error: function(er) {
+                                        CloseLoadingDialog();
+                                    }
+                                });
+                            }
+
+                            $(document).ready(function() {
+                                // Additional initialization if needed
+                            });
+            </script>
+        }
+
+    }
+</div>

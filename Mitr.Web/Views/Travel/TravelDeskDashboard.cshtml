@@ -1,0 +1,294 @@
+﻿@model Mitr.Models.TravelMode
+@{
+	ViewBag.Title = "TravelDeskDashboard";
+}
+
+<!-- Start -->
+<div class="row">
+	<div class="col-lg-6 col-md-12">
+		<div class="shadow-box boxheight">
+			<h2 class="heading-grd heading-btn  blk-gdn-btn m-0"> To be Booked </h2>
+			<ul class="list-unstyled row pl-2 pr-2 mt-3 booklistinfo ">
+				<li class="col-lg-4 col-md-4 col-sm-4">
+					<a herf="#" onclick="ClickMode(3);"><div class="booklist "><i class="fas fa-plane"></i>By Air <span class="count-scd">@Model.Air</span></div></a>
+				</li>
+				<li class="col-lg-4 col-md-4 col-sm-4">
+					<a herf="#" onclick="ClickMode(2);"> <div class="booklist "><i class="fas fa-train"></i>By Train<span class="count-scd">@Model.Train</span></div></a>
+				</li>
+				<li class="col-lg-4 col-md-4 col-sm-4">
+					<a herf="#" onclick="ClickMode(1);">   <div class="booklist "><i class="fas fa-road"></i>By Road(Self Arrange ) <span class="count-scd">@Model.Road</span></div></a>
+				</li>
+				<li class="col-lg-4 col-md-4 col-sm-4">
+					<a herf="#" onclick="ClickMode(5);">   <div class="booklist "><i class="fas fa-road"></i>By Road(Office provided ) <span class="count-scd">@Model.Road</span></div></a>
+				</li>
+				<li class="col-lg-4 col-md-4 col-sm-4">
+					<a herf="#" onclick="ClickMode(4);"> <div class="booklist "><i class="fas fa-ship"></i>By Sea<span class="count-scd">@Model.Sea</span></div></a>
+				</li>
+				<li class="col-lg-4 col-md-4 col-sm-4">
+					<div class="booklist "><i class="fas fa-utensils"></i>Hotel <span class="count-scd">@Model.Hotel</span></div>
+				</li>
+				<li class="col-lg-4 col-md-4 col-sm-4">
+					<div class="booklist "><i class="fas fa-credit-card"></i>Visa <span class="count-scd">0</span></div>
+				</li>
+				<li class="col-lg-4 col-md-4 col-sm-4">
+					<div class="booklist "><i class="fas fa-user-shield"></i>Insurance <span class="count-scd">0</span></div>
+				</li>
+				<li class="col-lg-4 col-md-4 col-sm-4">
+					<div class="booklist "><i class="fas fa-taxi"></i>Local Cab <span class="count-scd">0</span></div>
+				</li>
+			</ul>
+
+			-----
+			<div class="tab-main">
+				<ul id="tabs" class="nav nav-tabs " role="tablist">
+					<li class="nav-item"> <a id="tab-A" href="#active-log" class="nav-link  ripplelink active" data-toggle="tab" role="tab"><i class="fas fa-envelope-open"></i>Open Requests</a> </li>
+					<li class="nav-item"> <a id="tab-B" href="#leaves" class="nav-link ripplelink " data-toggle="tab" role="tab"><i class="fas fa-receipt"></i>Billing</a> </li>
+					<li class="nav-item"> <a id="tab-c" href="#legacy" class="nav-link ripplelink " data-toggle="tab" role="tab"><i class="fas fa-database"></i>Legacy Data</a> </li>
+
+				</ul>
+				<div id="UpdateModalTravelRequest">
+
+				</div>
+			</div>
+				
+				@*@{Html.RenderAction("_ViewTravelDeskList_Dashboard", new { src = clsApplicationSetting.EncryptQueryString(ViewBag.MenuID.ToString() + "*/Travel/_ViewTravelDeskList_Dashboard" + "*" + 0) }); }*@
+
+			</div>
+		</div>
+	<div class="col-lg-6 col-md-12">
+		<div class="shadow-box">
+			<h2 class="heading-grd heading-btn  blk-gdn-btn m-0"> Travel Request </h2>
+			<div id="targetDiv">
+				<div class="no-dat-dv">
+					<img src="~/assets/design/images/not-found-image.png" alt="">
+					<p class="mtr-o-clr">No Record Found</p>
+				</div>
+			</div>
+		</div>
+	</div>
+
+
+</div>
+
+
+
+
+
+
+@section scripts    {
+	@System.Web.Optimization.Scripts.Render("~/bundle/unobtrusivejs");
+	<script>
+		
+		
+
+		$(document).ready(function () {
+			TravelDeskboardlist(10);
+		});
+		function ClickMode(Mode) {
+	       TravelDeskboardlist(Mode);
+		
+
+
+         }
+		function Transfer(obj) {
+			debugger;
+			var TravelRequestDetID = parseInt($(obj).closest('tr').find("td.hdfid input[type='hidden']").val());
+			var TravelDeskId = parseInt($(obj).closest('tr').find("td.hdfTraveldeskId input[type='hidden']").val());
+
+			if (TravelRequestDetID > 0 && TravelDeskId > 0) {
+
+				ConfirmMsgBox("Are you sure to Transfer this Request.", '', function () {
+
+					TransferRequest(TravelRequestDetID, TravelDeskId);
+
+				});
+			}
+			else {
+				ConfirmMsgBox("something wrong .", '', function () {
+
+
+
+				});
+			}
+
+
+		}
+		function TransferRequest(TravelRequestDetID, TravelDeskId) {
+
+			$.ajax({
+				url: "/CommonAjax/TransferTravelRequestJson",
+				type: "Get",
+				async: true,
+				data: { TravelRequestDetID: TravelRequestDetID, TravelDeskId: TravelDeskId },
+				success: function (data) {
+					if (data == 1) {
+						SuccessToaster(' Request Transfer successfully');
+						window.location.reload();
+					}
+					else {
+						FailToaster('Can not Transfer.')
+					}
+				},
+				error: function (er) {
+					alert(er);
+				}
+			});
+		}
+		function TravelDeskboardlist(Mode) {
+		  ShowLoadingDialog();
+        	$.ajax({
+				url: "/Travel/_ViewTravelDeskList_Dashboard",
+				type: "Get",
+				data: { src: EncryptQueryStringJSON(@ViewBag.MenuID+"*" + "/Travel/_ViewTravelDeskList_Dashboard" + "*" + Mode) },
+                success: function (data)
+                {
+					$("#UpdateModalTravelRequest").empty();
+					$("#UpdateModalTravelRequest").html(data);
+                    CloseLoadingDialog();
+				},
+				error: function (er) {
+                     FailToaster(er);
+                     CloseLoadingDialog();
+				}
+			});
+	}
+
+		@*$('.viewRequest').on('click', function (e) {
+			debugger;
+           ShowLoadingDialog();
+            e.preventDefault();
+            e.stopPropagation();
+          $(this).closest("li").addClass("selected").siblings().removeClass("selected");
+             var TRI = $(this).closest("li").find("input:hidden[name=TRI]").val();
+            ViewTravelRequest(TRI);
+
+
+
+            });
+
+        function ViewTravelRequest(TravelRequestID) {
+            debugger;
+          var ID = Number(TravelRequestID);
+			$.ajax({
+                url: "/Travel/_ViewTravelRequest_ForDesk",
+				type: "Get",
+				data: { src: EncryptQueryStringJSON(@ViewBag.MenuID+"*" + "/Travel/_ViewTravelRequest_ForDesk" + "*" + ID) },
+                success: function (data)
+                {
+
+					$("#targetDiv").empty();
+                    $("#targetDiv").html(data);
+
+                    CloseLoadingDialog();
+
+				},
+				error: function (er) {
+                    FailToaster(er);
+                      CloseLoadingDialog();
+				}
+			});
+        }*@
+	function EditTravelDocument(TravelRequestID, versionno, Traveldocid) {
+		debugger;
+			var ID = Number(TravelRequestID);
+		    var Amendverno = Number(versionno);
+		   var Traveldocid = Number(Traveldocid);
+			$.ajax({
+                url: "/Travel/_AddTravelDocument",
+				type: "Get",
+				data: { src: EncryptQueryStringJSON(@ViewBag.MenuID+"*" + "/Travel/_AddTravelDocument" + "*" + ID + "*" + Amendverno + "*" + Traveldocid) },
+                success: function (data)
+                {
+					$("#targetAddDocument").empty();
+                    $("#targetAddDocument").html(data);
+                    var form = $("form")
+                   .removeData("validator")
+                   .removeData("unobtrusiveValidation");
+                    $.validator.unobtrusive.parse(form);
+
+				},
+				error: function (er) {
+                    FailToaster(er);
+				}
+			});
+		}
+
+        function AddTravelDocument(TravelRequestID,versionno) {
+			var ID = Number(TravelRequestID);
+			var Amendverno = Number(versionno);
+			$.ajax({
+                url: "/Travel/_AddTravelDocument",
+				type: "Get",
+				data: { src: EncryptQueryStringJSON(@ViewBag.MenuID+"*" + "/Travel/_AddTravelDocument" + "*" + ID + "*" + Amendverno) },
+                success: function (data)
+                {
+					$("#targetAddDocument").empty();
+                    $("#targetAddDocument").html(data);
+                    var form = $("form")
+                   .removeData("validator")
+                   .removeData("unobtrusiveValidation");
+                    $.validator.unobtrusive.parse(form);
+
+				},
+				error: function (er) {
+                    FailToaster(er);
+				}
+			});
+        }
+
+
+
+        function DeleteTravelDoc(TravelDocID,obj) {
+            ConfirmMsgBox('Are you sure want to delete Document', '', function () {
+                $.ajax({
+                    url: "/CommonAjax/DeleteTravelDocJSON",
+                    type: "Post",
+                    async: true,
+                    data: { TravelDocID: TravelDocID },
+                    success: function (data) {
+                        if (data > 0) {
+                             var L = $(obj).closest("tr").find("input:hidden[name=TRID]").val();
+                             ViewTravelRequest(L);
+                        }
+                        else {
+                            FailToaster('Can not delete this request');
+                        }
+                    },
+                    error: function (er) {
+                        alert(er);
+                    }
+                });
+            });
+        }
+
+           function OnAddTravelDocumentSuccess(obj) {
+               if (obj.Status) {
+				   SuccessToaster(obj.SuccessMessage);
+				   $("#AddDocumentModal").modal('hide');
+				   $('.modal-backdrop').removeClass("modal-backdrop fade show");
+				   $('.modal-backdrop').addClass("modal fade show");
+                   ViewTravelRequest(obj.ID);
+
+            }
+            else {
+				   FailToaster(obj.SuccessMessage);
+				   CloseLoadingDialog();
+            }
+        }
+
+        function ActionOnForwardToFinance_Desk(obj)
+        {
+          if (obj.Status)
+           {
+              SuccessToaster(obj.SuccessMessage);
+			  location.reload();
+            }
+            else {
+                FailToaster(obj.SuccessMessage);
+            }
+        }
+
+	</script>
+
+
+}

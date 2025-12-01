@@ -1,0 +1,251 @@
+﻿@model Mitr.Models.BudgetMaster.SetBudgetEmployeeSallary
+
+
+		<div class="modal-body">
+			<div class="row">
+				<div class="col-sm-4  form-group">
+					<label>Staff Name</label>
+					@Html.DropDownListFor(modal => modal.EmployeeId, new SelectList(@ViewBag.EmpList, "Id", "Name"), "select", new { @class = "form-control applyselect" })
+					@*<select class="form-control dpselect">
+							<option>Select</option>
+							<option selected="">Sanjay Paul</option>
+							<option>Manju</option>
+							<option>To be appointed</option>
+						</select>*@
+
+				</div>
+				<div class="col-sm-12 mt-2 form-group">
+					<ul class="list-unstyled inline-li rqt-hlf575 m-0 rqt-dtl">
+						<li><strong class="green-clr">Staff Detail</strong></li>
+						<li>
+							<label class="lbl-clr">Sanjay Paul</label>
+							<br>
+							1554<span class="space-line">|</span> Delhi
+						</li>
+						<li>
+							<label>Location</label>
+							<br>
+							Delhi
+						</li>
+						<li>
+							<label>Designation </label>
+							<br>Executive Director
+						</li>
+						<li>
+							<label>Employment Category  </label>
+							<br> Core
+						</li>
+						<li>
+							<label>Sub Category </label>
+							<br>5 days one Hour
+						</li>
+						<li>
+							<label>Hours </label>
+							<br>
+							18 Hr.
+						</li>
+
+
+					</ul>
+
+				</div>
+
+				<div class="col-sm-12 form-group">
+
+					<!----open tab---->
+					<div class="tab-main mb-3">
+						<ul id="tabs" class="nav nav-tabs " role="tablist">
+							<li class="nav-item"> <a id="tab-C" href="#standalone" class="nav-link ripplelink active" data-toggle="tab" role="tab" aria-selected="true"><i class="fas fa-calendar-check"></i> Year Wise </a> </li>
+							<li class="nav-item"> <a id="tab-A" href="#rfp-budgets" class="nav-link ripplelink" data-toggle="tab" role="tab" aria-selected="false"><i class="far fa-calendar-alt"></i>Month Wise</a>  </li>
+						</ul>
+						<div id="content" class="tab-content shadow-box p-0" role="tablist">
+							<div id="standalone" class="card tab-pane fade active show" role="tabpanel" aria-labelledby="tab-A">
+								<div class="card-header" role="tab" id="heading-A">
+									<h5 class="mb-0">
+										<!-- Note: `data-parent` removed from here -->
+										<a data-toggle="collapse" href="#collapse-A" aria-expanded="true" aria-controls="collapse-A">Year Wise<i class="fas fa-clock"></i></a>
+									</h5>
+								</div>
+
+								<!-- Note: New place of `data-parent` -->
+								<div id="collapse-A" class="collapse show" data-parent="#content" role="tabpanel" aria-labelledby="heading-A">
+									<div class="card-body p-0">
+										<!-- Start -->
+
+										<div class="table-responsive">
+											<table class="table">
+												<thead>
+													<tr>
+														<th></th>
+														<th class="text-center" width="80">Oct-Mar (Upto March) </th>
+														<th class="text-center" width="80">Apr-Sept (After March) </th>
+													</tr>
+													<tr>
+														<th></th>
+														<th class="text-center" colspan="2">Percentage</th>
+													</tr>
+												</thead>
+												<tbody>
+													<tr>
+														<td><strong>2020-21</strong></td>
+														<td>
+															<div class="input-group">
+																<input type="number" value="" class="form-control text-center" placeholder="0">
+																<div class="input-group-append"> <span class="input-group-text" id="basic-addon2">%</span> </div>
+															</div>
+														</td>
+														<td>
+															<div class="input-group">
+																<input type="number" value="" class="form-control text-center" placeholder="0">
+																<div class="input-group-append"> <span class="input-group-text" id="basic-addon2">%</span> </div>
+															</div>
+														</td>
+													</tr>
+													<tr>
+														<td><strong>2021-22	</strong></td>
+														<td>
+															<div class="input-group">
+																<input type="number" value="" class="form-control text-center" placeholder="0">
+																<div class="input-group-append"> <span class="input-group-text" id="basic-addon2">%</span> </div>
+															</div>
+														</td>
+														<td>
+															<div class="input-group">
+																<input type="number" value="" class="form-control text-center" placeholder="0">
+																<div class="input-group-append"> <span class="input-group-text" id="basic-addon2">%</span> </div>
+															</div>
+														</td>
+													</tr>
+													<tr>
+														<td><strong>2022-23</strong></td>
+														<td>
+															<div class="input-group">
+																<input type="number" value="" class="form-control text-center" placeholder="0">
+																<div class="input-group-append"> <span class="input-group-text" id="basic-addon2">%</span> </div>
+															</div>
+														</td>
+														<td>
+															<div class="input-group">
+																<input type="number" value="" class="form-control text-center" placeholder="0">
+																<div class="input-group-append"> <span class="input-group-text" id="basic-addon2">%</span> </div>
+															</div>
+														</td>
+													</tr>
+												</tbody>
+											</table>
+
+
+										</div>
+										<!-- End -->
+									</div>
+								</div>
+							</div>
+							<div id="rfp-budgets" class="card tab-pane fade" role="tabpanel" aria-labelledby="tab-A">
+								<div class="card-header" role="tab" id="heading-A">
+									<h5 class="mb-0">
+										<!-- Note: `data-parent` removed from here -->
+										<a data-toggle="collapse" href="#collapse-C" aria-expanded="true" aria-controls="collapse-A">Month Wise  <i class="fas fa-clock"></i></a>
+									</h5>
+								</div>
+
+								<!-- Note: New place of `data-parent` -->
+								<div id="collapse-C" class="collapse " data-parent="#content" role="tabpanel" aria-labelledby="heading-A">
+									<div class="card-body p-0">
+										<!-- Start -->
+										<div class="table-responsive">
+
+											<table class="table tbl-880">
+												<thead>
+													<tr>
+														<th width="150"></th>
+														<th width="120" class=" text-center">Apr</th>
+														<th width="120" class=" text-center">May</th>
+														<th width="120" class="text-center">Jun</th>
+														<th width="120" class=" text-center">July</th>
+														<th width="120" class=" text-center">Aug</th>
+														<th width="120" class=" text-center">Sept</th>
+														<th width="120" class=" text-center">Oct</th>
+														<th width="120" class=" text-center">Nov</th>
+														<th width="120" class=" text-center">Dec</th>
+														<th width="120" class=" text-center">Jan</th>
+														<th width="120" class=" text-center">Feb</th>
+														<th width="120" class=" text-center">Mar </th>
+													</tr>
+												</thead>
+												<tbody>
+														<tr>
+															<td>2020-21</td>
+															<td></td>
+															<td></td>
+															<td></td>
+															<td></td>
+															<td></td>
+															<td></td>
+															<td>
+																<div class="input-group">
+																	<div class="input-group">
+																		<input type="number" value="" class="form-control text-center" placeholder="0">
+																		<div class="input-group-append"> <span class="input-group-text" id="basic-addon2">%</span> </div>
+																	</div>
+															</td>
+															<td>
+																<div class="input-group">
+																	<div class="input-group">
+																		<input type="number" value="" class="form-control text-center" placeholder="0">
+																		<div class="input-group-append"> <span class="input-group-text" id="basic-addon2">%</span> </div>
+																	</div>
+															</td>
+															<td>
+																<div class="input-group">
+																	<div class="input-group">
+																		<input type="number" value="" class="form-control text-center" placeholder="0">
+																		<div class="input-group-append"> <span class="input-group-text" id="basic-addon2">%</span> </div>
+																	</div>
+															</td>
+															<td>
+																<div class="input-group">
+																	<div class="input-group">
+																		<input type="number" value="" class="form-control text-center" placeholder="0">
+																		<div class="input-group-append"> <span class="input-group-text" id="basic-addon2">%</span> </div>
+																	</div>
+															</td>
+															<td>
+																<div class="input-group">
+																	<div class="input-group">
+																		<input type="number" value="" class="form-control text-center" placeholder="0">
+																		<div class="input-group-append"> <span class="input-group-text" id="basic-addon2">%</span> </div>
+																	</div>
+															</td>
+															<td>
+																<div class="input-group">
+																	<div class="input-group">
+																		<input type="number" value="" class="form-control text-center" placeholder="0">
+																		<div class="input-group-append"> <span class="input-group-text" id="basic-addon2">%</span> </div>
+																	</div>
+															</td>
+														</tr>
+												
+
+
+												</tbody>
+											</table>
+
+										</div>
+										<!-- End -->
+									</div>
+								</div>
+							</div>
+
+						</div>
+					</div>
+					<!----close tab---->
+				</div>
+
+
+			</div>
+			<div class="mt-4 text-center">
+				<button type="button" data-dismiss="modal" class="btn cnl-btn"><i class="fas fa-times"></i> Close</button>
+				<button type="submit" class="btn mtr-o-grn " name="Command" value="Add"><i class="fas fa-save"></i>Save</button>
+				<button type="submit" class="btn mtr-o-grn " name="Command" value="Add"><i class="fas fa-save"></i>Save & New</button>
+			</div>
+		</div>

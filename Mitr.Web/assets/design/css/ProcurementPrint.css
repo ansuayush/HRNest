@@ -1,0 +1,104 @@
+﻿
+.prdodrheader {
+    padding: 10px;
+    font-size: 16px;
+    margin-bottom: 40px;
+}
+
+    .prdodrheader h2 {
+        font-weight: normal;
+    }
+
+    .prdodrheader .offerleterlogo {
+        width: 200px;
+    }
+
+    .prdodrheader .rightsideinfo p {
+        margin-bottom: 5px;
+    }
+
+    .prdodrheader .rightsideinfo small {
+        line-height: 18px !important;
+        font-size: 12px;
+        display: table
+    }
+
+.prdord-info, .prdord-tableprice {
+    padding: 0px 20px 20px;
+}
+
+    .prdord-info h2 {
+        display: table;
+        font-size: 14px;
+        font-weight: normal;
+        background: #fffaf3;
+        padding: 4px 10px;
+        border-left: 4px solid #ef8813;
+        color: #7c7c7c;
+        margin-bottom: 15px;
+    }
+
+.prdord-adr {
+    font-size: 14px;
+}
+
+    .prdord-adr p {
+        margin-top: 5px;
+        margin-bottom: 0px;
+    }
+
+    .prdord-adr table td {
+        font-size: 14px !important;
+    }
+
+    .prdord-adr table td {
+        padding: 0px 15px 5px 0px;
+    }
+
+.prdord-tableprice th {
+    font-size: 14px;
+    padding: 15px;
+    border: 0px;
+    background: #fffaf3;
+    color: #000;
+}
+
+.prdord-tableprice td {
+    padding: 15px !important;
+    border: 0px;
+    border-bottom: 1px solid #dbdbdb !important;
+    font-size: 14px !important;
+    border-bottom: 0px;
+}
+
+.prdordftr {
+    padding: 20px;
+    font-size: 14px;
+}
+
+.square li {
+    list-style-type: square;
+    padding: 0px 0px 10px;
+}
+
+.prdordftr td {
+    border: 0px;
+}
+
+ol li::before {
+    color: #040404;
+}
+
+ol li li::before {
+    content: "";
+}
+
+.rightsideinfo table td {
+    font-size: 14px !important;
+    padding-bottom: 5px;
+    vertical-align: top;
+}
+
+.prdord-info table td {
+    vertical-align: top;
+}

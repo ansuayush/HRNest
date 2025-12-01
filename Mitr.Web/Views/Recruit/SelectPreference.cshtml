@@ -1,0 +1,228 @@
+﻿
+@model IList<Mitr.Models.Recruit.Recom_Preference>
+@{
+	List<SelectListItem> D1 = new List<SelectListItem>();
+
+	for (int i = 1; i <= Model.Count; i++)
+	{
+		D1.Add(new SelectListItem { Text = i.ToString(), Value = i.ToString() });
+	}
+
+	bool IsBtnVisible = false;
+	if (Model != null)
+	{
+		if (!Model.Any(x => x._Preference > 0))
+		{
+			IsBtnVisible = true;
+		}
+	}
+
+}
+
+<div class="inner-main mb-5 pb-0">
+	<h1 class="heading-one ">Preference for Program Officer</h1>
+
+	@{ Html.RenderAction("ViewRequests", "Recruit", new { src = clsApplicationSetting.EncryptQueryString(ViewBag.MenuID.ToString() + " */Recruit/ViewRequests*" + ViewBag.REC_ReqID) }); }
+
+
+
+	@using (Ajax.BeginForm("SelectPreference", "Recruit",
+	new { src = ViewBag.src },
+	new AjaxOptions { HttpMethod = "POST", OnSuccess = "SelectPreferenceSuccess", OnBegin = "ShowLoadingDialog();", OnFailure = "CloseLoadingDialog();" },
+	new
+	{
+		@id = "SelectPreferenceFrom",
+		enctype = "multipart/form-data"
+	})
+	)
+	{
+
+		<div class="row">
+			<div class="col-sm-12">
+				<strong>Staff List </strong>
+				<div class="table-responsive">
+					<table class="table gry-tbl mt-2">
+						<thead>
+							<tr>
+								<th scope="col" rowspan="2" class="w-33 text-center">Sno.</th>
+								<th scope="col" rowspan="2">Name</th>
+								<th scope="col" class="text-center" colspan="3">Impacts</th>
+								<th rowspan="2">Comment</th>
+								<th rowspan="2" class="w-50">Preference</th>
+							</tr>
+							<tr>
+								<th scope="col" rowspan="1" class="w-100">Relocation</th>
+								<th scope="col" rowspan="1" class="w-100">Job Title</th>
+								<th scope="col" rowspan="1" class="w-100">Pillar</th>
+							</tr>
+						</thead>
+						<tbody>
+							@{ int Count = 0;}
+
+							@for (int i = 0; i < Model.Count; i++)
+							{
+
+								Count++;
+								<tr>
+									<td class="text-center">
+										@Count
+										@Html.HiddenFor(x => Model[i].EmpID)
+									</td>
+									<td>@Model[i].EmpName (@Model[i].EMPCode) </td>
+									<td>
+										@Model[i].RelocationByHR
+										@if ((Model[i].Relocation != Model[i].RelocationByHR) || Model[i].RelocationByHR == "Yes")
+										{
+											<div class="pr">
+												<div class="dropdown">
+													<div class="drop-pophr" data-toggle="dropdown" aria-expanded="true"> <i class="fas fa-info-circle"></i> </div>
+													<div class="dropdown-menu" role="menu" x-placement="top-start" style="position: absolute; will-change: transform; top: 0px; left: 0px; transform: translate3d(65px, -73px, 0px);">
+														<ul class="list-unstyled text-clr two-clm tr-pophover p-2">
+															<li>
+																<strong>Old Location</strong>
+																<p>@Model[i].Location</p>
+															</li>
+															<li>
+																<strong>New Location</strong>
+																<p>@Model[i].Current_Location</p>
+															</li>
+														</ul>
+													</div>
+												</div>
+											</div>
+										}
+									</td>
+									<td>
+										@Model[i].JobTitleByHR
+
+										@if ((Model[i].JobTitle != Model[i].JobTitleByHR) || Model[i].JobTitleByHR == "Yes")
+										{
+											<div class="pr">
+												<div class="dropdown">
+													<div class="drop-pophr" data-toggle="dropdown" aria-expanded="true"> <i class="fas fa-info-circle"></i> </div>
+													<div class="dropdown-menu" role="menu" x-placement="top-start" style="position: absolute; will-change: transform; top: 0px; left: 0px; transform: translate3d(65px, -73px, 0px);">
+														<ul class="list-unstyled text-clr two-clm tr-pophover p-2">
+															<li>
+																<strong>Old Job</strong>
+																<p>@Model[i].Job</p>
+															</li>
+															<li>
+																<strong>New Job</strong>
+																<p>@Model[i].Current_Job</p>
+															</li>
+														</ul>
+													</div>
+												</div>
+											</div>
+										}
+
+									</td>
+									<td>
+										@Model[i].PillarByHR
+
+										@if ((Model[i].Pillar != Model[i].PillarByHR) || Model[i].PillarByHR == "Yes")
+										{
+											<div class="pr">
+												<div class="dropdown">
+													<div class="drop-pophr" data-toggle="dropdown" aria-expanded="true"> <i class="fas fa-info-circle"></i> </div>
+													<div class="dropdown-menu" role="menu" x-placement="top-start" style="position: absolute; will-change: transform; top: 0px; left: 0px; transform: translate3d(65px, -73px, 0px);">
+														<ul class="list-unstyled text-clr two-clm tr-pophover p-2">
+															<li>
+																<strong>Old Pillar</strong>
+																<p>@Model[i].TH_Areas</p>
+															</li>
+															<li>
+																<strong>New Pillar</strong>
+																<p>@Model[i].Current_TH_Areas</p>
+															</li>
+														</ul>
+													</div>
+												</div>
+											</div>
+										}
+
+									</td>
+									<td>
+										@if (IsBtnVisible)
+										{
+											@Html.TextAreaFor(x => Model[i].comment, new { @class = "form-control" })
+										}
+										else
+										{
+										<p>@Model[i].comment</p>
+										}
+											@Html.ValidationMessageFor(model => Model[i].comment, "", new { @class = "text-danger" })
+										</td>
+									<td>
+										@if (IsBtnVisible)
+										{
+										@Html.DropDownListFor(model => Model[i]._Preference, new SelectList(D1, "Value", "text", Model[i]._Preference), "Select", new { @class = "form-control applyselect ddpreference" })
+										}
+										else
+										{
+										<span>@Model[i]._Preference</span>
+										}
+										@Html.ValidationMessageFor(model => Model[i]._Preference, "", new { @class = "text-danger" })
+									</td>
+								</tr>
+							}
+						</tbody>
+
+					</table>
+				</div>
+			</div>
+
+		</div>
+		if (IsBtnVisible)
+		{
+			<div class="row">
+				<div class="col-lg-12 text-center mb-2">
+					<button type="submit" class="btn  mtr-o-grn mb-2" name="Command" value="Add"><i class="fa fa-paper-plane" aria-hidden="true"></i> Submit</button>
+				</div>
+
+			</div>
+
+		}
+
+	}
+
+</div>
+
+@section scripts    {
+
+	@System.Web.Optimization.Scripts.Render("~/bundle/unobtrusivejs")
+	@Html.IncludeVersionedJs(Url.Content("~/ckeditor/ClassicConfig.js"))
+	@Html.IncludeVersionedJs(Url.Content("~/assets/design/Scripts/AddInit.js"))
+
+	<script>
+
+		$('.ddpreference').bind("change", function () {
+			var currentthis = this;
+			var a = $(currentthis).find("option:selected").val();
+			$(".ddpreference").each(function (index) {
+				if (currentthis != this) {
+					var b = $(this).find("option:selected").val();
+					if (b && a == b) {
+						$(currentthis).val('');
+						swal("can not use same preference for others", "");
+
+					}
+				}
+			});
+
+		});
+
+
+		function SelectPreferenceSuccess(obj) {
+
+			if (obj.Status) {
+				SuccessToaster(obj.SuccessMessage);
+				window.location.href = obj.RedirectURL;
+			}
+			else {
+				CloseLoadingDialog();
+				FailToaster(obj.SuccessMessage);
+			}
+		}
+	</script>
+}

@@ -1,0 +1,205 @@
+﻿
+@{
+	ViewBag.Title = "Joiningkit";
+	Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<script src="~/assets/design/js/wow.js"></script>
+<script src="~/assets/design/js/wow.min.js"></script>
+@section scripts    {
+	@System.Web.Optimization.Scripts.Render("~/bundle/unobtrusivejs")
+	@System.Web.Optimization.Scripts.Render("~/bundle/dataTablesjs")
+	<script src="~/assets/design/Scripts/AddInit.js?v=@clsApplicationSetting.GetWebConfigValue("Version")"></script>
+
+	<script src="~/Areas/Onboarding/DevScript/OnboardingJoiningKit.js"></script>
+	<script>
+
+        var CandidateId = '@ViewBag.RequestId';
+		function RedirectToOnboard() {
+			window.location.href = virtualPath + 'Onboarding/HRScreenOnboard';
+		}
+
+	</script>
+}
+<script>
+	$(document).ready(function () {
+		$(".dpselect").select2();
+		$('.dropdown-menu').on('click', function (e) {
+			if ($(this).hasClass('dropdown-menu-form')) {
+				e.stopPropagation();
+			}
+		});
+	});
+	
+</script>
+<style>
+	.disabled {
+		color: #999; /* example: change color to gray */
+		pointer-events: none; /* disable pointer events */
+	}
+</style>
+<div class="container-fluid text-clr">
+	<!-- Start -->
+	<div class="inner-main defult-height pb-0">
+		<h1 class="heading-one ">HR Process</h1>
+
+		<ul class="tab-thrid" id="ulHeader">
+			<li class="dnactive" id="liOffer" onclick="RedirectToClick('Offer');"><a>Offer</a></li>
+			<li class="active"   id="liJoiningkit" onclick="RedirectToClick('Joiningkit');"><a>Joining Kit</a></li>
+			<li class="dnactive" id="liPreRegistration" onclick="RedirectToClick('PreRegistration');"><a>Pre-Registration</a></li>
+			<li class="dnactive" id="liOrientationSchedule" onclick="RedirectToClick('OrientationSchedule');"><a>Orientation Schedule</a></li>
+			<li class="dnactive" id="liRegistration" onclick="RedirectToClick('Registration');"><a>Registration</a></li>
+			<li class="dnactive" id="liAttachment" onclick="RedirectToClick('Attachment');"><a>Attachment</a></li>
+			<li class="dnactive" id="liUserOnboarding" onclick="RedirectToClick('UserOnboarding');"><a>Onboarding</a></li>
+			<li class="dnactive" id="liDeclarationDetails" onclick="RedirectToClick('DeclarationDetails');"><a>Declaration</a> </li>
+			<li class="dnactive" id="liOrientation" onclick="RedirectToClick('Orientation');"><a>Orientation</a></li>
+		</ul>
+
+		<div class="row">
+			<div class="col-md-8 col-sm-12">
+				<div class="row">
+					<div class="col-sm-3 form-group">
+						<label>Employee Name</label>
+						<input type="text" id="txtEmployeeName" disabled class="form-control OfferIssued" placeholder="" />
+					</div>
+					<div class="col-sm-3 form-group">
+						<label>Personal e-Mail Id</label>
+						<input type="text" id="txtPersonalEmailID" disabled class="form-control OfferIssued" placeholder="" />
+					</div>
+					<div class="col-sm-3 form-group">
+						<label>Issue of Offer Letter</label>
+						<input type="text" autocomplete="off" disabled class="form-control datepicker OfferIssued" placeholder="Enter" id="txtIssueofOfferLetter" onchange="HideErrorMessage(this)">
+					</div>
+					<div class="col-sm-3 form-group">
+						<label>Offer Accepted Date</label>
+						<input type="text" class="form-control datepicker JoiningKitValidation" disabled autocomplete="off" id="txtOfferAcceptDate" placeholder="" onchange="HideErrorMessage(this)">
+					</div>
+					<div class="col-sm-3 form-group">
+						<label>Expected Date of Joining <sup>*</sup></label>
+						<input type="text" id="txtExpectedDateofJoining" disabled class="form-control datepicker JoiningKitValidation" placeholder="" onchange="HideErrorMessage(this)">
+						<span id="sptxtExpectedDateofJoining" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+					</div>
+					<div class="col-sm-3 form-group" id="divEndDateofContract">
+						<label>End date of employment Contract <sup>*</sup></label>
+						<input type="text" id="txtEndDateofContract" disabled class="form-control datepicker " placeholder="" onchange="HideErrorMessage(this)">
+						<span id="sptxtEndDateofContract" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+					</div>
+					<div class="col-sm-3 form-group">
+						<label>Psychometric Test <sup>*</sup></label>
+						@*<select class="form-control applyselect" onchange="HideErrorMessage(this)" id="ddlPsychometricTest">
+						</select>*@
+						<select id="ddlPsychometricTest" onchange="HideErrorMessage(this)" class="form-control dpselect select2-hidden-accessible " tabindex="-1" aria-hidden="true">
+						</select>
+						<span id="spddlPsychometricTest" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+					</div>
+					<div class="col-sm-3 form-group">
+						<label>Send On <sup>*</sup></label>
+						<input type="text" id="txtSendOn" autocomplete="off" class="form-control datepicker " placeholder="" onchange="HideErrorMessage(this)">
+						<span id="sptxtSendOn" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+					</div>
+					<!--<div class="col-sm-3 form-group">
+					<label>Send On-->
+					@*<sup>*</sup>*@
+					<!--</label>
+						<input type="text" id="txtJoiningKitSendOn" autocomplete="off" class="form-control datepicker " placeholder="" onchange="HideErrorMessage(this)">
+						<span id="sptxtJoiningKitSendOn" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+					</div>-->
+				</div>
+			</div>
+			<div class="col-lg-8 text-center mt-1">
+				@*<button type="submit" id="btnSendJoiningKitSubmit" class="btn mtr-o-grn btn-l ripplelink pull-right" name="Command" value="Add" data-toggle="modal" data-target="#sjk"><i class="fas fa-envelope"></i>Send Joining Kit</button>*@
+				<button onclick="SaveJoiningKitDetails(1);" type="submit" id="btnSendJoiningKitSubmit" class="btn mtr-o-grn btn-l ripplelink pull-right" name="Command" value="Add" data-toggle="modal" ><i class="fas fa-envelope"></i>Submit</button>
+				<button type="submit" id="btnReject" class="btn red-clr-bg btn-l ripplelink pull-right" name="Command" value="Add" data-toggle="modal" data-target="#rfc"><i class="fas fa-ban"></i>Reject</button>
+				<button onclick="RedirectToOnboard();" type="button" class="btn cnl-btn ripplelink  pull-right"><i class="fas fa-times"></i> Close</button>
+			</div>
+		</div>
+
+		<!----End start-->
+	</div>
+</div>
+<div class="modal" id="rfc">
+	<div class="modal-dialog modal-md">
+		<div class="modal-content ">
+
+			<!-- Modal Header -->
+			<div class="modal-header">
+				<h4 class="modal-title"><i class="fas fa-ban"></i>Reject</h4>
+				<button type="button" class="close" data-dismiss="modal">×</button>
+			</div>
+
+			<!-- Modal body -->
+			<div class="modal-body">
+				<div class="row">
+					<div class="col-sm-12">
+						<ul class="list-unstyled inlin-list p-0 ">
+							<li>
+								<input type="radio" id="chkRejectedbyC3" name="Rejected">
+								<label for="chkRejectedbyC3"> Rejected by C3</label>
+							</li>
+							<li>
+								<input type="radio" id="chkRejectedbyCandidates" name="Rejected">
+								<label for="chkRejectedbyCandidates"> Declined by Candidate</label>
+							</li>
+						</ul>
+					</div>
+					<div class="col-sm-12 form-group mt-2">
+
+						<label>Reason</label>
+						<textarea id="txtReason" onchange="HideErrorMessage(this)" class="form-control maxSize[1200] h-100 Mandatory" placeholder="Enter Reason"></textarea>
+						<span id="sptxtReason" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+					</div>
+
+					<div class="col-sm-12">
+						<ul class="list-unstyled inlin-list ">
+							<li>
+								<input type="checkbox" id="chkDonotMovetoTalentPool" name="">
+								<label for="chkDonotMovetoTalentPool">Do not Move to Talent Pool</label>
+							</li>
+
+						</ul>
+					</div>
+				</div>
+				<!-- Modal footer -->
+				<div class="p-0 text-center mt-3 ">
+					<button type="button" class="btn cnl-btn ripplelink" data-dismiss="modal"><i class="fas fa-times"></i>Close</button>
+					<button type="button" onclick="SaveJoiningKitDetails(2);" id="btnSubmit" class="btn mtr-o-grn btn-l "><i class="fas fa-paper-plane"></i>Submit</button>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<div class="modal" id="sjk">
+	<div class="modal-dialog modal-md">
+		<div class="modal-content ">
+
+			<!-- Modal Header -->
+			<div class="modal-header">
+				<h4 class="modal-title"><i class="fas fa-envelope"></i>Send Joining Kit</h4>
+				<button type="button" class="close" data-dismiss="modal">×</button>
+			</div>
+
+			<!-- Modal body -->
+			<div class="modal-body">
+				<div class="row">
+					<div class="col-sm-6 form-group">
+						<label>Send On <sup>*</sup></label>
+						<input type="text" id="txtSendOn" autocomplete="off" class="form-control datepicker " placeholder="" onchange="HideErrorMessage(this)">
+						<span id="sptxtSendOn" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+					</div>
+
+					<div class="col-sm-6 form-group">
+						<label>Email Id</label>
+						<input type="text" id="txtPEmailId" class="form-control OfferIssued" placeholder="" />
+					</div>
+
+				</div>
+				<!-- Modal footer -->
+				<div class="p-0 text-center mt-3 ">
+					<button type="button" class="btn cnl-btn ripplelink" data-dismiss="modal"><i class="fas fa-times"></i>Close</button>
+					<button type="button" class="btn mtr-g-grn btn-l "><i class="fas fa-download"></i>Download</button>
+					<a onclick="SaveJoiningKitDetails(1);" class="btn mtr-o-grn btn-l "><i class="fas fa-paper-plane"></i>Submit</a>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+

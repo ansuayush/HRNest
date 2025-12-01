@@ -1,0 +1,168 @@
+﻿
+@model Mitr.Models.EmployeeExit.ResignationRequest
+@{
+	string MenuID = ViewBag.MenuID.ToString();
+
+
+}
+
+@using (Ajax.BeginForm("_ResignationonbehalfSave", "ExitEmployee", new { src = ViewBag.src }, new AjaxOptions { HttpMethod = "POST", OnSuccess = "OnSuccess", OnBegin = "ShowLoadingDialog()" }, new { @id = "AddResignationonbehalf" }))
+{
+
+	<div class="row">
+		<div class="col-sm-12">
+			<div class="row">
+				@Html.HiddenFor(Modal => Modal.lEmpid)
+				@Html.HiddenFor(model => model.iNoticePeriodServe)
+				<input type="hidden" name="sRequestdate" id="sRequestdate" value="@( Convert.ToDateTime(Model.sRequestdate).ToString("yyyy-MM-dd"))" />
+
+				<input type="hidden" id="hfRelievingdate" value="@Model.sReleivingdate" />
+
+
+				<div class="col-sm-4 wh-575 form-group">
+					<label>Designation</label>
+					<p>@Model.DeginationName</p>
+				</div>
+				<div class="col-sm-4 wh-575 form-group">
+					<label>Department</label>
+					<p>@Model.DeptName</p>
+				</div>
+
+				<div class="col-sm-4 wh-575 form-group">
+					<label>Location</label>
+					<p>@Model.LocationName</p>
+				</div>
+
+				<div class="col-sm-6 form-group">
+                    <label>Reason for Resignation</label>
+					@Html.DropDownListFor(model => model.lReasonid, new SelectList(ViewBag.reason, "Id", "field_name", Model.lReasonid), "select", new { @class = "form-control applyselect " })
+					@Html.ValidationMessageFor(model => model.lReasonid, "", new { @class = "text-danger" })
+				</div>
+				<div class="col-sm-6 form-group">
+					<label>Comment</label>
+					@Html.TextBoxFor(model => model.sComment, new { @class = "form-control ", @placeholder = "Enter" })
+				</div>
+				<div class="col-sm-12 form-group"> <strong>Notice Period as per Policy: <span class="red-clr">@Model.iNoticePeriod  Days</span></strong> </div>
+				<div class="col-sm-12 form-group">
+					<ul class="list-unstyled inline-li m-0">
+						<li>
+							<label class="m-0">Do he/she wants to serve full notice period?</label>
+						</li>
+						<li>
+							<div class="radio-button">
+								<input id="rdonoticeperiodY" name="radio1" type="radio" @(Model.iNoticePeriodServe == 1 ? "checked" : "") onclick="Fnnoticeperiod()" />
+								<label for="rdonoticeperiodY" class="radio-label">Yes</label>
+
+							</div>
+						</li>
+						<li>
+							<div class="radio-button">
+								<input id="rdonoticeperiodN" name="radio1" type="radio" @(Model.iNoticePeriodServe == 0 ? "checked" : "") onclick="Fnnoticeperiod()" />
+								<label for="rdonoticeperiodN" class="radio-label">No</label>
+
+							</div>
+						</li>
+					</ul>
+				</div>
+
+				<div class="col-sm-6 form-group" id="divasperpolcy" class="hide">
+					<label>Relieving Date</label>
+					<p>@Model.sReleivingdate</p>
+					@Html.HiddenFor(Modal => Modal.sReleivingdate)
+				</div>
+
+				<div class="col-sm-12" style="display: none;" id="DivReasonNoticePeriod" class="hide">
+					<div class="row">
+						<div class="col-sm-6 wh-575 form-group">
+							<label>Relieving Date</label>
+							@Html.TextBoxFor(model => model.sNReleivingdate, new { @class = "form-control", @type = "date", @onchange = "FnReleivingDay();" })
+							@Html.ValidationMessageFor(model => model.sNReleivingdate, "", new { @class = "text-danger" })
+						</div>
+						<div class="col-sm-6 wh-575 form-group">
+							<label>Short Notice Period</label>
+							<div class="input-group w-100 ">
+								<input type="number" class="form-control" id="iRelievingDay" value="" placeholder="0" aria-label="Username" disabled="" aria-describedby="basic-addon1">
+								<div class="input-group-prepend"> <span class="input-group-text" id="basic-addon1">Days</span> </div>
+							</div>
+						</div>
+						<div class="col-sm-12 form-group">
+							<label>Reason for not serving full notice period</label>
+							@Html.TextBoxFor(model => model.sReasonNoticePeriod, new { @class = "form-control h-100" })
+						</div>
+					</div>
+				</div>
+                <div class="col-sm-12 text-left">
+                    <button type="button" name="Command" value="Add" class="btn mtr-o-grn btn-l ripplelink " data-toggle="modal" data-target="#dc"><i class="fas fa-share"></i>Forward to HR<span class="ink animate" style="height: 150px; width: 150px; left: 7px; top: -58px;"></span></button>
+                    <button type="submit" name="Command" id="btnsubmit" value="Save" class="btn mtr-o-grn btn-l ripplelink " style="display:none"> <i class="fas fa-share"></i>Forward to HR </button>
+                    @*<button type="submit" name="Command" value="Save" class="btn mtr-o-grn btn-l ripplelink " data-toggle="modal" data-target="#mailer"> <i class="fas fa-share"></i>Forward to HR </button>*@
+                    @Html.CreateAnchor(MenuID, "/Account/Dashboard", "Close", "btn cnl-btn btn-l ripplelink", "Close", "fas fa-arrow-left", "")
+
+                    @*<button type="button" class="btn cnl-btn btn-l ripplelink"><i class="fas fa-times"></i>Close</button>*@
+
+
+                </div>
+			</div>
+		</div>
+	</div>
+
+}
+<div class="modal fade" id="dc">
+
+    <div class="modal-dialog modal-dialog-centered modal-md ">
+
+        <div class="modal-content">
+
+            <!-- Modal Header -->
+
+            <div class="swal-icon swal-icon--warning">
+
+                <span class="swal-icon--warning__body">
+
+                    <span class="swal-icon--warning__dot"></span>
+
+                </span>
+
+            </div>
+
+
+
+            <div class="modal-body ">
+
+                <div class="swal-title text-center">The information will be shared with your supervisor. Do you want to proceed ?</div>
+
+            </div>
+
+            <div class="modal-footer">
+
+                <button type="button" data-dismiss="modal" data-toggle="modal" class="btn cnl-btn">No</button>
+
+                <a data-toggle="modal" data-target="#int1" class="btn mtr-o-grn" onclick="Submitdata()">Yes</a>
+
+
+
+            </div>
+
+
+
+        </div>
+
+
+
+
+
+
+
+    </div>
+
+</div>
+@section scripts    {
+
+
+	@System.Web.Optimization.Scripts.Render("~/bundle/dataTablesjs")
+	@System.Web.Optimization.Scripts.Render("~/bundle/unobtrusivejs")
+	@Html.IncludeVersionedJs(Url.Content("~/assets/design/Scripts/AddInit.js"))
+	@Html.IncludeVersionedJs(Url.Content("~/assets/design/Scripts/ToolTip.js"))
+<script>
+   
+	</script>
+}

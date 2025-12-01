@@ -1,0 +1,97 @@
+﻿
+@model IList<Mitr.Models.Subgrant>
+
+@section style{
+    @System.Web.Optimization.Styles.Render("~/bundle/dataTablecss")
+}
+<div class="inner-main mb-5 pb-0">
+    @Html.Partial("ListHeader_Partial", "Subgrant List")
+
+
+    <div class="row">
+        <div class="col-md-12 col-sm-12 col-xs-12">
+
+            <div class="x_content table-currency m-0">
+                <input type="hidden" id="hdnAddUrl" name="hdnAddUrl" value="@Url.Action("SubgrantAdd",new { src = clsApplicationSetting.EncryptQueryString(ViewBag.MenuID.ToString() + "*/Master/SubgrantAdd*0") })" />
+
+
+                <div class="table-responsive">
+                    <table id="datatable-buttons" class="table table-striped table-bordered dt-responsive nowrap tbltick new_width" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
+                        <thead>
+                            <tr>
+                                <th>S.no.</th>
+                                <th>Action</th>
+                                <th>Priority</th>
+                                <th>Code</th>
+                                <th>Name</th>
+                                <th>Address</th>
+                                <th>Mobile</th>
+                                <th>Inserted Date</th>
+                                <th>Updated Date</th>
+                                <th>IP Address</th>
+                            </tr>
+                            <tr class="searchbar">
+                                <th class="searchhide"></th>
+                                <th class="searchhide"></th>
+                                <th class="searchhide"></th>
+                                <th></th>
+                                <th></th>
+                                <th></th>
+                                <th></th>
+                                <th> </th>
+                                <th> </th>
+                                <th> </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @{ int Count = 0;}
+                            @foreach (Mitr.Models.Subgrant item in Model)
+                            {
+                                Count++;
+                                <tr class="@(item.IsActive == true?"": "trrowred")">
+                                    <td>@Count</td>
+                                    <td>
+                                        <input type="hidden" name="I" value="@item.SubgrantID" />
+                                        <input type="hidden" name="N" value="@item.Code" />
+                                        @if (clsApplicationSetting.GetSessionValue("Modify") == "True")
+                                        {
+                                            @Html.Raw(item.IsActive == true
+                                           ? "<a  data-toggle='tooltip' data-original-title='Click to DeActivate' list='SubgrantList' OP='0' class='AIsActive' > <i class='fa fa-check-circle checkgreen' aria-hidden='true'></i></a>"
+                                           : "<a data-toggle='tooltip' data-original-title='Click to Activate' list='SubgrantList' OP='1'  class='AIsActive' > <i class='fa fa-times-circle crossred' aria-hidden='true'></i></a>")
+
+                                            <a title="Edit" href="@Url.Action("SubgrantAdd",new { src = clsApplicationSetting.EncryptQueryString(ViewBag.MenuID.ToString() + "*/Master/SubgrantAdd*"+item.SubgrantID) })" data-toggle='tooltip'><i class="fas fa-edit checkgreen" aria-hidden="true"></i> </a>
+                                        }
+                                    </td>
+                                    <td>
+
+                                        @Html.Raw(clsApplicationSetting.GetSessionValue("Modify") == "True" ? "<input type='number' class='listpriority' list='SubgrantList' value=\"" + item.Priority + "\" />" : item.Priority.ToString())
+                                    </td>
+                                    <td>@item.Code</td>
+                                    <td> @item.Name</td>
+                                    <td> @item.Address</td>
+                                    <td> @item.Mobile</td>
+                                    <td>@item.createdat</td>
+                                    <td>@item.modifiedat</td>
+                                    <td>@item.IPAddress</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+
+</div>
+
+
+@section scripts    {
+    @System.Web.Optimization.Scripts.Render("~/bundle/dataTablesjs")
+
+
+    @Html.IncludeVersionedJs(Url.Content("~/assets/design/Scripts/AddInit.js"))
+    @Html.IncludeVersionedJs(Url.Content("~/assets/design/Scripts/ToolTip.js"))
+}
+

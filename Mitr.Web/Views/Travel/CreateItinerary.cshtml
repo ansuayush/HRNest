@@ -1,0 +1,648 @@
+﻿@model Mitr.Models.CreateItineraryDetails
+@using System.Data
+@{
+	double TotalPerDiemRate = 0;
+}
+<h1 class="heading-one mb-0">Travel Request</h1>
+<ul class="list-unstyled trl-rq">
+	<li>Request No : @Model.TravelDetailList.Select(x => x.req_no).FirstOrDefault()</li>
+	<li>Request Date : @Convert.ToDateTime(Model.TravelDetailList.Select(x => x.req_date).FirstOrDefault()).ToString("dd-MMM-yyyy") </li>
+</ul>
+@Html.Partial("TravelHeader_Partial")
+
+
+@using (Ajax.BeginForm("CreateItinerary", "Travel",
+	  new { src = clsApplicationSetting.EncryptQueryString(ViewBag.MenuID.ToString() + "*/Travel/CreateItinerary*" + ViewBag.TravelREQID + "*" + ViewBag.RequestType) },
+	  new AjaxOptions { HttpMethod = "POST", OnSuccess = "ActionOnSuccess", OnFailure = "ActionOnSuccess" },
+  new { @id = "CreateItinerary", enctype = "multipart/form-data" })
+  )
+{
+	@Html.AntiForgeryToken()
+
+	<div class="shadow-box trlbox p-4">
+
+		<div class="row">
+			<div class="col-sm-12 mx-auto">
+				<div class="table-responsive">
+					<table class="table mact-tble mb-0">
+						<thead>
+							<tr>
+								<th class="td-10">S.No.</th>
+								<th>Travel Date</th>
+								<th>From</th>
+								<th>To</th>
+								<th width="100">Mode</th>
+								<th width="100">Travel Type</th>
+								<th>Ticket as per rule</th>
+								<th>Hotel </th>
+							</tr>
+						</thead>
+						<tbody>
+							@{ int count = 0;
+								double FirstAmount = 0, PercantageAmount = 0;
+							}
+							@for (int i = 0; i < Model.TravelDetailList.Count; i++)
+							{
+								count++;
+								//if (count == 1 || count == Model.TravelDetailList.Count)
+								//{
+								//	FirstAmount = Convert.ToDouble(Model.TravelDetailList[i].Toperdiem_rate) * 0.75;
+								//}
+								if (count == 1)
+								{
+									FirstAmount = Convert.ToDouble(Model.TravelDetailList[i].Toperdiem_rate) * 0.75;
+								}
+								else if (count == Model.TravelDetailList.Count)
+								{
+									FirstAmount = Convert.ToDouble(Model.TravelDetailList[i].Fromperdiem_rate) * 0.75;
+								}
+								else
+								{
+									FirstAmount = Convert.ToDouble(Model.TravelDetailList[i].Toperdiem_rate);
+								}
+								PercantageAmount = (FirstAmount * 0) / 100;
+								TotalPerDiemRate += Math.Round(FirstAmount - PercantageAmount);
+
+								<tr>
+									<td>@count</td>
+									<td>
+
+										@Convert.ToDateTime(Model.TravelDetailList[i].Travel_date).ToString("dd-MMM-yyyy")
+										@Html.HiddenFor(model => model.TravelDetailList[i].Travel_date)
+
+
+									</td>
+									<td>
+										@Model.TravelDetailList[i].fromCity
+										@Html.HiddenFor(model => model.TravelDetailList[i].fromCityID)
+									</td>
+									<td>
+										@Model.TravelDetailList[i].toCity
+										@Html.HiddenFor(model => model.TravelDetailList[i].ToCityID)
+										@Html.HiddenFor(model => model.TravelDetailList[i].ToClassCity)
+										@Html.HiddenFor(model => model.TravelDetailList[i].Toperdiem_rate)
+										@Html.HiddenFor(model => model.TravelDetailList[i].fromCityID)
+										@Html.HiddenFor(model => model.TravelDetailList[i].FromClassCity)
+										@Html.HiddenFor(model => model.TravelDetailList[i].Fromperdiem_rate)
+									</td>
+									<td>
+
+										@{
+											List<SelectListItem> officePersonelList = new List<SelectListItem>
+																																																																																																																																																																																																																																													{
+									new SelectListItem{Text="By Air",Value="3" },
+									new SelectListItem{Text="By Train",Value="2" },
+									new SelectListItem{Text="By Road(Self Arrange)",Value="1" },
+									  new SelectListItem{Text="By Road(Office provided)",Value="5" },
+									new SelectListItem{Text="By Sea",Value="4" }
+									};
+										}
+
+										@Html.DropDownListFor(model => model.TravelDetailList[i].Travel_modeID, new SelectList(officePersonelList, "Value", "text", Model.TravelDetailList[i].Travel_modeID), new { @class = "form-control applyselect" })
+										@Html.ValidationMessageFor(model => model.TravelDetailList[i].Travel_modeID, "", new { @class = "text-danger" })
+
+									</td>
+									<td>
+										@{
+											List<SelectListItem> TravelMode = new List<SelectListItem>
+																																																																																																																																																																																																																																																			{
+									new SelectListItem{Text="Official",Value="1" },
+									new SelectListItem{Text="Personal",Value="2" }
+									};
+										}
+										@Html.DropDownListFor(model => model.TravelDetailList[i].officePersonelID, new SelectList(TravelMode, "Value", "text", Model.TravelDetailList[i].officePersonelID), new { @class = "form-control applyselect" })
+										@Html.ValidationMessageFor(model => model.TravelDetailList[i].officePersonelID, "", new { @class = "text-danger" })
+
+									</td>
+
+									<td class="no-rule">
+										<select class="form-control applyselect ticketperrule" id="@Html.IdFor(model => model.TravelDetailList[i].ticketbookingID)" name="@Html.NameFor(model => model.TravelDetailList[i].ticketbookingID)">
+											<option value="0">Yes</option>
+											<option value="1">No</option>
+										</select>
+										<div class="dropdown ticketI" style="@(Model.TravelDetailList[i].ticketbookingID==0?"display:none":"")">
+											<div class="drop-pophr divticketperrule"> <i class="fas fa-info-circle"></i> </div>
+										</div>
+
+										<div class="modal fade pop-dgn ticketruleModal">
+											<div class="modal-dialog mdl-sm">
+												<div class="modal-content">
+													<div class="modal-header blk-gdn-btn">
+														<h4 class="modal-title">
+															<i class="fas fa-map-marker-alt"></i>
+															@Model.TravelDetailList[i].fromCity - @Model.TravelDetailList[i].toCity
+														</h4>
+														<div class="close" data-dismiss="modal">&times;</div>
+													</div>
+													<div class="modal-body">
+														<div class="row">
+															<div class="col-sm-6 form-group">
+																<label>Preferred Airline/Time</label>
+																@Html.TextBoxFor(model => model.TravelDetailList[i].ticketdetail)
+																@Html.ValidationMessageFor(model => model.TravelDetailList[i].ticketdetail, "", new { @class = "text-danger" })
+
+															</div>
+															<div class="col-sm-12 form-group">
+																<label>Justification</label>
+																@Html.TextBoxFor(model => model.TravelDetailList[i].justification)
+																@Html.ValidationMessageFor(model => model.TravelDetailList[i].justification, "", new { @class = "text-danger" })
+															</div>
+														</div>
+														<div class="mt-2 text-center">
+
+															<button type="button" data-dismiss="modal" class="btn mtr-o-grn btn-l ripplelink btnTicket "><i class="fas fa-save whiteclr"></i>Save</button>
+															<button type="button" class="btn cnl-btn btn-l ripplelink" data-dismiss="modal"><i class="fas fa-times"></i>Close</button>
+														</div>
+													</div>
+												</div>
+											</div>
+										</div>
+
+
+
+									</td>
+									<td class="no-rule">
+										<select class="form-control applyselect HotelBooking" id="@Html.IdFor(model => model.TravelDetailList[i].hotelbookingID)" name="@Html.NameFor(model => model.TravelDetailList[i].hotelbookingID)">
+											<option @(Model.TravelDetailList[i].hotelbookingID == 0 ? "selected" : "") value="0">Not Required </option>
+											<option @(Model.TravelDetailList[i].hotelbookingID == 1 ? "selected" : "") value="1">Other Hotel</option>
+											@{
+												DataSet Ds = new DataSet();
+												Ds = Mitr.CommonClass.Common_SPU.fnGetMasterAll(0, "master_hotel", Model.TravelDetailList[i].ToCityID, "1");
+												if (Ds != null)
+												{
+													foreach (DataRow item in Ds.Tables[0].Rows)
+													{
+														<option @(Model.TravelDetailList[i].hotel_no == item["ID"].ToString() ? "selected" : "") value="@item["ID"]">@item["field_value"]</option>
+													}
+												}
+											}
+										</select>
+
+										<div class="modal fade pop-dgn HotelBookingModal">
+											<div class="modal-dialog mdl-sm">
+												<div class="modal-content">
+													<div class="modal-header blk-gdn-btn">
+														<h4 class="modal-title"><i class="fas fa-utensils"></i>Add Hotel ( @Model.TravelDetailList[i].toCity )</h4>
+														<div class="close" data-dismiss="modal">&times;</div>
+													</div>
+													<div class="modal-body">
+														<div class="row">
+															<div class="col-sm-12 form-group divHotalName">
+																<label>Other Hotel Name</label>
+																@Html.TextBoxFor(model => model.TravelDetailList[i].OtherHotel)
+																@Html.ValidationMessageFor(model => model.TravelDetailList[i].OtherHotel, "", new { @class = "text-danger" })
+															</div>
+														</div>
+														<div class="mt-2 text-center">
+
+															<button type="button" data-dismiss="modal" class="btn mtr-o-grn btn-l ripplelink "><i class="fas fa-save"></i>Save</button>
+															<button type="button" class="btn cnl-btn btn-l ripplelink" data-dismiss="modal"><i class="fas fa-times"></i>Close</button>
+														</div>
+													</div>
+												</div>
+											</div>
+										</div>
+
+										<div class="dropdown HotelBookingI" style="@(Model.TravelDetailList[i].hotelbookingID==0?"display:none":"")">
+											<div class="drop-pophr divHotelBooking" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> <i class="fas fa-info-circle"></i></div>
+										</div>
+
+									</td>
+								</tr>
+							}
+
+
+						</tbody>
+					</table>
+				</div>
+			</div>
+			<div class="col-sm-6">
+				<input type="checkbox" id="ckAdvanceRequired" name="@Html.NameFor(x => x.AdvanceRequired)">
+				<label for="ckAdvanceRequired"> Advance Required </label>
+				<small style="display:none;" class="mainamountshow"><strong class="green-clr">Amount: </strong><i class="fas fa-rupee-sign m-0"></i> <span class="spnGrandTotalValue fn-bold"></span></small>
+			</div>
+			<div class="col-sm-6 text-right btnview" style="display:none">
+				<a class="btn mtr-g-grn btn-l ripplelink" data-toggle="modal" data-target="#advancelists"><i class="fas fa-eye"></i>View/Edit</a>
+			</div>
+			<div class="col-sm-12 text-center mt-4">
+				<a onclick="ShowLoadingDialog();window.location='@Url.Action("CreateRequest", new { src = clsApplicationSetting.EncryptQueryString(ViewBag.MenuID.ToString() + "*/Travel/CreateRequest*" + ViewBag.TravelREQID + "*" + ViewBag.RequestType) })';" class="btn cnl-btn ripplelink"><i class="fas fa-arrow-left" aria-hidden="true"></i>Back</a>
+
+				<button type="submit" class="btn mtr-o-grn ripplelink" onclick="return subValidate(1)"  name="Command" value="Add">
+					<i class="fas fa-paper-plane"></i>Submit
+				</button>
+
+			</div>
+		</div>
+	</div>
+
+	<!-- TASK Modal Advance Lists-->
+
+	<div class="modal fade pop-dgn" id="advancelists">
+		<div class="modal-dialog modal-lg">
+			<div class="modal-content">
+
+				<!-- Modal Header -->
+				<div class="modal-header blk-gdn-btn">
+					<h4 class="modal-title"><i class="fas fa-rupee-sign"></i>Advance Request</h4>
+					<div class="close" data-dismiss="modal">&times;</div>
+				</div>
+
+				<!-- Modal body -->
+				<div class="modal-body p-2">
+					<div class="row">
+						<div class="col-sm-12">
+							<div class="table-responsive">
+								<table class="table mt-0">
+									<thead>
+										<tr>
+											<th>Section</th>
+											<th class="text-right">Amount (INR)</th>
+										</tr>
+									</thead>
+									<tbody>
+										<tr>
+											<td>
+												<strong>Perdiem</strong>
+												<small class="d-block">Estimated Perdiem Value  <i class="fas fa-rupee-sign"></i>@string.Format("{0:c}", @TotalPerDiemRate)</small>
+											</td>
+											<td width="100" class="text-right">
+												@{ Model.PerdiemAmount = Convert.ToDecimal(TotalPerDiemRate);}
+												@Html.TextBoxFor(model => model.PerdiemAmount, new { @class = "form-control mycal text-right", @readonly = "readonly" })
+												@Html.ValidationMessageFor(model => model.PerdiemAmount, "", new { @class = "text-danger" })
+
+											</td>
+										</tr>
+										<tr>
+											<td><strong>Hotel</strong></td>
+											<td class="text-right">
+												@Html.TextBoxFor(model => model.HotelAmount, new { @class = "form-control mycal text-right" })
+												@Html.ValidationMessageFor(model => model.HotelAmount, "", new { @class = "text-danger" })
+											</td>
+										</tr>
+										<tr>
+											<td><strong>Transportation </strong></td>
+											<td>
+												@Html.TextBoxFor(model => model.TransportationAmount, new { @class = "form-control mycal text-right" })
+												@Html.ValidationMessageFor(model => model.TransportationAmount, "", new { @class = "text-danger" })
+
+											</td>
+										</tr>
+										<tr>
+											<td>
+												<strong>
+													@Html.TextBoxFor(model => model.OtherSection1, new { @class = "form-control", @placeholder = "Enter" })
+													<span id="lblothersecmsg" class="red-clr fw-n m-0" style="display:none"></span>
+													@Html.ValidationMessageFor(model => model.OtherSection1, "", new { @class = "text-danger" })
+												</strong>
+											</td>
+											<td>
+												@Html.TextBoxFor(model => model.OtherAmount1, new { @class = "form-control mycal text-right" })
+												@Html.ValidationMessageFor(model => model.OtherAmount1, "", new { @class = "text-danger" })
+
+
+											</td>
+										</tr>
+										<tr>
+											<td>
+												<strong>
+													@Html.TextBoxFor(model => model.OtherSection2, new { @class = "form-control", @placeholder = "Enter" })
+													<span id="lblothersecmsg2" class="red-clr fw-n m-0" style="display:none"></span>
+													@Html.ValidationMessageFor(model => model.OtherSection2, "", new { @class = "text-danger" })
+												</strong>
+											</td>
+											<td>
+												@Html.TextBoxFor(model => model.OtherAmount2, new { @class = "form-control mycal text-right" })
+												@Html.ValidationMessageFor(model => model.OtherAmount2, "", new { @class = "text-danger" })
+
+											</td>
+										</tr>
+										<tr class="fn-bold text-right">
+											<td>Total Amount:</td>
+											<td>
+												@{ var ammount = Convert.ToDecimal(TotalPerDiemRate);}
+												<strong> <i class="fas fa-rupee-sign"></i><span class="spnGrandTotal">@string.Format("{0:c}", @ammount)</span> </strong>
+											</td>
+										</tr>
+
+										<tr class="fn-bold text-right">
+											<td>
+												Requested Amount:<br />
+												<span id="lbladvancemsg" class="red-clr fw-n m-0" style="display:none"></span>
+											</td>
+											<td>
+												@{ Model.AdvanceAmount = Convert.ToDecimal(TotalPerDiemRate);}
+												@Html.TextBoxFor(model => model.AdvanceAmount, new { @class = "form-control  text-right" })
+												@*<input type="number" value="" class="form-control text-right" placeholder="0">*@
+											</td>
+										</tr>
+
+									</tbody>
+								</table>
+							</div>
+						</div>
+
+						<div class="col-sm-12 mbthrclm">
+							<div class="row">
+
+								<div class="col-lg-4 col-md-4 col-sm-6 form-group">
+									<label>	Mode Of Payment</label>
+									@{
+										List<SelectListItem> PaymentModeList = new List<SelectListItem>
+																																																															   {
+												 new SelectListItem{Text="NEFT/Bank Transfer",Value="NEFT/Bank Transfer" },
+												 new SelectListItem{Text="Cheque",Value="Cheque" }
+												 //new SelectListItem{Text="Cash",Value="Cash" }
+															 };
+									}
+									@Html.DropDownListFor(model => model.pay_mode, new SelectList(PaymentModeList, "Value", "text", Model.pay_mode), new { @class = "form-control applyselect" })
+									@Html.ValidationMessageFor(model => model.pay_mode, "", new { @class = "text-danger" })
+								</div>
+								<div class="col-lg-4 col-md-4 col-sm-6 form-group payNEFT">
+									<label>Account No.	</label>
+									@Html.TextBoxFor(model => model.account_no, new { @class = "form-control" })
+									@Html.ValidationMessageFor(model => model.account_no, "", new { @class = "text-danger" })
+								</div>
+								<div class="col-lg-4 col-md-4 col-sm-6 form-group payNEFT">
+									<label>Bank Name	</label>
+									@Html.TextBoxFor(model => model.bank_name, new { @class = "form-control" })
+									@Html.ValidationMessageFor(model => model.bank_name, "", new { @class = "text-danger" })
+								</div>
+								<div class="col-lg-4 col-md-4 col-sm-6 form-group payNEFT">
+									<label>NEFT Code		</label>
+									@Html.TextBoxFor(model => model.neft_code, new { @class = "form-control" })
+									@Html.ValidationMessageFor(model => model.neft_code, "", new { @class = "text-danger" })
+								</div>
+								<div class="col-lg-8 col-md-8 col-sm-6 form-group payNEFT">
+									<label>Branch	</label>
+									@Html.TextBoxFor(model => model.branch_name, new { @class = "form-control" })
+									@Html.ValidationMessageFor(model => model.branch_name, "", new { @class = "text-danger" })
+								</div>
+
+
+							</div>
+						</div>
+
+					</div>
+					<div class="mt-0 text-center">
+						<button type="button" class="btn mtr-o-grn btn-l ripplelink" onclick="return Validate()"><i class="fas fa-paper-plane"></i>Submit</button>
+						<button type="button" class="btn cnl-btn btn-l ripplelink" data-dismiss="modal"><i class="fas fa-times"></i>Close</button>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="modal fade confirmmsg" id="confirmmsg" role="dialog">
+		<div class="modal-dialog">
+
+			<!-- Modal content-->
+			<div class="modal-content">
+
+				<div class="modal-body">
+
+					<div class="swal-icon swal-icon--warning">
+						<span class="swal-icon--warning__body">
+							<span class="swal-icon--warning__dot"></span>
+						</span>
+					</div>
+					<p class="swal-txt">
+						“You are submitting the travel request without any request for advance, pl reconfirm”
+					</p>
+				</div>
+				<div class="modal-footer text-center">
+					<button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+					<button type="submit" class="btn mtr-o-grn ripplelink" onclick="return subValidate(0)" name="Command" value="Add">Ok</button>
+					@*<button type="button" class="btn btn-default" onclick="return FinalSubmit()"> Ok</button>*@
+				</div>
+			</div>
+
+		</div>
+	</div>
+}
+
+@section scripts    {
+
+	@System.Web.Optimization.Scripts.Render("~/bundle/unobtrusivejs")
+	<script src="~/assets/design/Scripts/AddInit.js?v=@clsApplicationSetting.GetWebConfigValue("Version")"></script>
+
+	<script>
+		function subValidate(obj) {
+			debugger;
+			var ret = false;
+
+			if (obj == 0) {
+
+				ret = true;
+
+			}
+			else {
+				let isChecked = $('#ckAdvanceRequired').is(':checked');
+				if (isChecked == true) {
+					ret = true;
+				}
+				else {
+					$("#confirmmsg").modal('show');
+					ret = false;
+
+				}
+			}
+
+
+			return ret;
+		}
+		// data-dismiss="modal"
+		function chk1() {
+		
+			if (parseFloat($("#OtherAmount1").val()) > 0 && $("#OtherSection1").val() == "") {
+				if ($("#OtherSection1").val() == "") {
+					$("#lblothersecmsg").show();
+					$("#lblothersecmsg").html("Hey! You missed this field.");
+					$("#advancelists").modal('show');
+					return false;
+
+
+				}
+				else {
+					$("#lblothersecmsg").html("");
+					$("#lblothersecmsg").hide();
+					return true;
+				}
+
+			}
+			else {
+				$("#lblothersecmsg").html("");
+				$("#lblothersecmsg").hide();
+				return true;
+			}
+		}
+		function chk2() {
+			if (parseFloat($("#OtherAmount2").val()) > 0 && $("#OtherSection2").val() == "") {
+				if ($("#OtherSection2").val() == "") {
+					$("#lblothersecmsg2").show();
+					$("#lblothersecmsg2").html("Hey! You missed this field.");
+					$("#advancelists").modal('show');
+					return false;
+				}
+				else {
+					$("#lblothersecmsg2").html("");
+					$("#lblothersecmsg2").hide();
+					return true;
+				}
+
+			}
+			else {
+				$("#lblothersecmsg2").html("");
+				$("#lblothersecmsg2").hide();
+				return true;
+			}
+
+		}
+		function chk3() {
+			debugger;
+		
+			var TotalAmount = $(".spnGrandTotal").text();
+			var number = Number(TotalAmount.replace(/[^0-9\.-]+/g, ""));
+			var AdvanceAmount = $("#AdvanceAmount").val();
+			if (AdvanceAmount != "") {
+				if (parseFloat(number) >= parseFloat(AdvanceAmount)) {
+
+					$("#lbladvancemsg").html("");
+					$("#lbladvancemsg").hide();
+					//$("#advancelists").modal('hide');
+					$(".spnGrandTotalValue").html(AdvanceAmount);
+					return true;
+				}
+				else {
+					$("#lbladvancemsg").show();
+					$("#lbladvancemsg").html("Requested amount cannot be greater than total amount.");
+					$("#advancelists").modal('show');
+					return false;
+				}
+			}
+		}
+
+		function Validate() {
+			debugger;
+
+
+			var chk_1 = chk1();
+			var chk_2 = chk2();
+			var chk_3 = chk3();
+			//if (chk_1 == false) {
+			//	$("#lblothersecmsg").show();
+			//	$("#lblothersecmsg").html("Hey! You missed this field.");
+			//}
+			//else {
+			//	$("#lblothersecmsg2").html("");
+			//	$("#lblothersecmsg2").hide();
+			//}
+
+
+			if (chk_1 == true && chk_2 == true && chk_3 == true) {
+				$("#advancelists").modal('hide');
+			}
+
+
+
+		}
+
+
+
+
+
+
+
+		$('#pay_mode').bind("change", function () {
+			PayModeSelection()
+		});
+
+
+		function PayModeSelection() {
+			var a = $('#pay_mode option:selected').val();
+			if (a == "NEFT/Bank Transfer") {
+				$(".payNEFT").show();
+			}
+			else {
+				$(".payNEFT").hide();
+			}
+		}
+		$('.mycal').blur(function () {
+			CalFinalTotal();
+		});
+
+		function CalFinalTotal() {
+
+			var GrandBTotal = 0;
+			$(".mycal").each(function (index) {
+				GrandBTotal += parseFloat($(this).val()) || 0;
+			});
+			$(".spnGrandTotalValue").html(GrandBTotal);
+			$("#AdvanceAmount").val(GrandBTotal);
+			//AdvanceAmount
+			$(".spnGrandTotal").html(GrandBTotal);
+
+		}
+		$('#ckAdvanceRequired').click(function () {
+			if (this.checked == true) {
+				$(".btnview").show();
+				$("#advancelists").modal('show');
+				//	CalFinalTotal();
+				$(".mainamountshow").show();
+			}
+			else {
+				$(".btnview").hide();
+				$(".mainamountshow").hide();
+			}
+		});
+
+		$(".divHotelBooking").click(function (e) {
+			e.preventDefault();
+			var a = $(this).closest('tr').find("select.HotelBooking option:selected").val();
+			if (a != "") {
+				if (a == "1") {
+					$(this).closest('tr').find(".HotelBookingModal").modal('show');
+				}
+			}
+		});
+
+		$(".divticketperrule").click(function (e) {
+			e.preventDefault();
+			$(this).closest('tr').find(".ticketruleModal").modal('show');
+		});
+
+		$("select.ticketperrule").change(function () {
+			var a = $(this).children("option:selected").val();
+			if (a == "1") {
+				$(this).closest('tr').find(".ticketruleModal").modal('show');
+				$(this).closest('tr').find(".ticketI").show();
+			}
+			else {
+				$(this).closest('tr').find(".ticketI").hide();
+
+			}
+		});
+
+		$("select.HotelBooking").change(function () {
+			var a = $(this).children("option:selected").val();
+			if (a != "") {
+				if (a == "1") {
+					$(this).closest('tr').find(".HotelBookingModal").modal('show');
+					$(this).closest('tr').find(".HotelBookingI").show();
+				}
+				else {
+					$(this).closest('tr').find(".HotelBookingI").hide();
+				}
+			}
+		});
+
+		function ActionOnSuccess(obj) {
+
+			if (obj.Status) {
+				window.location = obj.RedirectURL;
+			}
+			else {
+				FailToaster(obj.SuccessMessage);
+			}
+
+		}
+	</script>
+}

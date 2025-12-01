@@ -1,0 +1,244 @@
+﻿@model Exit.Request.Add
+
+<div class="inner-main">
+    <div class="right_col" role="main">
+        
+        <h1 class="heading-one">  Resignation Requests </h1>
+
+        @using (Ajax.BeginForm("MyExitRequest", "Exit",
+                new { src = ViewBag.src },
+                new AjaxOptions { HttpMethod = "POST", OnSuccess = "OnRequestSuccess", OnBegin = "ShowLoadingDialog()" },
+            new { @id = "MyExitRequestFrom" })
+            )
+        {
+
+            @Html.AntiForgeryToken()
+            @Html.HiddenFor(x => Model.Exit_ID)
+
+        <div class="row">
+            <div class="col-sm-6">
+                <div class="row">
+                   
+                        <div class="col-sm-3 wh-575 form-group">
+                            <label>Request No</label>
+                            <p>@Model.Req_No</p>
+                        </div>
+                    
+                    <div class="col-sm-3 wh-575 form-group">
+                        <label>Request Date</label>
+                        <p>@Model.Req_Date</p>
+                    </div>
+                    @if (!string.IsNullOrEmpty(Model.Status))
+                    {
+                        <div class="col-sm-3 wh-575 form-group">
+                            <label>Status</label>
+                            <span class="red-clr">@Model.Status</span>
+                        </div>
+                    }
+                <div class="col-sm-12 mb-0 form-group"></div>    
+                <div class="col-sm-6 form-group">
+                    <label>Reason for Resignation</label>
+
+                    @Html.DropDownListFor(n => n.Resignation_Reason, new SelectList(Model.ResignationReasonList, "Name", "Name", Model.Resignation_Reason), "Select",
+                     new { @class = "form-control  applyselect",  })
+                    @Html.ValidationMessageFor(model => model.Resignation_Reason, "", new { @class = "text-danger" })
+
+                    @*<select id="@Html.IdFor(x => Model.Resignation_Reason)" name="@Html.NameFor(x => Model.Resignation_Reason)" class="form-control applyselect" data-val-required="Hey! You missed this field" data-val="true">
+                        <option t="" ch="" value="">Select Reason</option>
+                        @foreach (var item in Model.ResignationReasonList)
+                        {
+                            <option @(item.Name == Model.Resignation_Reason ? "selected" : "") value="@item.Name">@item.Name</option>
+                        }
+                    </select>
+                    @Html.ValidationMessageFor(model => model.Resignation_Reason, "", new { @class = "text-danger" })*@
+                </div>
+                    <div class="col-sm-6 form-group">
+                        <label>Comment</label>
+                        @Html.TextAreaFor(model => model.Comment, new { @class = "form-control", @placeholder = "Enter" })
+                        @Html.ValidationMessageFor(model => model.Comment, "", new { @class = "text-danger" })
+                    </div>
+                    <div class="col-sm-6 form-group"> <strong>Notice Period as per Policy: <span class="red-clr">@Model.NoticePeriod Days</span></strong> </div>
+                    <div class="col-sm-12 mb-0 form-group"></div>
+                    <div class="col-sm-6 form-group">
+                        <label>Relieving date as per policy</label>
+                        <p>
+                            @Model.Actual_RelievingDate
+                            @Html.HiddenFor(model => model.Actual_RelievingDate)
+                        </p>
+                    </div>
+                    <div class="col-sm-12 form-group">
+                        <ul class="list-unstyled inline-li m-0">
+                            <li>
+                                <label class="m-0">Do you want to serve full notice period?</label>
+                            </li>
+                            <li>
+                                <div class="radio-button">
+                                    <input id="yes1" name="@Html.NameFor(x=>x.IsServeNotice)" type="radio" @(Model.isdeleted == 0 ? "disabled" : "") value="1" @(Model.IsServeNotice == 1 ? "checked" : "") onclick="show(this);">
+                                    <label for="yes1" class="radio-label mb-0">Yes</label>
+                                </div>
+                            </li>
+                            <li>
+                                <div class="radio-button">
+                                    <input id="no1" name="@Html.NameFor(x=>x.IsServeNotice)" type="radio" @(Model.isdeleted == 0 ? "disabled" : "") value="0" @(Model.IsServeNotice == 0 ? "checked" : "") onclick="show(this);">
+                                    <label for="no1" class="radio-label mb-0">No</label>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+
+
+
+                    <div class="col-sm-12 divhide" style="@(Model.IsServeNotice == 0?"":"display:none")">
+                        <div class="row">
+                            @if (Model.NewNoticePeriod > 0)
+                            {
+                                <div class="col-sm-3 form-group"> <strong>Calculative Notice Period : <span class="red-clr">@Model.NewNoticePeriod Days</span></strong> </div>
+                            }
+                            <div class="col-sm-3 wh-575 form-group">
+                                <label>Expected Relieving Date</label>
+                                @Html.TextBoxFor(model => model.RelievingDate, new { @class = "form-control", @type = "date" })
+                                @Html.ValidationMessageFor(model => model.RelievingDate, "", new { @class = "text-danger" })
+                            </div>
+                            <div class="col-sm-9 form-group">
+                                <label>Reason for not serving full notice period</label>
+                                @Html.TextAreaFor(model => model.ReasonForNotServingNotice, new { @class = "form-control", @placeholder = "Enter" })
+                                @Html.ValidationMessageFor(model => model.ReasonForNotServingNotice, "", new { @class = "text-danger" })
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <div class="col-sm-12 text-left">
+                        @if (Model.isdeleted == 2)
+                        {
+                            <button type="submit" name="Command" value="Add" class="btn mtr-o-grn btn-l ripplelink"> <i class="fas fa-share"></i>Forward to HR </button>
+                        }
+
+                        @if (Model.HistoryCount > 0)
+                        {
+                            <button type="button" id="btnHistory" class="btn mtr-o-grn btn-l ripplelink"> <i class="fas fa-history"></i>View History </button>
+                        }
+                        @if (Model.Approved == 2)
+                        {
+                            <button type="button" id="btnASuggations" class="btn mtr-o-grn btn-l ripplelink"> <i class="fas fa-history"></i>View Approvers </button>
+                        }
+                        <button type="button" class="btn cnl-btn ripplelink pull-right" onclick="ShowLoadingDialog(); window.location = '/Dashboard';"><i class="fas fa-times"></i> Cancel</button>
+
+                       
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        }
+
+    </div>
+</div>
+
+
+<div class="modal fade pop-dgn" id="ViewModal">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header blk-gdn-btn">
+                <h4 class="modal-title"><i class="fas fa-print"></i><span id="spanHeadExit"></span></h4>
+                <div class="close" data-dismiss="modal">&times;</div>
+            </div>
+            <div class="modal-body">
+                <div id="ModalTagetDiv"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section scripts    {
+
+    @System.Web.Optimization.Scripts.Render("~/bundle/unobtrusivejs")
+    @Html.IncludeVersionedJs(Url.Content("~/assets/design/Scripts/ToolTip.js"))
+    @Html.IncludeVersionedJs(Url.Content("~/assets/design/scripts/AddInit.js"))
+<script>
+        function show(obj) {
+            var a = $(obj).val();
+            if (a == "1") {
+                $(".divhide").hide();
+
+            } else {
+                $(".divhide").show();
+            }
+        }
+
+        function OnRequestSuccess(obj) {
+            if (obj.Status) {
+                SuccessToaster(obj.SuccessMessage);
+                window.location.href = obj.RedirectURL;
+                $("#ViewModal").modal('hide');
+                $("#btnSearch").click();
+            }
+            else {
+                CloseLoadingDialog();
+                FailToaster(obj.SuccessMessage);
+
+            }
+        }
+
+        $('#btnHistory').on('click', function (e) {
+            ViewExitRequestHistory();
+
+        });
+
+
+        function ViewExitRequestHistory() {
+            ShowLoadingDialog();
+            var src=EncryptQueryStringJSON(@ViewBag.MenuID+"*" + "/Exit/_ExitRequestList")
+            $.ajax({
+                url: "/Exit/_ExitRequestList",
+                type: "Post",
+                data: { Approve: 2, src: src },
+                success: function (data) {
+                    $("#spanHeadExit").html('Request History')
+                    $("#ModalTagetDiv").empty();
+                    $("#ModalTagetDiv").html(data);
+                    $('#ViewModal').modal({
+                        backdrop: 'static',
+                        keyboard: false
+                    });
+                    CloseLoadingDialog();
+                },
+                error: function (er) {
+                    console.log(er);
+                    CloseLoadingDialog();
+                }
+            });
+        }
+
+    $('#btnASuggations').on('click', function (e) {
+        ViewApproversSuggationsList();
+        });
+
+
+    function ViewApproversSuggationsList() {
+        ShowLoadingDialog();
+        var Exit_ID = $("#Exit_ID").val();
+        var src = EncryptQueryStringJSON(@ViewBag.MenuID+"*" + "/Exit/_ApproversSuggationsList*" + Exit_ID)
+            $.ajax({
+                url: "/Exit/_ApproversSuggationsList",
+                type: "Post",
+                data: { src: src },
+                success: function (data) {
+                    $("#spanHeadExit").html("Approver's Suggations")
+                    $("#ModalTagetDiv").empty();
+                    $("#ModalTagetDiv").html(data);
+                    $('#ViewModal').modal({
+                        backdrop: 'static',
+                        keyboard: false
+                    });
+                    CloseLoadingDialog();
+                },
+                error: function (er) {
+                    console.log(er);
+                    CloseLoadingDialog();
+                }
+            });
+        }
+</script>
+}

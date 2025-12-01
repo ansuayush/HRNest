@@ -1,0 +1,73 @@
+﻿@using System.Data
+@model Mitr.Models.MiscQuestion
+
+@section style{
+    @System.Web.Optimization.Styles.Render("~/bundle/dataTablecss")
+}
+
+
+<div class="right_col" role="main">
+    @Html.Partial("HeaderMsg_Partial")
+    <h1 class="heading-one">
+        Voting Score Board
+
+    </h1>
+
+    @using (Ajax.BeginForm("_VotingScoreBoardList", "Master",
+            new { src = clsApplicationSetting.EncryptQueryString(ViewBag.MenuID.ToString() + "*/Master/_VotingScoreBoardList") },
+            new AjaxOptions { HttpMethod = "POST", OnSuccess = "BindTarget", OnFailure = "BindTarget" },
+        new { @id = "_VotingScoreBoardListFrom" })
+        )
+    {
+
+        <div class="tab-main mb-5">
+            <div class="row text-clr">
+
+                <div class="col-sm-3 form-group">
+                    <label>Question</label>
+                    @Html.DropDownListFor(model => model.QuestionID, new SelectList(Model.QuestionList, "QuestionID", "Quest", Model.QuestionID), "select", new { @class = "form-control applyselect" })
+                    @Html.ValidationMessageFor(model => model.QuestionID, "", new { @class = "text-danger" })
+                </div>
+
+
+
+                <div style="display:none">
+                    <button type="submit" class="btn mtr-g-grn btn-l ripplelink" id="btnSearch" name="Command" value="Search"><i class="fas fa-search"></i>Search</button>
+                </div>
+
+            </div>
+        </div>
+    }
+    <div id="TargetDiv"></div>
+
+</div>
+
+
+@section scripts    {
+    @System.Web.Optimization.Scripts.Render("~/bundle/dataTablesjs")
+    @System.Web.Optimization.Scripts.Render("~/bundle/unobtrusivejs")
+    @Html.IncludeVersionedJs(Url.Content("~/assets/design/Scripts/AddInit.js"))
+    <script>
+
+        $('#QuestionID').on("change", function () {
+            ShowLoadingDialog();
+            $("#btnSearch").click();
+        });
+
+
+        function BindTarget(args) {
+            CloseLoadingDialog();
+            $("#TargetDiv").empty();
+            $("#TargetDiv").html(args);
+
+            DatatableScriptsWithColumnSearch("tableQuestion");
+            $("#spn1").html($("#hdnOptionCount1").val());
+            $("#spn2").html($("#hdnOptionCount2").val());
+            $("#spn3").html($("#hdnOptionCount3").val());
+            $("#spn4").html($("#hdnOptionCount4").val());
+
+        }
+
+    </script>
+
+}

@@ -1,0 +1,83 @@
+﻿
+@{
+    ViewBag.Title = "AssigntaskSave";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container-fluid">
+
+    <!-- Start -->
+    <div class="inner-main defult-height p-3 pb-0">
+        <h1 class="heading-one mb-3">Handover Task</h1>
+        <input type="hidden" id="hdfid" value="@ViewBag.ID " />
+        <div class="row">
+            <div class="col-sm-12 form-group">
+                <ul class="list-unstyled inline-li m-0 rqt-dtl">
+                    <li>
+                        <label>Requested by</label><span id="spRby"></span>
+                    </li>
+
+                    <li>
+                        <label>Req No</label><span id="spRN"></span>
+                    </li>
+
+                    <li>
+                        <label>Location</label><span id="spL"></span>
+                    </li>
+                    <li>
+                        <label>Department</label><span id="spDept"></span>
+                    </li>
+                    <li>
+                        <label>Designation</label><span id="spDes"></span>
+                    </li>
+                    <li>
+                        <label>Requested Date</label><span id="spRD"></span>
+                    </li>
+                    <li>
+                        <label>Approved Relieving Date </label><span id="spARD"></span>
+                    </li>
+
+                </ul>
+            </div>
+            <div class="col-sm-6 form-group">
+                <h3 class="subheading">Handover Task List</h3>
+                <div class="table-responsive">
+                    <table class="table table-striped text-left mb-0 mt-0 vt-a" id="tabelHandover">
+                        <thead>
+                            <tr>
+                                <th width="33">S.No </th>
+                                <th>Task </th>
+                                <th width="80">Priority</th>
+                                <th width="300">Remark</th>
+                                <th width="120" style="display:none">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+
+
+                </div>
+            </div>
+
+
+
+        </div>
+    </div>
+    <!-- ENd -->
+</div>
+
+@section scripts    {
+    @System.Web.Optimization.Scripts.Render("~/bundle/unobtrusivejs")
+    @System.Web.Optimization.Scripts.Render("~/bundle/dataTablesjs")
+    <script src="~/assets/design/Scripts/AddInit.js?v=@clsApplicationSetting.GetWebConfigValue("Version")"></script>
+
+    <script src="~/assets/design/scripts/DevScriptExit/AsginTaskSave.js"></script>
+    <script>
+
+
+
+
+    </script>
+
+}

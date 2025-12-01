@@ -1,0 +1,91 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="shortcut icon" href="@Url.Content("~/assets/design/images/favicon.png")" type="image/x-icon">
+	<link rel="icon" href="@Url.Content("~/assets/design/images/favicon.png")" type="image/png" sizes="50x50">
+	@Html.IncludeVersionedCss(Url.Content("~/assets/design/css/icons.css"))
+	@Html.IncludeVersionedCss(Url.Content("~/assets/design/css/bootstrap.min.css"))
+	@Html.IncludeVersionedCss(Url.Content("~/assets/design/css/custom.css"))
+	@Html.IncludeVersionedCss(Url.Content("~/assets/design/css/style.css"))
+	@Html.IncludeVersionedCss(Url.Content("~/assets/design/css/select2.min.css"))
+	@RenderSection("style", required: false)
+	@Html.IncludeVersionedCss(Url.Content("~/Areas/Career/assets/css/career.css"))
+	
+
+	
+</head>
+<body>
+	<div id="dvMaskFullpage" style="display: none;">
+		<div class="vertical-centered-box">
+			<div class="content">
+				<div class="loader-circle"></div>
+				<div class="loader-line-mask">
+					<div class="loader-line"></div>
+				</div>
+				@Html.CreateImage("favicon.png", "favicon", "")
+				<p>Loading ...</p>
+			</div>
+		</div>
+	</div>
+	<div class="container-fluid">
+		@RenderBody()
+	</div>
+
+	<div id="toast">
+		<div id="toasticon"><i></i></div>
+		<div id="toastMsg"></div>
+	</div>
+	@Html.IncludeVersionedJs(Url.Content("~/assets/design/js/jquery-3.4.1.min.js"))
+	@Html.IncludeVersionedJs(Url.Content("~/assets/design/js/popper.min.js"))
+	@Html.IncludeVersionedJs(Url.Content("~/assets/design/js/bootstrap.min.js"))
+	@Html.IncludeVersionedJs(Url.Content("~/assets/design/js/stellarnav.min.js"))
+	@Html.IncludeVersionedJs(Url.Content("~/assets/design/js/notify.js"))
+	@Html.IncludeVersionedJs(Url.Content("~/assets/design/js/sweetalert.js"))
+	@Html.IncludeVersionedJs(Url.Content("~/assets/design/js/wow.min.js"))
+	@Html.IncludeVersionedJs(Url.Content("~/assets/design/js/select2.min.js"))
+
+	@Html.IncludeVersionedJs(Url.Content("~/assets/design/Scripts/CustomValidate.js"))
+	@Html.IncludeVersionedJs(Url.Content("~/assets/design/js/jquery.sidebar.js"))
+	@Html.IncludeVersionedJs(Url.Content("~/assets/design/js/moment.min.js"))
+	@RenderSection("scripts", required: false)
+	@Html.IncludeVersionedJs(Url.Content("~/assets/design/Scripts/ToolTip.js"))
+	<script>
+
+		function SuccessToaster(Message) {
+			$("#toastMsg").html(Message);
+			$("#toasticon i").addClass("fas fa-check green-clr ");
+			var x = document.getElementById("toast")
+			x.className = "show";
+			setTimeout(function () { x.className = x.className.replace("show", ""); }, 5000);
+		}
+
+		function FailToaster(Message) {
+			$("#toastMsg").html(Message);
+			$("#toasticon i").addClass("fas fa-exclamation-triangle red-clr");
+			var x = document.getElementById("toast")
+			x.className = "show toaster-warning";
+			setTimeout(function () { x.className = x.className.replace("show toaster-warning", ""); }, 5000);
+		}
+
+
+$(document).ready(function () {
+    var TS = '@TempData["Success"]';
+    var TSM = '@TempData["SuccessMsg"]';
+    if (TS == "Y") {
+        SuccessToaster(TSM);
+    }
+    if (TS == "N") {
+        FailToaster(TSM);
+    }
+});
+	</script>
+
+
+	<noscript>
+		<p class="NojavaScript">Javascripts is disabled </p>
+	</noscript>
+
+</body>
+</html>

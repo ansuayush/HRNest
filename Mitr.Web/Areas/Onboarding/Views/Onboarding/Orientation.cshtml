@@ -1,0 +1,138 @@
+﻿
+@{
+	ViewBag.Title = "Orientation";
+	Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<script src="~/Areas/Onboarding/DevScript/OnboardingOrientation.js"></script>
+<script>
+        var CandidateId = '@ViewBag.RequestId';
+		var IsEDUser = '@ViewBag.IsED';
+        var loggedinUserid = '@ViewBag.UserId';
+		var loggedinUserName = '@ViewBag.UserName';
+		var UserGrade = '@ViewBag.Grade';
+        var IsPM = '@ViewBag.IsPM';
+</script>
+<script>
+	function RedirectToOnboard() {
+		window.location.href = virtualPath + 'Onboarding/HRScreenOnboard';
+	}
+</script>
+<div class="container-fluid text-clr">
+	<!-- Start -->
+	<div class="inner-main defult-height pb-0">
+		<h1 class="heading-one ">HR Process</h1>
+
+		<ul class="tab-thrid">
+			<li class="dnactive" onclick="RedirectToClick('Offer');"><a >Offer</a></li>
+			<li class="dnactive" onclick="RedirectToClick('Joiningkit');"><a >Joining Kit</a></li>
+			<li class="dnactive" onclick="RedirectToClick('PreRegistration');"><a >Pre-Registration</a></li>
+			<li class="dnactive" onclick="RedirectToClick('OrientationSchedule');"><a >Orientation Schedule</a></li>
+			<li class="dnactive" onclick="RedirectToClick('Registration');"><a >Registration</a></li>
+			<li class="dnactive" onclick="RedirectToClick('Attachment');"><a >Attachment</a></li>
+			<li class="dnactive" onclick="RedirectToClick('UserOnboarding');"><a >Onboarding</a></li>
+			<li class="dnactive" onclick="RedirectToClick('DeclarationDetails');"><a >Declaration</a> </li>
+			<li class="active" onclick="RedirectToClick('Orientation');"><a >Orientation</a></li>
+		</ul>
+
+		<div class="row">
+			<div class="col-lg-8">
+				<div class="table-responsive">
+					<div id="OrientationTable">
+
+					</div>
+					@*<table class="table mt-0">
+						<thead>
+							<tr>
+								<th class="w-33">S.No</th>
+								<th class="w-250">Name of Member</th>
+								<th class="tw-100">Date</th>
+								<th class="tw-100">Time</th>
+								<th class="tw-100">Place</th>
+								<th class="w-500">Purpose</th>
+								<th class="tw-100">Mode</th>
+								<th class="w-500">Feedback</th>
+								<th> Status</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr>
+								<td>1</td>
+								<td>Amit Kumar </td>
+								<td>25/5/2020</td>
+								<td>1:00 PM</td>
+								<td>Delhi</td>
+								<td>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</td>
+								<td></td>
+								<td>In ullamcorper ipsum sapien, a laoreet eros fringilla porttitor.</td>
+								<td><strong class="green-clr">Complete</strong></td>
+							</tr>
+							<tr>
+								<td>2</td>
+								<td>Amit Kumar </td>
+								<td>25/5/2020</td>
+								<td>1:00 PM</td>
+								<td>Delhi</td>
+								<td>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</td>
+								<td></td>
+								<td>In ullamcorper ipsum sapien, a laoreet eros fringilla porttitor.</td>
+								<td><strong class="green-clr">Complete</strong></td>
+							</tr>
+							<tr>
+								<td>3</td>
+								<td>Amit Kumar </td>
+								<td>25/5/2020</td>
+								<td>1:00 PM</td>
+								<td>Delhi</td>
+								<td>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</td>
+								<td></td>
+								<td>In ullamcorper ipsum sapien, a laoreet eros fringilla porttitor.</td>
+								<td><strong class="green-clr">Complete</strong></td>
+							</tr>
+							<tr>
+								<td>4</td>
+								<td>Amit Kumar </td>
+								<td>25/5/2020</td>
+								<td>1:00 PM</td>
+								<td>Delhi</td>
+								<td>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</td>
+								<td></td>
+								<td>In ullamcorper ipsum sapien, a laoreet eros fringilla porttitor.</td>
+								<td><strong class="green-clr">Complete</strong></td>
+							</tr>
+							<tr>
+								<td>5</td>
+								<td>Amit Kumar </td>
+								<td>25/5/2020</td>
+								<td>1:00 PM</td>
+								<td>Delhi</td>
+								<td>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</td>
+								<td></td>
+								<td>In ullamcorper ipsum sapien, a laoreet eros fringilla porttitor.</td>
+								<td><strong class="green-clr">Complete</strong></td>
+							</tr>
+							<tr>
+								<td>6</td>
+								<td>Amit Kumar </td>
+								<td>25/5/2020</td>
+								<td>1:00 PM</td>
+								<td>Delhi</td>
+								<td>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</td>
+								<td></td>
+								<td>In ullamcorper ipsum sapien, a laoreet eros fringilla porttitor.</td>
+								<td><strong class="green-clr">Complete</strong></td>
+							</tr>
+						</tbody>
+					</table>*@
+				</div>
+			</div>
+			<div class="col-lg-8 text-center mt-2">
+
+
+				<button onclick="RedirectToOnboard();" type="button" class="btn cnl-btn ripplelink  pull-right"><i class="fas fa-times"></i> Close</button>
+			</div>
+		</div>
+	</div>
+
+	<!----End start-->
+</div>
+

@@ -1,0 +1,41 @@
+﻿
+@using System.Data
+@model Mitr.Models.DailyLogMonth
+
+@{
+	ViewBag.Title = "DailyLogMonth";
+}
+<div class="inner-main mb-5 pt-3">
+	@Html.Partial("HeaderMsg_Partial")
+
+	@using (Ajax.BeginForm("_MonthlyActiveLog", "Activity",
+			new { src = clsApplicationSetting.EncryptQueryString(ViewBag.MenuID.ToString() + "*/Activity/_MonthlyActiveLog") },
+			new AjaxOptions { HttpMethod = "POST", OnSuccess = "BindTarget", OnBegin = "ShowLoadingDialog();", OnFailure = "CloseLoadingDialog();" },
+		new { @id = "_MonthlyActiveLogFrom" })
+		)
+	{
+		<div class="row d-flex">
+			<div class="col-sm-2 form-group">
+				<label class="lbl-abs">Select Month</label>
+				@Html.TextBoxFor(model => model.Month, new { @class = "form-control actdate h-82", @type = "month" })
+				@Html.ValidationMessageFor(model => model.Month, "", new { @class = "text-danger" })
+
+				<button type="submit" class="btn mtr-g-grn btn-l ripplelink dnone" id="btnSearch" name="Command" value="Search"><i class="fas fa-search"></i>Search</button>
+			</div>
+			<div class="col-sm-9 form-group hideaftersub">
+				<div class="HoursSummaryTarget">@Html.Partial("_Loading")</div>
+			</div>
+
+			
+		</div>
+	}
+	<div id="TargetDiv"></div>
+</div>
+@section scripts    {
+	@System.Web.Optimization.Scripts.Render("~/bundle/dataTablesjs")
+
+	<script src="~/assets/design/Scripts/AddInit.js?v=@clsApplicationSetting.GetWebConfigValue("Version")"></script>
+	@System.Web.Optimization.Scripts.Render("~/bundle/unobtrusivejs")
+	<script src="~/assets/design/Scripts/PagesJS/MonthlyActiveLog.js?v=@clsApplicationSetting.GetWebConfigValue("Version")"></script>
+
+}

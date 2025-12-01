@@ -1,0 +1,1693 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>
+        Mitr: Digital Library
+    </title>
+    <meta name="title" content="Mitr: ActivityList" />
+    <meta name="keywords" content="Mitr: ActivityList" />
+    <meta name="description" content="Mitr: ActivityList" />
+
+ 
+  
+
+    <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,700&display=swap" rel="stylesheet">
+
+    <link rel="shortcut icon" href="~/assets/design/images/favicon.png" type="image/x-icon">
+    <link rel="icon" href="~/assets/design/images/favicon.png" type="image/png" sizes="50x50">
+    <link href='~/assets/design/css/stellarnav.css?v=1.6' rel='stylesheet' />
+    <link href='~/assets/design/css/bootstrap.min.css?v=1.6' rel='stylesheet' />
+    <link href='~/assets/design/css/sidebar.css?v=1.6' rel='stylesheet' />
+    <link href='~/assets/design/css/style.css?v=1.6' rel='stylesheet' />
+    <link href='~/assets/design/css/select2.min.css?v=1.6' rel='stylesheet' />
+    <link href='~/assets/design/css/animate.css?v=1.6' rel='stylesheet' />
+    <link href='~/assets/design/css/bootstrap-multiselect.css?v=1.6' rel='stylesheet' />
+    <link href="/bundle/dataTablecss?v=n4wzfa1ecUaofPcg6ZYtWp2OWNYEUo8R7oGM1OQxXHU1" rel="stylesheet" />
+    <link href='~/assets/design/css/custom.css?v=1.6' rel='stylesheet' />
+    <link href='~/assets/design/css/responsive.css?v=1.6' rel='stylesheet' />
+    <link href="~/assets/css/icons.css" rel="stylesheet" />
+    <style>
+
+        #toastmsg {
+            visibility: hidden;
+            min-width: 250px;
+            margin-left: -125px;
+            text-align: center;
+            position: fixed;
+            z-index: 1;
+            left: 50%;
+            top: 75px;
+        }
+
+            #toastmsg p {
+                padding: 16px;
+                border-radius: 2px;
+                text-align: center;
+                border: solid 1px #fff;
+                box-shadow: 0px 0px 10px 0px #555;
+            }
+
+        .yellow {
+            background-color: #f5ed16;
+            color: #000;
+        }
+
+        .red {
+            background-color: #f02222;
+            color: #fff;
+        }
+
+        .blue {
+            background-color: #6393f5;
+            color: #fff;
+        }
+
+        .green {
+            background-color: #29b50d;
+            color: #fff;
+        }
+
+        #toastmsg.show {
+            visibility: visible;
+            -webkit-animation: fadein 0.5s, fadeout 0.5s 2.5s;
+            animation: fadein 0.5s, fadeout 0.5s 2.5s;
+        }
+
+        .errorValidation {
+            border-color: red;
+        }
+    </style>
+
+
+ 
+    <script>
+        $.getJSON('http://www.geoplugin.net/json.gp', function (data) {
+            console.log(JSON.stringify(data, null, 2));
+            $('#hdnIP').val(data.geoplugin_request)
+        });
+    </script>
+
+</head>
+<body>
+
+    <input type="hidden" id="hdnIP" />
+    <div id="toastmsg"></div>
+
+    <div id="dvMaskFullpage" style="display: none;">
+        <div class="vertical-centered-box">
+            <div class="content">
+                <div class="loader-circle"></div>
+                <div class="loader-line-mask">
+                    <div class="loader-line"></div>
+                </div>
+                <img src='~/assets/design/images/favicon.png' alt="favicon" />
+                <p>Loading ...</p>
+            </div>
+        </div>
+    </div>
+
+    <header class="fixed-top">
+        <div class="l-header">
+
+
+
+            <div class="l-header-inner u-cf">
+                <div class="l-header-item u-pull-left">
+                    <span class="l-header-item-logo">
+
+                        <a href="index.html">
+                            <img src='~/assets/design/images/logo.jpg' class="l-header-logo-link-img snd-lgo" alt="Logo" />
+                        </a>
+
+                    </span>
+
+                </div>
+
+
+
+                <div class="l-header-item-contact u-pull-right">
+
+                    <ul class="list-unstyled top-menu-list">
+
+                        <li>
+
+                            <a class="tp-arw ripplelink" data-toggle=")" aria-haspopup="true" aria-expanded="false" id="Menu_215" target="_self" href="/Activity/DailyLog?src=FF8F1E8726CDB1D8649672BEC4DD2B822710C51259CC">Daily Log </a>
+
+
+                        </li>
+                        <li>
+
+                            <a class="tp-arw ripplelink" data-toggle=")" aria-haspopup="true" aria-expanded="false" id="Menu_247" target="_self" href="/Activity/ActivityLogApproval?src=FF8A1C8726CDB1D8649672BEC4DD2E803A15CA3742D2B6BDE7BB78B67ECBF27AD5">Team Log </a>
+
+
+                        </li>
+                        <li>
+
+                            <a class="tp-arw ripplelink" data-toggle=")" aria-haspopup="true" aria-expanded="false" id="Menu_82" target="_self" href="/Account/OfficePolicies?src=F58C01">Office Policies </a>
+                            <div class="dropdown-menu">
+                                <a class="dropdown-item" id="Menu_85" target="_self" onclick="" href="">Office Manual</a>
+                                <a class="dropdown-item" id="Menu_86" target="_self" onclick="" href="">Sexual Harassment Policy</a>
+                                <a class="dropdown-item" id="Menu_87" target="_self" onclick="" href="">Procurement Manual</a>
+                                <a class="dropdown-item" id="Menu_88" target="_self" onclick="" href="">ICC Process</a>
+                                <a class="dropdown-item" id="Menu_89" target="_self" onclick="" href="">Business Continuity Plan</a>
+                                <a class="dropdown-item" id="Menu_90" target="_self" onclick="" href="">Late Coming to Office</a>
+                                <a class="dropdown-item" id="Menu_91" target="_self" onclick="" href="">Anti Trafficking Policy</a>
+
+                            </div>
+
+                        </li>
+                        <li>
+
+                            <a class="tp-arw ripplelink" data-toggle=")" aria-haspopup="true" aria-expanded="false" id="Menu_83" target="_self" href="?src=F58D01">Services </a>
+
+                            <div class="dropdown-menu">
+                                <a class="dropdown-item" id="Menu_156" target="_self" onclick="ShowLoadingDialog();" href="/Cab/CabBooking?MenuID=156">Cab Booking (E.C)</a>
+                                <a class="dropdown-item" id="Menu_157" target="_self" onclick="ShowLoadingDialog();" href="/Cab/CabApproval?MenuID=157">Cab Approval (E.C)</a>
+                                <a class="dropdown-item" id="Menu_158" target="_self" onclick="ShowLoadingDialog();" href="/Cab/TaxiDetails?MenuID=158">Taxi Details (E.C)</a>
+                                <a class="dropdown-item" id="Menu_159" target="_self" onclick="ShowLoadingDialoVirtuVirtualPathVirtualPathalPathg();" href="/Cab/OfficeCarBookingStatus?MenuID=159">Office Car Booking Status (E.C)</a>
+                                <a class="dropdown-item" id="Menu_160" target="_self" onclick="ShowLoadingDialog();" href="/Cab/BillingDetails?MenuID=160">Billing Details (E.C)</a>
+                                <a class="dropdown-item" id="Menu_161" target="_self" onclick="ShowLoadingDialog();" href="/Cab/Finance?MenuID=161">Finance (E.C)</a>
+                                <a class="dropdown-item" id="Menu_162" target="_self" onclick="ShowLoadingDialog();" href="/Cab/CabStatus?MenuID=162">CAB Status (E.C)</a>
+
+                            </div>
+
+                        </li>
+                        <li>
+
+                            <a class="tp-arw ripplelink" data-toggle=")" aria-haspopup="true" aria-expanded="false" id="Menu_84" target="_self" href="?src=F58A01">Help </a>
+
+                            <div class="dropdown-menu">
+                                <a class="dropdown-item" id="Menu_99" target="_self" onclick="" href="">Action</a>
+
+                            </div>
+
+                        </li>
+
+                        <li>
+
+                            <a href="/Tools/AllNotification" class="top-prf-pic tp-arw" data-toggle="dropdown" aria-haspopup="false" aria-expanded="true">
+                                <i class="fas fa-bell"></i>
+                                <span id="spnMainTotalCount" class="count-nt wow swing">0</span>
+                            </a>
+                            <div class="dropdown-menu dropdown-menu-form ">
+                                <div class="NotificationDiv"></div>
+                            </div>
+                        </li>
+                        <li>
+                            <a class="top-prf-pic tp-arw" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <img src='~/assets/design/images/NoImage.png' style="display:none" />
+                            </a>
+                            <div class="dropdown-menu profile-list">
+                                <ul>
+                                    <li>
+                                        <div class="media emp-info">
+                                            <div class="media-left">
+                                                <div class="prf-img" data-toggle="modal" data-target="#updateimage">
+                                                    <div class="profile-img">
+                                                        <img src='~/assets/design/images/NoImage.png' style="display:none" class="media-object" />
+                                                    </div>
+                                                    <span class="emp-info-txt">Change Image</span>
+                                                </div>
+                                            </div>
+                                            <div class="media-body align-self-center">
+                                                <h4 class="media-heading">
+                                                    <a href=''>Superadmin </a>
+
+                                                </h4>
+                                                <p></p>
+                                            </div>
+                                        </div>
+                                    </li>
+                                    <li>
+                                        <a target="" class="" href=''><i class="fa fa-users" aria-hidden='true'></i> ESS Payroll</a>
+
+                                    </li>
+                                    <li>
+                                        <a onclick="ListAdd();"><i class="fa fa-user" aria-hidden="true"></i> My Profile</a>
+                                    </li>
+                                    <li>
+                                        <a target="" class="" href=''><i class="fa fa-users" aria-hidden='true'></i> My Setting</a>
+
+                                    </li>
+                                    <li>
+                                        <a target="" class="" href='/ChangePassword'><i class="fa fa-users" aria-hidden='true'></i> Change Password</a>
+                                    </li>
+                                    <li>
+                                        <a target="" class="" href=''><i class="fa fa-users" aria-hidden='true'></i> Logout</a>
+
+                                    </li>
+                            </div>
+                        </li>
+
+                        <li>
+                            <a href="http://www.c3india.org/" target="_blank">
+                                <img src='~/assets/design/images/c3.png' style="display:none" class="right-logo" alt="c3 India" />
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+
+
+
+
+            <script>
+                function ListAdd() {
+                    ShowLoadingDialog();
+                    var ID = Number('0');
+                    var MenuID = Number('298');
+                    ShowLoadingDialog();
+                    var url = "/Account/RegistrationDetails?Empid=" + ID;
+                    var url = "/Account/RegistrationDetails?src=" + EncryptQueryStringJSON(0 + "*" + "/Account/RegistrationDetails" + "*" + ID);
+                    window.location.href = url;
+                }
+            </script>
+
+
+            <!-- MENU Start -->
+            <div class="stellarnav mtr-o-grn ">
+                <!-- Navigation Menu-->
+                <ul class="MenuListUl">
+                    <li class="menu-list"><a href="index.html" onclick="ShowLoadingDialog();" style="padding-top:8px"><i class="fas fa-home"></i></a></li>
+                    <li class="menu-list ">
+                        <a href="javascripts:;"><img src="~/assets/design/images/icon/project-icon.svg" alt="Master" width="20px" height="20px" /><span>Master</span></a>
+                        <ul>
+                            <li class="menu-list">
+                                <a href="~/DigitalLibrary/SubCategory">Sub Category</a>
+                            </li>
+                            <li class="menu-list">
+                                <a href="~/DigitalLibrary/Tag">Tag</a>
+                            </li>
+                            <li class="menu-list">
+                                <a href="~/DigitalLibrary/ProjectTeamLead">Team Lead Master</a>
+                            </li>
+                            <li class="menu-list">
+                                <a href="~/DigitalLibrary/CategoryEdOdMapping">ED/OD Linkup Master</a>
+                            </li>
+
+                        </ul>
+                    </li>
+                    <li class="menu-list ">
+                        <a href="javascripts:;"><img src="~/assets/design/images/icon/project-icon.svg" alt="Activity Log" width="20px" height="20px" /><span>Digital Library</span></a>
+                        <ul>
+                            <li class="menu-list">
+                                <a target="_self" href="~/DigitalLibrary/DigitalLib">Digital Library</a>
+                            </li>
+                            <li class="menu-list">
+                                <a target="_self" href="~/DigitalLibrary/DigitalLib">My Contents</a>
+                            </li>
+                            <li class="menu-list">
+                                <a target="_self" href="~/DigitalLibrary/DigitalLib">Team Content Requests</a>
+                            </li>
+                            <li class="menu-list">
+                                <a target="_self" href="~/DigitalLibrary/DigitalLib">Rejected Documents</a>
+                            </li>
+                        </ul>
+                    </li>
+
+            </div>
+
+
+        </div>
+    </header>
+
+    <div class="l-sideNav">
+        <div id="js-nav-toggle" class="l-hamburger arrow "> <a href="#"> <span class="top"></span> <span class="middle"></span> <span class="bottom"></span> </a> </div>
+        <div class="l-nav">
+            <nav role="navigation">
+                <div class="l-nav-container">
+                    <ul class="l-nav-inner">
+
+                        <li class="l-nav-item ripplelink">
+                            <a target="_self" class="l-nav-item-link" href='/Utility/MediaClippingList?MenuID=79?src=FA8701825CF8BBC0649462E5F0970B8A2F3FD03746DB93BCE7B661B5789BC97ED760BD264B08CB'>Tally</a>
+
+
+                            <span class="l-nav-item-icon">
+
+                                T
+                            </span>
+                        </li>
+                        <li class="l-nav-item ripplelink">
+                            <a target="_self" class="l-nav-item-link" href='?src=FA8901'>Messenger</a>
+
+
+                            <span class="l-nav-item-icon">
+
+                                M
+                            </span>
+                        </li>
+                        <li class="l-nav-item ripplelink">
+                            <a target="_self" class="l-nav-item-link" href='?src=F58E01'>Hootsuite</a>
+
+
+                            <span class="l-nav-item-icon">
+
+                                H
+                            </span>
+                        </li>
+                        <li class="l-nav-item ripplelink">
+                            <a target="_self" class="l-nav-item-link" href='?src=FA8601'>Downloads</a>
+
+
+                            <span class="l-nav-item-icon">
+
+                                D
+                            </span>
+                        </li>
+                        <li class="l-nav-item ripplelink">
+                            <a target="_self" class="l-nav-item-link" href='/Utility/ConferenceRoomList?MenuID=76?src=FA8801825CF8BBC0649462E5FE9D01852B0ED93055CEA8BDEF9744AF7FD0BB56DC7B812B3202C5B6'>Media Clipping</a>
+
+
+                            <span class="l-nav-item-icon">
+
+                                M
+                            </span>
+                        </li>
+                        <li class="l-nav-item ripplelink">
+                            <a target="_self" class="l-nav-item-link" href='javascripts:;?src=FA8B01C768FAB3DF6E9272BAC98155D8'>Voting Polling</a>
+
+
+                            <span class="l-nav-item-icon">
+
+                                V
+                            </span>
+                        </li>
+                        <li class="l-nav-item ripplelink">
+                            <a target="_self" class="l-nav-item-link" href='/Misc/TelephoneDirectoryList?MenuID=81?src=F58F018244E5A1CF22B47EA6D882078C2019F83744CE99A6EF88718A65D7F024F4709A173F7BCFB861'>Tel Directory</a>
+
+
+                            <span class="l-nav-item-icon">
+
+                                T
+                            </span>
+                        </li>
+
+                    </ul>
+                </div>
+            </nav>
+        </div>
+
+        <div class="overlay-bg l-contents"></div>
+    </div>
+    <div class="l-contents">
+        <div class="container-fluid">
+
+            @RenderBody()
+        </div>
+    </div>
+
+    <div class="modal fade pop-dgn" id="as">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+
+                <div class="modal-header blk-gdn-btn">
+                    <h4 class="modal-title"><i class="fas fa-plus-circle"></i>Advanced Search</h4>
+                    <div class="close" data-dismiss="modal">&times;</div>
+                </div>
+                <!-- Modal body -->
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-sm-4 form-group">
+                            <strong>Master</strong>
+                        </div>
+                        <div class="col-sm-8 form-group">
+                            <strong>Value</strong>
+                        </div>
+                        <!----1---->
+                        <div class="col-sm-4 form-group">
+                            <select id="asselector" class="form-control applyselect">
+                                <option>Select</option>
+                                <option value="projectcode">Project Code</option>
+                                <option value="projectname">Project Name</option>
+                                <option value="thematic">Thematic</option>
+                                <option value="place">Place </option>
+                                <option value="tag">Tag</option>
+                                <option value="year">Year</option>
+                            </select>
+                        </div>
+                        <div class="col-sm-8 form-group">
+                            <div id="projectcode" class="hidenone">
+                                <select class="form-control applyselect" multiple="">
+                                    <option>P079</option>
+                                    <option>P094</option>
+                                    <option>P095</option>
+                                    <option>P096</option>
+                                </select>
+                            </div>
+
+                            <div id="projectname" class="hidenone">
+                                <select class="form-control applyselect" multiple="">
+                                    <option>UNNITI- SGP</option>
+                                    <option>Unnitti Foundation</option>
+                                    <option>Unniti</option>
+                                    <option>Improving Knowledge Around Menstrual</option>
+                                </select>
+                            </div>
+                            <div id="thematic" class="hidenone">
+                                <select class="form-control applyselect" multiple="">
+                                    <option>Girls’ education & youth development </option>
+                                </select>
+                            </div>
+                            <div id="place" class="hidenone">
+
+                                <select class="form-control applyselect" multiple="">
+                                    <option>Gujarat</option>
+                                    <option>Delhi</option>
+                                    <option>Goa</option>
+                                    <option>Punjab</option>
+
+                                </select>
+                            </div>
+                            <div id="tag" class="hidenone">
+                                <select class="form-control applyselect" multiple="">
+                                    <option>Nutrition</option>
+                                    <option>Digital Literacy</option>
+                                    <option>Women’s Collectives </option>
+                                    <option>Sakshamaa</option>
+
+                                </select>
+                            </div>
+                            <div id="year" class="hidenone">
+
+                                <select class="form-control applyselect">
+                                    <option>Select</option>
+                                    <option>2019</option>
+                                    <option>2020</option>
+                                    <option>2021</option>
+                                    <option>2022</option>
+
+                                </select>
+                            </div>
+                        </div>
+                        <!----1---->
+                        <!----2---->
+                        <div class="col-sm-4 form-group">
+                            <select id="asselector-2" class="form-control applyselect">
+                                <option>Select</option>
+                                <option value="projectcode-2 ">Project Code</option>
+                                <option value="projectname-2">Project Name</option>
+                                <option value="thematic-2">Thematic</option>
+                                <option value="place-2">Place </option>
+                                <option value="tag-2">Tag</option>
+                                <option value="year-2">Year</option>
+                            </select>
+                        </div>
+                        <div class="col-sm-8 form-group">
+                            <div id="projectcode-2" class="hidenone-2">
+                                <select class="form-control applyselect" multiple="">
+                                    <option>P079 1</option>
+                                    <option>P094</option>
+                                    <option>P095</option>
+                                    <option>P096</option>
+                                </select>
+                            </div>
+
+                            <div id="projectname-2" class="hidenone-2">
+                                <select class="form-control applyselect" multiple="">
+                                    <option>UNNITI- SGP</option>
+                                    <option>Unnitti Foundation</option>
+                                    <option>Unniti</option>
+                                    <option>Improving Knowledge Around Menstrual</option>
+                                </select>
+                            </div>
+                            <div id="thematic-2" class="hidenone-2">
+                                <select class="form-control applyselect" multiple="">
+                                    <option>Girls’ education & youth development </option>
+                                </select>
+                            </div>
+                            <div id="place-2" class="hidenone-2">
+
+                                <select class="form-control applyselect" multiple="">
+                                    <option>Gujarat</option>
+                                    <option>Delhi</option>
+                                    <option>Goa</option>
+                                    <option>Punjab</option>
+
+                                </select>
+                            </div>
+                            <div id="tag-2" class="hidenone-2">
+                                <select class="form-control applyselect" multiple="">
+                                    <option>Nutrition</option>
+                                    <option>Digital Literacy</option>
+                                    <option>Women’s Collectives </option>
+                                    <option>Sakshamaa</option>
+
+                                </select>
+                            </div>
+                            <div id="year-2" class="hidenone-2">
+
+                                <select class="form-control applyselect">
+                                    <option>Select</option>
+                                    <option>2019</option>
+                                    <option>2020</option>
+                                    <option>2021</option>
+                                    <option>2022</option>
+
+                                </select>
+                            </div>
+                        </div>
+                        <!----2---->
+                        <!----3---->
+                        <div class="col-sm-4 form-group">
+                            <select id="asselector-3" class="form-control applyselect">
+                                <option>Select</option>
+                                <option value="projectcode-3 ">Project Code</option>
+                                <option value="projectname-3">Project Name</option>
+                                <option value="thematic-3">Thematic</option>
+                                <option value="place-3">Place </option>
+                                <option value="tag-3">Tag</option>
+                                <option value="year-3">Year</option>
+                            </select>
+                        </div>
+                        <div class="col-sm-8 form-group">
+                            <div id="projectcode-3" class="hidenone-3">
+                                <select class="form-control applyselect" multiple="">
+                                    <option>P079 1</option>
+                                    <option>P094</option>
+                                    <option>P095</option>
+                                    <option>P096</option>
+                                </select>
+                            </div>
+
+                            <div id="projectname-3" class="hidenone-3">
+                                <select class="form-control applyselect" multiple="">
+                                    <option>UNNITI- SGP</option>
+                                    <option>Unnitti Foundation</option>
+                                    <option>Unniti</option>
+                                    <option>Improving Knowledge Around Menstrual</option>
+                                </select>
+                            </div>
+                            <div id="thematic-3" class="hidenone-3">
+                                <select class="form-control applyselect" multiple="">
+                                    <option>Girls’ education & youth development </option>
+                                </select>
+                            </div>
+                            <div id="place-3" class="hidenone-3">
+
+                                <select class="form-control applyselect" multiple="">
+                                    <option>Gujarat</option>
+                                    <option>Delhi</option>
+                                    <option>Goa</option>
+                                    <option>Punjab</option>
+
+                                </select>
+                            </div>
+                            <div id="tag-3" class="hidenone-3">
+                                <select class="form-control applyselect" multiple="">
+                                    <option>Nutrition</option>
+                                    <option>Digital Literacy</option>
+                                    <option>Women’s Collectives </option>
+                                    <option>Sakshamaa</option>
+
+                                </select>
+                            </div>
+                            <div id="year-3" class="hidenone-3">
+
+                                <select class="form-control applyselect">
+                                    <option>Select</option>
+                                    <option>2019</option>
+                                    <option>2020</option>
+                                    <option>2021</option>
+                                    <option>2022</option>
+
+                                </select>
+                            </div>
+                        </div>
+                        <!----3---->
+                        <!----4---->
+                        <div class="col-sm-4 form-group">
+                            <select id="asselector-4" class="form-control applyselect">
+                                <option>Select</option>
+                                <option value="projectcode-4 ">Project Code</option>
+                                <option value="projectname-4">Project Name</option>
+                                <option value="thematic-4">Thematic</option>
+                                <option value="place-4">Place </option>
+                                <option value="tag-4">Tag</option>
+                                <option value="year-4">Year</option>
+                            </select>
+                        </div>
+                        <div class="col-sm-8 form-group">
+                            <div id="projectcode-4" class="hidenone-4">
+                                <select class="form-control applyselect" multiple="">
+                                    <option>P079 1</option>
+                                    <option>P094</option>
+                                    <option>P095</option>
+                                    <option>P096</option>
+                                </select>
+                            </div>
+
+                            <div id="projectname-4" class="hidenone-4">
+                                <select class="form-control applyselect" multiple="">
+                                    <option>UNNITI- SGP</option>
+                                    <option>Unnitti Foundation</option>
+                                    <option>Unniti</option>
+                                    <option>Improving Knowledge Around Menstrual</option>
+                                </select>
+                            </div>
+                            <div id="thematic-4" class="hidenone-4">
+                                <select class="form-control applyselect" multiple="">
+                                    <option>Girls’ education & youth development </option>
+                                </select>
+                            </div>
+                            <div id="place-4" class="hidenone-4">
+
+                                <select class="form-control applyselect" multiple="">
+                                    <option>Gujarat</option>
+                                    <option>Delhi</option>
+                                    <option>Goa</option>
+                                    <option>Punjab</option>
+
+                                </select>
+                            </div>
+                            <div id="tag-4" class="hidenone-4">
+                                <select class="form-control applyselect" multiple="">
+                                    <option>Nutrition</option>
+                                    <option>Digital Literacy</option>
+                                    <option>Women’s Collectives </option>
+                                    <option>Sakshamaa</option>
+
+                                </select>
+                            </div>
+                            <div id="year-4" class="hidenone-4">
+
+                                <select class="form-control applyselect">
+                                    <option>Select</option>
+                                    <option>2019</option>
+                                    <option>2020</option>
+                                    <option>2021</option>
+                                    <option>2022</option>
+
+                                </select>
+                            </div>
+                        </div>
+                        <!----4---->
+
+
+
+                        <div class="col-sm-12 text-center">
+
+                            <a href="searchbox.html" class="btn mtr-g-grn btn-l ripplelink pull-right" name="Command" value="Add"><i class="fas fa-search"></i>Search</a>
+                            <button type="button" class="btn cnl-btn ripplelink" data-dismiss="modal"><i class="fas fa-times"></i>Close</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade pop-dgn" id="sc">
+        <div class="modal-dialog modal-md">
+            <div class="modal-content">
+
+                <div class="modal-header blk-gdn-btn">
+                    <h4 class="modal-title"><i class="fa fa-plus"></i>Add Content</h4>
+                    <div class="close" data-dismiss="modal">&times;</div>
+                </div>
+                <!-- Modal body -->
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-sm-12 form-group">
+                            <label>Choose Your Category</label>
+                            <select class="form-control applyselect">
+                                <option>Select</option>
+                                <option>Project Documents</option>
+                                <option>Evaluation Baseline</option>
+                                <option>Evaluation Midline</option>
+                                <option>Evaluation Endline</option>
+                                <option>Evaluation MIS</option>
+                                <option>Evaluation Raw Data</option>
+                                <option>Evaluation Assessment</option>
+                                <option>Proposal Documents</option>
+                                <option>Publication</option>
+                                <option>Training Material</option>
+                                <option>Contracts</option>
+                                <option>Communication Collaterals
+                                <option>
+                                <option>Communication Events
+                                <option>
+                            </select>
+                        </div>
+
+
+                        <div class="col-sm-12 text-center">
+
+                            <button type="submit" class="btn mtr-g-grn btn-l ripplelink pull-right" name="Command" value="Add" data-toggle="modal" data-target="#scnew"><i class="fas fa-cogs"></i> Process</button>
+                            <button type="button" class="btn cnl-btn ripplelink" data-dismiss="modal"><i class="fas fa-times"></i>Close</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+    <div class="modal fade" id="scnew" role="dialog" aria-modal="flase">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+
+                <div class="modal-header blk-gdn-btn">
+                    <h4 class="modal-title"><i class="fa fa-plus"></i>Add Content</h4>
+                    <div class="close" data-dismiss="modal">&times;</div>
+                </div>
+                <!-- Modal body -->
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-sm-3 form-group">
+                            <label>Req. No.</label>
+                            <input type="text" value="101" disabled="" placeholder="Enter" name="">
+                        </div>
+                        <div class="col-sm-3 form-group">
+                            <label>Req. Date.</label>
+                            <input type="date" value="" value="101" disabled="" placeholder="Enter" name="">
+                        </div>
+                        <div class="col-sm-3 form-group">
+                            <label>Req. By</label>
+                            <input type="text" value="" disabled="" placeholder="Enter" name="">
+                        </div>
+                        <div class="col-sm-3 form-group">
+                            <label>Category</label>
+                            <input type="text" value="Project Document" disabled="" placeholder="Enter" name="">
+                        </div>
+                        <div class="col-md-12 form-group">
+                            <hr>
+                            <span class="hr-aps"><i class="fas fa-info-circle"></i>Details</span>
+                        </div>
+                        <div class="col-sm-3 form-group">
+                            <label>Sub Category <sup>*</sup></label>
+                            <select class="form-control applyselect">
+                                <option>Select</option>
+                                <option>Brochure</option>
+                                <option>Case Study</option>
+                                <option>Posters</option>
+                                <option>BL Report</option>
+                                <option>ML-Executive Summary</option>
+                                <option>ML-Factsheets</option>
+                                <option>EL-Presentations</option>
+                                <option>Factsheets</option>
+                            </select>
+                        </div>
+                        <div class="col-sm-3 form-group">
+                            <label>Project Code <sup>*</sup></label>
+                            <select class="form-control applyselect" multiple="">
+                                <option>P031</option>
+                                <option>P032</option>
+                                <option>P033</option>
+                                <option>P034</option>
+                            </select>
+                        </div>
+                        <div class="col-sm-6 form-group">
+                            <label>Project Name <sup>*</sup></label>
+                            <select class="form-control applyselect" multiple="">
+
+                                <option>UNNITI- SGP</option>
+                                <option>Unnitti Foundation</option>
+                                <option>Unniti</option>
+                            </select>
+                        </div>
+
+                        <div class="col-sm-6 form-group">
+                            <label>Place <sup>*</sup></label>
+                            <select class="form-control applyselect" multiple="">
+                                <option>Select</option>
+                                <option>Delhi</option>
+                                <option>Goa</option>
+                                <option>Uttar Pradesh</option>
+                                <option>Punjab</option>
+                            </select>
+                        </div>
+
+                        <div class="col-sm-6 form-group">
+                            <label>Thematic<sup>*</sup></label>
+                            <select class="form-control applyselect" multiple="">
+                                <option>Select</option>
+                                <option>Girls’ education & youth development </option>
+                            </select>
+                        </div>
+                        <div class="col-sm-3 form-group">
+                            <label>Funded By</label>
+                            <select class="form-control applyselect" multiple="">
+
+                                <option>Unniti Foundation</option>
+                                <option>Oracle</option>
+                                <option>Amazon</option>
+                                <option>Bill and Melinda Gates Foundation (BMGF)</option>
+                            </select>
+                        </div>
+                        <div class="col-sm-3 form-group">
+                            <label>Upload Date <sup>*</sup></label>
+                            <input type="date" value="" placeholder="Enter" name="">
+                        </div>
+                        <div class="col-sm-3 form-group">
+                            <label>Report No</label>
+                            <input type="text" value="" placeholder="Enter" name="">
+                        </div>
+
+                        <div class="col-sm-3 form-group">
+                            <label>Author/Coordinator <sup>*</sup></label>
+                            <select class="form-control applyselect">
+                                <option>Select</option>
+                                <option>Author/Coordinator 1</option>
+                                <option>Author/Coordinator 2</option>
+                                <option>Author/Coordinator 3</option>
+                                <option>Author/Coordinator 4</option>
+                            </select>
+                        </div>
+
+                        <div class="col-md-12 form-group">
+                            <hr>
+                            <span class="hr-aps"><i class="fas fa-info-circle"></i>Content Detail</span>
+                        </div>
+
+                        <div class="col-sm-12 form-group">
+                            <label>Title <sup>*</sup></label>
+                            <input type="text" value="" placeholder="Enter" name="">
+                        </div>
+                        <div class="col-sm-6 form-group">
+                            <label>Sub Title</label>
+                            <input type="text" value="" placeholder="Enter" name="">
+                        </div>
+                        <div class="col-sm-6 form-group">
+                            <label>Tag <sup>*</sup></label>
+                            <select class="form-control applyselect" multiple="">
+                                <option>Select</option>
+                                <option>Tag 1</option>
+                                <option>Tag 2</option>
+                                <option>Tag 3</option>
+                                <option>Tag 4</option>
+                            </select>
+                        </div>
+                        <div class="col-sm-6 form-group">
+                            <label>Abstract/Summary <sup>*</sup></label>
+                            <textarea class="form-control" placeholder="Enter"></textarea>
+                        </div>
+                        <div class="col-sm-6 form-group">
+                            <label>Remarks</label>
+                            <textarea class="form-control" placeholder="Enter"></textarea>
+                        </div>
+                        <div class="col-sm-3 form-group">
+                            <label>Confendential <sup>*</sup></label>
+                            <select class="form-control applyselect">
+                                <option>Select</option>
+                                <option>Confendential 1</option>
+                                <option>Confendential 2</option>
+                                <option>Confendential 3</option>
+                                <option>Confendential 4</option>
+                            </select>
+                        </div>
+
+                        <div class="col-sm-3 form-group">
+                            <label>Reviewed <sup>*</sup></label>
+                            <select class="form-control applyselect">
+                                <option>Select</option>
+                                <option>Reviewed 1</option>
+                                <option>Reviewed 2</option>
+                                <option>Reviewed 3</option>
+                                <option>Reviewed 4</option>
+                            </select>
+                        </div>
+
+                        <div class="col-sm-3 form-group">
+                            <label>Reviewed By <sup>*</sup></label>
+                            <select class="form-control applyselect">
+                                <option>Select</option>
+                                <option>Reviewed By 1</option>
+                                <option>Reviewed By 2</option>
+                                <option>Reviewed By 3</option>
+                                <option>Reviewed By 4</option>
+                            </select>
+                        </div>
+
+                        <div class="col-sm-3 form-group">
+                            <label>Published <sup>*</sup></label>
+                            <select class="form-control applyselect">
+                                <option>Select</option>
+                                <option>Shubha </option>
+
+                            </select>
+                        </div>
+
+                        <div class="col-md-12 form-group">
+                            <hr>
+                            <span class="hr-aps"><i class="fas fa-paperclip"></i>Attach Content</span>
+                        </div>
+
+                        <div class="col-sm-3 form-group">
+                            <label>Document Uploaded By <sup>*</sup></label>
+                            <select class="form-control applyselect">
+                                <option>Select</option>
+                                <option>Document Uploaded By 1</option>
+                                <option>Document Uploaded By 2</option>
+                                <option>Document Uploaded By 3</option>
+                                <option>Document Uploaded By 4</option>
+                            </select>
+                        </div>
+
+                        <div class="col-sm-3 form-group">
+                            <label>Attachment Type <sup>*</sup></label>
+                            <select class="form-control applyselect">
+                                <option>Select</option>
+                                <option>Photo</option>
+                                <option>Document</option>
+                                <option>Video</option>
+
+                            </select>
+                        </div>
+
+                        <div class="col-sm-6 form-group">
+                            <label>Attachment <sup>*</sup></label>
+                            <input type="file" class="form-control" name="">
+                        </div>
+
+
+
+                        <div class="col-sm-12 text-center">
+
+
+
+                            <button type="submit" class="btn mtr-o-grn btn-l ripplelink pull-right" name="Command" value="Add"><i class="fa fa-paper-plane" aria-hidden="true"></i> Submit</button>
+                            <button type="button" class="btn cnl-btn ripplelink" data-dismiss="modal"><i class="fas fa-long-arrow-alt-left"></i>Back</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="modal fade" id="share" role="dialog" aria-modal="flase">
+        <div class="modal-dialog modal-md">
+            <div class="modal-content">
+                <div class="modal-header blk-gdn-btn">
+                    <h4 class="modal-title">Missing: Women from Work</h4>
+                    <div class="close" data-dismiss="modal">&times;</div>
+                </div>
+                <!-- Modal body -->
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-sm-12 form-group">
+                            <label>To <sup>*</sup></label>
+                            <select class="form-control applyselect" multiple="">
+                                <option>demo@c3india.org</option>
+                                <option>demo1@c3india.org</option>
+                                <option>demo2@c3india.org</option>
+                                <option>demo2@c3india.org</option>
+                                <option>demo2@c3india.org</option>
+                                <option>demo2@c3india.org</option>
+                                <option>demo2@c3india.org</option>
+                                <option>demo2@c3india.org</option>
+                                <option>demo2@c3india.org</option>
+                            </select>
+                        </div>
+                        <div class="col-sm-12 text-center">
+                            <button type="submit" class="btn mtr-o-grn" name="Command" value="Add" data-toggle="modal" data-target="#mailer" data-dismiss="modal"><i class="fas fa-envelope"></i>Send</button>
+                            <button type="button" class="btn cnl-btn ripplelink" data-dismiss="modal"><i class="fas fa-times"></i>Close</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="modal fade" id="mailer">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <!-- Modal Header -->
+                <div style="position: relative;">
+                    <button type="button" class="close m-close" data-dismiss="modal">&times;</button>
+                </div>
+                <div class="modal-body " style="background: #f8f8f8; padding: 20px">
+                    <table style=" width: 100%; display: table;  margin:0px auto">
+                        <tbody>
+                            <tr>
+                                <td>
+                                    <table style="width: 100%; background: #fff; border:1px solid #d8d8d8; padding: 10px 10px 10px 10px">
+                                        <tbody>
+                                            <tr>
+                                                <td style=" padding:10px"><img src="~/images/mitr-logo-2.jpg" alt="Mitr Logo" title="Mitr" width="80" height="22"></td>
+                                                <td align="right" style="padding:10px"><img src="~/images/logo.jpg" alt="Centre for Catalyzing Change Logo" title="Centre for Catalyzing Change" width="80" height="34"></td>
+                                            </tr>
+                                            <tr>
+                                                <td colspan="2" style="border-top: 1px solid #d8d8d8; padding: 10px">
+                                                    <p style="color: #848484; font-size: 12px; font-family: arial">
+                                                        To: Employee_name1, Employee_name2<br />
+                                                        CC: <br />
+                                                        Subject: A content shared with you
+                                                    </p>
+                                                    <p style="color: #848484; font-size: 12px; font-family: arial">
+                                                        <strong>Dear (Employee Name),</strong>
+                                                    </p>
+                                                    <p style="margin: 0px 0px 20px 0px; padding: 0px; font-size:12px; font-family: arial">
+                                                        (Employee_name) has shared a content of ‘Content_name’ with you which is Confidential and Critical. Please have a look.
+                                                    </p>
+                                                    <div style="font-size: 12px; font-family: arial; color: #848484; margin-top:20px;">
+                                                        <strong style="color: #848484; font-family: arial">Best Regards,</strong><br>
+                                                        Mitr
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+    <script type='text/javascript' src='~/assets/design/js/jquery-3.4.1.min.js?v=1.6'></script>
+    <script type='text/javascript' src='~/assets/design/js/popper.min.js?v=1.6'></script>
+    <script type='text/javascript' src='~/assets/design/js/bootstrap.min.js?v=1.6'></script>
+    <script type='text/javascript' src='~/assets/design/js/stellarnav.min.js?v=1.6'></script>
+    <script type='text/javascript' src='~/assets/design/js/notify.js?v=1.6'></script>
+    <script type='text/javascript' src='~/assets/design/js/sweetalert.js?v=1.6'></script>
+    <script type='text/javascript' src='~/assets/design/js/wow.min.js?v=1.6'></script>
+    <script type='text/javascript' src='~/assets/design/js/select2.min.js?v=1.6'></script>
+    <script type='text/javascript' src='~/assets/design/js/bootstrap-multiselect.js?v=1.6'></script>
+    <script type='text/javascript' src='~/assets/design/Scripts/CustomValidate.js?v=1.6'></script>
+    <script type='text/javascript' src='~/assets/design/js/moment.min.js?v=1.6'></script>
+    <script type='text/javascript' src='~/assets/design/Scripts/ToolTip.js?v=1.6'></script>
+    <script type='text/javascript' src='~/assets/design/Scripts/PagesJS/Layout.js?v=1.6'></script>
+    <script type='text/javascript' src='~/assets/design/scripts/WorkingSetting.js?v=1.6'></script>
+    <script type='text/javascript' src='~/assets/design/js/jquery.signalR-2.4.1.min.js?v=1.6'></script>
+    <script type='text/javascript' src='~/assets/design/js/jquery.sidebar.js?v=1.6'></script>
+
+
+    <script src="/bundle/dataTablesjs?v=DjWXrTBwIYYffXqt1nlq6r9tYq6mmtYo5DhMlcKNqOg1"></script>
+
+
+    <script src="/bundle/unobtrusivejs?v=7I5sOjjQFFkBn2gxkZn4o8GjKT35PmiVNttoow6pTbE1"></script>
+
+
+    <script type='text/javascript' src='~/assets/design/Scripts/AddInit.js?v=1.6'></script>
+    <script type='text/javascript' src='~/assets/design/Scripts/ToolTip.js?v=1.6'></script>
+    <script>
+        function ListHeaderAdd(CMSID) {
+            if (CMSID == undefined) {
+                CMSID = 0;
+            }
+            $.ajax({
+                url: "/FundRaising/_ActivityAdd",
+                type: "Get",
+                data: { src: EncryptQueryStringJSON(298 + "*" + "/FundRaising/_ActivityAdd" + "*" + CMSID) },
+                success: function (data) {
+                    $("#TagetDiv").empty();
+                    $("#TagetDiv").html(data);
+                    $("#ViewModal").modal("show");
+                    var form = $("form")
+                        .removeData("validator")
+                        .removeData("unobtrusiveValidation");
+                    $.validator.unobtrusive.parse(form);
+                    $("#group_id").select2();
+                },
+                error: function (er) {
+                    alert(er);
+
+                }
+            });
+        }
+
+        function OnSuccess(obj) {
+            if (obj.Status) {
+                SuccessToaster(obj.SuccessMessage);
+                window.location.reload();
+            }
+            else {
+                CloseLoadingDialog();
+                FailToaster(obj.SuccessMessage);
+
+            }
+        }
+        function FnGetData(obj) {
+            var SelectedID = $("#group_id").val();
+            if (SelectedID) {
+                $.ajax({
+                    url: "/CommonAjax/GetMasterAllData",
+                    type: "Post",
+                    async: true,
+                    data: { ID: SelectedID, TableName: 'FR_STAGE' },
+                    success: function (data) {
+                        if (data.ID) {
+                            $("#field_value").val(data.group_Name);
+                            $("#txtstagelevel").val(data.group_Name);
+
+                        }
+
+
+                    },
+                    error: function (er) {
+                        console.log(er);
+                    }
+                });
+            }
+        }
+    </script>
+
+
+
+
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('.selectmtr').multiselect({
+                enableFiltering: true,
+                includeSelectAllOption: true,
+                maxHeight: 400,
+                dropUp: true,
+                enableCaseInsensitiveFiltering: true
+            });
+        });
+
+    </script>
+
+    <script type="text/javascript">
+
+        $("textarea").keyup(function (e) {
+
+            var $this = $(this),
+                charLength = $this.val().length,
+                charLimit = parseInt($this.attr('class').match(/maxSize\[(\d+)\]/)[1]);
+            // Displays count
+
+            $this.next(".countshow").html(charLength + " of " + charLimit + " characters used");
+            // Alert when max is reached
+
+            if ($this.val().length >= charLimit) {
+                $this.next(".countshow").html("<strong>You may only have up to " + charLimit + " characters.</strong>");
+                $this.next(".countshow").html("<strong>You may only have up to " + charLimit + " characters.</strong>");
+                $this.next(".countshow").addClass("red-clr");
+            }
+        });
+
+        $("textarea").keydown(function (e) {
+
+            var $this = $(this),
+                charLength = $this.val().length,
+                charLimit = parseInt($this.attr('class').match(/maxSize\[(\d+)\]/)[1]);
+
+
+        });
+    </script>
+    <script>
+        //signalr js code for start hub and send receive notification
+        //var notificationHub = $.connection.notificationHub;
+        //$.connection.hub.start().done(function () {
+        //   // console.log('Notification hub started');
+        //  getNotification();
+        //});
+
+        ////signalr method for push server message to client
+        //notificationHub.client.notify = function (message) {
+        //    if (message && message.toLowerCase() == "fire") {
+        //      //  console.log('fire Notification ');
+        //        getNotification();
+        //    }
+        //}
+        function UploadProfileImage() {
+
+            var fileUpload = $("#inputFile").get(0);
+            var files = fileUpload.files;
+
+            // Create FormData object
+            var fileData = new FormData();
+
+            //Looping over all files and add it to FormData object
+            for (var i = 0; i < files.length; i++) {
+
+                fileData.append("attachmentfile", files[i]);
+            }
+            $.ajax({
+                url: "/CommonAjax/UploadProfileImageJSON",
+                type: "POST",
+                processData: false,
+                contentType: false,
+                data: fileData,
+                success: function (response) {
+
+                    if (response != "0") {
+                        window.location.reload();
+                    }
+                }
+            });
+        }
+        function OnPostFailure() {
+            CloseLoadingDialog();
+            FailToaster('Something went wrong');
+        }
+
+        function getNotification() {
+            $.ajax({
+                url: "/Services/_Notification",
+                type: "Get",
+                success: function (data) {
+
+                    $(".NotificationDiv").empty();
+                    $(".NotificationDiv").html(data);
+                    var LastTRCount = Number($('.NotificationDiv').find("ul li").not('.no-data').length);
+                    $("#spnMainTotalCount").html(LastTRCount)
+                },
+                error: function (er) {
+                    console.log('error in getNotification');
+
+                }
+            });
+        }
+
+
+        function updateLoggedInUsers() {
+
+            getLoggedInUsers();
+        }
+
+
+        function getLoggedInUsers() {
+            $.ajax({
+                url: "/Account/GetOnlineUser",
+                type: "Get",
+                success: function (data) {
+                    $(".OnlineuserList").empty();
+                    $(".OnlineuserList").html(data);
+                    var LastTRCount = Number($('.tableUserLogged').find("tbody tr").length)
+                    $(".spnCountOnline").html(LastTRCount)
+
+                },
+                error: function (er) {
+                    alert(er);
+
+                }
+            });
+        }
+
+        //        window.onbeforeunload = function (e) {
+
+        //    //This is called when we close the page
+        //    $.connection.hub.stop();
+        //    return "You killed me! :'(";
+        //};
+
+        $(document).ready(function () {
+            setInterval(function () {
+                // SessionEnd();
+            }, 10000);
+
+            var TS = '';
+            var TSM = '';
+            if (TS == "Y") {
+                SuccessToaster(TSM);
+            }
+            if (TS == "N") {
+                FailToaster(TSM);
+            }
+        });
+
+
+
+        var MenuID = Number(298);
+        wow = new WOW();
+        wow.init();
+
+
+        function SuccessToaster(Message) {
+            $("#toastMsg").html(Message);
+            $("#toasticon i").addClass("fas fa-check green-clr ");
+            var x = document.getElementById("toast")
+            x.className = "show";
+            setTimeout(function () { x.className = x.className.replace("show", ""); }, 5000);
+        }
+
+        function FailToaster(Message) {
+            $("#toastMsg").html(Message);
+            $("#toasticon i").addClass("fas fa-exclamation-triangle red-clr");
+            var x = document.getElementById("toast")
+            x.className = "show toaster-warning";
+            setTimeout(function () { x.className = x.className.replace("show toaster-warning", ""); }, 5000);
+        }
+
+
+        function ValidateFile(FileName) {
+
+            var result = false;
+            if (document.getElementById(FileName).files[0].name.toUpperCase().match(/\.(.PDF|.DOCX|.TXT|.XLS|.XLSX)$/)) {
+
+                var filesize = 5000000;
+                var sizeinbytes = document.getElementById(FileName).files[0].size;
+                if (filesize >= sizeinbytes) {
+                    result = true;
+                }
+                else {
+                    FailToaster("File size should be less than 4.77 MB");
+                    document.getElementById(FileName).value = '';
+                    result = false;
+
+                }
+                return result;
+            }
+            else {
+                FailToaster("Invalid file type , please select valid file again");
+                document.getElementById(FileName).value = '';
+                return result;
+            }
+
+        }
+
+        function ValidateImage(FileName) {
+
+            var result = false;
+            if (document.getElementById(FileName).files[0].name.toUpperCase().match(/\.(.JPG|.JPEG|.PNG|.PDF)$/)) {
+
+                var filesize = 5000000;
+                var sizeinbytes = document.getElementById(FileName).files[0].size;
+                if (filesize >= sizeinbytes) {
+                    result = true;
+                }
+                else {
+                    FailToaster("Image should be less than 4.77 MB");
+
+                    document.getElementById(FileName).value = '';
+                    result = false;
+
+                }
+                return result;
+            }
+            else {
+                FailToaster("Invalid Image type , please select valid Image");
+                document.getElementById(FileName).value = '';
+                return result;
+            }
+
+        }
+    </script>
+
+
+    <script>
+        // JavaScript Document
+        $(function () {
+            $('#js-nav-toggle').click(function (e) {
+                e.preventDefault();
+                $("html").toggleClass("is-sideopen");
+                $("#js-nav-toggle").toggleClass("is-active");
+            });
+
+            var $content = $('.l-contents');
+            var $header = $('.l-header');
+
+
+            $content.click(function () {
+                $("html").removeClass("is-sideopen");
+            });
+
+
+            $header.click(function () {
+                $("html").removeClass("is-sideopen");
+            });
+
+
+        });
+
+
+        $(function () {
+
+            var $dropdown = $('.js-dropdown');
+            var $content = $('.l-contents');
+            var $toggle = $('#js-nav-toggle');
+
+
+            $('.js-dropdown-menu').hide();
+            $dropdown.click(function () {
+                $('i').removeClass('is-rotate');
+                $('.js-dropdown-menu').slideUp(200);
+                if ($('+.js-dropdown-menu', this).css('display') == 'none') {
+                    $('i', this).addClass('is-rotate');
+                    $('+.js-dropdown-menu', this).slideDown(200);
+                }
+            });
+
+
+            $content.click(function () {
+                $('i').removeClass('is-rotate');
+                $('.js-dropdown-menu').slideUp(200);
+                if ($('+.js-dropdown-menu', this).css('display') == 'none') {
+                    $('i', this).addClass('is-rotate');
+                    $('+.js-dropdown-menu', this).slideDown(200);
+                }
+            });
+
+
+            $toggle.click(function () {
+                $('i').removeClass('is-rotate');
+                $('.js-dropdown-menu').slideUp(200);
+                if ($('+.js-dropdown-menu', this).css('display') == 'none') {
+                    $('i', this).addClass('is-rotate');
+                    $('+.js-dropdown-menu', this).slideDown(200);
+                }
+            });
+
+        });
+
+        $(function () {
+            $('.is-ac-close').hide();
+            $(".is-ac-click").on("click", function () {
+                if ($(this).children('i').is('.fa-angle-right')) {
+                    $(this).children('i')
+                        .removeClass('fa-angle-right')
+                        .addClass('fa-angle-down');
+                } else {
+                    $(this).children('i')
+                        .removeClass('fa-angle-down')
+                        .addClass('fa-angle-right');
+                }
+                $(this).next().slideToggle(200);
+            });
+
+            $('.is-ac-close').hide();
+            $(".is-ac-bar").on("click", function () {
+
+                if ($(this).find('i').is('.fa-caret-down')) {
+
+                    $(this).find('i')
+                        .removeClass()
+                        .addClass('fa fa-caret-up');
+                } else {
+                    $(this).find('i')
+                        .removeClass()
+                        .addClass('fa fa-caret-down');
+                }
+                $(this).next().slideToggle(200);
+            });
+        });
+
+
+
+
+        //---------------------------------------------------
+        // ▼　tab
+        //---------------------------------------------------
+        $(function () {
+            var rwdTab = $('.c-tab'),
+                switchPoint = 768,
+                fadeSpeed = 300,
+                slideSpeed = 300;
+
+            var tabBtn = rwdTab.children('.c-tab-panel').children('.c-tab-heading'),
+                contentsArea = rwdTab.children('.c-tab-panel').children('.c-tab-body');
+
+            tabBtn.on('click', function () {
+                if (!$(this).hasClass('c-tab-active')) {
+                    tabBtn.removeClass('c-tab-active');
+                    $(this).addClass('c-tab-active');
+
+                    if (window.innerWidth > switchPoint) {
+                        contentsArea.fadeOut(fadeSpeed);
+                        $(this).next().fadeIn(fadeSpeed);
+                    } else {
+                        contentsArea.slideUp(slideSpeed);
+                        $(this).next().slideDown(slideSpeed);
+                    }
+                }
+            });
+
+            tabBtn.first().click();
+        });
+
+
+
+    </script>
+    <!-- required -->
+    <script type="text/javascript">
+        jQuery(document).ready(function ($) {
+            jQuery('.stellarnav').stellarNav({
+                theme: 'dark',
+                breakpoint: 960,
+                position: 'right',
+
+            });
+            $('.notifyjs-corner').empty();
+        });
+    </script>
+    <!-- required -->
+    <script>
+        $("document").ready(function () {
+
+            $('.dropdown-menu').on('click', function (e) {
+                if ($(this).hasClass('dropdown-menu-form')) {
+                    e.stopPropagation();
+                }
+            });
+
+            if ($(".MenuListUl").find("li").parent().length < 4) {
+                $(".MenuListUl").addClass("menulastchild");
+            }
+            else {
+                $(".MenuListUl").removeClass("menulastchild");
+            }
+
+        });
+
+
+    </script>
+    <script>
+
+        var links = document.querySelectorAll('.ripplelink');
+
+        for (var i = 0, len = links.length; i < len; i++) {
+            links[i].addEventListener('click', function (e) {
+                var targetEl = e.target;
+                var inkEl = targetEl.querySelector('.ink');
+
+                if (inkEl) {
+                    inkEl.classList.remove('animate');
+                }
+                else {
+                    inkEl = document.createElement('span');
+                    inkEl.classList.add('ink');
+                    inkEl.style.width = inkEl.style.height = Math.max(targetEl.offsetWidth, targetEl.offsetHeight) + 'px';
+                    targetEl.appendChild(inkEl);
+                }
+
+                inkEl.style.left = (e.offsetX - inkEl.offsetWidth / 2) + 'px';
+                inkEl.style.top = (e.offsetY - inkEl.offsetHeight / 2) + 'px';
+                inkEl.classList.add('animate');
+            }, false);
+        }
+    </script>
+
+
+    <script type="text/javascript">
+        $(window).scroll(function () {
+            if ($(this).scrollTop() > 250) {
+                $('.header').addClass("sticky");
+            }
+            else {
+                $('.header').removeClass("sticky");
+            }
+        });
+
+
+    </script>
+
+    <script>
+        $(window).scroll(function () {
+            if ($(this).scrollTop() > 200) {
+                $('.navsky').addClass('fixed');
+            } else {
+                $('.navsky').removeClass('fixed');
+            }
+        });
+    </script>
+
+    <script type="text/javascript">
+        var a = document.getElementById("blah");
+        function readUrl(input) {
+            if (input.files) {
+                var reader = new FileReader();
+                reader.readAsDataURL(input.files[0]);
+                reader.onload = (e) => {
+                    a.src = e.target.result;
+                }
+
+            }
+        }
+
+        $('#inputFile').on("change", function () {
+            $('.rv').addClass("rvbtn");
+        });
+        $('.count-nt').on("click", function () {
+            $('.text-center').removeClass("rvbtn");
+        });
+
+        $('.rv').on("click", function () {
+            $(this).removeClass("rvbtn");
+            $('.prfimg').removeClass("imgshow");
+            $('.prftxt').removeClass("prftxtshow");
+
+        });
+        $('#inputFile').on("change", function () {
+            $('.prfimg').addClass("imgshow");
+            $('.prftxt').addClass("prftxtshow");
+        });
+
+
+
+
+        var inputFile = document.getElementById("inputFile");
+        removeImg = () => {
+            a.src = "";
+            inputFile.value = "";
+        }
+    </script>
+
+    <script type="text/javascript">
+        $(function () {
+            $('#asselector').change(function () {
+                $('.hidenone').hide();
+                $('#' + $(this).val()).show();
+            });
+        });
+    </script>
+
+    <script type="text/javascript">
+        $(function () {
+            $('#asselector-2').change(function () {
+                $('.hidenone-2').hide();
+                $('#' + $(this).val()).show();
+            });
+        });
+    </script>
+
+    <script type="text/javascript">
+        $(function () {
+            $('#asselector-3').change(function () {
+                $('.hidenone-3').hide();
+                $('#' + $(this).val()).show();
+            });
+        });
+    </script>
+
+    <script type="text/javascript">
+        $(function () {
+            $('#asselector-4').change(function () {
+                $('.hidenone-4').hide();
+                $('#' + $(this).val()).show();
+            });
+        });
+    </script>
+
+    <noscript>
+        <p class="NojavaScript">Javascripts is disabled </p>
+    </noscript>
+
+
+  
+
+    @RenderSection("scripts", required: false)
+</body>
+</html>

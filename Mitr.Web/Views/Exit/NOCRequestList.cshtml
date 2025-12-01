@@ -1,0 +1,98 @@
+﻿@using System.Data
+@model Mitr.Models.Exit.Tabs
+
+@section style{
+	@System.Web.Optimization.Styles.Render("~/bundle/dataTablecss")
+}
+@{
+	string MenuID = "0";
+	if (ViewBag.MenuID != null)
+	{
+		MenuID = ViewBag.MenuID;
+	}
+}
+<script src="~/assets/design/js/jquery-3.4.1.min.js"></script>
+<div class="inner-main">
+	<div class="right_col" role="main">
+		@Html.Partial("ListHeader_Partial", "NOC Requests List")
+
+
+		@using (Ajax.BeginForm("_NOCRequestList", "Exit",
+		   new { src = clsApplicationSetting.EncryptQueryString(ViewBag.MenuID.ToString() + "*/Exit/_NOCRequestList") },
+		   new AjaxOptions { HttpMethod = "POST", OnSuccess = "BindTarget" },
+	   new { @id = "_NOCRequestListFrom" })
+	   )
+		{
+
+			<div class="tab-main ">
+				<div class="row text-clr">
+					<div class="col-md-12">
+						<ul id="tabs" class="nav nav-tabs " role="tablist">
+							<li class="nav-item"> <a tabvalue="0" class="nav-link active ripplelink AnchorApproval" data-toggle="tab" role="tab"><i class="far fa-clock"></i>Pending</a> </li>
+							<li class="nav-item"> <a tabvalue="1" class="nav-link ripplelink AnchorApproval" data-toggle="tab" role="tab"><i class="fas fa-database"></i>Processed</a> </li>
+
+						</ul>
+					</div>
+					<div style="display:none">
+						@Html.HiddenFor(model => model.Approve)
+						<button type="submit" class="btn mtr-g-grn btn-l ripplelink" id="btnSearch" name="Command" value="Search">
+							<i class="fas fa-search"></i>Search
+						</button>
+					</div>
+				</div>
+			</div>
+
+		}
+
+		<div id="TargetDiv"></div>
+	</div>
+</div>
+
+@section scripts    {
+	
+	@System.Web.Optimization.Scripts.Render("~/bundle/unobtrusivejs")
+
+	@Html.IncludeVersionedJs(Url.Content("~/assets/design/Scripts/ToolTip.js"))
+
+	@Html.IncludeVersionedJs(Url.Content("~/assets/design/Scripts/SyncScripts.js"))
+	<script>
+        var virtualPath = "@System.Configuration.ConfigurationManager.AppSettings["VirtualPath"]";
+        var baseURL= "@System.Configuration.ConfigurationManager.AppSettings["BaseURL"]";
+	</script>
+	<script src="~/assets/design/js/wow.js"></script>
+	<script src="~/assets/design/js/wow.min.js"></script>
+	<script src="~/Areas/DigitalLibrary/DevScript/Common.js"></script>
+	<script src="~/Areas/DigitalLibrary/DevScript/ComboFill.js"></script>
+	
+	<script>
+        $(document).ready(function () {
+            $("#btnSearch").click();
+        });
+        $('.AnchorApproval').on('click', function (e) {debugger
+            e.preventDefault();
+            e.stopPropagation();
+            var att = $(this).attr("tabvalue");
+            $(".AnchorApproval.active").removeClass("active");
+            $(this).addClass("active");
+            $("#Approve").val(att);
+            ShowLoadingDialog();
+            $("#btnSearch").click();
+        });
+
+        function BindTarget(args) {
+            CloseLoadingDialog();
+            $("#TargetDiv").empty();
+            $("#TargetDiv").html(args);
+		}
+
+        function ListAdd(Exit_SP_ID,ExitID) {
+            var ID = Number(Exit_SP_ID);
+            var ExitID = Number(ExitID);
+				var MenuID = Number('@MenuID');
+                ShowLoadingDialog();
+            var url = "/Exit/StartExitProcess?src=" + EncryptQueryStringJSON(MenuID + "*" + "/Exit/StartExitProcess" + "*" + ExitID + "*" + ID);
+                window.location.href = url;
+	}
+
+	</script>
+}

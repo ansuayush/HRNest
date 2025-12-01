@@ -1,0 +1,197 @@
+﻿@model Exit.LevelApprovals.Add
+
+@{
+    string MenuID = ViewBag.MenuID.ToString();
+}
+<div class="inner-main mb-5 p-3 pb-0">
+    <h1 class="heading-one mb-3">Level Approvals ( @(Model.Doctype) )</h1>
+    @if (ViewBag.ViewModal != null)
+    {
+        { Html.RenderPartial("_RequestView", (Exit.Request_View)ViewBag.ViewModal); }
+    }
+
+
+    @using (Ajax.BeginForm("LevelApprovals_Action", "Exit",
+    new { src = ViewBag.src },
+      new AjaxOptions { HttpMethod = "POST", OnSuccess = "OnActionSuccess", OnBegin = "ShowLoadingDialog()" },
+new { @id = "_LevelApprovals_ActionFrom" })
+)
+    {
+        @Html.HiddenFor(model => model.Doctype)
+        @Html.HiddenFor(model => model.Exit_APP_ID)
+        @Html.HiddenFor(model => model.Exit_ID)
+        @Html.HiddenFor(model => model.Approved)
+        <div class="row">
+            <div class="col-sm-3 wh-575 align-self-center" style=" @(Model.Approved==0?"":"display:none;")">
+                <button id="toggleMessage" type="button" class="btn m-0 blk-gdn-btn">
+                    <i class="fas fa-sticky-note"></i>Decline Notice Period
+                    <span class="ink animate"></span>
+                </button>
+            </div>
+            <div class="col-sm-12 form-group m-0">
+
+                <div class="row box" style="@(Model.Approved==2?"":"display:none;")">
+                    <div class="col-sm-3 form-group">
+                        <label>Suggested Relieving Date</label>
+                        @Html.TextBoxFor(model => model.Suggested_RDate, new { @class = "form-control", @type = "DATE" })
+                        @Html.ValidationMessageFor(model => model.Suggested_RDate, "", new { @class = "text-danger" })
+                    </div>
+                    <div class="col-sm-3 form-group">
+                        <label>Reason for not accepting relieving date</label>
+                        @Html.TextAreaFor(model => model.NA_Reason, new { @class = "form-control" })
+                        @Html.ValidationMessageFor(model => model.NA_Reason, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+            </div>
+        
+            <div class="col-sm-6 form-group">
+                <label>Comment on Resignation</label>
+                @Html.TextAreaFor(model => model.Comment, new { @class = "form-control", @placeholder = "Enter" })
+                @Html.ValidationMessageFor(model => model.Comment, "", new { @class = "text-danger" })
+            </div>
+        
+        <div class="col-sm-12 text-left">
+            @if (Model.Approved == 0)
+            {
+                <button type="button" value="resolution" class="btn mtr-y-bg btn-l ripplelink btnSubmit"> <i class="fas fa-user-shield"></i> Record Resolution</button>
+                <button type="submit" name="Command" value="Add" class="btn mtr-o-grn btn-l ripplelink"> <i class="fas fa-share"></i>Submit </button>
+            }
+
+           
+                <button type="button" id="btnASuggations" class="btn mtr-o-grn btn-l ripplelink"> <i class="fas fa-history"></i>View Approvers </button>
+            
+            @Html.CreateAnchor(MenuID, "/Exit/LevelApprovalsList", "Back", "btn cnl-btn btn-l ripplelink", "Click to go back", "fa fa-share", "")
+
+
+        </div>
+    </div>
+
+
+    }
+</div>
+
+
+<div class="modal" id="ViewModal" aria-modal="true">
+    <div class="modal-dialog modal-md">
+        <div class="modal-content ">
+            <div class="modal-header">
+                <h4 class="modal-title"><span id="spnhead"></span></h4>
+                <button type="button" class="close" data-dismiss="modal">×</button>
+            </div>
+            <div class="modal-body">
+                <div id="ModalTagetDiv"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+@section scripts    {
+
+    @System.Web.Optimization.Scripts.Render("~/bundle/unobtrusivejs")
+<script>
+
+        $('#toggleMessage').on('click', function (e) {
+            $(".box").toggle();
+            $("#Approved").val($("#Approved").val() == '0' ? '2' : '0');
+        });
+
+        function OnActionSuccess(obj) {
+            if (obj.Status) {
+                SuccessToaster(obj.SuccessMessage);
+                window.location.href = obj.RedirectURL;
+            }
+            else {
+                CloseLoadingDialog();
+                FailToaster(obj.SuccessMessage);
+
+            }
+        }
+
+        $('.btnSubmit').on('click', function (e) {
+            GetPopData($(this).val());
+        });
+
+        function GetPopData(Type)
+        {
+            $("#spnhead").html("Reason for Continuing");
+            var T = $('#ViewModal').find(".modal-dialog.modal-md");
+            $(T).removeClass("modal-lg");
+
+            var Exit_ID = $("#Exit_ID").val();
+            var Doctype = $("#Doctype").val();
+			ShowLoadingDialog();
+		   $.ajax({
+			   url: "/Exit/_RequestProcessing",
+				type: "Get",
+               data: { src: EncryptQueryStringJSON(@ViewBag.MenuID+"*" + "/Exit/_RequestProcessing" + "*" + Exit_ID + "*" + Type + "*" + Doctype) },
+                success: function (data)
+                {
+					$("#ModalTagetDiv").empty();
+					$("#ModalTagetDiv").html(data);
+					$('#ViewModal').modal({
+						backdrop: 'static',
+						keyboard: false
+					});
+
+
+                     var form = $("form")
+                .removeData("validator")
+                .removeData("unobtrusiveValidation");
+                    $.validator.unobtrusive.parse(form);
+					$(".applyselect").select2();
+                    CloseLoadingDialog();
+				},
+				error: function (er) {
+                    console.log(er);
+                    CloseLoadingDialog();
+
+				}
+			});
+	}
+
+    function OnProcessSuccess(obj) {
+        if (obj.Status) {
+            SuccessToaster(obj.SuccessMessage);
+            window.location.href = obj.RedirectURL;
+        }
+        else {
+            CloseLoadingDialog();
+            FailToaster(obj.SuccessMessage);
+
+        }
+    }
+
+           $('#btnASuggations').on('click', function (e) {
+        ViewApproversSuggationsList();
+        });
+
+
+    function ViewApproversSuggationsList() {
+        ShowLoadingDialog();
+        var Exit_ID = $("#Exit_ID").val();
+        var src = EncryptQueryStringJSON(@ViewBag.MenuID+"*" + "/Exit/_ApproversSuggationsList*" + Exit_ID)
+            $.ajax({
+                url: "/Exit/_ApproversSuggationsList",
+                type: "Post",
+                data: { src: src },
+                success: function (data) {
+                    $("#spnhead").html("Approver's Suggations")
+                    $("#ModalTagetDiv").empty();
+                    $("#ModalTagetDiv").html(data);
+                    $('#ViewModal').modal({
+                        backdrop: 'static',
+                        keyboard: false
+                    });
+                    CloseLoadingDialog();
+                },
+                error: function (er) {
+                    console.log(er);
+                    CloseLoadingDialog();
+                }
+            });
+        }
+
+</script>
+}

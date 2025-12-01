@@ -1,0 +1,159 @@
+﻿
+@model Mitr.Models.Recruit.Request.View
+
+@if (!string.IsNullOrEmpty(Model.AmendRemarks))
+{
+	<div class="text-right">
+		@Model.AmendRemarks
+	</div>
+}
+
+<h2 class="header-two"><i class="fas fa-users"></i>Hiring Details</h2>
+<div class="row">
+    <div class="col-lg-3 col-md-4 col-sm-6  form-group">
+        <label>Code</label>
+        @Html.TextBoxFor(x => Model.REC_Code, new { @class = "form-control", @readonly = "readonly" })
+    </div>
+    <div class="col-lg-3 col-md-4 col-sm-6  form-group">
+        <label>Project Name</label>
+        @Html.TextBoxFor(x => Model.ProjectName, new { @class = "form-control", @readonly = "readonly" })
+    </div>
+    <div class="col-lg-3 col-md-4 col-sm-6  form-group">
+        <label>Project Manager</label>
+        @Html.TextBoxFor(x => Model.Managername, new { @class = "form-control", @readonly = "readonly" })
+
+    </div>
+    <div class="col-lg-3 col-md-4 col-sm-6  form-group">
+        <label>Job Title</label>
+        @Html.TextBoxFor(x => Model.JobTitle, new { @class = "form-control", @readonly = "readonly" })
+    </div>
+    <div class="col-lg-3 col-md-4 col-sm-6  form-group">
+        <label>Location</label>
+        @Html.TextBoxFor(x => Model.LocatioNName, new { @class = "form-control", @readonly = "readonly" })
+    </div>
+    <div class="col-lg-3 col-md-4 col-sm-6  form-group">
+        <label>Due Date</label>
+        @Html.TextBoxFor(x => Model.DueDate, new { @class = "form-control", @readonly = "readonly" })
+    </div>
+    <div class="col-lg-3 col-md-4 col-sm-6  form-group align-self-end">
+        <a class="btn mtr-g-grn mb-0 btn-l ripplelink pull-right" data-toggle="modal" data-target="#viewdetail">
+            <i class="fas fa-eye"></i>View JD
+        </a>
+    </div>
+    <div class="col-lg-3 col-md-4 col-sm-6  form-group align-self-end">
+        <a id="btnTalentPool" class="btn blk-gdn-btn"><i class="fas fa-plus"></i>Add Import from Talent Pool</a>
+    </div>
+
+</div>
+
+
+<div class="modal fade pop-dgn" id="viewdetail">
+	<div class="modal-dialog modal-lg">
+		<div class="modal-content">
+			<div class="modal-header blk-gdn-btn">
+				<h4 class="modal-title">
+					<i class="fas fa-user-check"></i>Recruitment Detail
+				</h4>
+				<div class="close" data-dismiss="modal">&times;</div>
+			</div>
+			<div class="modal-body p-1">
+
+				<h2 class="header-two"><i class="fas fa-users"></i>Hiring Details</h2>
+				<div class="row">
+					<div class="col-lg-3 col-md-4 col-sm-6  form-group">
+						<label>Code</label>
+						@Html.TextBoxFor(x => Model.REC_Code, new { @class = "form-control", @readonly = "readonly" })
+					</div>
+					<div class="col-lg-3 col-md-4 col-sm-6  form-group">
+						<label>Project Name</label>
+						@Html.TextBoxFor(x => Model.ProjectName, new { @class = "form-control", @readonly = "readonly" })
+					</div>
+					<div class="col-lg-3 col-md-4 col-sm-6  form-group">
+						<label>Project Manager</label>
+						@Html.TextBoxFor(x => Model.Managername, new { @class = "form-control", @readonly = "readonly" })
+
+					</div>
+					<div class="col-lg-3 col-md-4 col-sm-6  form-group">
+						<label>Start Date</label>
+						@Html.TextBoxFor(x => Model.StartDate, new { @class = "form-control", @readonly = "readonly" })
+					</div>
+					<div class="col-lg-3 col-md-4 col-sm-6  form-group">
+						<label>End Date</label>
+						@Html.TextBoxFor(x => Model.EndDate, new { @class = "form-control", @readonly = "readonly" })
+					</div>
+				</div>
+
+
+				<div class="row">
+					<div class="col-lg-3 col-md-4 col-sm-6  form-group">
+						<label>Job Title</label>
+						@Html.TextBoxFor(x => Model.JobTitle, new { @class = "form-control", @readonly = "readonly" })
+					</div>
+
+					<div class="col-lg-3 col-md-4 col-sm-6  form-group">
+						<label>%Time</label>
+						@Html.TextBoxFor(x => Model.Time_Per, new { @class = "form-control", @readonly = "readonly" })
+					</div>
+					<div class="col-lg-3 col-md-4 col-sm-6  form-group">
+						<label>Thematic Area</label>
+						@Html.TextBoxFor(x => Model.ThematicArea, new { @class = "form-control", @readonly = "readonly" })
+					</div>
+					<div class="col-lg-3 col-md-4 col-sm-6  form-group">
+						<label>Location</label>
+						@Html.TextBoxFor(x => Model.LocatioNName, new { @class = "form-control", @readonly = "readonly" })
+					</div>
+					<div class="col-lg-3 col-md-4 col-sm-6  form-group">
+						<label>Job Sub Title</label>
+						@Html.TextBoxFor(x => Model.Job_SubTitle, new { @class = "form-control", @readonly = "readonly" })
+
+					</div>
+					<div class="col-lg-3 col-md-4 col-sm-6  form-group">
+						<label>Due Date</label>
+						@Html.TextBoxFor(x => Model.DueDate, new { @class = "form-control", @readonly = "readonly" })
+
+					</div>
+					<div class="col-lg-3 col-md-3 col-sm-6 form-group">
+						<label>Staff Category</label>
+						@Html.TextBoxFor(x => Model.Staff_Cat, new { @class = "form-control", @readonly = "readonly" })
+
+					</div>
+					<div class="col-lg-3 col-md-3 col-sm-6 form-group">
+						<label>Hiring Type</label>
+						@Html.TextBoxFor(x => Model.REC_Type, new { @class = "form-control", @readonly = "readonly" })
+
+					</div>
+				</div>
+				<h2 class="header-two"><i class="fas fa-file-alt"></i>JD Details</h2>
+				<div class="row">
+					<div class="col-lg-6 col-md-6 col-sm-6  form-group">
+						<label>Job Description</label>
+						@Html.Raw(Model.JobDescription)
+					</div>
+					<div class="col-lg-6 col-md-6 col-sm-6  form-group">
+						<label>Qualification</label>
+						@Html.Raw(Model.Qualification)
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-lg-4 col-md-4 col-sm-6  form-group">
+						<label>Skills</label>
+						@Html.TextBoxFor(x => Model.SkillsName, new { @class = "form-control", @readonly = "readonly" })
+					</div>
+
+					<div class="col-lg-2 col-md-2 col-sm-6  form-group">
+						<label>Min. Experience</label>
+						<div class="input-group w-80">
+							@Html.TextBoxFor(x => Model.Experience, new { @class = "form-control", @readonly = "readonly" })
+							<div class="input-group-prepend">
+								<span class="input-group-text" id="basic-addon1">Yrs</span>
+							</div>
+						</div>
+					</div>
+
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+

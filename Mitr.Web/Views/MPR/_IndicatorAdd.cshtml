@@ -1,0 +1,114 @@
+﻿@model MPR.Indicator.IndicatorAdd
+
+@{
+	List<SelectListItem> ColDataType1Lis = new List<SelectListItem>
+{
+new SelectListItem{Text="Select",Value="" },
+new SelectListItem{Text="Number",Value="Number" },
+new SelectListItem{Text="Text",Value="Text" },
+new SelectListItem{Text="Sum",Value="Sum" }
+};
+
+	List<SelectListItem> AnswerLis = new List<SelectListItem>
+{
+new SelectListItem{Text="Incremental",Value="Incremental" },
+new SelectListItem{Text="Cumulative",Value="Cumulative" }
+
+};
+}
+@using (Ajax.BeginForm("_IndicatorAdd", "MPR",
+	new { src = ViewBag.src },
+	new AjaxOptions { HttpMethod = "POST", OnSuccess = "OnMPRIndicatorSuccess" },
+new { @id = "_IndicatorAddFrom" })
+)
+{
+
+	@Html.AntiForgeryToken()
+	@Html.HiddenFor(x => Model.IndicatorID)
+	@Html.HiddenFor(model => model.NoOfCol)
+
+	<div class="row">
+		
+			<div class="col-lg-6 col-md-6 col-sm-6  form-group">
+				<label>Sub Section</label>
+				@Html.DropDownListFor(x => Model.MPRSubSecID, new SelectList(ViewBag.GetMPRSubSecList, "MPRSubSID", "SubSecName", Model.MPRSubSecID), "Select Sub Section",
+		new { @class = "form-control  applyselect" })
+				@Html.ValidationMessageFor(model => Model.MPRSubSecID, "", new { @class = "text-danger" })
+			</div>
+
+			<div class="col-lg-6 col-md-6 col-sm-6  form-group">
+				<label>Section</label>
+				@Html.TextBoxFor(model => model.SecName, new { @class = "form-control", @readonly = "true" })
+			</div>
+		
+		<div class="col-sm-12 mb-2">
+			<strong class="green-clr">Create Indicator</strong>
+		</div>
+		<div class="col-sm-8 form-group">
+			<label>Indicator</label>
+			@Html.TextAreaFor(model => model.IndicatorName, new { @class = "form-control" })
+			@Html.ValidationMessageFor(model => model.IndicatorName, "", new { @class = "text-danger" })
+
+		</div>
+			<div class="col-sm-4 form-group">
+					<label>Answer is</label>
+					@Html.DropDownListFor(model => model.AnswerIs, new SelectList(AnswerLis, "Value", "text", Model.AnswerIs), new { @class = "form-control applyselect" })
+					@Html.ValidationMessageFor(model => model.AnswerIs, "", new { @class = "text-danger" })
+				</div>
+			
+				
+			
+			
+	</div>
+
+	<div class="row">
+		
+			<div class="col-lg-4 col-md-3 col-sm-6  form-group divcol1" style="display:none">
+				@Html.TextBoxFor(model => model.ColText1, new { @class = "form-control", @readonly = "true" })
+				@Html.HiddenFor(model => model.ColSuffix1)
+				@Html.DropDownListFor(model => model.ColDataType1, new SelectList(ColDataType1Lis, "Value", "text", Model.ColDataType1), new { @class = "form-control applyselect" })
+				@Html.ValidationMessageFor(model => model.ColDataType1, "", new { @class = "text-danger" })
+
+			</div>
+
+			<div class="col-lg-4 col-md-4 col-sm-6  form-group divcol2" style="display:none">
+				@Html.TextBoxFor(model => model.ColText2, new { @class = "form-control", @readonly = "true" })
+				@Html.HiddenFor(model => model.ColSuffix2)
+				@Html.DropDownListFor(model => model.ColDataType2, new SelectList(ColDataType1Lis, "Value", "text", Model.ColDataType2), new { @class = "form-control applyselect" })
+				@Html.ValidationMessageFor(model => model.ColDataType2, "", new { @class = "text-danger" })
+			</div>
+
+
+			<div class="col-lg-4 col-md-4 col-sm-12  form-group divcol3" style="display:none">
+				@Html.TextBoxFor(model => model.ColText3, new { @class = "form-control", @readonly = "true" })
+				@Html.HiddenFor(model => model.ColSuffix3)
+				@Html.DropDownListFor(model => model.ColDataType3, new SelectList(ColDataType1Lis, "Value", "text", Model.ColDataType3), new { @class = "form-control applyselect" })
+				@Html.ValidationMessageFor(model => model.ColDataType3, "", new { @class = "text-danger" })
+			</div>
+		
+	</div>
+		<div class="row">
+		
+		<div class="col-lg-4 form-group">
+					<label>Priority<sup>*</sup></label>
+					@Html.TextBoxFor(model => model.Priority, new { @class = "form-control" })
+					@Html.ValidationMessageFor(model => model.Priority, "", new { @class = "text-danger" })
+				</div>
+
+			<div class="col-sm-12 mb-2">
+				<input type="checkbox" id="@Html.IdFor(x=>x.IsOrganisational)" name="@Html.NameFor(x=>x.IsOrganisational)" value="Yes">
+				<label for="@Html.IdFor(x=>x.IsOrganisational)"> Is this organisational level?</label>
+
+			</div>
+		</div>
+
+		<div class="text-left">
+			<button type="submit" class="btn mtr-g-grn btn-l ripplelink pull-right" name="Command" value="Add"><i class="fas fa-plus"></i> Add</button>
+			<button type="button" id="btnClr" class="btn cnl-btn ripplelink  pull-right"><i class="fas fa-times"></i> Clear</button>
+		</div>
+
+
+
+
+
+		}

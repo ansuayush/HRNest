@@ -1,0 +1,539 @@
+﻿@model Mitr.Models.SubgrantAdd
+
+@{
+    List<Mitr.Models.SubgrantDetails> myList = new List<Mitr.Models.SubgrantDetails>();
+    myList.Add(new Mitr.Models.SubgrantDetails());
+    if (Model.AttachmentsList == null || Model.AttachmentsList.Count == 0)
+    {
+        Model.AttachmentsList = myList;
+    }
+    if (Model.AuthorizedPersonList == null || Model.AuthorizedPersonList.Count == 0)
+    {
+        Model.AuthorizedPersonList = myList;
+    }
+
+    List<SelectListItem> DropDownList = new List<SelectListItem>
+    {
+            new SelectListItem{Text="Registration Certificate",Value="1" },
+            new SelectListItem{Text="FCRA Registration",Value="2" } ,
+            new SelectListItem{Text="Income tax Exemption (12A etc.)",Value="3" } ,
+            new SelectListItem{Text="80G Registration",Value="4" },
+            new SelectListItem{Text="MOA & Rules",Value="5" },
+            new SelectListItem{Text="Audited Accounts",Value="6" },
+            new SelectListItem{Text="Income tax Return",Value="7" },
+            new SelectListItem{Text="Any Other",Value="8", }
+            };
+
+
+}
+@Html.Partial("HeaderMsg_Partial")
+
+
+                @using (Html.BeginForm("SubgrantAdd", "Master",
+new { src = ViewBag.src }, FormMethod.Post,
+new
+{
+name = "SubgrantAddForm",
+id = "SubgrantAddForm",
+@class = "form-horizontal form-label-left input_mask",
+enctype = "multipart/form-data"
+}))
+                {
+                    @Html.AntiForgeryToken()
+                    @Html.HiddenFor(x => Model.SubgrantList.SubgrantID)
+                    
+                            <h1 class="heading-one mb-2">Subgrant Details</h1>
+                      
+                    <div class="inner-main mb-4 ">					
+						
+
+                        <div class="row ">
+                            <div class="col-lg-2 col-md-3 col-sm-6 form-group">
+                                <label>Subgrant Code<sup>*</sup> </label>
+                                @Html.TextBoxFor(model => model.SubgrantList.Code, new { @class = "form-control" })
+                                @Html.ValidationMessageFor(model => model.SubgrantList.Code, "", new { @class = "text-danger" })
+
+                            </div>
+
+                            <div class="col-lg-2 col-md-3 col-sm-6 form-group">
+                                <label>Subgrant Name<sup>*</sup> </label>
+                                @Html.TextBoxFor(model => model.SubgrantList.Name, new { @class = "form-control" })
+                                @Html.ValidationMessageFor(model => model.SubgrantList.Name, "", new { @class = "text-danger" })
+
+                            </div>
+
+                            <div class="col-lg-2 col-md-3 col-sm-6 form-group">
+                                <label>Mobile<sup>*</sup> </label>
+                                @Html.TextBoxFor(model => model.SubgrantList.Mobile, new { @class = "form-control" })
+                                @Html.ValidationMessageFor(model => model.SubgrantList.Mobile, "", new { @class = "text-danger" })
+                            </div>
+
+
+                            <div class="col-lg-2 col-md-3 col-sm-6 form-group">
+                                <label>Location</label>
+                                @Html.TextBoxFor(model => model.SubgrantList.Location, new { @class = "form-control" })
+                                @Html.ValidationMessageFor(model => model.SubgrantList.Location, "", new { @class = "text-danger" })
+                            </div>
+
+                            <div class="col-lg-12 col-md-10 col-sm-10 form-group">
+                                <label>Address <sup>*</sup></label>
+
+                                @Html.TextAreaFor(model => model.SubgrantList.Address, new { @class = "form-control" })
+                                @Html.ValidationMessageFor(model => model.SubgrantList.Address, "", new { @class = "text-danger" })
+
+
+                            </div>
+
+
+
+                            <div class="col-lg-2 col-md-3 col-sm-4 form-group">
+                                <label>PAN No<sup>*</sup></label>
+                                @Html.TextBoxFor(model => model.SubgrantList.PanNo, new { @class = "form-control" })
+                                @Html.ValidationMessageFor(model => model.SubgrantList.PanNo, "", new { @class = "text-danger" })
+
+                            </div>
+                            <div class="col-lg-2 col-md-3 col-sm-6 form-group">
+                                <label>FCRA <sup>*</sup></label>
+                                @Html.TextBoxFor(model => model.SubgrantList.Fora_No, new { @class = "form-control" })
+                                @Html.ValidationMessageFor(model => model.SubgrantList.Fora_No, "", new { @class = "text-danger" })
+                            </div>
+
+                            <div class="col-lg-2 col-md-3 col-sm-4 form-group">
+                                <label>Short Name</label>
+                                @Html.TextBoxFor(model => model.SubgrantList.ShortName, new { @class = "form-control" })
+                                @Html.ValidationMessageFor(model => model.SubgrantList.ShortName, "", new { @class = "text-danger" })
+
+                            </div>
+                            <div class="col-lg-2 col-md-3 col-sm-4 form-group">
+                                <label>Priority </label>
+                                @Html.TextBoxFor(model => model.SubgrantList.Priority, new { @class = "form-control" })
+                                @Html.ValidationMessageFor(model => model.SubgrantList.Priority, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+                        </div>
+                    
+
+
+                    <div class="row">
+					
+					    
+                            <div class="col-lg-6 col-md-6 col-sm-12">
+								<div class="inner-main mb-4 p-0">
+									<div class="header-two"><i class="fas fa-user-shield"></i>Authorized Person</div>                                
+										<div class="pl-2 pr-2 pb-2 text-clr">
+										
+										<div class="table-responsive">
+											<table class="table table-scroll" id="tblAuthorized">
+												<thead>
+													<tr>
+														<th class="width-40">S No</th>
+														<th>Name</th>
+														<th>Designation</th>
+														<th></th>
+													</tr>
+												</thead>
+												<tbody>
+													@{ int count = 0;}
+													@if (Model.AuthorizedPersonList != null)
+													{
+														for (int i = 0; i < Model.AuthorizedPersonList.Count; i++)
+														{
+															count++;
+															<tr>
+																<td>
+																	<label id="span_@count" name="span_@count">@count </label>
+																</td>
+																<td>
+																	@Html.TextBoxFor(model => model.AuthorizedPersonList[i].Name, new { @class = "form-control" })
+																	@Html.ValidationMessageFor(model => model.AuthorizedPersonList[i].Name, "", new { @class = "text-danger" })
+																</td>
+																<td>
+																	@Html.TextAreaFor(model => model.AuthorizedPersonList[i].Designation, new { @class = "form-control" })
+																	@Html.ValidationMessageFor(model => model.AuthorizedPersonList[i].Designation, "", new { @class = "text-danger" })
+																</td>
+																<td>
+																	@if (count > 1)
+																	{
+																		<a onclick="DeleteAuthorizedRow(this)" data-toggle='tooltip' data-original-title='Remove'> <i class='fas fa-window-close red-clr'></i></a>
+																	}
+																</td>
+															</tr>
+														}
+													}
+
+												</tbody>
+											</table>
+										</div>
+										<div class="text-right mt-2"><button type="button" class="btn green-clr ripplelink btnAuthorized"><i class="fas fa-plus"></i> Add Row</button></div>
+										</div>
+									</div>
+
+                            </div>
+
+                            <div class="col-lg-6 col-md-6 col-sm-12">
+								<div class="inner-main mb-4 p-0">
+									<div class="header-two"><i class="fas fa-paperclip"></i>Attachments</div>
+									<div class="pl-2 pr-2 pb-2 text-clr">
+                                
+
+                                <div class="table-responsive">
+                                    <table class="table table-scroll" id="tblAttachments">
+                                        <thead>
+                                            <tr>
+                                                <th class="width-40">S No</th>
+                                                <th>Type</th>
+                                                <th>Description</th>
+                                                <th>Attachment</th>
+                                                <th></th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @{ int count1 = 0;}
+                                            @if (Model.AttachmentsList != null)
+                                            {
+                                                for (int i = 0; i < Model.AttachmentsList.Count; i++)
+                                                {
+                                                    count1++;
+                                                    <tr>
+                                                        <td>
+                                                            <label id="span_@count" name="span_@count">@count </label>
+                                                        </td>
+                                                        <td>
+                                                            @Html.DropDownListFor(model => model.AttachmentsList[i].TypeID, new SelectList(DropDownList, "Value", "text", Model.AttachmentsList[i].TypeID), "select", new { @class = "form-control " })
+                                                            @Html.ValidationMessageFor(model => model.AttachmentsList[i].TypeID, "", new { @class = "text-danger" })
+                                                        </td>
+
+                                                        <td>
+                                                            @Html.TextAreaFor(model => model.AttachmentsList[i].Name, new { @class = "form-control" })
+                                                            @Html.ValidationMessageFor(model => model.AttachmentsList[i].Name, "", new { @class = "text-danger" })
+                                                        </td>
+                                                        <td>
+                                                            @Html.HiddenFor(modal => modal.AttachmentsList[i].AttachmentID)
+                                                            <div class="divAttachmentShow" style="@(Model.AttachmentsList[i].AttachmentID > 0 ? "" : "display:none")">
+
+                                                                <a class="achor-link" target="_blank" href="~/Attachments/@Model.AttachmentsList[i].AttachmentID@Model.AttachmentsList[i].ContentType">@Model.AttachmentsList[i].filename</a>
+
+                                                                <a style="color:red;cursor:pointer;" onclick="DeleteFile(this);"><i class="fa fa-times" aria-hidden="true"></i></a>
+
+                                                            </div>
+
+                                                            <div class="divAttachmentUpload" style="@(Model.AttachmentsList[i].AttachmentID > 0 ? "display:none" : "")">
+                                                                @Html.TextBoxFor(model => model.AttachmentsList[i].UploadFile, new { @class = "form-control", @type = "file" })
+                                                                @Html.ValidationMessageFor(model => model.AttachmentsList[i].UploadFile, "", new { @class = "text-danger" })
+                                                            </div>
+                                                        </td>
+                                                        <td>
+                                                            @if (count1 > 1)
+                                                            {
+                                                                <a onclick="DeleteAttachmentsRow(this)" data-toggle='tooltip' data-original-title='Remove'> <i class='fas fa-window-close red-clr'></i></a>
+                                                            }
+                                                        </td>
+                                                    </tr>
+                                                }
+                                            }
+
+                                        </tbody>
+                                    </table>
+                                </div>
+								<div class="text-right mt-2"><button type="button" class="btn green-clr ripplelink btnAttachments"><i class="fas fa-plus"></i> Add Row</button></div>
+								</div>
+								</div>
+                            </div>
+                        
+
+                    </div>
+					
+					<div class="text-center mt-2 mb-5">
+						 
+                            @if (Model.SubgrantList.SubgrantID != 0)
+                            {
+                                <button type="submit" class="btn mtr-g-grn btn-l ripplelink  pull-right" name="Command" value="Update"><i class="fas fa-pencil-alt"></i> Update</button>
+                            }
+                            else
+                            {
+                                <button type="submit" class="btn mtr-o-grn 	pull-right" name="Command" value="Add"><i class="fa fa-paper-plane" aria-hidden="true"></i> Submit</button>
+                            }
+							<button type="button" class="btn cnl-btn ripplelink pull-right" onclick="ShowLoadingDialog();window.location='@Url.Action("SubgrantList", new { src = clsApplicationSetting.EncryptQueryString(ViewBag.MenuID.ToString() + "*/Master/SubgrantList") })';"><i class="fas fa-times"></i> Cancel</button>
+					</div>
+
+
+                }
+
+
+
+
+
+@section scripts    {
+    <script src="~/assets/design/Scripts/AddInit.js?v=@clsApplicationSetting.GetWebConfigValue("Version")"></script>
+    @System.Web.Optimization.Scripts.Render("~/bundle/unobtrusivejs")
+    <script>
+        function DeleteFile(obj) {
+            ConfirmMsgBox('Do you really Want to Change Attachemnt?', '', function () {
+                $(obj).closest("td").find('div.divAttachmentUpload').show();
+                $(obj).closest("td").find('div.divAttachmentShow').hide();
+                $(obj).closest("td").find('input[type="hidden').val("0")
+            });
+        }
+        $(".btnAuthorized").click(function (e) {
+            AddAuthorizedNewRow();
+        });
+
+        $(".btnAttachments").click(function (e) {
+            AddAttachmentsNewRow();
+        });
+
+        function AddAuthorizedNewRow() {
+            var LastTRCount = parseInt($('#tblAuthorized').find("tbody tr").length) - 1;
+            var $tableBody = $('#tblAuthorized').find("tbody"),
+                $trLast = $tableBody.find("tr:last"),
+                $trNew = $trLast.clone();
+            $trNew.find("td:last").html('<a onclick="DeleteAuthorizedRow(this)" class="remove"><i class="fas fa-window-close red-clr" aria-hidden="true"></i></a>')
+
+
+            $trNew.find("div").each(function () {
+                $(this).attr({
+                    'id': function (_, id) { var arr = id.split('_'); return id.replace(arr[1], LastTRCount + 1); },
+                });
+
+            });
+
+            $trNew.find("label").each(function () {
+                $(this).attr({
+                    'id': function (_, id) { var arr = id.split('_'); return id.replace(arr[1], LastTRCount + 1); },
+                });
+                $(this).html(parseInt($('#tblAuthorized').find("tbody tr").length) + 1)
+            });
+
+            $trNew.find("input").each(function (i) {
+                $(this).attr({
+                    'id': function (_, name) { return name.replace('_' + LastTRCount + '_', '_' + (parseInt(LastTRCount) + 1) + '_'); },
+                    'name': function (_, name) { return name.replace('[' + LastTRCount + ']', '[' + (parseInt(LastTRCount) + 1) + ']'); },
+                });
+                $(this).val('')
+            });
+            $trNew.find("textarea").each(function (i) {
+                $(this).attr({
+                    'id': function (_, name) { return name.replace('_' + LastTRCount + '_', '_' + (parseInt(LastTRCount) + 1) + '_'); },
+                    'name': function (_, name) { return name.replace('[' + LastTRCount + ']', '[' + (parseInt(LastTRCount) + 1) + ']'); },
+                });
+                $(this).val('')
+            });
+
+            $trNew.find("span").each(function (i) {
+                if ($(this).attr("data-valmsg-for")) {
+                    $(this).attr({
+                        'data-valmsg-for': function (_, name) { return name.replace('[' + LastTRCount + ']', '[' + (parseInt(LastTRCount) + 1) + ']'); }
+                    });
+                }
+                if ($(this).attr("for")) {
+                    $(this).attr({
+                        'for': function (_, name) { return name.replace('_' + LastTRCount + '_', '_' + (parseInt(LastTRCount) + 1) + '_'); }
+                    });
+                }
+            });
+
+            $trLast.after($trNew);
+            var form = $("#SubgrantAddForm").closest("form");
+            form.removeData('validator');
+            form.removeData('unobtrusiveValidation');
+            $.validator.unobtrusive.parse(form);
+            $('[data-toggle="tooltip"]').tooltip();
+        }
+
+
+        function DeleteAuthorizedRow(obj) {
+            var count = 0;
+            var TotalRowCount = $('#tblAuthorized').find("tbody tr").length;
+            ConfirmMsgBox("Are you sure want to delete", '', function () {
+
+                $(obj).closest('tr').remove();
+                $("#tblAuthorized TBODY TR").each(function (i) {
+                    $(this).closest("tr").find("label").each(function () {
+                        $(this).attr({
+                            'id': function (_, id) { var arr = id.split('_'); return id.replace(arr[1], i); },
+                        });
+                        $(this).html(i + 1)
+                    });
+
+                    $(this).closest("tr").find("div").each(function () {
+                        $(this).attr({
+                            'id': function (_, id) { var arr = id.split('_'); return id.replace(arr[1], i); },
+                        });
+                    });
+
+
+                    $(this).closest("tr").find("input").each(function () {
+                        $(this).attr({
+                            'id': function (_, id) { return id.replace('_' + (parseInt(i) + 1) + '_', '_' + i + '_'); },
+                            'name': function (_, name) { return name.replace('[' + (parseInt(i) + 1) + ']', '[' + i + ']'); },
+                        });
+
+                    });
+
+
+
+                    $(this).closest("tr").find("textarea").each(function () {
+                        $(this).attr({
+                            'id': function (_, id) { return id.replace('_' + (parseInt(i) + 1) + '_', '_' + i + '_'); },
+                            'name': function (_, name) { return name.replace('[' + (parseInt(i) + 1) + ']', '[' + i + ']'); },
+                        });
+
+                    });
+
+
+                    $(this).closest("tr").find("span").each(function () {
+                        if ($(this).attr("data-valmsg-for")) {
+                            $(this).attr({
+                                'data-valmsg-for': function (_, name) { return name.replace('[' + (parseInt(i) + 1) + ']', '[' + i + ']'); },
+                            });
+                        }
+                        if ($(this).attr("for")) {
+                            $(this).attr({
+                                'for': function (_, id) { return id.replace('_' + (parseInt(i) + 1) + '_', '_' + i + '_'); },
+                            });
+                        }
+                    });
+                });
+                var form = $("#SubgrantAddForm").closest("form");
+                form.removeData('validator');
+                form.removeData('unobtrusiveValidation');
+                $.validator.unobtrusive.parse(form);
+
+            })
+        }
+
+
+
+
+        function AddAttachmentsNewRow() {
+            var LastTRCount = parseInt($('#tblAttachments').find("tbody tr").length) - 1;
+            var $tableBody = $('#tblAttachments').find("tbody"),
+                $trLast = $tableBody.find("tr:last"),
+                $trNew = $trLast.clone();
+            $trNew.find("td:last").html('<a onclick="DeleteAttachmentsRow(this)" class="remove"><i class="fas fa-window-close red-clr" aria-hidden="true"></i></a>')
+
+            $trNew.find("label").each(function () {
+                $(this).attr({
+                    'id': function (_, id) { var arr = id.split('_'); return id.replace(arr[1], LastTRCount + 1); },
+                });
+                $(this).html(parseInt($('#tblAttachments').find("tbody tr").length) + 1)
+            });
+
+            $trNew.find("input").each(function (i) {
+                $(this).attr({
+                    'id': function (_, name) { return name.replace('_' + LastTRCount + '_', '_' + (parseInt(LastTRCount) + 1) + '_'); },
+                    'name': function (_, name) { return name.replace('[' + LastTRCount + ']', '[' + (parseInt(LastTRCount) + 1) + ']'); },
+                });
+                ($(this).attr('type') == "hidden" ? $(this).val('0') : $(this).val(''));
+                $(this).closest("td").find('div.divAttachmentUpload').show();
+                $(this).closest("td").find('div.divAttachmentShow').hide();
+                $(this).closest("td").find('input[type="hidden').val("0")
+
+            });
+            $trNew.find("textarea").each(function (i) {
+                $(this).attr({
+                    'id': function (_, name) { return name.replace('_' + LastTRCount + '_', '_' + (parseInt(LastTRCount) + 1) + '_'); },
+                    'name': function (_, name) { return name.replace('[' + LastTRCount + ']', '[' + (parseInt(LastTRCount) + 1) + ']'); },
+                });
+                $(this).val('')
+            });
+
+            $trNew.find("select").each(function (i) {
+                $(this).attr({
+                    'id': function (_, name) { return name.replace('_' + LastTRCount + '_', '_' + (parseInt(LastTRCount) + 1) + '_'); },
+                    'name': function (_, name) { return name.replace('[' + LastTRCount + ']', '[' + (parseInt(LastTRCount) + 1) + ']'); },
+                });
+                $(this).val('')
+            });
+
+            $trNew.find("span").each(function (i) {
+                if ($(this).attr("data-valmsg-for")) {
+                    $(this).attr({
+                        'data-valmsg-for': function (_, name) { return name.replace('[' + LastTRCount + ']', '[' + (parseInt(LastTRCount) + 1) + ']'); }
+                    });
+                }
+                if ($(this).attr("for")) {
+                    $(this).attr({
+                        'for': function (_, name) { return name.replace('_' + LastTRCount + '_', '_' + (parseInt(LastTRCount) + 1) + '_'); }
+                    });
+                }
+            });
+
+            $trLast.after($trNew);
+            var form = $("#SubgrantAddForm").closest("form");
+            form.removeData('validator');
+            form.removeData('unobtrusiveValidation');
+            $.validator.unobtrusive.parse(form);
+            $('[data-toggle="tooltip"]').tooltip();
+        }
+
+
+        function DeleteAttachmentsRow(obj) {
+            var count = 0;
+            var TotalRowCount = $('#tblAttachments').find("tbody tr").length;
+            ConfirmMsgBox("Are you sure want to delete", '', function () {
+
+                $(obj).closest('tr').remove();
+                $("#tblAttachments TBODY TR").each(function (i) {
+                    $(this).closest("tr").find("label").each(function () {
+                        $(this).attr({
+                            'id': function (_, id) { var arr = id.split('_'); return id.replace(arr[1], i); },
+                        });
+                        $(this).html(i + 1)
+                    });
+
+                    $(this).closest("tr").find("div").each(function () {
+                        $(this).attr({
+                            'id': function (_, id) { var arr = id.split('_'); return id.replace(arr[1], i); },
+                        });
+                    });
+
+
+                    $(this).closest("tr").find("input").each(function () {
+                        $(this).attr({
+                            'id': function (_, id) { return id.replace('_' + (parseInt(i) + 1) + '_', '_' + i + '_'); },
+                            'name': function (_, name) { return name.replace('[' + (parseInt(i) + 1) + ']', '[' + i + ']'); },
+                        });
+
+                    });
+
+
+
+                    $(this).closest("tr").find("textarea").each(function () {
+                        $(this).attr({
+                            'id': function (_, id) { return id.replace('_' + (parseInt(i) + 1) + '_', '_' + i + '_'); },
+                            'name': function (_, name) { return name.replace('[' + (parseInt(i) + 1) + ']', '[' + i + ']'); },
+                        });
+
+                    });
+                    $(this).closest("tr").find("select").each(function () {
+                        $(this).attr({
+                            'id': function (_, id) { return id.replace('_' + (parseInt(i) + 1) + '_', '_' + i + '_'); },
+                            'name': function (_, name) { return name.replace('[' + (parseInt(i) + 1) + ']', '[' + i + ']'); },
+                        });
+
+                    });
+
+                    $(this).closest("tr").find("span").each(function () {
+                        if ($(this).attr("data-valmsg-for")) {
+                            $(this).attr({
+                                'data-valmsg-for': function (_, name) { return name.replace('[' + (parseInt(i) + 1) + ']', '[' + i + ']'); },
+                            });
+                        }
+                        if ($(this).attr("for")) {
+                            $(this).attr({
+                                'for': function (_, id) { return id.replace('_' + (parseInt(i) + 1) + '_', '_' + i + '_'); },
+                            });
+                        }
+                    });
+                });
+                var form = $("#SubgrantAddForm").closest("form");
+                form.removeData('validator');
+                form.removeData('unobtrusiveValidation');
+                $.validator.unobtrusive.parse(form);
+
+            })
+        }
+
+    </script>
+}

@@ -1,0 +1,42 @@
+﻿@using System.Data
+@model DataSet
+
+@if (Model.Tables[0].Rows.Count > 0)
+{
+	<div class="table-responsive">
+		<table class="table text-center hrtbl table-two mt-0">
+			<tr>
+				<th colspan="3">Monthly Hours</th>
+				<th rowspan="3" width="15" class="thspc"></th>
+				<th colspan="3">Hours Worked</th>
+			</tr>
+			<tr class="scd-th">
+				@foreach (DataColumn item in Model.Tables[0].Columns)
+				{
+					<th>@item.ColumnName</th>
+				}
+			</tr>
+
+			@foreach (DataRow dtRow in Model.Tables[0].Rows)
+			{
+				<tr>
+					@foreach (DataColumn dc in Model.Tables[0].Columns)
+					{
+
+						<td>
+							@dtRow[dc].ToString()
+							<input type="hidden" id="@dc.ColumnName" value="@dtRow[dc].ToString()" />
+						</td>
+
+					}
+				</tr>
+			}
+
+
+		</table>
+
+	</div>
+}
+
+
+

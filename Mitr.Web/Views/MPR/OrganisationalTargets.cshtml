@@ -1,0 +1,111 @@
+﻿
+@model IList<MPR.Targets.TargetsList>
+@{
+	ViewBag.Title = "OrganisationalTargets";
+}
+@{
+	string MenuID = "0";
+	if (ViewBag.MenuID != null)
+	{
+		MenuID = ViewBag.MenuID;
+	}
+}
+<div class="inner-main mb-5 pb-0">
+	<h1 class="heading-one mb-0">Organisational Level Targets</h1>
+
+	<!---->
+
+	<div class="tab-main mt-3 ">
+		<ul id="tabs" class="nav nav-tabs " role="tablist">
+			<li class="nav-item"> <a id="tab-A" href="#active-log" class="nav-link active ripplelink" data-toggle="tab" role="tab"><i class="far fa-clock"></i>Pending</a> </li>
+			<li class="nav-item"> <a id="tab-B" href="#leaves" class="nav-link ripplelink" data-toggle="tab" role="tab"><i class="fas fa-check"></i>Processed</a> </li>
+
+		</ul>
+
+
+		<div id="content" class="tab-content p-0" role="tablist">
+			<!-- --->
+			<div id="active-log" class="card tab-pane fade show active" role="tabpanel" aria-labelledby="tab-A">
+				<div class="card-header" role="tab" id="heading-A">
+					<h5 class="mb-0">
+						<a data-toggle="collapse" href="#collapse-A" aria-expanded="true" aria-controls="collapse-A">Open Request  <i class="fas fa-envelope-open"></i></a>
+					</h5>
+				</div>
+
+				<div id="collapse-A" class="collapse show" data-parent="#content" role="tabpanel" aria-labelledby="heading-A">
+
+					@Html.EJS().Grid("FlatGrid").DataSource((List <MPR.Targets.TargetsList>)Model.Where(x=>x.MPRTargetID==0).ToList()).GridLines(Syncfusion.EJ2.Grids.GridLine.Both).Columns(col =>
+			   {
+				   col.Field("FinID").Visible(false).Add();
+				   col.Field("Year").HeaderText("Year").Width("160").Add();
+
+				   col.HeaderText("Action").TextAlign(Syncfusion.EJ2.Grids.TextAlign.Center).Template("#tmpAction").Width("50").Add();
+
+			   }).AllowPaging().PageSettings(page => page.PageCount(10)).Created("created").Toolbar(new List<string>() { "Search" }).Render()
+
+				</div>
+			</div>
+
+			<div id="leaves" class="card tab-pane fade" role="tabpanel" aria-labelledby="tab-B">
+
+				<div class="card-header" role="tab" id="heading-B">
+					<h5 class="mb-0"> <a class="collapsed" data-toggle="collapse" href="#collapse-B" aria-expanded="false" aria-controls="collapse-B">Processed <i class="fas fa-check"></i></a> </h5>
+				</div>
+
+				<div id="collapse-B" class="collapse" data-parent="#content" role="tabpanel" aria-labelledby="heading-B">
+					@Html.EJS().Grid("FlatGrid1").DataSource((List <MPR.Targets.TargetsList>)Model.Where(x=>x.MPRTargetID > 0).ToList()).GridLines(Syncfusion.EJ2.Grids.GridLine.Both).Columns(col =>
+			   {
+				   col.Field("FinID").Visible(false).Add();
+				   col.Field("Year").HeaderText("Year").Width("160").Add();
+				   col.HeaderText("Action").TextAlign(Syncfusion.EJ2.Grids.TextAlign.Center).Template("#tmpAction1").Width("50").Add();
+
+			   }).AllowPaging().PageSettings(page => page.PageCount(10)).Created("created1").Toolbar(new List<string>() { "Search" }).Render()
+
+				</div>
+			</div>
+
+		</div>
+	</div>
+
+
+
+</div>
+
+
+<script id="tmpAction" type="text/x-template">
+
+	<input type="hidden" name="I" value="${FinID}" />
+	<a onclick="BindOGTarEdit(this)"><i class="fas fa-bullseye" aria-hidden="true"></i> Set Target </a>
+
+
+</script>
+
+
+<script id="tmpAction1" type="text/x-template">
+	<input type="hidden" name="I" value="${FinID}" />
+	<a onclick="BindOGTarEdit(this)"><i class="fas fa-bullseye" aria-hidden="true"></i> Set Target </a>
+</script>
+<script>
+		function BindOGTarEdit(obj) {
+			var I = $(obj).closest("tr").find("input:hidden[name=I]").val();
+			var URL = "/MPR/TargetsSetting?src=" +EncryptQueryStringJSON(@ViewBag.MenuID+"*" + "/MPR/TargetsSetting*" + I + "*0")			
+			window.location = URL;
+        }
+
+</script>
+<script>
+    function created() {
+        var grid = document.getElementById("FlatGrid").ej2_instances[0];
+        document.getElementById(grid.element.id + "_searchbar").addEventListener('keyup', () => {
+            grid.search(event.target.value)
+        });
+    }
+</script>
+<script>
+    function created1() {
+        var grid = document.getElementById("FlatGrid1").ej2_instances[0];
+        document.getElementById(grid.element.id + "_searchbar").addEventListener('keyup', () => {
+            grid.search(event.target.value)
+        });
+    }
+</script>

@@ -1,0 +1,449 @@
+﻿
+@{
+	ViewBag.Title = "OrientationSchedule";
+	Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@section scripts    {
+	@System.Web.Optimization.Scripts.Render("~/bundle/unobtrusivejs")
+	@System.Web.Optimization.Scripts.Render("~/bundle/dataTablesjs")
+	<script src="~/assets/design/Scripts/AddInit.js?v=@clsApplicationSetting.GetWebConfigValue("Version")"></script>
+	<script src="~/Areas/Onboarding/DevScript/OnboardingOrientationSchedule.js"></script>
+	<script>
+        var CandidateId = '@ViewBag.RequestId';
+		var IsEDUser = '@ViewBag.IsED';
+        var loggedinUserid = '@ViewBag.UserId';
+		var loggedinUserName = '@ViewBag.UserName';
+		var UserGrade = '@ViewBag.Grade';
+        var IsPM = '@ViewBag.IsPM';
+	</script>
+}
+<div class="container-fluid text-clr">
+	<!-- Start -->
+	<div class="inner-main defult-height pb-0">
+		<h1 class="heading-one ">HR Process</h1>
+		<ul class="tab-thrid">
+			<li class="dnactive" onclick="RedirectToClick('Offer');"><a >Offer</a></li>
+			<li class="dnactive" onclick="RedirectToClick('Joiningkit');"><a >Joining Kit</a></li>
+			<li class="dnactive" onclick="RedirectToClick('PreRegistration');"><a >Pre-Registration</a></li>
+			<li class="active"   onclick="RedirectToClick('OrientationSchedule');"><a >Orientation Schedule</a></li>
+			<li class="dnactive" onclick="RedirectToClick('Registration');"><a >Registration</a></li>
+			<li class="dnactive" onclick="RedirectToClick('Attachment');"><a >Attachment</a></li>
+			<li class="dnactive" onclick="RedirectToClick('UserOnboarding');"><a >Onboarding</a></li>
+			<li class="dnactive" onclick="RedirectToClick('DeclarationDetails');"><a >Declaration</a> </li>
+			<li class="dnactive" onclick="RedirectToClick('Orientation');"><a >Orientation</a></li>
+		</ul>
+		<div class="row">
+			<div class="col-lg-8">
+				<div class="table-responsive">
+					<table id="tblOrientationSchedule" class="table mt-0">
+						<thead>
+							<tr>
+								<th width="33">S.No</th>
+								<th width="200">Name of Member</th>
+								<th width="100">Date</th>
+								<th width="100">Time</th>
+								<th width="100">Place</th>
+								<th width="100">Purpose</th>
+								<th width="100">Mode</th>
+								<th width="100" class="text-center" style="display:none;">Action</th>
+							</tr>
+						</thead>
+						<tbody id="tableToModify">
+							<tr class="tr_clone" id="rowToClone">
+								<td><label class="lblSNo" id="lblSNo">1</label></td>
+								<td>
+									<select onchange="HideErrorMessage(this)" class="form-control dpselect select2-hidden-accessible Mandatorypld" id="ddlNameOfMembers">
+									</select>
+									<span id="spddlNameOfMembers" class="text-danger field-validation-error Project" style="display:none;">Hey, You missed this field!!</span>
+								</td>
+								<td>
+									<input type="text" autocomplete="off" class="form-control datepicker Mandatory" placeholder="Enter" id="txtDate" onchange="HideErrorMessage(this)">
+									<span id="sptxtDate" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+								</td>
+								<td>
+									<input type="time" id="txtTime" class=" Mandatory" name="" onchange="HideErrorMessage(this)">
+									<span id="sptxtTime" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+								</td>
+								<td><input type="text" id="txtPlace" class=" Mandatory" name="" onchange="HideErrorMessage(this)">
+									<span id="sptxtPlace" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+								</td>
+								<td><input type="text" id="txtPurpose" name="" class=" Mandatory" onchange="HideErrorMessage(this)">
+									<span id="sptxtPurpose" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+								</td>
+								<td>
+									<select onchange="HideErrorMessage(this)" class="form-control dpselect select2-hidden-accessible Mandatorypld" style="width:100px;" id="ddlMode">
+									</select>
+									<span id="spddlMode" class="text-danger field-validation-error Project" style="display:none;">Hey, You missed this field!!</span>
+								</td>
+								<td style="text-align: right; display: none" >
+									<a href="#" id="aReschedule" onclick="ReschedulePopup();"><i class="fas fa-calendar-alt"></i>Reschedule</a><span class="divline">|</span>
+									<a title='Click to Remove' data-toggle='tooltip' data-original-title='Click to Remove'><i class='fas fa-window-close m-0 red-clr' aria-hidden='true'></i> </a>
+								</td>
+							</tr>
+						</tbody>
+					</table>
+
+				</div>
+				<div class="form-group  text-right" id="divAddRow" style="display:block;">
+					<button  type="button" id="btnOrientationSchedulesAddRow" onclick="AddOrientationSchedulesArray()" class="btn green-clr ripplelink">
+						<i class="fas fa-plus"></i> Add Row
+					</button>
+				</div>
+				<div class="form-group  text-right" id="divUpdateRow" style="display:none;">
+					<button   type="button" onclick="UpdateOrientationSchedulesArray()" class="btn green-clr ripplelink">
+						<i class="fas fa-plus"></i> Update Row
+					</button>
+				</div>
+				<div id="tblOrientationSchedule1">
+
+				</div>
+			</div>
+			<div class="col-lg-8 text-center mt-2">
+				<button onclick="SaveOrientationSchedules();" id="btnOrientationSchedulesSave" type="button" class="btn mtr-o-grn btn-l ripplelink pull-right"><i class="fas fa-paper-plane"></i>Save</button>
+				<button onclick="RedirectToRegistration();" id="btnOrientationSchedulesSubmitted" type="button" class="btn mtr-o-grn btn-l ripplelink pull-right"><i class="fas fa-paper-plane"></i>Submit</button>
+				<button onclick="RedirectToOnboard();" type="button" class="btn cnl-btn ripplelink  pull-right"><i class="fas fa-times"></i> Close</button>
+			</div>
+		</div>
+	</div>
+
+	<!----End start-->
+</div>
+<!-- The Modal -->
+<div class="modal" id="reschedule">
+	<div class="modal-dialog modal-md">
+		<div class="modal-content ">
+
+			<!-- Modal Header -->
+			<div class="modal-header">
+				<h4 class="modal-title"><i class="fas fa-user-tie"></i><span id="spRescheduleName"></span></h4>
+				<button type="button" class="close" data-dismiss="modal">×</button>
+			</div>
+
+			<!-- Modal body -->
+			<div class="modal-body">
+				<div class="row">
+					<div class="col-sm-8 form-group">
+						<label>Date</label>
+						<input type="text" id="txtRescheduleDate" placeholder="Enter"  class="form-control datepicker ">
+					</div>
+					<div class="col-sm-4 form-group">
+						<label>Time</label>
+						<input type="time" name="" id="txtRescheduleTime" class="form-control" placeholder="Enter">
+					</div>
+
+				</div>
+				<!-- Modal footer -->
+				<div class="p-0 text-center mt-3 ">
+					<button onclick="RedirectToOnboard();" type="button" class="btn cnl-btn ripplelink" data-dismiss="modal"><i class="fas fa-times"></i>Close</button>
+					<a id="btnSaveReschedule" onclick="SavebtnReschedule();" href="#" class="btn mtr-o-grn btn-l"><i class="fas fa-paper-plane"></i>Submit</a>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<script>
+	$(document).ready(function () {
+		$(".dpselect").select2();
+	});
+</script>
+<script type="text/javascript">
+	$(function () {
+		$(".fold-table tr.view").on("click", function () {
+			$(this).toggleClass("open").next(".fold").toggleClass("open");
+		});
+	});
+</script>
+<script>
+	//var MenuID = Number(129);
+	//wow = new WOW();
+	//wow.init();
+	function RedirectToOnboard() {
+		window.location.href = virtualPath + 'Onboarding/HRScreenOnboard';
+	}
+
+	function SuccessToaster(Message) {
+		$("#toastMsg").html(Message);
+		$("#toasticon i").addClass("fas fa-check green-clr ");
+		var x = document.getElementById("toast")
+		x.className = "show";
+		setTimeout(function () { x.className = x.className.replace("show", ""); }, 4000);
+	}
+
+	function FailToaster(Message) {
+		$("#toastMsg").html(Message);
+		$("#toasticon i").addClass("fas fa-exclamation-triangle red-clr");
+		var x = document.getElementById("toast")
+		x.className = "show toaster-warning";
+		setTimeout(function () { x.className = x.className.replace("show toaster-warning", ""); }, 4000);
+	}
+
+
+	function ValidateFile(FileName) {
+
+		var result = false;
+		if (document.getElementById(FileName).files[0].name.toUpperCase().match(/\.(PDF|DOCX|TXT|XLS|XLSX)$/)) {
+
+			var filesize = 3145728;
+			var sizeinbytes = document.getElementById(FileName).files[0].size;
+			if (filesize >= sizeinbytes) {
+				result = true;
+			}
+			else {
+				FailToaster("File size should be less than 3 MB");
+				document.getElementById(FileName).value = '';
+				result = false;
+
+			}
+			return result;
+		}
+		else {
+			FailToaster("Invalid file type , please select valid file again");
+			document.getElementById(FileName).value = '';
+			return result;
+		}
+
+	}
+
+	function ValidateImage(FileName) {
+
+		var result = false;
+		if (document.getElementById(FileName).files[0].name.toUpperCase().match(/\.(JPG|JPEG|PNG|PDF)$/)) {
+
+			var filesize = 2097152;
+			var sizeinbytes = document.getElementById(FileName).files[0].size;
+			if (filesize >= sizeinbytes) {
+				result = true;
+			}
+			else {
+				FailToaster("Image should be less than 2 MB");
+
+				document.getElementById(FileName).value = '';
+				result = false;
+
+			}
+			return result;
+		}
+		else {
+			FailToaster("Invalid Image type , please select valid Image");
+			document.getElementById(FileName).value = '';
+			return result;
+		}
+
+	}
+</script>
+<script>
+	// JavaScript Document
+	$(function () {
+		$('#js-nav-toggle').click(function (e) {
+			e.preventDefault();
+			$("html").toggleClass("is-sideopen");
+			$("#js-nav-toggle").toggleClass("is-active");
+		});
+
+		var $content = $('.l-contents');
+		var $header = $('.l-header');
+
+
+		$content.click(function () {
+			$("html").removeClass("is-sideopen");
+		});
+
+
+		$header.click(function () {
+			$("html").removeClass("is-sideopen");
+		});
+
+
+	});
+
+
+	$(function () {
+
+		var $dropdown = $('.js-dropdown');
+		var $content = $('.l-contents');
+		var $toggle = $('#js-nav-toggle');
+
+
+		$('.js-dropdown-menu').hide();
+		$dropdown.click(function () {
+			$('i').removeClass('is-rotate');
+			$('.js-dropdown-menu').slideUp(200);
+			if ($('+.js-dropdown-menu', this).css('display') == 'none') {
+				$('i', this).addClass('is-rotate');
+				$('+.js-dropdown-menu', this).slideDown(200);
+			}
+		});
+
+
+		$content.click(function () {
+			$('i').removeClass('is-rotate');
+			$('.js-dropdown-menu').slideUp(200);
+			if ($('+.js-dropdown-menu', this).css('display') == 'none') {
+				$('i', this).addClass('is-rotate');
+				$('+.js-dropdown-menu', this).slideDown(200);
+			}
+		});
+
+
+		$toggle.click(function () {
+			$('i').removeClass('is-rotate');
+			$('.js-dropdown-menu').slideUp(200);
+			if ($('+.js-dropdown-menu', this).css('display') == 'none') {
+				$('i', this).addClass('is-rotate');
+				$('+.js-dropdown-menu', this).slideDown(200);
+			}
+		});
+
+	});
+
+	$(function () {
+		$('.is-ac-close').hide();
+		$(".is-ac-click").on("click", function () {
+			if ($(this).children('i').is('.fa-angle-right')) {
+				$(this).children('i')
+					.removeClass('fa-angle-right')
+					.addClass('fa-angle-down');
+			} else {
+				$(this).children('i')
+					.removeClass('fa-angle-down')
+					.addClass('fa-angle-right');
+			}
+			$(this).next().slideToggle(200);
+		});
+
+		$('.is-ac-close').hide();
+		$(".is-ac-bar").on("click", function () {
+
+			if ($(this).find('i').is('.fa-caret-down')) {
+
+				$(this).find('i')
+					.removeClass()
+					.addClass('fa fa-caret-up');
+			} else {
+				$(this).find('i')
+					.removeClass()
+					.addClass('fa fa-caret-down');
+			}
+			$(this).next().slideToggle(200);
+		});
+	});
+
+
+
+
+	//---------------------------------------------------
+	// ▼　tab
+	//---------------------------------------------------
+	$(function () {
+		var rwdTab = $('.c-tab'),
+			switchPoint = 768,
+			fadeSpeed = 300,
+			slideSpeed = 300;
+
+		var tabBtn = rwdTab.children('.c-tab-panel').children('.c-tab-heading'),
+			contentsArea = rwdTab.children('.c-tab-panel').children('.c-tab-body');
+
+		tabBtn.on('click', function () {
+			if (!$(this).hasClass('c-tab-active')) {
+				tabBtn.removeClass('c-tab-active');
+				$(this).addClass('c-tab-active');
+
+				if (window.innerWidth > switchPoint) {
+					contentsArea.fadeOut(fadeSpeed);
+					$(this).next().fadeIn(fadeSpeed);
+				} else {
+					contentsArea.slideUp(slideSpeed);
+					$(this).next().slideDown(slideSpeed);
+				}
+			}
+		});
+
+		tabBtn.first().click();
+	});
+
+
+
+</script>
+<!-- required -->
+<script type="text/javascript">
+	jQuery(document).ready(function ($) {
+		jQuery('.stellarnav').stellarNav({
+			theme: 'dark',
+			breakpoint: 960,
+			position: 'right',
+
+		});
+		$('.notifyjs-corner').empty();
+	});
+</script>
+<!-- required -->
+<script>
+	$("document").ready(function () {
+
+		$('.dropdown-menu').on('click', function (e) {
+			if ($(this).hasClass('dropdown-menu-form')) {
+				e.stopPropagation();
+			}
+		});
+	});
+
+
+</script>
+<script>
+
+	var links = document.querySelectorAll('.ripplelink');
+
+	for (var i = 0, len = links.length; i < len; i++) {
+		links[i].addEventListener('click', function (e) {
+			var targetEl = e.target;
+			var inkEl = targetEl.querySelector('.ink');
+
+			if (inkEl) {
+				inkEl.classList.remove('animate');
+			}
+			else {
+				inkEl = document.createElement('span');
+				inkEl.classList.add('ink');
+				inkEl.style.width = inkEl.style.height = Math.max(targetEl.offsetWidth, targetEl.offsetHeight) + 'px';
+				targetEl.appendChild(inkEl);
+			}
+
+			inkEl.style.left = (e.offsetX - inkEl.offsetWidth / 2) + 'px';
+			inkEl.style.top = (e.offsetY - inkEl.offsetHeight / 2) + 'px';
+			inkEl.classList.add('animate');
+		}, false);
+	}
+</script>
+<script type="text/javascript">
+	$(window).scroll(function () {
+		if ($(this).scrollTop() > 250) {
+			$('.header').addClass("sticky");
+		}
+		else {
+			$('.header').removeClass("sticky");
+		}
+	});
+
+
+</script>
+<script>
+	$(document).ready(function () {
+		$('[data-toggle="tooltip"]').tooltip();
+	});
+</script>
+<script type="text/javascript">
+	$(function () {
+		$("#mtruser").click(function () {
+			if ($(this).is(":checked")) {
+				$(".mtrlgnid").show();
+				$(".toggle-btn").addClass("yestoggle");
+
+
+
+			} else {
+				$(".mtrlgnid").hide();
+				$(".toggle-btn").removeClass("yestoggle");
+			}
+		});
+	});
+</script>

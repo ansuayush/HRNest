@@ -1,0 +1,275 @@
+﻿
+@{
+	ViewBag.Title = "HRApprovalAction";
+
+}
+
+@using (Ajax.BeginForm("HRApprovalAction", "ExitEmployee",
+	 new { src = clsApplicationSetting.EncryptQueryString(ViewBag.MenuID.ToString() + "*/ExitEmployee/HRApprovalAction") },
+	 new AjaxOptions { HttpMethod = "POST", OnSuccess = "BindTarget", OnFailure = "CloseLoadingDialog()", OnBegin = "ShowLoadingDialog();" },
+ new { @id = "HRApprovalActionFrom" })
+ )
+{
+	<div class="inner-main defult-height pb-0">
+
+		<div class="row">
+			<div class="inner-main defult-height p-3 pb-0">
+				<h1 class="heading-one mb-3">Resignation Request </h1>
+				<div class="row">
+					<div class="col-sm-12 form-group">
+						<ul class="list-unstyled inline-li m-0 rqt-dtl">
+							<li>
+								<label>Req No</label>
+								1301
+							</li>
+							<li>
+								<label>Requested Date</label>
+								1/2/2020
+							</li>
+							<li>
+								<label>Requested by</label>
+								Rohit Sharma
+							</li>
+
+
+
+							<li>
+								<label>Location</label>
+								Delhi
+							</li>
+							<li>
+								<label>Department</label>
+
+								Reproductive Health &amp; Rights
+							</li>
+							<li>
+								<label>Designation</label>
+
+								Accounts &amp; Administrative Officer
+							</li>
+
+						</ul>
+					</div>
+					<div class="col-xl-3 col-lg-4 form-group">
+						<label>Reason for Resignation</label>
+						<p>Reason 1</p>
+					</div>
+					<div class="col-xl-3 col-lg-4 form-group" data-popover-content="#comment" data-toggle="popover" data-placement="top" data-original-title="" title="">
+						<label>Employee's Comment on Resignation</label>
+						<p><span class="ellipsis-text">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed vitae lectus ex. Suspendisse potenti.</span><span class="cmt-view">View</span></p>
+						<div id="comment" style="display: none">
+							<div class="popover-body">
+								<button type="button" class="popover-close close"> <i class="fas fa-times"></i> </button>
+								Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed vitae lectus ex. Suspendisse potenti. Proin in molestie neque. Curabitur in leo et nisl luctus semper. Sed laoreet ut justo eu tristique. Integer eleifend neque ut gravida ultrices. Nulla id tortor feugiat, auctor urna non, rutrum ligula. Donec sodales lacus in finibus efficitur. Quisque lacinia quis nunc sed ultricies.
+							</div>
+						</div>
+					</div>
+					<div class="col-sm-12"></div>
+					<div class="col-xl-3 col-lg-4 form-group align-self-end"><strong>Notice Period as per Policy: <span class="red-clr">15 Days</span></strong></div>
+					<div class="col-xl-3 col-lg-4 form-group align-self-end"><strong>Employee proposed notice period: <span class="red-clr">10 Days</span></strong>  </div>
+					<div class="col-sm-12"></div>
+					<div class="col-xl-3 col-lg-4 col-sm-6 wh-575 form-group">
+						<label>Relieving date as per policy</label>
+						<p>15/2/2020</p>
+					</div>
+					<div class="col-xl-3 col-lg-4  col-sm-6 wh-575 form-group">
+						<label>Employee Proposed Relieving Date</label>
+						<p>11/4/2020</p>
+					</div>
+					<div class="col-sm-12"></div>
+
+					<div class="col-xl-6 col-lg-8 form-group " data-popover-content="#comment1" data-toggle="popover" data-placement="top" data-original-title="" title="">
+						<label>Reason for not accepting the notice period</label>
+						<p><span class="ellipsis-text">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed vitae lectus ex. Suspendisse potenti. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed vitae lectus ex. Suspendisse potenti.</span><span class="cmt-view">View</span></p>
+						<div id="comment1" style="display: none">
+							<div class="popover-body">
+								<button type="button" class="popover-close close"> <i class="fas fa-times"></i> </button>
+								Maecenas in imperdiet risus, a blandit eros. Ut quis est lorem. Duis libero tellus, eleifend eu egestas nec, vehicula eget tellus. Praesent purus libero, euismod sit amet dui a, imperdiet aliquam odio. Integer nec neque urna. In hac habitasse platea dictumst. Donec eros metus, sodales eu aliquam nec, tincidunt at sapien. Donec commodo, leo quis dictum pellentesque, turpis nibh luctus dolor, sed pellentesque tortor odio a leo.
+							</div>
+						</div>
+					</div>
+					<div class="col-sm-12 text-left">
+						<button type="button" name="Command" value="Add" class="btn mtr-y-bg btn-l ripplelink " data-toggle="modal" data-target="#rfc"> <i class="fas fa-user-shield"></i> Record Resolution</button>
+						<button type="button" name="Command" value="Add" class="btn blk-gdn-btn btn-l ripplelink " data-toggle="modal" data-target="#fts"><i class="fas fa-share"></i> Forward</button>
+						<button type="submit" name="Command" value="Add" class="btn mtr-o-grn btn-l ripplelink " data-toggle="modal" data-target="#dc"><i class="fas fa-user-check"></i>Approve &amp; Proceed</button>
+						<button type="button" class="btn cnl-btn btn-l ripplelink"><i class="fas fa-times"></i>Close</button>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+}
+<div class="modal fade" id="rfc">
+	<div class="modal-dialog modal-dialog-centered modal-md">
+		<div class="modal-content ">
+
+			<!-- Modal Header -->
+			<div class="modal-header">
+				<h4 class="modal-title">Reason for Continuing</h4>
+				<button type="button" class="close" data-dismiss="modal">&times;</button>
+			</div>
+
+			<!-- Modal body -->
+			<div class="modal-body">
+				<div class="row">
+					<div class="col-sm-6 form-group">
+						<label>Attachment</label>
+						<input type="file" class="form-control">
+					</div>
+					<div class="col-sm-12 form-group">
+						<label>Reason<sup>*<sup></sup></label>
+						<input type="text" id="txtReason" class="form-control Mandatory" value="" onchange="HideErrorMessage(this)">
+						<span id="sptxtReason" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+					</div>
+				</div>
+				<!-- Modal footer -->
+				<div class="p-0 text-center ">
+					<button type="button" class="btn cnl-btn ripplelink" data-dismiss="modal"><i class="fas fa-times"></i>Close</button>
+					<button type="button" class="btn mtr-o-grn btn-l" onclick="SaveRecord()"><i class="fas fa-paper-plane"></i>Submit</button>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div class="modal fade" id="fts">
+	<div class="modal-dialog modal-dialog-centered modal-md">
+		<div class="modal-content ">
+
+			<!-- Modal Header -->
+			<div class="modal-header">
+				<h4 class="modal-title"><i class="fas fa-cogs"></i>Process Flow</h4>
+				<button type="button" class="close" data-dismiss="modal">&times;</button>
+			</div>
+
+			<!-- Modal body -->
+			<div class="modal-body">
+				<div class="row">
+					<div class="col-sm-12">
+						<table class="table mt-0">
+							<tbody>
+								<tr>
+									<td><strong>Level 1 <sup class="red-clr">*</sup></strong></td>
+									<td colspan="0" class="tw-100">
+										<select id="change" class="form-control dpselect ">
+											<option>Select Name</option>
+											<option value="this">Arun Kumar (arun@cedpaindia,org)</option>
+											<option selected="">Rakhi Miglani (rmighlani@c3india.org)</option>
+											<option value="this">Vandana Nair (vnair@c3india.org)</option>
+											<option value="this">Prateek jain (pjain@c3india.org)</option>
+										</select>
+									</td>
+								</tr>
+								<tr>
+									<td><strong>Level 2 </strong></td>
+									<td colspan="0" class="tw-100">
+										<select class="form-control dpselect ">
+											<option>Select Name</option>
+											<option>Arun Kumar (arun@cedpaindia,org)</option>
+											<option>Rakhi Miglani (rmighlani@c3india.org)</option>
+											<option>Vandana Nair (vnair@c3india.org)</option>
+											<option>Prateek jain (pjain@c3india.org)</option>
+										</select>
+									</td>
+								</tr>
+								<tr>
+									<td><strong>Level 3 </strong></td>
+									<td colspan="0" class="tw-100">
+										<select class="form-control dpselect ">
+											<option>Select Name</option>
+											<option>Arun Kumar (arun@cedpaindia,org)</option>
+											<option>Rakhi Miglani (rmighlani@c3india.org)</option>
+											<option>Vandana Nair (vnair@c3india.org)</option>
+											<option>Prateek jain (pjain@c3india.org)</option>
+										</select>
+									</td>
+								</tr>
+								<tr>
+									<td><strong>Level 4 </strong></td>
+									<td colspan="0" class="tw-100">
+										<select class="form-control dpselect ">
+											<option>Select Name</option>
+											<option>Arun Kumar (arun@cedpaindia,org)</option>
+											<option>Rakhi Miglani (rmighlani@c3india.org)</option>
+											<option>Vandana Nair (vnair@c3india.org)</option>
+											<option>Prateek jain (pjain@c3india.org)</option>
+										</select>
+									</td>
+								</tr>
+								<tr>
+									<td><strong>Level 5 </strong></td>
+									<td colspan="0" class="tw-100">
+										<select class="form-control dpselect ">
+											<option>Select Name</option>
+											<option>Arun Kumar (arun@cedpaindia,org)</option>
+											<option>Rakhi Miglani (rmighlani@c3india.org)</option>
+											<option>Vandana Nair (vnair@c3india.org)</option>
+											<option>Prateek jain (pjain@c3india.org)</option>
+										</select>
+									</td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
+				</div>
+				<!-- Modal footer -->
+				<div class="p-0 text-center ">
+					<button type="button" class="btn cnl-btn ripplelink" data-dismiss="modal"><i class="fas fa-times"></i>Close</button>
+					<a href="../supervisor/supervisor_proceed-screen.html" class="btn mtr-o-grn btn-l "><i class="fas fa-paper-plane"></i>Submit</a>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+@section scripts    {
+	@System.Web.Optimization.Scripts.Render("~/bundle/unobtrusivejs")
+	@System.Web.Optimization.Scripts.Render("~/bundle/dataTablesjs")
+	<script src="~/assets/design/Scripts/AddInit.js?v=@clsApplicationSetting.GetWebConfigValue("Version")"></script>
+	$(document).ready(function () {
+	BindScreen();
+	});
+	function BindScreen() {
+	var HRmodel = {
+	    ReqNo: "",
+	    RequestedDate: "",
+	    Requestedby: "",
+	    Location: "",
+	    Department: "",
+	    Designation: "",
+	    ReasonResignation: "",
+	    EmployeeComment : "",
+	    NP: "",
+	    PNP: "",
+	    RDP: "",
+	    PRD: "",
+	    RFNANP: ""
+	}
+	const jsonString = JSON.stringify(model);
+	   var ScreenID = "C100";
+	   CommonAjaxMethod(virtualPath + 'Generic/GetRecords', { HRmodel: jsonString, screenId: ScreenID }, 'GET', function (response) {
+
+	});
+
+
+
+
+
+	}
+
+	function SaveRecord() {
+
+	var model = {
+	RId: "12",
+	Reason: $('#txtReason').val()
+	}
+	const jsonString = JSON.stringify(model);
+
+	CommonAjaxMethod(virtualPath + 'Generic/PerformOperation', model, 'POST', function (response) {
+
+
+	});
+
+	}
+
+
+}

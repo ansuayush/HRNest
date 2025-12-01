@@ -1,0 +1,58 @@
+﻿@model IList<MPR.Targets.TargetsList>
+
+@{
+	string MenuID = "0";
+	if (ViewBag.MenuID != null)
+	{
+		MenuID = ViewBag.MenuID;
+	}
+}
+<div class="row">
+	<div class="col-sm-12">
+		@Html.EJS().Grid("FlatGrid").DataSource((List <MPR.Targets.TargetsList>)Model).GridLines(Syncfusion.EJ2.Grids.GridLine.Both).Columns(col =>
+   {
+	   col.Field("FinID").Visible(false).Add();
+	   col.Field("ProjectID").Visible(false).Add();
+	   col.Field("Year").HeaderText("Year").Width("160").Add();
+	   col.Field("Projref_No").HeaderText("Project No").Width("160").Add();
+	   col.Field("Proj_Name").HeaderText("Project Name").Width("160").Add();
+	   col.HeaderText("Action").TextAlign(Syncfusion.EJ2.Grids.TextAlign.Center).Template("#tmpAction").Width("100").Add();
+	   
+
+   }).AllowPaging().PageSettings(page => page.PageCount(10)).Created("created").Toolbar(new List<string>() { "Search" }).Render()
+
+
+	</div>
+</div>
+
+
+<script id="tmpAction" type="text/x-template">
+
+	<input type="hidden" name="I" value="${FinID}" />
+	<input type="hidden" name="P" value="${ProjectID}" />
+	<a onclick="BindOGTarEdit(this)"><i class="fas fa-bullseye" aria-hidden="true"></i> Set Target </a>
+
+
+</script>
+
+<script>
+    function created() {
+        var grid = document.getElementById("FlatGrid").ej2_instances[0];
+        document.getElementById(grid.element.id + "_searchbar").addEventListener('keyup', () => {
+            grid.search(event.target.value)
+        });
+    }
+</script>
+<script>
+		function BindOGTarEdit(obj) {
+			var I = $(obj).closest("tr").find("input:hidden[name=I]").val();
+			var P = $(obj).closest("tr").find("input:hidden[name=P]").val();
+			var URL = "/MPR/TargetsSetting?src=" +EncryptQueryStringJSON(@ViewBag.MenuID+"*" + "/MPR/TargetsSetting" + "*" + I + "*"+P)
+			window.location = URL;
+        }
+
+</script>
+
+
+
+@(Html.EJS().ScriptManager())

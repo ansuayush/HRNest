@@ -1,0 +1,296 @@
+﻿
+@model Mitr.Models.AddDonor
+@using System.Data
+
+@Html.Partial("HeaderMsg_Partial")
+
+@using (Html.BeginForm("DonorAdd", "Master",
+new { src = ViewBag.src }, FormMethod.Post,
+new
+{
+    name = "DonorAddForm",
+    id = "DonorAddForm",
+    @class = "form-horizontal form-label-left input_mask",
+    enctype = "multipart/form-data"
+}))
+{
+
+    @Html.AntiForgeryToken()
+    @Html.HiddenFor(x => Model.Donor.DonorID)
+
+    <h1 class="heading-one mb-2">Donor Details</h1>
+
+    <div class="inner-main mb-4 p-0">
+        <div class="header-two"><i class="fas fa-info"></i> Information </div>
+        <div class="pl-2 pr-2 text-clr">
+            <div class="row">
+
+                <div class="col-lg-2 col-md-3 col-sm-6  form-group">
+                    <label>Donar Name<span class="required">*</span></label>
+                    @Html.TextBoxFor(model => Model.Donor.DonorName, new { @class = "form-control" })
+                    @Html.ValidationMessageFor(model => Model.Donor.DonorName, "", new { @class = "text-danger" })
+                </div>
+
+                <div class="col-lg-2 col-md-3 col-sm-6  form-group">
+                    <label>Source Type<sup>*</sup></label>
+                    @{
+                        List<SelectListItem> DropDownList = new List<SelectListItem>
+                                                                                                    {
+            new SelectListItem{Text="Indian",Value="1" },
+            new SelectListItem{Text="Foreign",Value="2" }
+            };
+                    }
+                    @Html.DropDownListFor(model => Model.Donor.SourceID, new SelectList(DropDownList, "Value", "text", Model.Donor.SourceID), "Select", new { @class = "form-control " })
+                    @Html.ValidationMessageFor(model => Model.Donor.SourceID, "", new { @class = "text-danger" })
+
+                </div>
+                <div class="col-lg-2 col-md-3 col-sm-6  form-group">
+                    <label>Country Name<span class="required">*</span></label>
+                    @Html.TextBoxFor(model => Model.Donor.CountryName, new { @class = "form-control" })
+                    @Html.ValidationMessageFor(model => Model.Donor.CountryName, "", new { @class = "text-danger" })
+                </div>
+
+                <div class="col-lg-2 col-md-3 col-sm-6  form-group">
+                    <label>State<span class="required">*</span></label>
+                    @Html.TextBoxFor(model => Model.Donor.StateName, new { @class = "form-control" })
+                    @Html.ValidationMessageFor(model => Model.Donor.StateName, "", new { @class = "text-danger" })
+                </div>
+
+                <div class="col-lg-2 col-md-3 col-sm-6  form-group">
+                    <label>City<span class="required">*</span></label>
+                    @Html.TextBoxFor(model => Model.Donor.CityName, new { @class = "form-control" })
+                    @Html.ValidationMessageFor(model => Model.Donor.CityName, "", new { @class = "text-danger" })
+                </div>
+
+                <div class="col-lg-2 col-md-3 col-sm-6  form-group">
+                    <label>Zip Code<span class="required">*</span></label>
+                    @Html.TextBoxFor(model => Model.Donor.ZipCode, new { @class = "form-control" })
+                    @Html.ValidationMessageFor(model => Model.Donor.ZipCode, "", new { @class = "text-danger" })
+                </div>
+                <div class="col-lg-2 col-md-3 col-sm-6  form-group">
+                    <label>Phone No<span class="required">*</span></label>
+                    @Html.TextBoxFor(model => Model.Donor.PhoneNO, new { @class = "form-control" })
+                    @Html.ValidationMessageFor(model => Model.Donor.PhoneNO, "", new { @class = "text-danger" })
+                </div>
+                <div class="col-lg-2 col-md-3 col-sm-6  form-group">
+                    <label>Fax</label>
+                    @Html.TextBoxFor(model => Model.Donor.Fax, new { @class = "form-control" })
+                    @Html.ValidationMessageFor(model => Model.Donor.Fax, "", new { @class = "text-danger" })
+                </div>
+                <div class="col-lg-2 col-md-3 col-sm-6  form-group">
+                    <label>Website</label>
+                    @Html.TextBoxFor(model => Model.Donor.Website, new { @class = "form-control" })
+                    @Html.ValidationMessageFor(model => Model.Donor.Website, "", new { @class = "text-danger" })
+                </div>
+                <div class="col-lg-2 col-md-3 col-sm-6  form-group">
+                    <label>Priority<span class="required">*</span></label>
+                    @Html.TextBoxFor(model => Model.Donor.Priority, new { @class = "form-control" })
+                    @Html.ValidationMessageFor(model => Model.Donor.Priority, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-lg-6 col-md-6 col-sm-6  form-group">
+                    <label>Head Office Address </label>
+                    @Html.TextAreaFor(model => Model.Donor.Lane1, new { @class = "form-control" })
+                    @Html.ValidationMessageFor(model => Model.Donor.Lane1, "", new { @class = "text-danger" })
+                </div>
+                <div class="col-lg-6 col-md-6 col-sm-6  form-group">
+                    <label>Country Office Address</label>
+                    @Html.TextAreaFor(model => Model.Donor.Lane2, new { @class = "form-control" })
+                    @Html.ValidationMessageFor(model => Model.Donor.Lane2, "", new { @class = "text-danger" })
+                </div>
+            </div>
+        </div>
+    </div>
+
+        <div class="inner-main mb-4 p-0">
+            <div class="header-two"><i class="fas fa-user-shield"></i> Contact Details</div>
+            <div class="pl-2 pr-2 pb-2 text-clr">
+
+                <div class="table-responsive">
+                    <table class="table table-scroll" id="tblContactDetails">
+                        <thead>
+                            <tr>
+                                <th class="width-40">S No </th>
+                                <th>Name</th>
+                                <th>Designaton</th>
+                                <th>Location</th>
+                                <th>Location</th>
+                                <th>Phone No	</th>
+                                <th>Mobile No	</th>
+                                <th>Email</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @{ int count = 0;}
+                            @if (Model.DonorDetailsList != null)
+                            {
+                                for (int i = 0; i < Model.DonorDetailsList.Count; i++)
+                                {
+                                    count++;
+                            <tr>
+                                <td>
+                                    <label id="span_@count" name="span_@count">@count </label>
+                                </td>
+                                <td>
+                                    @Html.TextBoxFor(model => model.DonorDetailsList[i].PersonName, new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(model => model.DonorDetailsList[i].PersonName, "", new { @class = "text-danger" })
+                                </td>
+                                <td>
+                                    @Html.TextBoxFor(model => model.DonorDetailsList[i].Designation, new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(model => model.DonorDetailsList[i].Designation, "", new { @class = "text-danger" })
+                                </td>
+                                <td>
+                                    @Html.TextBoxFor(model => model.DonorDetailsList[i].Location, new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(model => model.DonorDetailsList[i].Location, "", new { @class = "text-danger" })
+                                </td>
+                                <td>
+                                    @Html.TextBoxFor(model => model.DonorDetailsList[i].PhoneNo, new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(model => model.DonorDetailsList[i].PhoneNo, "", new { @class = "text-danger" })
+                                </td>
+                                <td>
+                                    @Html.TextBoxFor(model => model.DonorDetailsList[i].MobileNo, new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(model => model.DonorDetailsList[i].MobileNo, "", new { @class = "text-danger" })
+                                </td>
+                                <td>
+                                    @Html.TextBoxFor(model => model.DonorDetailsList[i].Email, new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(model => model.DonorDetailsList[i].Email, "", new { @class = "text-danger" })
+                                </td>
+                                <td>
+                                    @if (count > 1)
+                                    {
+                                        <a onclick="DeleteRow(this)" data-toggle='tooltip' data-original-title='Remove'> <i class='fas fa-window-close red-clr'></i></a>
+                                    }
+                                </td>
+                            </tr>
+                                }
+                            }
+
+                        </tbody>
+                    </table>
+                </div>
+                <div class="text-right mt-2"><button type="button" class="btn green-clr ripplelink btnNewRow"><i class="fas fa-plus"></i> Add Row</button></div>
+            </div>
+        </div>
+
+   
+
+    <div class="row">
+        <div class="col-lg-12 text-center">
+
+            @if (Model.Donor.DonorID > 0)
+            {
+                <button type="submit" class="btn mtr-o-grn btn-l ripplelink pull-right" name="Command" value="Add"><i class="fa fa-paper-plane" aria-hidden="true"></i> Update</button>
+            }
+            else
+            {
+                <button type="submit" class="btn mtr-o-grn btn-l ripplelink pull-right" name="Command" value="Add"><i class="fa fa-paper-plane" aria-hidden="true"></i> Submit</button>
+            }
+            <button type="button" class="btn cnl-btn ripplelink  pull-right" onclick="ShowLoadingDialog();window.location='@Url.Action("DonorList", new { src = clsApplicationSetting.EncryptQueryString(ViewBag.MenuID.ToString() + "*/Master/DonorList")  })';"><i class="fas fa-times"></i> Cancel</button>
+        </div>
+    </div>
+
+}
+
+@section scripts    {
+    <script src="~/assets/design/Scripts/AddInit.js?v=@clsApplicationSetting.GetWebConfigValue("Version")"></script>
+    @System.Web.Optimization.Scripts.Render("~/bundle/unobtrusivejs")
+    <script>
+
+          $(".btnNewRow").click(function (e) {
+            AddNewRow();
+        });
+
+      function AddNewRow() {
+            var LastTRCount = parseInt($('#tblContactDetails').find("tbody tr").length) - 1;
+            var $tableBody = $('#tblContactDetails').find("tbody"),
+                $trLast = $tableBody.find("tr:last"),
+                $trNew = $trLast.clone();
+            $trNew.find("td:last").html('<a onclick="DeleteRow(this)" class="remove"><i class="fas fa-window-close red-clr" aria-hidden="true"></i></a>')
+
+
+
+            $trNew.find("label").each(function () {
+                $(this).attr({
+                    'id': function (_, id) { var arr = id.split('_'); return id.replace(arr[1], LastTRCount + 1); },
+                });
+                $(this).html(parseInt($('#tblContactDetails').find("tbody tr").length) + 1)
+            });
+
+            $trNew.find("input").each(function (i) {
+                $(this).attr({
+                    'id': function (_, name) { return name.replace('_' + LastTRCount + '_', '_' + (parseInt(LastTRCount) + 1) + '_'); },
+                    'name': function (_, name) { return name.replace('[' + LastTRCount + ']', '[' + (parseInt(LastTRCount) + 1) + ']'); },
+                });
+                $(this).val('')
+            });
+           
+
+            $trNew.find("span").each(function (i) {
+                if ($(this).attr("data-valmsg-for")) {
+                    $(this).attr({
+                        'data-valmsg-for': function (_, name) { return name.replace('[' + LastTRCount + ']', '[' + (parseInt(LastTRCount) + 1) + ']'); }
+                    });
+                }
+                if ($(this).attr("for")) {
+                    $(this).attr({
+                        'for': function (_, name) { return name.replace('_' + LastTRCount + '_', '_' + (parseInt(LastTRCount) + 1) + '_'); }
+                    });
+                }
+            });
+
+            $trLast.after($trNew);
+              var form = $("form")
+                .removeData("validator")
+                .removeData("unobtrusiveValidation");
+                    $.validator.unobtrusive.parse(form);
+            $('[data-toggle="tooltip"]').tooltip();
+        }
+
+
+        function DeleteRow(obj) {
+            var count = 0;
+            var TotalRowCount = $('#tblContactDetails').find("tbody tr").length;
+            ConfirmMsgBox("Are you sure want to delete", '', function () {
+
+                $(obj).closest('tr').remove();
+                $("#tblContactDetails TBODY TR").each(function (i) {
+                    $(this).closest("tr").find("label").each(function () {
+                        $(this).attr({
+                            'id': function (_, id) { var arr = id.split('_'); return id.replace(arr[1], i); },
+                        });
+                        $(this).html(i + 1)
+                    });
+
+                  $(this).closest("tr").find("input").each(function () {
+                        $(this).attr({
+                            'id': function (_, id) { return id.replace('_' + (parseInt(i) + 1) + '_', '_' + i + '_'); },
+                            'name': function (_, name) { return name.replace('[' + (parseInt(i) + 1) + ']', '[' + i + ']'); },
+                        });
+
+                    });
+
+             $(this).closest("tr").find("span").each(function () {
+                        if ($(this).attr("data-valmsg-for")) {
+                            $(this).attr({
+                                'data-valmsg-for': function (_, name) { return name.replace('[' + (parseInt(i) + 1) + ']', '[' + i + ']'); },
+                            });
+                        }
+                        if ($(this).attr("for")) {
+                            $(this).attr({
+                                'for': function (_, id) { return id.replace('_' + (parseInt(i) + 1) + '_', '_' + i + '_'); },
+                            });
+                        }
+                    });
+                });
+                var form = $("form")
+                .removeData("validator")
+                .removeData("unobtrusiveValidation");
+                    $.validator.unobtrusive.parse(form);
+
+            })
+            }
+
+    </script>
+}

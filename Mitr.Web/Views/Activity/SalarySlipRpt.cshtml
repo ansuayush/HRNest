@@ -1,0 +1,110 @@
+﻿@model  ActivityReports
+@{
+    string MenuID = ViewBag.MenuID.ToString();
+}
+@section style{
+    @System.Web.Optimization.Styles.Render("~/bundle/dataTablecss")
+}
+@{
+    string PageName = "Report", IsHideDiv = "", DateType = "Date";
+
+}
+<div class="mb-100">
+
+    @using (Ajax.BeginForm("_SalarySlipRpt", "Activity",
+            new { src = ViewBag.src },
+            new AjaxOptions { HttpMethod = "POST", OnSuccess = "BindTarget", OnBegin = "ShowLoadingDialog()", OnFailure = "OnPostFailure()" },
+        new { @id = "_SalarySlipRptForm", @autocomplete = "Off" })
+        )
+    {
+        <div class="inner-main mb-2">
+            <h1 class="heading-one mb-3">Salary Slip</h1>
+            <div class="row">
+                <!---->
+                @Html.HiddenFor(x => Model.Doctype)
+                <div class="col-md-3 col-sm-4 form-group">
+                    <label style="display:@(DateType==""?"none":"")">Date</label>
+                    @if (DateType == "Date")
+                    {
+                        @Html.TextBoxFor(model => model.StartDate, new { @class = "form-control", @type = "Month" })
+                    }
+                    @Html.ValidationMessageFor(model => model.StartDate, "", new { @class = "text-danger" })
+                </div>
+                <div class="col-md-3 col-sm-4 form-group">
+                    <label>User Type </label>
+                    @Html.EnumDropDownListFor(model => model.MitrUser, "All", htmlAttributes: new { @class = "form-control applyselect" })
+                    @Html.ValidationMessageFor(model => model.MitrUser, "", new { @class = "text-danger" })
+                </div>
+                <div class="col-md-3 col-sm-4 form-group align-self-end">
+                    <label></label>
+                    <button id="btnSearch" type="button" onclick="List()" name="Command" value="Search" class="btn addbtn mb-0 label-top"><i class="fas fa-search"></i>Search</button>
+                    <button id="ExportExcel" type="button" value="Export" class="btn mtr-g-grn mb-0 label-top"><i class="fas fa-download"></i>Export</button>
+
+                </div>
+                <div class="col-md-12 col-sm-4 form-group">
+                    <div id="TargetDivList"></div>
+                </div>
+            </div>
+        </div>
+
+
+
+    }
+</div>
+
+
+@section scripts    {
+    @System.Web.Optimization.Scripts.Render("~/bundle/dataTablesjs")
+
+    @System.Web.Optimization.Scripts.Render("~/bundle/unobtrusivejs")
+
+    @Html.IncludeVersionedJs(Url.Content("~/assets/design/Scripts/AddInit.js"))
+    @Html.IncludeVersionedJs(Url.Content("~/assets/design/Scripts/ToolTip.js"))
+
+    <script>
+        $(document).ready(function () {
+           // $("#btnSearch").click();
+        });
+        function List() {
+            ShowLoadingDialog();
+           var Doctype = $("#Doctype").val();
+           var StartDate = $("#StartDate").val();
+           var MitrUser = $("#MitrUser").val();
+            ShowLoadingDialog();
+			$.ajax({
+                url: "/Activity/_SalarySlipRpt",
+				type: "Get",
+                data: { src: EncryptQueryStringJSON(@ViewBag.MenuID+"*" + "/Activity/_SalarySlipRpt" + "*" + Doctype + "*" + StartDate + "*" + MitrUser) },
+                success: function (data)
+                {
+                    CloseLoadingDialog();
+                    $("#TargetDivList").empty();
+                    $("#TargetDivList").html(data);
+                    DatatableWithoutPaging("table_Export");
+				},
+				error: function (er) {
+					alert(er);
+
+				}
+			});
+    }
+        function BindTarget(args) {
+
+            CloseLoadingDialog();
+            $("#TargetDivList").empty();
+            $("#TargetDivList").html(args);
+        }
+        function OnSuccess(obj) {
+            if (obj.Status) {
+                SuccessToaster(obj.SuccessMessage);
+                window.location.href = obj.RedirectURL;
+            }
+            else {
+                CloseLoadingDialog();
+                FailToaster(obj.SuccessMessage);
+
+            }
+        }
+
+    </script>
+}

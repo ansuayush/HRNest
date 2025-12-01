@@ -1,0 +1,42 @@
+﻿@model Mitr.Models.SalaryStructure.Grade.Add
+@using (Ajax.BeginForm("_GradeMasterAdd", "SalaryStructure",
+        new { src = clsApplicationSetting.EncryptQueryString(ViewBag.MenuID + "*" + "/SalaryStructure/_GradeMasterAdd*" + ViewBag.ID) },
+         new AjaxOptions { HttpMethod = "POST", OnSuccess = "OnSuccess", OnBegin = "ShowLoadingDialog()" },
+            new { @id = "_GradeMasterAddForm" })
+    )
+{
+    @Html.HiddenFor(x => Model.id)    
+
+<div class="row">
+    <div class="col-lg-6 col-md-6 col-sm-6 form-group">
+        <label>Name<sup>*</sup></label>
+        @Html.TextBoxFor(model => model.Grade, new { @class = "form-control", @placeholder = "Enter" })
+        @Html.ValidationMessageFor(model => model.Grade, "", new { @class = "text-danger" })
+    </div>
+    <div class="col-lg-6 col-md-6 col-sm-6 form-group">
+        <label>Role/Rank<sup>*</sup></label>
+        @Html.TextBoxFor(model => model.Role, new { @class = "form-control", @placeholder = "Enter" })
+        @Html.ValidationMessageFor(model => model.Role, "", new { @class = "text-danger" })
+    </div>
+    <div class="col-lg-6 col-md-6 col-sm-6 form-group">
+        <label>Job Title<sup>*</sup></label>
+        @Html.DropDownListFor(model => model.JobTitleid, new SelectList(ViewBag.List, "ID", "Name", Model.JobTitleid), "Select", new { @class = "form-control applyselect" })
+        @Html.ValidationMessageFor(model => model.JobTitleid, "", new { @class = "text-danger" })
+    </div>
+</div>
+
+    <div class="text-center">
+     @if (Model.id > 0)
+        {
+            <button type="submit" class="btn mtr-g-grn btn-l ripplelink pull-right" name="Command" value="Add"><i class="fa fa-paper-plane" aria-hidden="true"></i> Update</button>
+        }
+        else
+        {
+            <button type="submit" class="btn mtr-o-grn btn-l ripplelink pull-right" name="Command" value="Add"><i class="fa fa-paper-plane" aria-hidden="true"></i> Submit</button>
+        }
+        <button type="button" class="btn cnl-btn ripplelink" data-dismiss="modal"><i class="fas fa-times"></i>Close</button>
+
+       
+    </div>
+
+}

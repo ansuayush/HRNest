@@ -1,0 +1,416 @@
+﻿
+@{
+	ViewBag.Title = "Joined";
+	Layout = null;// "~/Views/Shared/_UserProcess.cshtml";
+}
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,700&amp;display=swap" rel="stylesheet">
+    <link rel="shortcut icon" href="../images/favicon.png" type="image/x-icon">
+    <link rel="icon" href="@Url.Content("~/assets/design/images/favicon.png")" type="image/png" sizes="50x50">
+    <link href="~/Content/css/select2.min.css" rel="stylesheet" />
+    <link href="~/assets/design/css/animate.css" rel="stylesheet" />
+    <link href="~/assets/design/css/sidebar.css" rel="stylesheet" />
+    <link href="~/assets/design/css/custom.css" rel="stylesheet" />
+
+    <link href="~/assets/design/css/style.css" rel="stylesheet" />
+    <link href="~/assets/design/css/responsive.css" rel="stylesheet" />
+    <link href="~/assets/design/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="~/assets/design/css/icons.css" rel="stylesheet" />
+    <link href="~/assets/design/css/stellarnav.css" rel="stylesheet" />
+    @Html.IncludeVersionedJs(Url.Content("~/assets/design/js/jquery-3.4.1.min.js"))
+    @Html.IncludeVersionedJs(Url.Content("~/assets/design/js/jquery-ui.min.js"))
+    <script src="~/assets/design/js/wow.js"></script>
+    <script src="~/assets/design/js/wow.min.js"></script>
+    <script src="~/Areas/DigitalLibrary/DevScript/Common.js"></script>
+    <script src="~/Areas/DigitalLibrary/DevScript/ComboFill.js"></script>
+    @Html.IncludeVersionedJs(Url.Content("~/assets/design/js/stellarnav.min.js"))
+    
+    <script>
+        var CandidateId = '@ViewBag.CandidateId';
+		var Id = '@ViewBag.Id';
+		var UserManID = '@ViewBag.UserManID';
+		var loggedinUserName = '@ViewBag.UserName';
+		var IPAddress = '@ViewBag.IPAddress';
+    </script>
+
+</head>
+<body class="welcome-body">
+	
+			<div class="wlc-dtl text-center joincard  ">
+					<img src="~/assets/design/images/c3.png" alt="" class="wlc-lgo">
+					<h2>Welcome to C3 INDIA</h2>
+					<div class="mt-4 row">
+						<div class="col-sm-4">
+							<div class="card text-center mitrcrd">
+								<img src="~/assets/design/images/complete-profile.png" class="iconsize">
+								<div class="card-body">
+									<h5 class="card-title">Complete Profile</h5>
+									<a onclick="RedirectToCompleteProfile();" href="#" name="Command" value="Add" class="btn mtr-o-grn btn-l "><strong>Read More</strong></a>
+								</div>
+							</div>
+						</div>
+						<div class="col-sm-4">
+							<div class="card text-center mitrcrd">
+								<img src="~/assets/design/images/orientation-icon.png" class="iconsize">
+								<div class="card-body">
+									<h5 class="card-title">Orientation Details</h5>
+									<a onclick="RedirectToOrientationDetails();" href="#" name="Command" value="Add" class="btn mtr-o-grn btn-l "><strong>Read More</strong></a>
+								</div>
+							</div>
+						</div>
+						<div class="col-sm-4">
+							<div class="card text-center mitrcrd" >
+								<img src="~/assets/design/images/declaration-icon.png" class="iconsize">
+								<div class="card-body">
+									<h5 class="card-title">Declaration </h5>
+									<a onclick="RedirectToDeclaration();" href="#" name="Command" value="Add" class="btn mtr-o-grn btn-l "><strong>Read More</strong></a>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+
+
+
+	@*<script>
+			$(document).ready(function () {
+				$(".dpselect").select2();
+			});
+		</script>*@
+	<script type="text/javascript">
+		$(function () {
+			$(".fold-table tr.view").on("click", function () {
+				$(this).toggleClass("open").next(".fold").toggleClass("open");
+			});
+		});
+	</script>
+
+	<script>
+		var MenuID = Number(129);
+
+		wow = new WOW();
+		wow.init();
+
+
+		function SuccessToaster(Message) {
+			$("#toastMsg").html(Message);
+			$("#toasticon i").addClass("fas fa-check green-clr ");
+			var x = document.getElementById("toast")
+			//x.className = "show";
+			setTimeout(function () { x.className = x.className.replace("show", ""); }, 4000);
+		}
+
+		function FailToaster(Message) {
+			$("#toastMsg").html(Message);
+			$("#toasticon i").addClass("fas fa-exclamation-triangle red-clr");
+			var x = document.getElementById("toast")
+			x.className = "show toaster-warning";
+			setTimeout(function () { x.className = x.className.replace("show toaster-warning", ""); }, 4000);
+		}
+
+
+		function ValidateFile(FileName) {
+
+			var result = false;
+			if (document.getElementById(FileName).files[0].name.toUpperCase().match(/\.(PDF|DOCX|TXT|XLS|XLSX)$/)) {
+
+				var filesize = 3145728;
+				var sizeinbytes = document.getElementById(FileName).files[0].size;
+				if (filesize >= sizeinbytes) {
+					result = true;
+				}
+				else {
+					FailToaster("File size should be less than 3 MB");
+					document.getElementById(FileName).value = '';
+					result = false;
+
+				}
+				return result;
+			}
+			else {
+				FailToaster("Invalid file type , please select valid file again");
+				document.getElementById(FileName).value = '';
+				return result;
+			}
+
+		}
+
+		function ValidateImage(FileName) {
+
+			var result = false;
+			if (document.getElementById(FileName).files[0].name.toUpperCase().match(/\.(JPG|JPEG|PNG|PDF)$/)) {
+
+				var filesize = 2097152;
+				var sizeinbytes = document.getElementById(FileName).files[0].size;
+				if (filesize >= sizeinbytes) {
+					result = true;
+				}
+				else {
+					FailToaster("Image should be less than 2 MB");
+
+					document.getElementById(FileName).value = '';
+					result = false;
+
+				}
+				return result;
+			}
+			else {
+				FailToaster("Invalid Image type , please select valid Image");
+				document.getElementById(FileName).value = '';
+				return result;
+			}
+
+		}
+	</script>
+	<script>
+		// JavaScript Document
+		$(function () {
+			$('#js-nav-toggle').click(function (e) {
+				e.preventDefault();
+				$("html").toggleClass("is-sideopen");
+				$("#js-nav-toggle").toggleClass("is-active");
+			});
+
+			var $content = $('.l-contents');
+			var $header = $('.l-header');
+
+
+			$content.click(function () {
+				$("html").removeClass("is-sideopen");
+			});
+
+
+			$header.click(function () {
+				$("html").removeClass("is-sideopen");
+			});
+
+
+		});
+
+
+		$(function () {
+
+			var $dropdown = $('.js-dropdown');
+			var $content = $('.l-contents');
+			var $toggle = $('#js-nav-toggle');
+
+
+			$('.js-dropdown-menu').hide();
+			$dropdown.click(function () {
+				$('i').removeClass('is-rotate');
+				$('.js-dropdown-menu').slideUp(200);
+				if ($('+.js-dropdown-menu', this).css('display') == 'none') {
+					$('i', this).addClass('is-rotate');
+					$('+.js-dropdown-menu', this).slideDown(200);
+				}
+			});
+
+
+			$content.click(function () {
+				$('i').removeClass('is-rotate');
+				$('.js-dropdown-menu').slideUp(200);
+				if ($('+.js-dropdown-menu', this).css('display') == 'none') {
+					$('i', this).addClass('is-rotate');
+					$('+.js-dropdown-menu', this).slideDown(200);
+				}
+			});
+
+
+			$toggle.click(function () {
+				$('i').removeClass('is-rotate');
+				$('.js-dropdown-menu').slideUp(200);
+				if ($('+.js-dropdown-menu', this).css('display') == 'none') {
+					$('i', this).addClass('is-rotate');
+					$('+.js-dropdown-menu', this).slideDown(200);
+				}
+			});
+
+		});
+
+		$(function () {
+			$('.is-ac-close').hide();
+			$(".is-ac-click").on("click", function () {
+				if ($(this).children('i').is('.fa-angle-right')) {
+					$(this).children('i')
+						.removeClass('fa-angle-right')
+						.addClass('fa-angle-down');
+				} else {
+					$(this).children('i')
+						.removeClass('fa-angle-down')
+						.addClass('fa-angle-right');
+				}
+				$(this).next().slideToggle(200);
+			});
+
+			$('.is-ac-close').hide();
+			$(".is-ac-bar").on("click", function () {
+
+				if ($(this).find('i').is('.fa-caret-down')) {
+
+					$(this).find('i')
+						.removeClass()
+						.addClass('fa fa-caret-up');
+				} else {
+					$(this).find('i')
+						.removeClass()
+						.addClass('fa fa-caret-down');
+				}
+				$(this).next().slideToggle(200);
+			});
+		});
+
+
+
+
+		//---------------------------------------------------
+		// ▼　tab
+		//---------------------------------------------------
+		$(function () {
+			var rwdTab = $('.c-tab'),
+				switchPoint = 768,
+				fadeSpeed = 300,
+				slideSpeed = 300;
+
+			var tabBtn = rwdTab.children('.c-tab-panel').children('.c-tab-heading'),
+				contentsArea = rwdTab.children('.c-tab-panel').children('.c-tab-body');
+
+			tabBtn.on('click', function () {
+				if (!$(this).hasClass('c-tab-active')) {
+					tabBtn.removeClass('c-tab-active');
+					$(this).addClass('c-tab-active');
+
+					if (window.innerWidth > switchPoint) {
+						contentsArea.fadeOut(fadeSpeed);
+						$(this).next().fadeIn(fadeSpeed);
+					} else {
+						contentsArea.slideUp(slideSpeed);
+						$(this).next().slideDown(slideSpeed);
+					}
+				}
+			});
+
+			tabBtn.first().click();
+		});
+
+
+
+	</script>
+	<!-- required -->
+	<script type="text/javascript">
+		$(document).ready(function ($) {
+			$('.stellarnav').stellarNav({
+				theme: 'dark',
+				breakpoint: 960,
+				position: 'right',
+
+			});
+			$('.notifyjs-corner').empty();
+		});
+	</script>
+	<!-- required -->
+	<script>
+		$("document").ready(function () {
+
+			$('.dropdown-menu').on('click', function (e) {
+				if ($(this).hasClass('dropdown-menu-form')) {
+					e.stopPropagation();
+				}
+			});
+		});
+
+
+	</script>
+	<script>
+
+		var links = document.querySelectorAll('.ripplelink');
+
+		for (var i = 0, len = links.length; i < len; i++) {
+			links[i].addEventListener('click', function (e) {
+				var targetEl = e.target;
+				var inkEl = targetEl.querySelector('.ink');
+
+				if (inkEl) {
+					inkEl.classList.remove('animate');
+				}
+				else {
+					inkEl = document.createElement('span');
+					inkEl.classList.add('ink');
+					inkEl.style.width = inkEl.style.height = Math.max(targetEl.offsetWidth, targetEl.offsetHeight) + 'px';
+					targetEl.appendChild(inkEl);
+				}
+
+				inkEl.style.left = (e.offsetX - inkEl.offsetWidth / 2) + 'px';
+				inkEl.style.top = (e.offsetY - inkEl.offsetHeight / 2) + 'px';
+				inkEl.classList.add('animate');
+			}, false);
+		}
+	</script>
+	<script type="text/javascript">
+		$(window).scroll(function () {
+			if ($(this).scrollTop() > 250) {
+				$('.header').addClass("sticky");
+			}
+			else {
+				$('.header').removeClass("sticky");
+			}
+		});
+
+		function RedirectToCompleteProfile() {
+			CommonAjaxMethod(virtualPath + 'UserProcess/UpdateVideoReview', { CandidateId: CandidateId, VideoReviewed: "CompleteProfileDetails" }, 'POST', function (response) {
+				//SuccessToaster(response.SuccessMessage);
+				window.location.href = virtualPath + 'UserProcess/CompleteProfileDetails';
+			});
+		}
+		function RedirectToOrientationDetails() {
+			CommonAjaxMethod(virtualPath + 'UserProcess/UpdateVideoReview', { CandidateId: CandidateId, VideoReviewed: "MeetingDetails" }, 'POST', function (response) {
+				//SuccessToaster(response.SuccessMessage);
+				window.location.href = virtualPath + 'UserProcess/MeetingDetails';
+			});
+			
+		}
+		function RedirectToDeclaration() {
+			CommonAjaxMethod(virtualPath + 'UserProcess/UpdateVideoReview', { CandidateId: CandidateId, VideoReviewed: "DeclarationDetails" }, 'POST', function (response) {
+				//SuccessToaster(response.SuccessMessage);
+				window.location.href = virtualPath + 'UserProcess/DeclarationDetails';
+			});			
+		}
+
+	</script>
+	<script>
+        var virtualPath = "@System.Configuration.ConfigurationManager.AppSettings["VirtualPath"]";
+		var baseURL = "@System.Configuration.ConfigurationManager.AppSettings["BaseURL"]";
+
+		//$(document).ready(function () {
+		//	BindOnboardPreRegistrationProcessRequest();
+		//});
+
+		//function BindOnboardPreRegistrationProcessRequest() {
+		//	CommonAjaxMethod(virtualPath + 'OnboardingRequest/BindonboardingProcessData', { CandidateId: CandidateId, inputData: 4 }, 'GET', function (response) {
+		//		var dataPreRegistration = response.data.data.Table; debugger
+		//		if (dataPreRegistration[0].VideoReviewed.trim() != null && dataPreRegistration[0].VideoReviewed.trim() != '') {
+		//			if (dataPreRegistration[0].VideoReviewed.trim() == "CompleteProfileDetails") {
+		//				window.location.href = virtualPath + 'UserProcess/CompleteProfileDetails';
+		//			}
+		//			if (dataPreRegistration[0].VideoReviewed.trim() == "MeetingDetails") {
+		//				window.location.href = virtualPath + 'UserProcess/MeetingDetails';
+		//			}
+		//			if (dataPreRegistration[0].VideoReviewed.trim() == "DeclarationDetails") {
+		//				window.location.href = virtualPath + 'UserProcess/DeclarationDetails';
+		//			}
+		//		}
+		//	});
+		//}
+
+		
+	</script>
+	<noscript>
+		<p class="NojavaScript">Javascripts is disabled</a></p>
+	</noscript>
+
+</body>
+</html>
+
+

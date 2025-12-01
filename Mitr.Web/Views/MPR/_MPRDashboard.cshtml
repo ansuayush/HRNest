@@ -1,0 +1,82 @@
+﻿@model MPRDashboard.ListDashboard
+@{
+	string MenuID = ViewBag.MenuID.ToString();
+	long TotalPendingSMPR = 0, Lock = 0;
+	List<MPRDashboard.List> PendingAtExecutor = new List<MPRDashboard.List>();
+	List<MPRDashboard.List> PendingAtSectionApprover = new List<MPRDashboard.List>();
+	List<MPRDashboard.List> PendingAtLevel = new List<MPRDashboard.List>();
+	List<MPRDashboard.List> Completed = new List<MPRDashboard.List>();
+	List<MPRDashboard.List> PendingAtLevel1 = new List<MPRDashboard.List>();
+	List<MPRDashboard.List> PendingAtLevel2 = new List<MPRDashboard.List>();
+	//	PendingAtExecutor = Model.Where(x => x.Approved == 0 && x.Submitted == 0 ).ToList();
+	//PendingAtExecutor = Model.Where(x => x.Approved == 0  && x.TotalExec==1 && x.ExecCompleted==0).ToList();
+	//	PendingAtExecutor = Model.Where(x =>  x.Approved == 0 && x.Submitted==0 && ( x.Executor1ID == Convert.ToInt32(clsApplicationSetting.GetSessionValue("LoginID")) || x.Executor2ID == Convert.ToInt32(clsApplicationSetting.GetSessionValue("LoginID")))).ToList();
+	//PendingAtSectionApprover = Model.Where(x => x.Approved != 0 && x.Approved ==4 && x.Approved != 1 && x.Approved != 3 && x.Approved != 5 && x.Approved != 6 && x.Submitted == 1 && x.ApproverID == Convert.ToInt32(clsApplicationSetting.GetSessionValue("LoginID"))).ToList();
+	//PendingAtLevel = Model.Where(x => (x.Approved == 1) || (x.Approved == 6)).ToList();
+	//PendingAtLevel1 = Model.Where(x => x.Approved == 1 && x.ApproverLevel1 == Convert.ToInt32(clsApplicationSetting.GetSessionValue("LoginID"))).ToList();
+	//PendingAtLevel2 = Model.Where(x => x.Approved == 6).ToList();
+	//PendingAtLevel2 = Model.Where(x => x.Approved == 3 && x.ApproverLevel2 == Convert.ToInt32(clsApplicationSetting.GetSessionValue("LoginID"))).ToList();
+	//Completed = Model.Where(x => (x.Approved == 3)).ToList();
+	//Completed = Model.Where(x => (x.Approved == 5 && x.ApproverLevel2==Convert.ToInt32(clsApplicationSetting.GetSessionValue("LoginID")))).ToList();
+
+	//PendingAtExecutor = Model.Where(x => x.TotalExec != x.ExecCompleted).ToList();
+	//PendingAtSectionApprover = Model.Where(x => x.AppTotal != x.AppCompleted).ToList();
+	//PendingAtLevel2 = Model.Where(x => x.Approved == 6).ToList();
+	//PendingAtLevel1 = Model.Where(x => x.Approved == 1).ToList();
+	//Completed = Model.Where(x => x.Approved == 5 && x.AppTotal == x.AppCompleted).ToList();
+
+	//PendingAtExecutor = Model.Where(x => x.TotalExec > x.ExecCompleted).ToList();
+	//PendingAtSectionApprover = Model.Where(x => x.AppTotal > x.AppCompleted && x.ExecCompleted != 0).ToList();
+	//PendingAtLevel = Model.Where(x => (x.Approved !=3) && x.AppCompleted != 0).ToList();
+	//Completed = Model.Where(x => x.Approved == 3).ToList();
+
+	//TotalPendingSMPR = PendingAtExecutor.Count + PendingAtSectionApprover.Count + PendingAtLevel.Count;
+	TotalPendingSMPR = Model.PendingAtExcutor + Model.PendingSectionApproval + Model.Pendinglevel1 + Model.Pendinglevel2;
+
+	//if (Model.Any(x => x.Lock == 1))
+	//{
+	//	Lock = 1;
+	//}
+}
+<div class="tab-main mt-3">
+	<input type="hidden" id="hdnTSMPR" value="@TotalPendingSMPR" />
+	<ul id="tabs" class="nav nav-tabs tabs-second " role="tablist">
+		<li class="nav-item">
+			<a id="tab-A"  class="nav-link ripplelink aExecutorclick" data-toggle="tab" role="tab" aria-selected="false"  onClick = "openSolution(1);">
+			
+				<span>@Model.PendingAtExcutor</span>Pending at Executor
+				<span class="ink animate" style="height: 177px; width: 177px; left: -14.5px; top: -61.5px;">
+					<span class="ink animate" style="height: 177px; width: 177px; left: 1.5px; top: -5.5px;"></span>
+				</span>
+			</a>
+		</li>
+		<li class="nav-item">
+			<a id="tab-B" href="#Tab2" class="nav-link active" data-toggle="tab" role="tab" aria-selected="true" onClick = "openSolution(2);">
+				<span>@Model.PendingSectionApproval</span>Pending at Section Approver
+			</a>
+		</li>
+
+		<li class="nav-item">
+			<a id="tab-C" href="#Tab3" class="nav-link" data-toggle="tab" role="tab" aria-selected="false" onClick = "openSolution(3);">
+				@*<span>@PendingAtLevel.Count()</span>Pending at MPR approvers*@
+				<span>@Model.Pendinglevel1</span>Pending at Level1
+			</a>
+		</li>
+		<li class="nav-item">
+			<a id="tab-E" href="#Tab5" class="nav-link" data-toggle="tab" role="tab" aria-selected="false" onClick = "openSolution(4);">
+				@*<span>@PendingAtLevel.Count()</span>Pending at MPR approvers*@
+				<span>@Model.Pendinglevel2</span>Pending at Level2
+			</a>
+		</li>
+
+		<li class="nav-item">
+			<a id="tab-d" href="#Tab4" class="nav-link" data-toggle="tab" role="tab" aria-selected="false" onClick = "openSolution(5);">
+				<span>@Model.Completed</span>Completed
+			</a>
+		</li>
+
+	</ul>
+
+	<div id="SMPRListDiv"></div>
+	
+</div>

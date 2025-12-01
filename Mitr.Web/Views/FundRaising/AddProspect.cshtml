@@ -1,0 +1,615 @@
+﻿@model  FundRaising.Prospect.Add
+@{
+    string MenuID = ViewBag.MenuID.ToString();
+}
+
+<div class="mb-100">
+    @using (Ajax.BeginForm("AddProspect", "FundRaising",
+            new { src = ViewBag.src },
+            new AjaxOptions { HttpMethod = "POST", OnSuccess = "OnSuccess", OnBegin = "ShowLoadingDialog()", OnFailure = "OnPostFailure()" },
+        new { @id = "AddProspectForm", @autocomplete = "Off" })
+        )
+    {
+        <div class="inner-main mb-2">
+            <h1 class="heading-one mb-3">Create New Prospect</h1>
+            <div class="row">
+                <!---->
+
+                <div class="col-md-3 col-sm-4 form-group">
+                    <label>Prospect Name <sup>*</sup> </label>
+                    @Html.TextBoxFor(model => model.ProspectName, new { @class = "form-control", @placeholder = "Enter" })
+                    @Html.ValidationMessageFor(model => model.ProspectName, "", new { @class = "text-danger" })
+                </div>
+                <div class="col-md-3 col-sm-4 form-group">
+                    <label>Type</label>
+
+                    <select class="form-control applyselect" id="ProspectType" name="ProspectType">
+                        <option @(Model.ProspectType != null ? Model.ProspectType == "UHNI/HNI" ? "Selected" : "" : "") value="UHNI/HNI">UHNI/HNI</option>
+                        <option @(Model.ProspectType != null ? Model.ProspectType == "CSR" ? "Selected" : "" : "") value="CSR">CSR</option>
+                        <option @(Model.ProspectType != null ? Model.ProspectType == "Institutional" ? "Selected" : "" : "") value="Institutional">Institutional</option>
+                        <option @(Model.ProspectType != null ? Model.ProspectType == "CSR Foundation" ? "Selected" : "" : "") value="CSR Foundation">CSR Foundation</option>
+                    </select>
+                    @Html.ValidationMessageFor(model => model.ProspectType, "", new { @class = "text-danger" })
+                </div>
+                <div class="col-md-3 col-sm-4 form-group">
+                    <label>Sector  <sup>*</sup></label>
+                    @Html.DropDownListFor(n => n.Catid, new SelectList(Model.lstCategory, "ID", "Name", Model.Catid), "Select", new { @class = "form-control  applyselect" })
+                    @Html.ValidationMessageFor(model => model.Catid, "", new { @class = "text-danger" })
+                </div>
+
+                <div class="col-md-3 col-sm-4 form-group">
+                    <label>Company  <sup>*</sup></label>
+                    @Html.TextBoxFor(model => model.Company, new { @class = "form-control", @placeholder = "Enter" })
+                    @Html.ValidationMessageFor(model => model.Company, "", new { @class = "text-danger" })
+                </div>
+                <div class="col-md-3 col-sm-4 form-group">
+                    <label>Country <sup>*</sup></label>
+                    @Html.DropDownListFor(n => n.Countryid, new SelectList(Model.lstCountry, "ID", "Name", Model.Countryid), "Select", new { @class = "form-control  applyselect",@OnChange= "FnGetStateMaster(this)" })
+                    @Html.ValidationMessageFor(model => model.Countryid, "", new { @class = "text-danger" })
+                </div>
+                <div class="col-md-3 col-sm-4 form-group ">
+                    <label>Key Focus Area <i class="fas fa-info-circle" data-toggle="tooltip" data-original-title="If selecting 'Other', please fill in details under Comments"></i></label>
+                    @Html.HiddenFor(x => Model.KFA)
+                    <select class="applyselect" multiple="multiple" id="ddlKFA">
+                        <option>Select</option>
+                        @if (Model.lstKFA != null)
+                        {
+                            foreach (var item in Model.lstKFA)
+                            {
+                                if (string.IsNullOrEmpty(Model.KFA))
+                                {
+                                    <option value="@item.ID">@item.Name</option>
+                                }
+                                else
+                                {
+                                    <option @(("@" + Model.KFA.Replace(",", "@") + "@").Contains("@" + item.ID.ToString() + "@") ? "selected" : "") value="@item.ID">@item.Name</option>
+                                }
+
+                            }
+                        }
+                    </select>
+                    @Html.ValidationMessageFor(model => model.KFA, "", new { @class = "text-danger" })
+
+                </div>
+                <div class="col-md-3 col-sm-4 form-group">
+                    <label>State  <sup>*</sup></label>
+                    @*@Html.DropDownListFor(n => n.Stateid, new SelectList(Model.lstState, "ID", "Name", Model.Stateid), "Select", new { @class = "form-control  applyselect" })
+        @Html.ValidationMessageFor(model => model.Stateid, "", new { @class = "text-danger" })*@
+                    @Html.HiddenFor(x => Model.Stateids)
+                    <select class="applyselect" multiple="multiple" id="ddlState">
+                        <option>Select</option>
+                        @if (Model.lstState != null)
+                        {
+                            foreach (var item in Model.lstState)
+                            {
+                                if (string.IsNullOrEmpty(Model.Stateids))
+                                {
+                                    <option value="@item.ID">@item.Name</option>
+                                }
+                                else
+                                {
+                                    <option @(("@" + Model.Stateids.Replace(",", "@") + "@").Contains("@" + item.ID.ToString() + "@") ? "selected" : "") value="@item.ID">@item.Name</option>
+                                }
+
+                            }
+                        }
+                    </select>
+                    @Html.ValidationMessageFor(model => model.Stateids, "", new { @class = "text-danger" })
+                </div>
+                <div class="col-md-3 col-sm-12 form-group">
+                    <label>Existing overall CSR/Philanthropy budget <sup>*</sup></label>
+                    @Html.TextBoxFor(model => model.Budget, new { @class = "form-control", @placeholder = "Enter" })
+                    @Html.ValidationMessageFor(model => model.Budget, "", new { @class = "text-danger" })
+
+                </div>
+
+                <div class="col-md-3 col-sm-12 form-group">
+                    <label>Nature of Lead <sup>*</sup></label>
+                    @Html.DropDownListFor(n => n.C3Fitid, new SelectList(Model.lstC3Fit, "ID", "Name", Model.C3Fitid), "Select", new { @class = "form-control  applyselect" })
+                    @Html.ValidationMessageFor(model => model.C3Fitid, "", new { @class = "text-danger" })
+
+                </div>
+
+                <div class="col-md-3 col-sm-12 form-group">
+                    <label>C3 Fit Area  <i class="fas fa-info-circle" data-toggle="tooltip" data-original-title="Name of C3 vertical"></i> <sup>*</sup></label>
+                    @Html.TextBoxFor(model => model.C3FitScore, new { @class = "form-control", @placeholder = "Enter" })
+                    @Html.ValidationMessageFor(model => model.C3FitScore, "", new { @class = "text-danger" })
+
+                </div>
+
+
+                <div class="col-md-3 col-sm-4 form-group">
+                    <label>Responsible <sup>*</sup></label>
+                    @Html.DropDownListFor(n => n.Responsibleid, new SelectList(Model.lstEmp, "ID", "Name", Model.Responsibleid), "Select", new { @class = "form-control  applyselect" })
+                    @Html.ValidationMessageFor(model => model.Responsibleid, "", new { @class = "text-danger" })
+
+                </div>
+                <div class="col-md-3 col-sm-4 form-group">
+                    <label>Accountable <sup>*</sup></label>
+                    @Html.DropDownListFor(n => n.Accountableid, new SelectList(Model.lstEmp, "ID", "Name", Model.Accountableid), "Select", new { @class = "form-control  applyselect" })
+                    @Html.ValidationMessageFor(model => model.Accountableid, "", new { @class = "text-danger" })
+
+                </div>
+                <div class="col-md-3 col-sm-4 form-group">
+                    <label>Informed to <sup>*</sup> </label>
+                    @Html.DropDownListFor(n => n.InformedToid, new SelectList(Model.lstEmp, "ID", "Name", Model.InformedToid), "Select", new { @class = "form-control  applyselect" })
+                    @Html.ValidationMessageFor(model => model.InformedToid, "", new { @class = "text-danger" })
+
+                </div>
+                <div class="col-md-3 col-sm-4 form-group">
+                    <label>Consented <sup>*</sup></label>
+                    @Html.DropDownListFor(n => n.Consentedid, new SelectList(Model.lstEmp, "ID", "Name", Model.Consentedid), "Select", new { @class = "form-control  applyselect" })
+                    @Html.ValidationMessageFor(model => model.Consentedid, "", new { @class = "text-danger" })
+
+                </div>
+                <div class="col-md-3 col-sm-4 form-group">
+                    <label>Website <sup>*</sup></label>
+                    @Html.TextBoxFor(model => model.Website, new { @class = "form-control", @placeholder = "Enter" })
+                    @Html.ValidationMessageFor(model => model.Website, "", new { @class = "text-danger" })
+
+                </div>
+                <div class="col-md-3 col-sm-4 form-group">
+                    <label>Other Supporting Info</label>
+                    @Html.TextAreaFor(model => model.OtherSupport, new { @class = "form-control", @placeholder = "Enter" })
+                    @Html.ValidationMessageFor(model => model.OtherSupport, "", new { @class = "text-danger" })
+
+                </div>
+                <div class="col-md-3 col-sm-4 form-group">
+                    <label>Comment</label>
+                    @Html.TextAreaFor(model => model.Comment, new { @class = "form-control", @placeholder = "Enter" })
+                    @Html.ValidationMessageFor(model => model.Comment, "", new { @class = "text-danger" })
+
+                </div>
+                <div class="col-md-3 col-sm-4 form-group">
+                    <label>CSR Policy</label>
+                    <input type="file" value="" placeholder="Enter" class="form-control" name="">
+                </div>
+
+                <div class="col-md-3 col-sm-4 form-group">
+                    <label>CSR Policy Web  Link </label>
+                    @Html.TextAreaFor(model => model.WebLink, new { @class = "form-control", @placeholder = "Enter" })
+                    @Html.ValidationMessageFor(model => model.WebLink, "", new { @class = "text-danger" })
+
+                </div>
+
+
+                <!---->
+            </div>
+        </div>
+        <div class="inner-main mb-2">
+            <div class="row">
+                <!---->
+                <div class="col-sm-12">
+                    <h2 class="headingtwo"><i class="fas fa-info-circle"></i>Contact Details</h2>
+                </div>
+                <div class="col-md-3 col-sm-4 form-group">
+                    <label>Contact Person Name</label>
+                    <input id="txtName" name="txtName" dirname="" type="text" placeholder="Enter" placeholder="Enter">
+                </div>
+
+                <div class="col-md-3 col-sm-4 form-group">
+                    <label>Contact Person's Designation</label>
+                    <input type="text" placeholder="Enter" placeholder="Enter" id="txtDesignation" name="txtDesignation">
+                </div>
+
+
+                <div class="col-md-3 col-sm-4 form-group">
+                    <label>Contact No</label>
+                    <input type="number" placeholder="Enter" placeholder="Enter" id="txtContact" name="txtContact">
+                </div>
+
+                <div class="col-md-3 col-sm-4 form-group">
+                    <label>Email ID</label>
+                    <input type="email" placeholder="Enter" placeholder="Enter" id="txtEmail" name="txtEmail">
+                </div>
+
+                <div class="col-md-3 col-sm-4 form-group">
+                    <label>Linkedin ID</label>
+                    <input type="text" placeholder="Enter" placeholder="Enter" id="txtLinkedin" name="txtLinkedin">
+                </div>
+                <div class="col-md-3 col-sm-4 form-group">
+                    <label>Address</label>
+                    <input type="text" placeholder="Enter" id="txtAddress" name="txtAddress">
+                </div>
+                <div class="col-sm-12">
+                    <ul class="list-unstyled inlin-list  mt-2">
+                        <li>
+                            <input type="checkbox" id="cbSecretory" name="">
+                            <label for="cbSecretory">  Add Secretary Details </label>
+                        </li>
+                    </ul>
+                </div>
+                <div class="col-sm-12">
+                    <div class="row" id="dvSecratoryDetails" style="display: none">
+                        <div class="col-md-3 col-sm-4 form-group">
+                            <label>Secretary Name</label>
+                            <input type="text" placeholder="Enter" placeholder="Enter" id="txtNameS" name="txtNameS">
+                        </div>
+
+                        <div class="col-md-3 col-sm-4 form-group">
+                            <label>Secretary Phone No.</label>
+                            <input type="number" placeholder="Enter" placeholder="Enter" id="txtPhoneS" name="txtPhoneS">
+                        </div>
+
+                        <div class="col-md-3 col-sm-4 form-group">
+                            <label>Secretary Email ID</label>
+                            <input type="email" placeholder="Enter" placeholder="Enter" id="txtEmailS" name="txtEmailS">
+                        </div>
+
+
+
+                        <div class="col-md-3 col-sm-4 form-group">
+                            <label>Other info</label>
+                            <input type="text" placeholder="Enter" placeholder="Enter" id="txtOtherInfoS" name="txtOtherInfoS">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-12 form-group text-right">
+                    <button type="button" class="btn mtr-g-grn m-0" onclick="FillProjectgrid();"><i class="fas fa-plus"></i>Add</button>
+                </div>
+
+                <div class="col-md-12">
+                    <div class="table-responsive">
+                        <table id="tblProjects" class="table scd-tbl-bg table-stripted mb-0 mt-0">
+                        <thead>
+                            <tr>
+                                <th class="w-50">SNo.</th>
+                                <th>Contact Person Name </th>
+                                <th>Contact Person's Designation</th>
+                                <th>Contact No</th>
+                                <th>Email ID</th>
+                                <th>Linkedin ID</th>
+                                <th>Address</th>
+                                <th class="text-center">Also UHNI/HNI</th>
+                                <th class="text-center">Action</th>
+
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @{ int procount = 0;}
+                            @if (Model.lstContactDetails != null)
+                            {
+                                for (int i = 0; i < Model.lstContactDetails.Count; i++)
+                                {
+                                    procount++;
+                            <tr>
+                                <td>
+                                    <label id="span_@i" name="span_@i">@procount </label>
+                                    <input type='hidden' id='CostCenterandItem_@i' Name='CostCenterandItem' value='@Model.lstContactDetails[i].ContactPerson#@Model.lstContactDetails[i].EmailId' />
+                                    @Html.HiddenFor(modal => Model.lstContactDetails[i].Id)
+                                    @Html.HiddenFor(modal => Model.lstContactDetails[i].SecratoryName, new { @class = "hfSecratoryName" })
+                                    @Html.HiddenFor(modal => Model.lstContactDetails[i].SecratoryDetails, new { @class = "hfSecratoryDetails" })
+                                    @Html.HiddenFor(modal => Model.lstContactDetails[i].SecratoryEmail, new { @class = "hfSecratoryEmail" })
+                                    @Html.HiddenFor(modal => Model.lstContactDetails[i].SecratoryPhone, new { @class = "hfSecratoryPhone" })
+                                    @Html.HiddenFor(modal => Model.lstContactDetails[i].SecratoryOtherInfo, new { @class = "hfSecratoryOtherInfo" })
+                                    @Html.HiddenFor(modal => Model.lstContactDetails[i].IsUHNI, new { @class = "hfIsUHNI" })
+                                </td>
+                                <td>@Html.TextAreaFor(model => model.lstContactDetails[i].ContactPerson, new { @class = "form-control" })</td>
+                                <td>@Html.TextAreaFor(model => model.lstContactDetails[i].Designation, new { @class = "form-control" })</td>
+                                <td>@Html.TextAreaFor(model => model.lstContactDetails[i].ContactNo, new { @class = "form-control" }) </td>
+                                <td>@Html.TextAreaFor(model => model.lstContactDetails[i].EmailId, new { @class = "form-control" })</td>
+                                <td>@Html.TextAreaFor(model => model.lstContactDetails[i].LinkedInId, new { @class = "form-control" })</td>
+                                <td>@Html.TextAreaFor(model => model.lstContactDetails[i].Address, new { @class = "form-control" })</td>
+                                <td class="text-center">
+                                    <input type="checkbox" id="cb_@i" class="cbIsUHNI" @(Model.lstContactDetails[i].IsUHNI == 1 ? "checked" : "") onclick="SelectUHNI(this)" name="select">
+                                    <label for="cb_@i"></label>
+                                </td>
+                                <td class="text-center">
+                                    @if (Model.lstContactDetails[i].SecratoryName != "")
+                                    {
+                                        <button type="button" onclick="FillSecratoryModal(this)" class="btn-none"><i class="fas fa-eye"></i>View Secretary</button><span class="divline">|</span>
+                                    }
+                                    <i onclick='DeleteRow(this)' class="fas fa-trash-alt red-clr"></i>
+                                </td>
+                            </tr>
+                                }
+                            }
+                        </tbody>
+                        </table>
+                    </div>
+                </div>
+
+				<div class="col-sm-12 text-center mt-4">
+					<button type="submit" name="Command" value="Add" class="btn mtr-o-grn btn-l ripplelink "> <i class="fas fa-save"></i> Save</button>
+					<button type="button" class="btn cnl-btn btn-l ripplelink" onclick="ShowLoadingDialog();window.location='@Url.Action("ProspectList", new { src = clsApplicationSetting.EncryptQueryString(ViewBag.MenuID.ToString() + "*/FundRaising/ProspectList*0")  })';"><i class="fas fa-times"></i> Close</button>
+
+				</div>
+
+                <!---->
+            </div>
+        </div>
+
+
+    }
+</div>
+
+<!-- The Modal -->
+<div class="modal" id="modalSecratory">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content ">
+
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <h4 class="modal-title">View Secretary Details</h4>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+
+            <!-- Modal body -->
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-sm-6 form-group">
+                        <label>Secratary Name </label>
+                        <input type="text" id="txtSecratoryNameP" value="" disabled="" class="form-control" placeholder="Enter">
+                    </div>
+                    <div class="col-sm-3 form-group">
+                        <label>Email ID  </label>
+                        <input type="text" id="txtSecratoryEmailP"  value="" disabled="" class="form-control" placeholder="Enter">
+                    </div>
+                    <div class="col-sm-3 form-group">
+                        <label>Phone No  </label>
+                        <input type="text" id="txtSecratoryPhoneP"  value="" disabled="" class="form-control" placeholder="Enter">
+                    </div>
+
+                    <div class="col-sm-12 form-group">
+                        <label>Other Info</label>
+                        <span id="txtSecratoryOtherInfoP"></span>                        
+                    </div>
+
+                </div>
+                <!-- Modal footer -->
+                <div class="p-0 text-center ">
+                    <button type="button" class="btn cnl-btn ripplelink" data-dismiss="modal"><i class="fas fa-times"></i>Close</button>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@section scripts    {
+    @System.Web.Optimization.Scripts.Render("~/bundle/unobtrusivejs")
+    @Html.IncludeVersionedJs(Url.Content("~/assets/design/scripts/AddInit.js"))
+    <script type="text/javascript">
+    onabort
+        $(function () {
+            $("#cbSecretory").click(function () {
+                if ($(this).is(":checked")) {
+                    $("#dvSecratoryDetails").show();
+                } else {
+                    $("#dvSecratoryDetails").hide();
+                }
+            });
+        });
+    </script>
+    <script>
+        function FillProjectgrid() {
+           
+            $(".notifyjs-wrapper").click();
+            var CombinationExist = false;
+            var txtNameS = '', txtPhoneS = '', txtEmailS = '', txtOtherInfoS = '', SecratoryDetail = '0';
+            var txtName = $("#txtName").val();
+            var txtDesignation = $("#txtDesignation").val();
+            var txtContact = $("#txtContact").val();
+            var txtEmail = $("#txtEmail").val();
+            var txtLinkedin = $("#txtLinkedin").val();
+            var txtAddress = $("#txtAddress").val();
+            var checkAll = $("#cbSecretory").is(":checked");
+            if (checkAll) {
+                SecratoryDetail = '1';
+                txtNameS = $("#txtNameS").val();
+                txtPhoneS = $("#txtPhoneS").val();
+                txtEmailS = $("#txtEmailS").val();
+                txtOtherInfoS = $("#txtOtherInfoS").val();
+                if (txtNameS == "") {
+                    $.notify($("#txtNameS"), "Hey, you missed this field!", "error");
+                    $("#txtNameS").focus();
+                }
+                else if (ValidateEmail(txtEmailS) == false) {
+                    $.notify($("#txtEmailS"), "Enter valid email id", "error");
+                    $("#txtEmailS").focus();
+                }
+                
+                
+            }
+            if (txtName == "") {
+                $.notify($("#txtName"), "Hey, you missed this field!", "error");
+                $("#txtName").focus();
+            }
+            else if (txtContact == "") {
+                $.notify($("#txtContact"), "Hey, you missed this field!", "error");
+                $("#txtContact").focus();
+            }
+            else if (ValidateEmail(txtEmail) == false) {
+                $.notify($("#txtEmail"), "Enter valid email id", "error");
+                $("#txtEmail").focus();
+            }
+            else if (txtAddress == "") {
+                $.notify($("#txtAddress"), "Hey, you missed this field!", "error");
+                $("#txtAddress").focus();
+            }
+            else {
+                var InnerHTML = "";
+                $('[name=CostCenterandItem]').each(function (index) {
+                    if ($(this).val() == txtName + "#" + txtEmail) {
+                        CombinationExist = true;
+                    }
+                });
+                if (!CombinationExist) {
+                    var Count = parseInt($('#tblProjects').find("tbody tr").length);
+                    InnerHTML += "<tr>";
+                    InnerHTML += "<td><label id='span_" + Count + "'  Name='span_" + Count + "'>" + (Count + 1) + "</label><input type='hidden' id='CostCenterandItem_" + Count + "'  Name='CostCenterandItem' value='" + txtName + "#" + txtEmail + "' />";
+                    InnerHTML += "<input type='hidden' id=\"lstContactDetails_" + Count + "__Id\" name=\"lstContactDetails[" + Count + "].Id\" value='0' />";
+                    InnerHTML += "<input type='hidden' id=\"lstContactDetails_" + Count + "__SecratoryName\" name=\"lstContactDetails[" + Count + "].SecratoryName\" value='" + txtNameS + "' class = 'hfSecratoryName' />";
+                    InnerHTML += "<input type='hidden' id=\"lstContactDetails_" + Count + "__SecratoryDetails\" name=\"lstContactDetails[" + Count + "].SecratoryDetails\" value='" + SecratoryDetail + "' class = 'hfSecratoryDetails' />";
+                    InnerHTML += "<input type='hidden' id=\"lstContactDetails_" + Count + "__IsUHNI\" name=\"lstContactDetails[" + Count + "].IsUHNI\" value='0' class='hfIsUHNI' />";
+                    InnerHTML += "<input type='hidden' id=\"lstContactDetails_" + Count + "__SecratoryEmail\" name=\"lstContactDetails[" + Count + "].SecratoryEmail\" value='" + txtEmailS + "'  class = 'hfSecratoryEmail' />";
+                    InnerHTML += "<input type='hidden' id=\"lstContactDetails_" + Count + "__SecratoryPhone\" name=\"lstContactDetails[" + Count + "].SecratoryPhone\" value='" + txtPhoneS + "'  class = 'hfSecratoryPhone' />";
+                    InnerHTML += "<input type='hidden' id=\"lstContactDetails_" + Count + "__SecratoryOtherInfo\" name=\"lstContactDetails[" + Count + "].SecratoryOtherInfo\" value='" + txtOtherInfoS + "'  class = 'hfSecratoryOtherInfo' /></td>";
+                    InnerHTML += "<td><input type='Text' class = 'form-control' id=\"lstContactDetails_" + Count + "__ContactPerson\" name=\"lstContactDetails[" + Count + "].ContactPerson\" value='" + txtName + "' /></td>";
+                    InnerHTML += "<td><input type='Text' class = 'form-control' id=\"lstContactDetails_" + Count + "__Designation\" name=\"lstContactDetails[" + Count + "].Designation\" value='" + txtDesignation + "' /></td>";
+                    InnerHTML += "<td><input type='Text' class = 'form-control' id=\"lstContactDetails_" + Count + "__ContactNo\" name=\"lstContactDetails[" + Count + "].ContactNo\" value='" + txtContact + "' /></td>";
+                    InnerHTML += "<td><input type='Text' class = 'form-control' id=\"lstContactDetails_" + Count + "__EmailId\" name=\"lstContactDetails[" + Count + "].EmailId\" value='" + txtEmail + "' /></td>";
+                    InnerHTML += "<td><input type='Text' class = 'form-control' id=\"lstContactDetails_" + Count + "__LinkedInId\" name=\"lstContactDetails[" + Count + "].LinkedInId\" value='" + txtLinkedin + "' /></td>";
+                    InnerHTML += "<td><input type='Text' class = 'form-control' id=\"lstContactDetails_" + Count + "__Address\" name=\"lstContactDetails[" + Count + "].Address\" value='" + txtAddress + "' /></td>";
+                    InnerHTML += "<td  class='text-center'><input type='checkbox' id='cb_" + Count + "' class='cbIsUHNI' onclick='SelectUHNI(this)' name='select'><label for='cb_" + Count + "'></label></td>";
+                    InnerHTML += "<td class='text-center'>";
+                    if (SecratoryDetail != '0')
+                    {
+                        InnerHTML += "<button  type='button'  onclick='FillSecratoryModal(this)' class='btn-none' ><i class='fas fa-eye'></i>View Secretary</button><span class='divline'>|</span>";
+                    }                   
+                    InnerHTML += "<a onclick='DeleteRow(this)'><i class='fas fa-trash-alt red-clr'></i></a></td > ";
+                    InnerHTML += "</tr>";
+
+                    $('#tblProjects').append(InnerHTML);
+                    $('[data-toggle="tooltip"]').tooltip();
+                    $("#txtName").val("");
+                    $("#txtDesignation").val("");
+                    $("#txtContact").val("");
+                    $("#txtEmail").val("");
+                    $("#txtLinkedin").val("");
+                    $("#txtNameS").val("");
+                    $("#txtPhoneS").val("");
+                    $("#txtEmailS").val("");
+                    $("#txtOtherInfoS").val("");
+                    $("#txtAddress").val("");
+                }
+                else {
+                    swal('Contact Details Already Exist!', '');
+                }
+            }
+        }
+        function SelectUHNI(obj) {
+            var checkAll = $(obj).is(":checked");
+            if (checkAll) {              
+                $(obj).closest('tr').find('.hfIsUHNI').val('1');
+            }
+            else {               
+                $(obj).closest('tr').find('.hfIsUHNI').val('0');
+            }
+
+        }
+        function FillSecratoryModal(obj) {           
+            $("#txtSecratoryNameP").val($(obj).closest('tr').find('.hfSecratoryName').val());
+            $("#txtSecratoryEmailP").val($(obj).closest('tr').find('.hfSecratoryEmail').val());
+            $("#txtSecratoryPhoneP").val($(obj).closest('tr').find('.hfSecratoryPhone').val());
+            $("#txtSecratoryOtherInfoP").html($(obj).closest('tr').find('.hfSecratoryOtherInfo').val());
+            $("#modalSecratory").modal("show");
+        }
+       
+        $('#ddlKFA').change(function () {
+            GetKFA()
+        });
+        function GetKFA() {
+            var KFAIds = $("#ddlKFA").val();
+            $("#KFA").val(KFAIds);
+        }
+        $('#ddlState').change(function () {
+            GetState()
+        });
+        function GetState() {
+            var stateIds = $("#ddlState").val();
+            $("#Stateids").val(stateIds);
+        }
+
+
+        $('#ddSkills').change(function () {
+            GetSkillValue()
+        });
+        function GetSkillValue() {
+            var ddSkills = $("#ddSkills").val();
+            $("#SkillsIDs").val(ddSkills);
+        }
+
+       
+        function FnGetStateMaster(obj) {
+            var SelectedID = $("#Countryid").val();
+            var data = GetDropDownData(SelectedID, 'State');
+            $("#ddlState").empty();
+            $("#ddlState").append($("<option />").val("").text("Select"));           
+            $(data).each(function () {
+                $("#ddlState").append($("<option />").val(this.ID).text(this.Name));
+                $("#ddlState").select2();
+            });
+            $("#Stateids").val('');
+            if (data.length != 0) {
+                $("#Stateids").rules("add", {
+                    required: true,
+                    messages: {
+                        required: "Hey! You missed this field."
+                    }
+                });
+            }
+            else
+            {                
+                $("#Stateids").rules("add", {
+                    required: false,
+                    messages: {
+                        required: "Required"
+                    }
+                });
+            }
+        }
+        function OnSuccess(obj) {
+            if (obj.Status) {
+                SuccessToaster(obj.SuccessMessage);
+                window.location.href = obj.RedirectURL;
+            }
+            else {
+                CloseLoadingDialog();
+                FailToaster(obj.SuccessMessage);
+
+            }
+        }
+        function DeleteRow(obj) {
+            var count = 0;
+            var TotalRowCount = $('#tblProjects').find("tbody tr").length;
+            var srno = TotalRowCount;
+            ConfirmMsgBox("Are you sure want to delete", '', function () {
+
+                $(obj).closest('tr').remove();
+                $("#tblProjects TBODY TR").each(function (i) {
+                    srno = srno - 1;
+                    $(this).closest("tr").find(".srno").each(function () {
+                        $(this).attr({
+                            'id': function (_, id) { var arr = id.split('_'); return id.replace(arr[1], i); },
+                        });
+                        $(this).html(srno)
+                    });
+
+                    $(this).closest("tr").find("input").each(function () {
+                        $(this).attr({
+                            'id': function (_, id) { return id.replace('_' + (parseInt(i) + 1) + '_', '_' + i + '_'); },
+                            'name': function (_, name) { return name.replace('[' + (parseInt(i) + 1) + ']', '[' + i + ']'); },
+                        });
+                    });
+
+					
+
+                    $(this).closest("tr").find("select").each(function () {
+                        $(this).attr({
+                            'id': function (_, id) { return id.replace('_' + (parseInt(i) + 1) + '_', '_' + i + '_'); },
+                            'name': function (_, name) { return name.replace('[' + (parseInt(i) + 1) + ']', '[' + i + ']'); },
+                        });
+                    });
+                    $(this).closest("tr").find("span").each(function () {
+                        if ($(this).attr("data-valmsg-for")) {
+                            $(this).attr({
+                                'data-valmsg-for': function (_, name) { return name.replace('[' + (parseInt(i) + 1) + ']', '[' + i + ']'); },
+                            });
+                        }
+                        if ($(this).attr("for")) {
+                            $(this).attr({
+                                'for': function (_, id) { return id.replace('_' + (parseInt(i) + 1) + '_', '_' + i + '_'); },
+                            });
+                        }
+                    });
+                });
+
+            })
+        }
+
+      
+    </script>
+}

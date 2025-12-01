@@ -1,0 +1,746 @@
+﻿
+@{
+	ViewBag.Title = "Index";
+	string FixHolidays = ClsCommon.GetFixHolidaysByEmpid(clsApplicationSetting.GetSessionValue("EMPID").ToString());
+}
+@using Mitr.CommonClass;
+@using Mitr.Models;
+@model Mitr.Models.Dashboard.DashboardList
+@section style{
+	@*<link href="~/assets/css/calendar/fullcalendar.css" rel="stylesheet">*@
+	@Html.IncludeVersionedCss(Url.Content("~/assets/design/js/calendar/lib/main.css"))
+}
+
+<div>
+	@Html.Partial("HeaderMsg_Partial")
+</div>
+
+
+<div class="row">
+	<div class="col-md-11">
+
+
+		<!-- tab--->
+		<div class="tab-main">
+			<ul id="tabs" class="nav nav-tabs " role="tablist">
+				<li class="nav-item"> <a id="tab-A" href="#dashboard" class="nav-link active ripplelink" data-toggle="tab" role="tab">Dashboard</a> </li>
+
+				<!--- <li class="nav-item"> <a id="tab-B" href="#dailylog" class="nav-link ripplelink" data-toggle="tab" role="tab">DailyLog</a> </li>
+
+				 <li class="nav-item"> <a id="tab-e" href="#leave" class="nav-link ripplelink" data-toggle="tab" role="tab">Leave</a> </li>
+
+				 <li class="nav-item"> <a id="tab-e" href="#travel" class="nav-link ripplelink" data-toggle="tab" role="tab">Travel</a> </li>
+
+				 <li class="nav-item"> <a id="tab-C" href="#training" class="nav-link ripplelink" data-toggle="tab" role="tab">Training</a> </li>--->
+
+			</ul>
+
+
+			<div id="content" class="tab-content  p-0" role="tablist">
+				<!---->
+				<div id="dashboard" class="card tab-pane fade show active" role="tabpanel" aria-labelledby="tab-A">
+					<div class="card-header " role="tab" id="heading-A">
+						<h5 class="mb-0">
+							<!-- Note: `data-parent` removed from here -->
+							<a data-toggle="collapse" href="#collapse-A" aria-expanded="true" aria-controls="collapse-A">Active Log </a>
+						</h5>
+					</div>
+
+					<!-- Note: New place of `data-parent` -->
+					<div id="collapse-A" class="collapse show p-0 h" data-parent="#content" role="tabpanel" aria-labelledby="heading-A">
+						<div class=" row">
+
+							<div class="col-lg-6 col-md-6  h-100">
+								<div class="box-border h-450">
+									<h2 class="heading-grd p-0"><i class="fas fa-calendar-alt"></i>Calender <hr class="heading-line"></h2>
+									<div class="@(FixHolidays.Contains("Saturday") ? "" : "fc-day-sat-on")">
+										<div id='calendar'>
+											@Html.Partial("_Loading")
+										</div>
+									</div>
+
+								</div>
+							</div>
+
+							<div class="col-lg-6 col-md-6  h-100">
+								<div class="box-border h-450">
+									<h2 class="heading-grd p-0">
+										<i class="fas fa-share-alt"></i>Social Media Post <div class="headding-right fn-nrl"> <a href="" data-toggle="modal" data-target="#myModal" class="count-nt"><i class="fa fa-plus" aria-hidden="true"></i></a></div>
+										<hr class="heading-line">
+									</h2>
+									<!-- --->
+									<div class="scroll tsk-scl-h" style="height: 240px; margin-top:20px">
+										<!--- -->
+										<div class="chat">
+											<div class="chat-history">
+
+											</div>
+										</div>
+										<!---  -->
+									</div>
+									<!-- -->
+								</div>
+							</div>
+
+						</div>
+
+					</div>
+				</div>
+
+				<!---->
+				<div id="dailylog" class="card tab-pane fade " role="tabpanel" aria-labelledby="tab-B">
+					<div class="card-header" role="tab" id="heading-B">
+						<h5 class="mb-0">
+							<a class="collapsed" data-toggle="collapse" href="#collapse-B" aria-expanded="false" aria-controls="collapse-B"> Leaves  <img src="/images/icon/leave-icon.svg" alt="Leaves icon"> </a>
+							<hr class="heading-line">
+						</h5>
+					</div>
+					<div id="collapse-B" class="collapse" data-parent="#content" role="tabpanel" aria-labelledby="heading-B">
+
+						<div class=" row">
+
+							<div class="col-lg-4 col-md-4  ">
+								<div class="box-border h-220">
+									<h2 class="heading-grd">Heading <a href="" data-toggle="modal" data-target="#myModal" class="clr-btn rgt-pst"><i class="fa fa-plus" aria-hidden="true"></i></a></h2>
+								</div>
+							</div>
+
+							<div class="col-lg-4 col-md-4  ">
+								<div class="box-border h-220">
+									<h2 class="heading-grd">Heading <a href="" data-toggle="modal" data-target="#myModal" class="clr-btn rgt-pst"><i class="fa fa-plus" aria-hidden="true"></i></a></h2>
+								</div>
+							</div>
+
+							<div class="col-lg-4 col-md-4  ">
+								<div class="box-border h-220">
+									<h2 class="heading-grd">Heading <a href="" data-toggle="modal" data-target="#myModal" class="clr-btn rgt-pst"><i class="fa fa-plus" aria-hidden="true"></i></a></h2>
+								</div>
+							</div>
+
+						</div>
+
+
+					</div>
+				</div>
+
+				<!---->
+				<div id="leave" class="card tab-pane fade " role="tabpanel" aria-labelledby="tab-B">
+					<div class="card-header" role="tab" id="heading-B">
+						<h5 class="mb-0"> <a class="collapsed" data-toggle="collapse" href="#collapse-B" aria-expanded="false" aria-controls="collapse-B"> Leaves  <img src="/images/icon/leave-icon.svg" alt="Leaves icon"> </a> </h5>
+					</div>
+					<div id="collapse-B" class="collapse" data-parent="#content" role="tabpanel" aria-labelledby="heading-B">
+
+						<div class=" row">
+
+							<div class="col-lg-4 col-md-4  ">
+								<div class="box-border h-220">
+									<h2 class="heading-grd">Heading <a href="" data-toggle="modal" data-target="#myModal" class="clr-btn rgt-pst"><i class="fa fa-plus" aria-hidden="true"></i></a></h2>
+								</div>
+							</div>
+
+							<div class="col-lg-4 col-md-4  ">
+								<div class="box-border h-220">
+									<h2 class="heading-grd">Heading <a href="" data-toggle="modal" data-target="#myModal" class="clr-btn rgt-pst"><i class="fa fa-plus" aria-hidden="true"></i></a></h2>
+								</div>
+							</div>
+
+							<div class="col-lg-4 col-md-4  ">
+								<div class="box-border h-220">
+									<h2 class="heading-grd">Heading <a href="" data-toggle="modal" data-target="#myModal" class="clr-btn rgt-pst"><i class="fa fa-plus" aria-hidden="true"></i></a></h2>
+								</div>
+							</div>
+
+						</div>
+
+
+					</div>
+				</div>
+				<!---->
+				<div id="travel" class="card tab-pane fade " role="tabpanel" aria-labelledby="tab-C">
+					<div class="card-header" role="tab" id="heading-C">
+						<h5 class="mb-0"> <a class="collapsed" data-toggle="collapse" href="#collapse-C" aria-expanded="false" aria-controls="collapse-C"> Asset </a> </h5>
+					</div>
+					<div id="collapse-C" class="collapse" role="tabpanel" data-parent="#content" aria-labelledby="heading-C">
+						<div class=" row">
+
+							<div class="col-lg-3 col-md-4  ">
+								<div class="box-border h-220">
+									<h2 class="heading-grd">Heading <a href="" data-toggle="modal" data-target="#myModal" class="clr-btn rgt-pst"><i class="fa fa-plus" aria-hidden="true"></i></a></h2>
+								</div>
+							</div>
+
+							<div class="col-lg-3 col-md-4  ">
+								<div class="box-border h-220">
+									<h2 class="heading-grd"> <a href="" data-toggle="modal" data-target="#myModal" class="clr-btn rgt-pst"><i class="fa fa-plus" aria-hidden="true"></i></a></h2>
+								</div>
+							</div>
+
+							<div class="col-lg-3 col-md-4  ">
+								<div class="box-border h-220">
+									<h2 class="heading-grd">Heading <a href="" data-toggle="modal" data-target="#myModal" class="clr-btn rgt-pst"><i class="fa fa-plus" aria-hidden="true"></i></a></h2>
+								</div>
+							</div>
+
+							<div class="col-lg-3 col-md-4  ">
+								<div class="box-border h-220">
+									<h2 class="heading-grd">Heading <a href="" data-toggle="modal" data-target="#myModal" class="clr-btn rgt-pst"><i class="fa fa-plus" aria-hidden="true"></i></a></h2>
+								</div>
+							</div>
+
+						</div>
+					</div>
+				</div>
+				<!---->
+				<div id="training" class="card tab-pane fade " role="tabpanel" aria-labelledby="tab-d">
+					<div class="card-header" role="tab" id="heading-C">
+						<h5 class="mb-0"> <a class="collapsed" data-toggle="collapse" href="#collapse-e" aria-expanded="false" aria-controls="collapse-C"> Taining <img src="/images/icon/training-icon.svg" alt="Training icon"></a> </h5>
+					</div>
+					<div id="collapse-e" class="collapse" role="tabpanel" data-parent="#content" aria-labelledby="heading-C">
+						<div class=" row">
+
+							<div class="col-lg-4 col-md-4  ">
+								<div class="box-border h-220">
+									<h2 class="heading-grd p-0">Heading <a href="" data-toggle="modal" data-target="#myModal" class="clr-btn rgt-pst"><i class="fa fa-plus" aria-hidden="true"></i></a></h2>
+								</div>
+							</div>
+
+							<div class="col-lg-4 col-md-4  ">
+								<div class="box-border h-220">
+									<h2 class="heading-grd">Heading <a href="" data-toggle="modal" data-target="#myModal" class="clr-btn rgt-pst"><i class="fa fa-plus" aria-hidden="true"></i></a></h2>
+								</div>
+							</div>
+
+							<div class="col-lg-4 col-md-4  ">
+								<div class="box-border h-220">
+									<h2 class="heading-grd">Heading <a href="" data-toggle="modal" data-target="#myModal" class="clr-btn rgt-pst"><i class="fa fa-plus" aria-hidden="true"></i></a></h2>
+								</div>
+							</div>
+
+
+
+						</div>
+					</div>
+				</div>
+				<!---->
+			</div>
+		</div>
+		<!--- close tab --->
+
+		<div class=" row">
+
+			<div class="col-lg-4 col-md-4 h-100  ">
+				<div class="box-border h-350">
+					<h2 class="heading-grd p-0">
+						<i class="fas fa-tasks"></i>My Task
+						<div class="headding-right fn-nrl"> <a href="" data-toggle="modal" data-target="#myModal" class="count-nt"><i class="fa fa-plus" aria-hidden="true"></i></a></div>
+						<hr class="heading-line">
+					</h2>
+				</div>
+			</div>
+			<div class="col-lg-4 col-md-4  h-100">
+
+				<!------->
+				<div class="box-border h-350">
+					<div class="row">
+						<div class="col-sm-12 m-0">
+							<h2 class="heading-grd p-0">
+								<i class="fas fa-users"></i>Staff Availability
+								<div class="headding-right headingtab fn-nrl subhead text-right"> <span class="showSingle active" target="1"><i class="fas fa-suitcase"></i>On Leave</span><span class="spc-lne">|</span> <span class="showSingle" target="2"><i class="fas fa-map-marker-alt"></i>On Travel</span><span class="spc-lne">|</span> <span class="showSingle" target="3"><i class="fas fa-handshake"></i>In Meeting</span> </div>
+							</h2>
+						</div>
+						<div class="col-sm-12 m-0">
+
+							<!-- --->
+							<div id="div1" class="targetDiv list-wrpaaer h-245">
+								<ul class="list-group list-group-flush " id="marquee-vertical">
+									@if (Model.LeaveDashBoard != null)
+									{
+										foreach (var item in Model.LeaveDashBoard)
+										{
+											<li class="list-group-item pl-0">
+												<div class="d-flex align-items-center">
+													<div class="flex-grow-1">
+														<strong>@item.emp_name </strong><br />
+														<ul class="lgt-text fn-10 list-unlisted dcptlist">
+															<li title="@item.design_name">
+																<div class="ellipsis">@item.design_name</div>
+															</li>
+															<li>@item.location_name</li>
+														</ul>
+
+
+													</div>
+													<div class="flex-shrink-0 text-end">
+														@*@if (Convert.ToDateTime(item.start_date) == Convert.ToDateTime(item.end_date))
+															{
+																<span>@item.start_date</span>
+															}
+															else
+															{
+																string result = item.start_date.Remove(2);
+																<span>@result - @item.end_date</span>
+															}*@
+														<span>@item.LeaveDetials</span>
+
+													</div>
+												</div>
+											</li>
+										}
+									}
+
+
+
+								</ul>
+							</div>
+							<!-- -->
+							<!-- --->
+							<div id="div2" class="targetDiv list-wrpaaer h-245" style="display: none;">
+								<ul class="list-group list-group-flush " id="marquee-verticaltr">
+									@if (Model.TravelDashBoard != null)
+									{
+										foreach (var item in Model.TravelDashBoard)
+										{
+
+											<li class="list-group-item pl-0">
+												<div class="d-flex align-items-center">
+													<div class="flex-grow-1">
+														<strong>@item.emp_name</strong><br />
+														<ul class="lgt-text fn-10 list-unlisted dcptlist">
+															<li title="@item.design_name">
+																<div class="ellipsis">@item.design_name</div>
+															</li>
+															<li>@item.location_name</li>
+														</ul>
+
+													</div>
+
+													<div class="flex-shrink-0 text-end text-right" title="@item.TravelCity">
+														@{
+															string result = item.TravelDate.Remove(2, 9);
+															string[] values = item.TravelCity.Split(',');
+														}
+														<span>@result</span><br>
+														@if (values.Length > 2)
+														{
+															<span class="lgt-text">@values[0]@values[1] ...</span>
+														}
+														else
+														{
+															<span class="lgt-text">@item.TravelCity </span>
+														}
+
+													</div>
+													@*<div class="flex-shrink-0 text-end text-right">
+
+
+															<span>@result</span><br />
+															<span class="lgt-text">@item.TravelCity </span>
+														</div>*@
+												</div>
+											</li>
+
+										}
+									}
+								</ul>
+							</div>
+							<!-- -->
+							<!-- --->
+							<div id="div3" class="targetDiv list-wrpaaer h-245" style="display: none;">
+								<div class="no-dat-dv">
+									<img src="assets/design/images/not-found-image.png" alt="No-Image">
+									<p class="mtr-o-clr">No Record Found</p>
+								</div>
+							</div>
+							<!-- -->
+						</div>
+					</div>
+				</div>
+				<!------->
+			</div>
+
+			<div class="col-lg-4 col-md-4 h-100  ">
+				<!------>
+				<div class="box-border h-350">
+					<div class="row">
+						<div class="col-sm-12 m-0">
+							<h2 class="heading-grd p-0">
+								<i class="fas fa-bullhorn"></i>Announcements
+								<div class="headding-right headingtab subhead text-right fn-nrl"> <span class="showSingletwo active" target="4"><i class="fas fa-birthday-cake"></i>Birthdays </span> </span> <span class="spc-lne">|</span> <span class="showSingletwo " target="5"><i class="fas fa-user-tie"></i>New Joinees </span> <span class="spc-lne">|</span> <span class="showSingletwo" target="6"><i class="fas fa-briefcase"></i>Work Anniversaries</span> </div>
+							</h2>
+						</div>
+						<div class="col-sm-12">
+
+							<!-- --->
+							<div id="div4" class="targetDivtwo list-wrpaaer h-245" style="">
+								<ul class="list-group list-group-flush " id="marquee-verticalbd">
+									@if (Model.BirthdayDashBoard != null)
+									{
+										foreach (var item in Model.BirthdayDashBoard)
+										{
+											<li class="list-group-item pl-0 lgt-mtr-o-bg">
+												<div class="d-flex align-items-center">
+													<div class="flex-grow-1">
+														<strong>@item.emp_name</strong><br>
+														<ul class="lgt-text fn-10 list-unlisted dcptlist">
+															<li title="@item.design_name">
+																<div class="ellipsis">@item.design_name</div>
+															</li>
+															<li>@item.location_name</li>
+														</ul>
+													</div>
+													<div class="flex-shrink-0 text-end text-right"> <span>@item.DOB</span> </div>
+												</div>
+											</li>
+
+										}
+									}
+								</ul>
+							</div>
+							<!-- -->
+							<!-- --->
+							<div id="div5" class="targetDivtwo list-wrpaaer h-245" style="display: none;">
+								<ul class="list-group list-group-flush " id="marquee-verticaljn">
+									@if (Model.NewJoineesDashBoard != null)
+									{
+										foreach (var item in Model.NewJoineesDashBoard)
+										{
+											<li class="list-group-item pl-0">
+												<div class="d-flex align-items-center">
+													<div class="flex-grow-1">
+														<strong>@item.emp_name </strong><br>
+														<ul class="lgt-text fn-10 list-unlisted dcptlist">
+															<li title="@item.design_name">
+																<div class="ellipsis">@item.design_name</div>
+															</li>
+															<li>@item.location_name</li>
+														</ul>
+
+													</div>
+													<div class="flex-shrink-0 text-end text-right"> <span>@item.DOJ</span> </div>
+												</div>
+											</li>
+										}
+									}
+
+								</ul>
+							</div>
+							<!-- -->
+							<!-- --->
+							<div id="div6" class="targetDivtwo list-wrpaaer h-245" style="display: none;">
+								<ul class="list-group list-group-flush " id="marquee-verticalwa">
+									@if (Model.WorkanniversaryDashBoard != null)
+									{
+										foreach (var item in Model.WorkanniversaryDashBoard)
+										{
+											<li class="list-group-item pl-0">
+												<div class="d-flex align-items-center">
+													<div class="flex-grow-1">
+														<strong>@item.emp_name </strong><br>
+														<ul class="lgt-text fn-10 list-unlisted dcptlist">
+															<li title="@item.design_name">
+																<div class="ellipsis">@item.design_name</div>
+															</li>
+															<li>@item.location_name</li>
+														</ul>
+
+													</div>
+													<div class="flex-shrink-0 text-end text-right"> <span>@item.DOJ</span> </div>
+												</div>
+											</li>
+										}
+									}
+								</ul>
+							</div>
+							<!-- -->
+
+						</div>
+					</div>
+				</div>
+				<!------>
+			</div>
+
+		</div>
+
+
+
+	</div>
+
+
+
+
+</div>
+
+
+
+<ul id="demo_menu2">
+	<li><a href="#">One</a></li>
+	<li><a href="#">Two</a></li>
+	<li><a href="#">Three</a></li>
+	<li><a href="#">Four</a></li>
+	<li><a href="#">Five</a></li>
+	<li><a href="#">Six</a></li>
+	<li><a href="#">Seven</a></li>
+	<li><a href="#">Eight</a></li>
+	<li><a href="#">Nine</a></li>
+	<li><a href="#">Ten</a></li>
+</ul>
+
+
+<!-- TASK Modal -->
+<div class="modal fade pop-dgn" id="myModal">
+	<div class="modal-dialog popw--md">
+		<div class="modal-content">
+
+			<!-- Modal Header -->
+			<div class="modal-header blk-gdn-btn">
+				<h4 class="modal-title"><i class="fas fa-plus"></i>Add activity</h4>
+				<div class="close" data-dismiss="modal">&times;</div>
+			</div>
+
+			<!-- Modal body -->
+			<div class="modal-body p-3">
+
+				<div class="row">
+					<div class="col-sm-4 form-group">
+						<label>Status</label>
+						<select class="dpselect select2-hidden-accessible" tabindex="-1" aria-hidden="true">
+							<option value="1">Pending</option>
+							<option value="1">Completed</option>
+							<option value="2">Cancel</option>
+							<option value="2">Deferred</option>
+						</select>
+					</div>
+
+					<div class="col-sm-4 form-group">
+						<label>To User</label>
+						<select class="dpselect select2-hidden-accessible" tabindex="-1" aria-hidden="true">
+							<option value="1">User Name</option>
+							<option value="1">User Name</option>
+							<option value="2">User Name</option>
+							<option value="2">User Name</option>
+						</select>
+					</div>
+
+					<div class="col-sm-4 form-group">
+						<label>Next Date</label>
+						<input type="text" class="form-control has-feedback-left" id="S" readonly name="StartDate" value="" placeholder="Select Next Date" aria-describedby="inputSuccess2Status4">
+					</div>
+
+					<div class="col-sm-12 form-group">
+						<label>Remarks/ Comment</label>
+						<textarea placeholder="Enter Remarks/ Comment"></textarea>
+					</div>
+
+					<div class="col-12 mt-2">
+						<button type="submit" class="btn mtr-o-grn btn-l"><i class="fas fa-save"></i>Save</button>
+					</div>
+
+				</div>
+
+
+
+			</div>
+		</div>
+	</div>
+</div>
+
+
+
+<div class="modal modal-fullscreen" id="actpop" tabindex="-1" role="dialog" aria-hidden="true">
+	<div class="modal-dialog modal-full pop-dgnnw" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title"><i class="fa fa-rocket" aria-hidden="true"></i> Daily Log</h5>
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+					<span aria-hidden="true">×</span>
+				</button>
+			</div>
+			<div class="modal-body container pt-0 pr-0 pb-0">
+
+				<div class="row">
+					<div class="col-sm-6">
+						<div class="tmsht-left">
+							<div class="tmsht-right-hd mb-2">
+								<i class="fas fa-arrow-left"></i> 3 Aug 2019 <i class="fas fa-arrow-right"></i> <span>Total: <strong>15 Hrs.</strong> </span>
+							</div>
+							<hr />
+							<div class="row">
+								<div class="col-sm-6">
+									<div class="form-group">
+										<label>Projects    </label>
+										<select class="dpselect select2-hidden-accessible" tabindex="-1" id="finselector" aria-hidden="true">
+											<option value="1">C3-Gen-002</option>
+											<option value="">C3-Gen-007</option>
+										</select>
+									</div>
+								</div>
+								<div class="col-sm-6">
+									<div class="form-group">
+										<label>Hours </label>
+										<input type="number" name="" value="" placeholder="Hours">
+									</div>
+								</div>
+								<div class="col-sm-12">
+									<div class="form-group mb-0">
+										<label>Description </label>
+										<textarea placeholder="Enter Description" class="hgt-110"></textarea>
+									</div>
+								</div>
+
+								<div class="col-sm-12 mt-2 mb-2">
+									<button type="submit" class="btn mtr-o-grn btn-l ripplelink " name="Command" value="Add"><i class="fas fa-save"></i>Save</button>
+									<button type="button" class="btn cnl-btn ripplelink  " onclick="ShowLoadingDialog();window.location='/dashboard';"><i class="fas fa-times"></i>Close</button>
+								</div>
+
+							</div>
+						</div>
+					</div>
+					<div class="col-sm-6">
+
+						<div class="tmsht-right">
+							<div class="tmsht-right-hd mb-2" style="padding-right: 17px;  padding-left: 8px;"><strong>3</strong> Total Entries <span><a href="">Full View</a></div>
+
+							<ul class="list-unstyled scroll prj-lst-tm hgt-257">
+								<li>
+									C03->Strategic Planning Retreat<br />
+									<small>
+										Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse accumsan vulputate lacinia.
+
+									</small>
+									<span>5 Hrs </span>
+								</li>
+								<li>
+									C03->Strategic Planning Retreat
+									<span>5 Hrs </span>
+								</li>
+								<li>
+									C03->Strategic Planning Retreat
+									<br />
+									<small>
+										Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse accumsan vulputate lacinia.
+										<span>5 Hrs </span>
+								</li>
+
+
+
+								<li>
+									C03->Strategic Planning Retreat
+									<span>5 Hrs </span>
+								</li>
+								<li>
+									C03->Strategic Planning Retreat
+									<br />
+									<small>
+										Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse accumsan vulputate lacinia.
+									</small>
+									<span>5 Hrs </span>
+								</li>
+								<li>
+									C03->Strategic Planning Retreat
+									<span>5 Hrs </span>
+								</li>
+
+
+
+							</ul>
+
+
+
+						</div>
+
+					</div>
+
+				</div>
+
+
+			</div>
+
+		</div>
+	</div>
+
+	@section scripts    {
+		@Html.IncludeVersionedJs(Url.Content("~/assets/design/js/calendar/lib/main.js"))
+		@Html.IncludeVersionedJs(Url.Content("~/assets/design/scripts/PagesJS/FillCalendar.js"))
+		<script src="~/assets/design/js/jquery-ui.min.js"></script>
+		<script src="~/assets/design/js/jquery.sidebar.js"></script>
+
+		@*<script src="~/js/calendar/fullcalendar.min.js"></script>*@
+
+		<script type="text/javascript">
+
+			$("ul#demo_menu2").sidebar({
+				position: "right",
+				callback: {
+					item: {
+						enter: function () {
+							$(this).find("a").animate({ color: "" }, 250);
+						},
+						leave: function () {
+							$(this).find("a").animate({ color: "" }, 250);
+						}
+					}
+				}
+			});
+
+		</script>
+
+		<script>
+			$(window).load(function () {
+				var date = new Date();
+				var d = date.getDate();
+				var m = date.getMonth();
+				var y = date.getFullYear();
+				var started;
+				var categoryClass;
+
+				var calendar = $('#calendar').fullCalendar({
+
+					header: {
+						left: 'title',
+						center: false,
+						right: 'prev,next today'
+					},
+					firstDay: 1,
+
+
+					events: function (start, end, timezone, callback) {
+						$.ajax({
+							url: '/CommonAjax/GetHolidayJson',
+							type: "GET",
+							dataType: "JSON",
+							success: function (result) {
+								var events = [];
+								$.each(result, function (i, data) {
+									events.push(
+										{
+											title: data.Name,
+											description: data.Remarks,
+											start: new Date(data.Date.split('/')[2], data.Date.split('/')[1] - 1, data.Date.split('/')[0]),
+											end: new Date(data.Date.split('/')[2], data.Date.split('/')[1] - 1, data.Date.split('/')[0]),
+											backgroundColor: data.ColorCode,
+											allDay: true
+
+										});
+								});
+
+								callback(events);
+							}
+						});
+					},
+					editable: true,
+					eventLimit: true,
+					views: {
+						month: {
+							eventLimit: 1
+						}
+					},
+					eventRender: function (event, element) {
+						element[0].title = event.description;
+					},
+
+
+				});
+
+			});
+		</script>
+	}

@@ -1,0 +1,234 @@
+﻿@using System.Data
+@model Mitr.Models.ProcessActivityTimeSheet
+@{
+	ViewBag.Title = "_Timesheet";
+	
+}
+
+@Html.Partial("HeaderMsg_Partial")
+
+
+@using (Html.BeginForm("_Timesheet", "Activity",
+new { MenuID = ViewBag.MenuID, SelectedDate = ViewBag.SelectedDate, EMPID = ViewBag.EMPID }, FormMethod.Post,
+new
+{
+    name = "_TimesheetForm",
+    id = "_TimesheetForm",
+    enctype = "multipart/form-data"
+}))
+{
+    <input type="hidden" id="Date" value="@ViewBag.SelectedDate" />
+    <div class="row">
+        <div class="col-md-8">
+            <h1 class="heading-one">Process Activity Log @Convert.ToDateTime(ViewBag.SelectedDate).ToString("MMMM")  @Convert.ToDateTime(ViewBag.SelectedDate).Year</h1>
+        </div>
+
+    </div>
+    <div class="table-responsive activitytable">
+
+
+
+        <table cellspacing="0" class="table table-small-font table-bordered table-striped m-0" style="min-width: 3400px;">
+            <thead>
+                <tr>
+
+                    @{ string LastValue = "";}
+                    @foreach (DataColumn item in Model.TimeSheetDataSet.Tables[0].Columns)
+                    {
+                        if (item.ColumnName.Contains("#"))
+                        {
+                            if (LastValue != @item.ColumnName.Split('#')[0])
+                            {
+                                <th scope="col" colspan="3">@item.ColumnName.Split('#')[0]</th>
+                            }
+                            LastValue = @item.ColumnName.Split('#')[0];
+                        }
+                        else
+                        {
+                            if (item.ColumnName == "Modify")
+                            {
+                                <th scope="col" rowspan="2">
+                                    <input type="checkbox" class="newwidth" id="checkAll" onclick="chkAll();" name="ChkAll" value="All" />
+                                    <label for="checkAll"></label>
+                                </th>
+                            }
+                            else
+                            {
+                                <th scope="col" rowspan="2">@item.ColumnName</th>
+                            }
+                        }
+                    }
+                </tr>
+                <tr>
+                    @foreach (DataColumn item in Model.TimeSheetDataSet.Tables[0].Columns)
+                    {
+                        if (item.ColumnName.Contains("#"))
+                        {
+                            <th scope="col" rowspan="1">@item.ColumnName.Split('#')[2]</th>
+
+                        }
+                    }
+                </tr>
+            </thead>
+            <tbody>
+
+                @{ int count = 0;}
+                @foreach (DataRow dtRow in Model.TimeSheetDataSet.Tables[0].Rows)
+                {
+                    count++;
+                    <tr>
+                        @foreach (DataColumn dc in Model.TimeSheetDataSet.Tables[0].Columns)
+                        {
+                            string Value = "";
+                            if (dc.ColumnName.Contains("#"))
+                            {
+                                Value = (@dtRow[dc].ToString() == "0" ? "" : dtRow[dc].ToString());
+                                <td>
+                                    @switch (dc.ColumnName.Split('#')[2])
+                                    {
+                                        case "WH":
+                                            <input type="number" id="txt_@(dtRow["EMPID"].ToString()+"_"+dc.ColumnName)" name="txt_@(dtRow["EMPID"].ToString()+"_"+dc.ColumnName)" value="@Value" onkeydown="if(event.key==='.'){event.preventDefault();}" oninput="event.target.value = event.target.value.replace(/[^0-9]*/g,'');" />
+                                            break;
+                                        case "TH":
+                                            <input type="number" id="txt_@(dtRow["EMPID"].ToString()+"_"+dc.ColumnName)" name="txt_@(dtRow["EMPID"].ToString()+"_"+dc.ColumnName)" value="@Value" onkeydown="if(event.key==='.'){event.preventDefault();}" oninput="event.target.value = event.target.value.replace(/[^0-9]*/g,'');" />
+                                            break;
+                                        default:
+                                            <span id="Spn_@count"><strong>@(@dtRow[dc].ToString() == "0" ? "" : string.Format("{0:#,0}", Convert.ToDecimal(dtRow[dc].ToString())))</strong></span>
+                                            break;
+                                    }
+                                </td>
+
+                            }
+                            else
+                            {
+                                <td>
+                                    @switch (dc.ColumnName)
+                                    {
+                                        case "Modify":
+                                            <input type="checkbox" class="newwidth" id="Chksingle_@dtRow["EMPID"].ToString()" @("1,2".Contains(dtRow["Modify"].ToString()) ? "checked" : "") @(dtRow["Modify"].ToString() == "1" ? "disabled" : "") name="Chksingle" value="@dtRow["EMPID"].ToString()" />
+                                            <label for="Chksingle_@dtRow["EMPID"].ToString()"></label>
+                                            <input type="hidden" name="N" value="@dtRow["EMP Name"].ToString()" />
+                                            <input type="hidden" name="E" value="@dtRow["EMPID"].ToString()" />
+
+                                            break;
+                                        case "Emp Name":
+                                            <a class="anhorEmployeeTimeSheet"><strong>@dtRow[dc].ToString()</strong></a>
+                                            break;
+                                        case "Gross Salary":
+                                            <span id="Spn_@count"><strong>@(@dtRow[dc].ToString() == "0" ? "" : string.Format("{0:#,0}", Convert.ToDecimal(dtRow[dc].ToString())))</strong></span>
+                                            break;
+                                        default:
+                                            <strong>@(@dtRow[dc].ToString() == "0" ? "" : dtRow[dc].ToString())</strong>
+                                            break;
+                                    }
+                                </td>
+
+                            }
+
+                        }
+
+                    </tr>
+                }
+            </tbody>
+
+        </table>
+
+
+    </div>
+    <div class="row onlyweb pb-3">
+        <div class="col-sm-12 text-center">
+            @*@if (Model.iCount != Model.TimeSheetDataSet.Tables[0].Rows.Count)
+                {*@
+            <button type="submit" class="btn mtr-o-grn btn-l ripplelink" name="Command" value="Calculate">Calculate</button>
+
+            <button type="submit" class="btn mtr-o-grn btn-l ripplelink" name="Command" value="Finalize">Finalize</button>
+            @*}*@
+            @if (Model.iUnLock > 0)
+            {
+                <button type="submit" class="btn mtr-o-grn btn-l ripplelink" name="Command" value="Lock">Lock</button>
+            }
+            @if (Model.iCount > 0)
+            {
+                <button type="button" onclick="ShowLoadingDialog(); window.location = '@Url.Action("ActivityReport", new { src = clsApplicationSetting.EncryptQueryString(ViewBag.MenuID+"*/Activity/ActivityReport") })'" class="btn cnl-btn btn-l ripplelink"><i class="fas fa-times"></i> Generate Report</button>
+            }
+            <button type="button" onclick="ShowLoadingDialog(); window.location = '@Url.Action("ConsolidateActivityLog", new { src = clsApplicationSetting.EncryptQueryString(ViewBag.MenuID+"*/Activity/ConsolidateActivityLog") })'" class="btn cnl-btn btn-l ripplelink"><i class="fas fa-times"></i> Cancel</button>
+
+        </div>
+    </div>
+
+}
+
+
+<!-- TASK Modal -->
+<div class="modal fade pop-dgn" id="ModalEmployeetimesheet">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+
+            <!-- Modal Header -->
+            <div class="modal-header blk-gdn-btn">
+                <h4 class="modal-title"><span id="spnEmployeetimesheet"></span></h4>
+                <div class="close" data-dismiss="modal">&times;</div>
+            </div>
+
+            <!-- Modal body -->
+            <div class="modal-body p-3 mt-2">
+                <div id="DivEmployeeTimeSheet"></div>
+                <div class="p-2">
+                    <div class="row">
+                        <div class="col-sm-12 text-center mt-3">
+                            <button type="button" class="btn cnl-btn ripplelink  " data-dismiss="modal"><i class="fas fa-times"></i>Close</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+@section scripts    {
+    @System.Web.Optimization.Scripts.Render("~/bundle/dataTablesjs")
+    <script src="~/assets/design/Scripts/AddInit.js?v=@clsApplicationSetting.GetWebConfigValue("Version")"></script>
+    @System.Web.Optimization.Scripts.Render("~/bundle/unobtrusivejs");
+    <script src="~/assets/design/js/freeze-table.js?v=@clsApplicationSetting.GetWebConfigValue("Version")"></script>
+    <script>
+        //$(document).ready(function () {
+        //    $(".table-scrollable").freezeTable({
+        //        'scrollable': true,
+        //        'columnNum': 7,
+        //    });
+        //});
+
+        $(".anhorEmployeeTimeSheet").click(function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+            ShowLoadingDialog();
+            var E = $(this).closest("tr").find("input:hidden[name=E]").val();
+            var N = $(this).closest("tr").find("input:hidden[name=N]").val();
+            GetEmployeeTimeSheet(E, N);
+        });
+
+        function GetEmployeeTimeSheet(E, N) {
+            var Date = $("#Date").val();
+            $.ajax({
+                url: "/Activity/_EmployeeTimeSheet",
+                type: "Post",
+                data: { src: EncryptQueryStringJSON(MenuID + "*" + "/Activity/_EmployeeTimeSheet"), Date: Date, EMPID: E },
+                success: function (data) {
+                    $("#spnEmployeetimesheet").html(N);
+                    $("#DivEmployeeTimeSheet").html(data);
+                    $("#ModalEmployeetimesheet").modal('show');
+                    CloseLoadingDialog();
+                },
+                error: function (r) {
+                    CloseLoadingDialog();
+                }
+            });
+        }
+    </script>
+}

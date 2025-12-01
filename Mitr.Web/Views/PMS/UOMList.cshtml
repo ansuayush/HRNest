@@ -1,0 +1,129 @@
+﻿@model PMS
+
+<div class="inner-main pb-0">
+	@Html.Partial("ListHeader_Partial", "UOM Master")
+
+
+	@using (Ajax.BeginForm("_UOMList", "PMS",
+			new { src = clsApplicationSetting.EncryptQueryString(ViewBag.MenuID.ToString() + "*/PMS/_UOMList") },
+			  new AjaxOptions { HttpMethod = "POST", OnSuccess = "BindTarget", OnBegin = "ShowLoadingDialog()" },
+		new { @id = "_UOMListFrom" })
+		)
+	{
+		<div class="row">
+
+			<div class="col-lg-2 slt-srh mb-0  form-group">
+				<label class="lbl-abs">Select Appraisal Period</label>
+				@Html.DropDownListFor(x => Model.FYID, new SelectList(ViewBag.FinYearList, "ID", "Year", Model.FYID), "Select Appraisal Period",
+		new { @class = "form-control  applyselect ddapplyaction" })
+				@Html.ValidationMessageFor(model => Model.FYID, "", new { @class = "text-danger" })
+			</div>
+			<div style="display:none">
+				<button type="submit" class="btn mtr-g-grn btn-l ripplelink" id="btnSearch" name="Command" value="Search"><i class="fas fa-search"></i>Search</button>
+			</div>
+		</div>
+	}
+
+	<div id="TargetDiv">@Html.Partial("_Loading")</div>
+</div>
+
+<div class="modal fade pop-dgn" id="ViewModal">
+	<div class="modal-dialog modal-md">
+		<div class="modal-content">
+
+			<div class="modal-header blk-gdn-btn">
+				<h4 class="modal-title"><i class="fa fa-plus"></i>Add UOM</h4>
+				<div class="close" data-dismiss="modal">&times;</div>
+			</div>
+			<!-- Modal body -->
+			<div class="modal-body">
+				<div id="TagetDivAdd"></div>
+			</div>
+		</div>
+	</div>
+</div>
+
+
+@section scripts    {
+	@System.Web.Optimization.Scripts.Render("~/bundle/unobtrusivejs")
+	@Html.IncludeVersionedJs(Url.Content("~/assets/design/Scripts/ToolTip.js"))
+	@System.Web.Optimization.Scripts.Render("~/assets/design/Scripts/AddInit.js")
+
+	<script>
+		$(document).ready(function () {
+			$("#btnSearch").click();
+		});
+
+		$('.ddapplyaction').bind("change", function () {
+			$("#btnSearch").click();
+		});
+
+
+		function BindTarget(args) {
+			CloseLoadingDialog();
+			$("#TargetDiv").empty();
+			$("#TargetDiv").html(args);
+			$('[data-toggle="tooltip"]').tooltip();
+			$(".applyselect").select2();
+		}
+
+		function ListAdd(ID) {
+			ListHeaderAdd(ID)
+		}
+		function ListHeaderAdd(CMSID) {
+        if (CMSID == undefined)
+        {
+            CMSID = 0;
+			}
+			var FYID = Number($("#FYID option:selected").val());
+
+			$.ajax({
+				url: "/PMS/_UOMAdd",
+				type: "Get",
+				data: { src: EncryptQueryStringJSON(@ViewBag.MenuID+"*" + "/PMS/_UOMAdd" + "*" + CMSID + "*" + FYID) },
+                success: function (data)
+                {
+					$("#TagetDivAdd").empty();
+					$("#TagetDivAdd").html(data);
+					$("#ViewModal").modal("show");
+					$(".applyselect").select2();
+                     var form = $("form")
+                .removeData("validator")
+                .removeData("unobtrusiveValidation");
+                    $.validator.unobtrusive.parse(form);
+
+				},
+				error: function (er) {
+					alert(er);
+
+				}
+			});
+            }
+
+		function OnPMSSuccess(obj)
+    {
+			if (obj.Status) {
+				CloseLoadingDialog();
+				SuccessToaster(obj.SuccessMessage);
+				$("#ViewModal").modal("hide");
+			$("#btnSearch").click();
+        }
+		else {
+			CloseLoadingDialog()
+			FailToaster(obj.SuccessMessage);
+        }
+
+		}
+
+		function TypeChange(obj) {
+			var a = $(obj).find("option:selected").val();
+            if (a === "Text" || a =="Percentage") {
+				$(".divauto").hide();
+			} else {
+				$(".divauto").show();
+			}
+		}
+
+	</script>
+
+}

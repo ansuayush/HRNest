@@ -1,0 +1,153 @@
+﻿
+@{
+	ViewBag.Title = "Welcome";
+	Layout = null;// "~/Views/Shared/_UserProcess.cshtml";
+}
+
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link href="https://fonts.googleapis.com/css?family=Roboto:300,400,700&amp;display=swap" rel="stylesheet">
+	<link rel="shortcut icon" href="../images/favicon.png" type="image/x-icon">
+	<link rel="icon" href="@Url.Content("~/assets/design/images/favicon.png")" type="image/png" sizes="50x50">
+	<link href="~/assets/design/css/custom.css" rel="stylesheet" />
+	<link href="~/assets/design/css/style.css" rel="stylesheet" />
+		<link href="~/assets/design/css/responsive.css" rel="stylesheet" />
+
+	<link href="~/assets/design/css/bootstrap.min.css" rel="stylesheet" />
+	<link href="~/assets/design/css/icons.css" rel="stylesheet" />
+	<link href="~/assets/design/css/stellarnav.css" rel="stylesheet" />
+	<script src="~/Scripts/jquery-3.7.0.min.js"></script>
+	<script src="~/assets/design/js/wow.js"></script>
+	<script src="~/assets/design/js/wow.min.js"></script>
+	<script src="~/Areas/DigitalLibrary/DevScript/Common.js"></script>
+	<script src="~/Areas/DigitalLibrary/DevScript/ComboFill.js"></script>
+	<style>
+
+		.divi-delayed-button-1 {
+			transform: translateY(100%);
+		}
+
+		.divi-delayed-button-1 {
+			visibility: hidden;
+			transition: all 400ms ease !important;
+		}
+
+			.divi-delayed-button-1.show-button,
+			.divi-delayed-button-2.show-button {
+				visibility: visible;
+				transform: none;
+			}
+
+		.welcome-body {
+			background: #b7d41b url('../../assets/images/welcom-bg.jpg') no-repeat;
+			position: relative;
+			-webkit-box-align: center;
+			-ms-flex-align: center;
+			align-items: center;
+			display: -webkit-box;
+			display: -ms-flexbox;
+			-webkit-box-pack: center;
+			-ms-flex-pack: center;
+			justify-content: center;
+			background-attachment: fixed;
+			background-size: cover;
+		}
+	</style>
+	<script>
+        var virtualPath = "@System.Configuration.ConfigurationManager.AppSettings["VirtualPath"]";
+        var baseURL= "@System.Configuration.ConfigurationManager.AppSettings["BaseURL"]";
+	</script>
+	<script>
+        var CandidateId = '@ViewBag.CandidateId';
+		var Id = '@ViewBag.Id';
+		var UserManID = '@ViewBag.UserManID';
+		var loggedinUserName = '@ViewBag.UserName';
+		var IPAddress = '@ViewBag.IPAddress';
+	</script>
+	
+</head>
+<body class="welcome-body">
+	<div id="toast">
+		<div id="toasticon"><i></i></div>
+		<div id="toastMsg"></div>
+	</div>
+	<div class="wlc-dtl text-center ">
+		<img src="~/assets/design/images/c3.png" alt="" class="wlc-lgo">
+		<h2>Welcome to C3 INDIA</h2>
+
+		<div id="divi-video-container">
+			<video controls="">
+				<source src="~/assets/video/boy-video.mp4" type="video/mp4">
+				<source src="../video/boy-video.mp4" type="video/webm">
+				Your browser does not support HTML5 video.
+			</video>
+		</div>
+		<div class="skip mt-5 divi-delayed-button-1">
+			<a onclick="RedirectToIntroduction();" href="#" name="Command" value="Add" class="wh-clr btn mtr-o-grn btn-lg "><strong>Next</strong></a>
+		</div>
+
+	</div>
+	<script src="~/assets/design/js/jquery-3.4.1.min.js"></script>
+	<script src="~/assets/design/js/popper.min.js"></script>
+	<script src="~/assets/design/js/bootstrap.min.js"></script>
+	<script src="~/assets/design/js/wow.min.js"></script>
+	<script>
+		wow = new WOW();
+		wow.init();
+	</script>
+
+
+	<script>
+		(function ($) {
+			$(document).ready(function () {
+				$diviVideo = $("#divi-video-container video");
+				videoElement = $("#divi-video-container video")[0];
+				$videoCta = $(".divi-delayed-button-1");
+				$videoCta2 = $(".divi-delayed-button-2");
+
+				$diviVideo.on("timeupdate", function (e) {
+					if (e.target.currentTime >= 157) {
+						$videoCta.addClass("show-button");
+					}
+					if (videoElement.paused || videoElement.ended) {
+						$videoCta2.addClass("show-button");
+					}
+				});
+			});
+		})(jQuery);
+
+		function RedirectToIntroduction() {
+			CommonAjaxMethod(virtualPath + 'UserProcess/UpdateVideoReview', { CandidateId: CandidateId, VideoReviewed: "Introduction" }, 'POST', function (response) {
+				SuccessToaster(response.SuccessMessage);
+				window.location.href = virtualPath + 'UserProcess/Introduction';
+			});
+		}
+		function SuccessToaster(Message) {
+			$("#toastMsg").html(Message);
+			$("#toasticon i").addClass("fas fa-check green-clr ");
+			var x = document.getElementById("toast")
+			x.className = "show";
+			setTimeout(function () { x.className = x.className.replace("show", ""); }, 4000);
+		}
+		function FailToaster(Message) {
+			$("#toastMsg").html(Message);
+			$("#toasticon i").addClass("fas fa-exclamation-triangle red-clr");
+			var x = document.getElementById("toast")
+			x.className = "show toaster-warning";
+			setTimeout(function () { x.className = x.className.replace("show toaster-warning", ""); }, 4000);
+		}
+	</script>
+	<script>
+        var virtualPath = "@System.Configuration.ConfigurationManager.AppSettings["VirtualPath"]";
+             var baseURL= "@System.Configuration.ConfigurationManager.AppSettings["BaseURL"]";
+	</script>
+	<noscript>
+		<p class="NojavaScript">Javascripts is disabled</a></p>
+	</noscript>
+
+
+</body>
+</html>
+

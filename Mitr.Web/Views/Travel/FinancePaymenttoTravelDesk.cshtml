@@ -1,0 +1,381 @@
+﻿
+@{
+	ViewBag.Title = "FinancePaymenttoTravelDesk";
+	Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@System.Web.Optimization.Styles.Render("~/bundle/dataTablecss")
+
+<div class="inner-main defult-height p-3 pb-0">
+	<h1 class="heading-one  mb-3">Travel Payment Through Office Card </h1>
+	<div class="row">
+		<div class="col-sm-12">
+
+			<div class="tab-main mb-5">
+				<ul id="tabs" class="nav nav-tabs " role="tablist">
+					<li class="nav-item"> <a id="tab-A" href="#Pending" onClick="showtable(1);" class="nav-link active ripplelink" data-toggle="tab" role="tab"><i class="fas fa-clock"></i>Pending</a> </li>
+					<li class="nav-item"> <a id="tab-B" href="#Approved" onClick="showtable(2);" class="nav-link ripplelink" data-toggle="tab" role="tab"><i class="fas fa-check"></i>Approved </a></li>
+					<li class="nav-item"> <a id="tab-C" href="#Reject" onClick="showtable(3);" class="nav-link ripplelink" data-toggle="tab" role="tab"><i class="fa fa-ban" aria-hidden="true"></i>Reject</a></li>
+
+
+				</ul>
+				<div id="content" class="tab-content p-0" role="tablist">
+
+					<div id="TargetDiv">
+
+					</div>
+
+
+				</div>
+			</div>
+
+		</div>
+	</div>
+</div>
+<div class="modal fade pop-dgn" id="rjct">
+	<div id="divreject" class="modal-dialog " style="display:none">
+		<div class="modal-content">
+
+			<!-- Modal Header -->
+			<div class="modal-header blk-gdn-btn">
+				<h4 class="modal-title"><i class="fas fa-ban"></i> Reject </h4>
+				<div class="close" data-dismiss="modal">&times;</div>
+			</div>
+
+			<!-- Modal body -->
+			<div class="modal-body">
+				<form>
+					<div class="row">
+						<div class="col-sm-12 form-group">
+							<label>Reason<sup>*</sup></label>
+							<input type="hidden" value="0" id="hdfId" />
+							<textarea class="form-group h-100" id="txtResion" placeholder="Enter"></textarea>
+						</div>
+						<div class="col-sm-12 mt-3 text-center">
+							<button type="submit" class="btn mtr-o-grn btn-l ripplelink RejectRequest  " name="Command" value="Add"> <i class="fa fa-paper-plane" aria-hidden="true"></i> Submit</button>
+							<button type="button" class="btn cnl-btn ripplelink  " data-dismiss="modal"><i class="fas fa-times"></i> Close</button>
+						</div>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+</div>
+<div class="modal fade confirmmsg" id="confirmmsg" role="dialog">
+	<div class="modal-dialog">
+
+		<!-- Modal content-->
+		<div class="modal-content">
+			<div class="modal-header">
+				<h4 class="modal-title">Confirm </h4>
+				<button type="button" class="close" data-dismiss="modal">×</button>
+			</div>
+			<div class="modal-body">
+
+
+				<div class="p-3">
+					<div class="row">
+						<div class="col-sm-6 mx-auto form-group">
+							<label>Finance Entry Date <sup>*</sup></label>
+							<input type="date" id="txtcnfdate" class="form-control">
+						</div>
+
+					</div>
+				</div>
+
+			</div>
+			<div class="modal-footer text-center">
+				<button type="button" class="btn cnl-btn ripplelink  " data-dismiss="modal"><i class="fas fa-times"></i>Close</button>
+				<button type="submit" class="btn mtr-o-grn ripplelink" onclick="btnconfirm()" name="Command" value="Add"><i class="fas fa-save"></i>Save</button>
+
+			</div>
+		</div>
+
+	</div>
+</div>
+@section scripts    {
+	@System.Web.Optimization.Scripts.Render("~/bundle/dataTablesjs")
+
+	@System.Web.Optimization.Scripts.Render("~/bundle/unobtrusivejs")
+	@Html.IncludeVersionedJs(Url.Content("~/assets/design/Scripts/AddInit.js"))
+	@Html.IncludeVersionedJs(Url.Content("~/assets/design/Scripts/ToolTip.js"))
+	<script type="text/javascript">
+		$(document).ready(function () {
+			showtable(1)
+
+		});
+
+		function showtable(tabname) {
+
+			if (tabname == "1") {
+
+
+				ShowLoadingDialog();
+				$.ajax({
+					url: "/Travel/_PendingFinancePaymenttoTravelDesk",
+					type: "Get",
+					async: true,
+					data: { src: EncryptQueryStringJSON(@ViewBag.MenuID+"*" + "/Travel/_PendingFinancePaymenttoTravelDesk") },
+					success: function (data) {
+						debugger;
+						$("#TargetDiv").empty();
+						$("#TargetDiv").html(data);
+						CloseLoadingDialog();
+					//	DatatableScriptsWithColumnSearch("PendingTable");
+
+
+					},
+					error: function (er) {
+						alert(er);
+
+					}
+				});
+
+			}
+			else if (tabname == "2") {
+				ShowLoadingDialog();
+					$.ajax({
+						url: "/Travel/_ApprovedFinancePaymenttoTravelDesk",
+					type: "Get",
+					async: true,
+						data: { src: EncryptQueryStringJSON(@ViewBag.MenuID+"*" + "/Travel/_ApprovedFinancePaymenttoTravelDesk") },
+					success: function (data) {
+								debugger;
+						$("#TargetDiv").empty();
+						$("#TargetDiv").html(data);
+						CloseLoadingDialog();
+						//DatatableScriptsWithColumnSearch("ApprovedTable");
+
+
+					},
+					error: function (er) {
+						alert(er);
+
+					}
+				});
+
+
+
+
+			}
+			else if (tabname == "3") {
+				ShowLoadingDialog();
+					$.ajax({
+						url: "/Travel/_RejectFinancePaymenttoTravelDesk",
+					type: "Get",
+					async: true,
+						data: { src: EncryptQueryStringJSON(@ViewBag.MenuID+"*" + "/Travel/_RejectFinancePaymenttoTravelDesk") },
+					success: function (data) {
+						$("#TargetDiv").empty();
+						$("#TargetDiv").html(data);
+						CloseLoadingDialog();
+					//	DatatableScriptsWithColumnSearch("RejectedTable");
+
+
+					},
+					error: function (er) {
+						alert(er);
+
+					}
+				});
+
+
+			}
+		}
+		function Cancel(obj) {
+
+			var ID = parseInt($(obj).closest('tr').find("td.hdftableid input[type='hidden']").val());
+			$("#hdfId").val(ID);
+			$("#txtResion").val('');
+			$("#divreject").show();
+		}
+		$('.RejectRequest').on('click', function (e) {
+			e.preventDefault();
+			e.stopPropagation();
+			var Id = $("#hdfId").val();
+			var Cancelreason = $("#txtResion").val();
+			if (parseInt(Id) > 0 && Cancelreason != '') {
+				$.ajax({
+					url: "/CommonAjax/CancelTravelfinanceCardJson",
+					type: "Get",
+					async: true,
+					data: { ID: Id, Reason: Cancelreason },
+					success: function (data) {
+						if (data == 1) {
+							SuccessToaster(' Request No  Reject successfully');
+							window.location.reload();
+						}
+						else {
+							FailToaster('Can not Cancel.')
+						}
+					},
+					error: function (er) {
+						alert(er);
+					}
+				});
+			}
+
+
+		});
+		function Confirm(obj) {
+
+			var ID = parseInt($(obj).closest('tr').find("td.hdftableid input[type='hidden']").val());
+			var RowId = obj.id;
+			const myArray = RowId.split("_");
+			var amount = parseInt($(obj).closest('tr').find("td.hdfamount input[type='hidden']").val());
+			var Refundamount = parseInt($(obj).closest('tr').find("td.hdfRefamount input[type='hidden']").val());
+			var date = $("#txtPaidDate_" + parseInt(myArray[1]) + "").val();
+			var Paidamount = parseFloat($("#txtAmount_" + parseInt(myArray[1]) + "").val());
+			if (amount >= Paidamount) {
+				if (ID > 0) {
+					ConfirmMsgBox("Are you sure to approve this Request.", '', function () {
+
+						ApproveRequest(ID, Paidamount, date);
+
+
+					});
+				}
+			}
+			else {
+				ConfirmMsgBox("Paid amount should be equal to less than amount .", '', function () {
+
+
+
+				});
+			}
+
+
+		}
+		function btnconfirm() {
+
+			var date = $("#txtcnfdate").val();
+			if (date != "") {
+				var CondirmChkRequest = [];
+				$('input.selectedId:checkbox:checked').each(function () {
+
+					var ChkId = $(this).attr("id");
+					var myArray = ChkId.split('_');
+					var niewid = parseInt(myArray[1]);
+					var Amount = $("#txtAmount_" + niewid + "").val();
+					var Id = $("#hdfTraveldocId_" + niewid + "").val();
+					var date = $("#txtcnfdate").val();
+					CondirmChkRequest.push({ ["Id"]: Id, Amount, date, niewid });
+
+				});
+
+				var count = 0;
+				var loopcount = 0;
+				var status = false;
+				for (let b = 0; b < CondirmChkRequest.length; b++) {
+
+					count++;
+					loopcount = CondirmChkRequest.length;
+					var hdfamount = $("#txthdfAmount_" + CondirmChkRequest[b].niewid + "").val();
+					status = true;
+
+					if (parseInt(hdfamount) >= parseInt(CondirmChkRequest[b].Amount)) {
+
+						$.ajax({
+							url: "/CommonAjax/ApprovedTravelfinanceCardJson",
+							type: "Get",
+							async: true,
+							data: { ID: CondirmChkRequest[b].Id, Paidamount: CondirmChkRequest[b].Amount, PaidDate: CondirmChkRequest[b].date, UatNo: "" },
+							success: function (data) {
+
+							},
+							error: function (er) {
+								alert(er);
+							}
+						});
+
+					}
+					else {
+						status = false;
+						SuccessToaster(' Finance Entry should be equal to less than amount Line No.' + CondirmChkRequest[b].niewid + '');
+						break;
+
+
+					}
+
+				}
+				if (count == loopcount && status == true) {
+					SuccessToaster('All Request Approve successfully');
+					window.location.reload();
+				}
+				else {
+					window.location.reload();
+				}
+			}
+			else {
+				FailToaster('select date.');
+
+			}
+		}
+
+
+		function ApproveRequest(ID, amount, date) {
+
+			$.ajax({
+				url: "/CommonAjax/ApprovedTravelfinanceCardJson",
+				type: "Get",
+				async: true,
+				data: { ID: ID, Paidamount: amount, PaidDate: date, UatNo:"" },
+				success: function (data) {
+					if (data == 1) {
+						SuccessToaster(' Request Approve successfully');
+						window.location.reload();
+					}
+					else {
+						FailToaster('Can not Approve.')
+					}
+				},
+				error: function (er) {
+					alert(er);
+				}
+			});
+		}
+
+		function Amount(obj) {
+
+			var Id = obj.id;
+			var amount = parseFloat(obj.value);
+			const myArray = Id.split("_");
+			var date = $("#txtPaidDate_" + parseInt(myArray[1]) + "").val();
+			if (amount > 0 && date != "") {
+				document.getElementById("btn_" + parseInt(myArray[1]) + "").disabled = false;
+			}
+
+
+		}
+
+
+		function PaidDate(obj) {
+
+			var Id = obj.id;
+			var date = obj.value;
+			const myArray = Id.split("_");
+			var amount = parseFloat($("#txtAmount_" + parseInt(myArray[1]) + "").val());
+			if (amount > 0 && date != "") {
+				document.getElementById("btn_" + parseInt(myArray[1]) + "").disabled = false;
+			}
+
+
+		}
+
+		function OnSuccess(obj) {
+
+
+			if (obj.Status) {
+
+				SuccessToaster(obj.SuccessMessage);
+				window.location.reload();
+			}
+			else {
+				CloseLoadingDialog();
+				FailToaster(obj.SuccessMessage);
+
+			}
+		}
+
+	</script>
+
+}

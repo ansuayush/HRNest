@@ -1,0 +1,132 @@
+﻿@{
+	ViewBag.Title = "UserOnboarding";
+	Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@section scripts    {
+	@System.Web.Optimization.Scripts.Render("~/bundle/unobtrusivejs")
+	@System.Web.Optimization.Scripts.Render("~/bundle/dataTablesjs")
+	<script src="~/assets/design/Scripts/AddInit.js?v=@clsApplicationSetting.GetWebConfigValue("Version")"></script>
+	<script src="~/Areas/Onboarding/DevScript/OnboardingOnboarding.js"></script>
+	<script>
+        var CandidateId = '@ViewBag.RequestId';
+		var IsEDUser = '@ViewBag.IsED';
+        var loggedinUserid = '@ViewBag.UserId';
+		var loggedinUserName = '@ViewBag.UserName';
+		var UserGrade = '@ViewBag.Grade';
+		var IsPM = '@ViewBag.IsPM';
+		var candodate_Status = false;
+		function ShowUserModal() {
+			$('#adduser').modal({
+				backdrop: 'static',
+				keyboard: false
+			});
+			$("#UserDetails_user_name").closest('div').find('.field-validation-valid').html('');
+		}
+		function CloseAddUserModel() {
+			$('#adduser').modal('hide');
+		}
+	</script>
+
+	<script>
+		var userId = "";
+		var empId = "";
+	function SubmitMasterEmployee(obj) {
+		//if (candodate_Status != true) {
+		CommonAjaxMethod(virtualPath + 'OnboardingRequest/BindUserOnboard', { Id: obj, inputData: 7 }, 'GET', function (response) {
+			var masterEmp = response.data.data.Table2;
+			if (masterEmp.length > 0) {
+				userId = response.data.data.Table2[0].user_id;
+				empId = response.data.data.Table2[0].id;
+			}
+		});
+			var count = 0;
+			if ($("#hdnAddUrl").val()) {
+				window.location.href = virtualPath + 'OnboardingEmployee/RegistrationDetails' + '?src=' + EncryptQueryStringJSON(@ViewBag.MenuID + "*" + "/OnboardingEmployee/RegistrationDetails" + "*" + obj + "*" + empId + "*" + userId);
+			}
+			else {
+				CloseLoadingDialog();
+				FailToaster("Link not found");
+			}
+		//}
+}
+	function ViewApplication(obj) {
+		 
+		var AppIID = obj;// $(obj).closest("tr").find("input:hidden[name=AppIID]").val();
+		$.ajax({
+			url: "/Onboarding/_ViewApplications",
+			type: "Get",
+			data: { src: EncryptQueryStringJSON(@ViewBag.MenuID + "*" + "/Onboarding/_ViewApplications" + "*" + AppIID) },
+			success: function (args) {
+				//CloseLoadingDialog();
+				$("#DivViewApp").empty();
+				$("#DivViewApp").html(args);
+				$("#ViewAppModal").modal('show');
+				return false;
+			},
+			error: function (er) {
+				CloseLoadingDialog()
+			}
+		});
+			return false;
+}
+	</script>
+}
+<div class="container-fluid text-clr">
+	<!-- Start -->
+	<input type="hidden" id="hdnAddUrl" name="hdnAddUrl" value="@Url.Action("ExternalMemberAdd",new { src = clsApplicationSetting.EncryptQueryString(ViewBag.MenuID.ToString() + "*/Grievance/ExternalMemberAdd*0") })" />
+	<div class="inner-main defult-height pb-0">
+		<h1 class="heading-one ">HR Process</h1>
+		<ul class="tab-thrid">
+			<li class="dnactive" onclick="RedirectToClick('Offer');"><a>Offer</a></li>
+			<li class="dnactive" onclick="RedirectToClick('Joiningkit');"><a>Joining Kit</a></li>
+			<li class="dnactive" onclick="RedirectToClick('PreRegistration');"><a>Pre-Registration</a></li>
+			<li class="dnactive" onclick="RedirectToClick('OrientationSchedule');"><a>Orientation Schedule</a></li>
+			<li class="dnactive" onclick="RedirectToClick('Registration');"><a>Registration</a></li>
+			<li class="dnactive" onclick="RedirectToClick('Attachment');"><a>Attachment</a></li>
+			<li class="active" onclick="RedirectToClick('UserOnboarding');"><a>Onboarding</a></li>
+			<li class="dnactive" onclick="RedirectToClick('DeclarationDetails');"><a>Declaration</a> </li>
+			<li class="dnactive" onclick="RedirectToClick('Orientation');"><a>Orientation</a></li>
+		</ul>
+		<div class="row">
+			<div class="col-sm-12">
+				<div class="table-responsive">
+					<div id="tblUserOnboard">
+
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="modal fade pop-dgn" id="ViewAppModal">
+		<div class="modal-dialog modal-lg">
+			<div class="modal-content">
+
+				<div class="modal-header blk-gdn-btn">
+					<h4 class="modal-title">Application Form</h4>
+					<div class="close" data-dismiss="modal">&times;</div>
+				</div>
+				<div class="modal-body">
+					<div id="DivViewApp"></div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="modal fade pop-dgn" id="ViewEmployeeMasterModal">
+		<div class="modal-dialog modal-lg" style="max-width: 90%!important">
+			<div class="modal-content">
+
+				<div class="modal-header blk-gdn-btn">
+					<h4 class="modal-title">Employee Master</h4>
+					<div class="close" data-dismiss="modal">&times;</div>
+				</div>
+				<div class="modal-body">
+					<div id="DivEmployeeMaster"></div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!----End start-->
+</div>
+

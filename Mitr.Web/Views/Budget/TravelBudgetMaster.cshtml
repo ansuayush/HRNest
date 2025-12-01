@@ -1,0 +1,56 @@
+﻿
+@{
+    ViewBag.Title = "TravelBudgetMaster";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="inner-main mb-5">
+  
+    @Html.Partial("ListHeader_Partial", "Travel Budget Master")
+
+    <input type="hidden" id="hdnAddUrl" name="hdnAddUrl" value="@Url.Action("AddTravelBudget",new { src = clsApplicationSetting.EncryptFriendly(ViewBag.MenuID+"*"+"/Budget/AddTravelBudget*0") })" />
+    <div class="table-responsive">
+        <div class="table-responsive">
+            <table class="table mt-0">
+                <thead>
+                    <tr>
+                        <th class="w-33">S.No </th>
+                        <th>Year</th>
+                        <th class="tw-100">Action</th>
+
+                    </tr>
+                </thead>
+                <tbody>
+                    @{ int Count = 0;
+                        string MenuID = "0";
+                        if (ViewBag.MenuID != null)
+                        {
+                            MenuID = ViewBag.MenuID;
+                        }
+
+                    }
+                    @if (Model.TravelBudgetList == null)
+                    {
+                        List
+                        <Mitr.Models.BudgetMaster.TravelBudgetList>
+                            List = new List<Mitr.Models.BudgetMaster.TravelBudgetList>
+                                ();
+                        List.Add(new Mitr.Models.BudgetMaster.TravelBudgetList());
+                        Model.TravelBudgetList = List;
+                    }
+                    @for (int i = 0; i < Model.TravelBudgetList.Count; i++)
+                    {
+                        Count++;
+                        <tr>
+                            <td>@Count</td>
+                            <td>@Model.TravelBudgetList[i].TravelType </td>
+                            <td><a href="@Url.Action("AddTravelBudget",new { src = clsApplicationSetting.EncryptFriendly(ViewBag.MenuID+"*"+"/Budget/AddTravelBudget*"+@Model.TravelBudgetList[i].Id+"") })"><i class="fas fa-eye"></i> View</a></td>
+                        </tr>
+                       
+                    }
+                    </tbody>
+            </table>
+        </div>
+    </div>
+
+</div>

@@ -1,0 +1,66 @@
+﻿@model Mitr.Models.TempDateModal
+
+@{
+    ViewBag.Title = "CompOffReport";
+}
+@section style{
+    @System.Web.Optimization.Styles.Render("~/bundle/dataTablecss")
+}
+<h1 class="heading-one">Compensatory Off</h1>
+
+@Html.Partial("HeaderMsg_Partial")
+<div class="shadow-box p-2">
+
+
+    @using (Ajax.BeginForm("_CompOffReport", "Personnel",
+           new { src = clsApplicationSetting.EncryptQueryString(ViewBag.MenuID.ToString() + "*/Personnel/_CompOffReport") },
+           new AjaxOptions { HttpMethod = "POST", OnSuccess = "ActionOnSuccess", OnFailure = "ActionOnSuccess" },
+       new { @id = "_CompOffReportFrom" })
+       )
+    {
+
+
+        @Html.AntiForgeryToken()
+        <div class="row">
+            <div class="col-sm-3 form-group">
+                <label>	From</label>
+                @Html.TextBoxFor(model => model.StartDate, new { @class = "form-control", @type = "date" })
+                @Html.ValidationMessageFor(model => model.StartDate, "", new { @class = "text-danger" })
+
+            </div>
+            <div class="col-sm-3 form-group ">
+                <label>To </label>
+                @Html.TextBoxFor(model => model.EndDate, new { @class = "form-control", @type = "date" })
+                @Html.ValidationMessageFor(model => model.EndDate, "", new { @class = "text-danger" })
+            </div>
+
+            <div class="col-sm-3 form-group align-self-center ">
+                <button type="submit" id="btnViewSearch" class="btn ripplelink"><i class="fa-paper-plane"></i> Search</button>
+                <button type="button" class="btn cnl-btn ripplelink  pull-right" onclick="ShowLoadingDialog();window.location='@Url.Action("EssPortal",new { src = clsApplicationSetting.EncryptQueryString(ViewBag.MenuID.ToString() + "*/Personnel/EssPortal")})';"><i class="fas fa-times"></i> Cancel</button>
+            </div>
+        </div>
+
+
+    }
+    <div id="TargetDiv"></div>
+
+</div>
+
+@section scripts    {
+    @System.Web.Optimization.Scripts.Render("~/bundle/dataTablesjs")
+    <script src="~/assets/design/Scripts/AddInit.js?v=@clsApplicationSetting.GetWebConfigValue("Version")"></script>
+    @System.Web.Optimization.Scripts.Render("~/bundle/unobtrusivejs");
+
+    <script>
+
+        function ActionOnSuccess(obj) {
+
+            $("#TargetDiv").empty();
+            $("#TargetDiv").html(obj);
+            CloseLoadingDialog();
+            DatatableScripts();
+        }
+
+
+    </script>
+}

@@ -1,0 +1,107 @@
+﻿@model Mitr.Models.Announcement
+@using System.Data
+@Html.Partial("HeaderMsg_Partial")
+
+                @using (Html.BeginForm("AnnouncementAdd", "Master",
+new { src = ViewBag.src }, FormMethod.Post,
+new
+{
+name = "AnnouncementAddForm",
+id = "AnnouncementAddForm",
+@class = "form-horizontal form-label-left input_mask",
+enctype = "multipart/form-data"
+}))
+                {
+                    @Html.AntiForgeryToken()
+                    @Html.HiddenFor(x => Model.AnnouncementID)
+                    
+                            <h1 class="heading-one mb-2">Announcement Details</h1>
+                        
+                        
+                   <div class="inner-main mb-4 ">					
+
+                        
+
+                            <div class="row ">
+                                <div class="col-lg-2 col-md-3 col-sm-6 form-group">
+                                    <label>Title<sup>*</sup> </label>
+                                    @Html.TextBoxFor(model => model.HeadingName, new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(model => model.HeadingName, "", new { @class = "text-danger" })
+
+                                </div>
+                                <div class="col-lg-2 col-md-3 col-sm-6 form-group">
+                                    <label>Start Date<sup>*</sup> </label>
+                                    @Html.TextBoxFor(model => model.StarDate, new { @class = "form-control", @type = "date" })
+                                    @Html.ValidationMessageFor(model => model.StarDate, "", new { @class = "text-danger" })
+
+                                </div>
+                                <div class="col-lg-2 col-md-3 col-sm-6 form-group">
+                                    <label>Expiry Date<sup>*</sup> </label>
+                                    @Html.TextBoxFor(model => model.ExpiryDate, new { @class = "form-control", @type = "date" })
+                                    @Html.ValidationMessageFor(model => model.ExpiryDate, "", new { @class = "text-danger" })
+
+                                </div>
+                                <div class="col-lg-2 col-md-3 col-sm-6 form-group">
+                                    <label>Location</label>
+                                    <select class="form-control applyselect" multiple id="@Html.IdFor(model => model.LocationID )" name="@Html.NameFor(model => model.LocationID)">
+                                        @if (ViewBag.LocationList != null)
+                                        {
+                                            foreach (DataRow item in ViewBag.LocationList.Tables[0].Rows)
+                                            {
+                                                <option @(!string.IsNullOrEmpty(Model.LinkedLocationID) && ("," + Model.LinkedLocationID + ",").Contains("," + item["ID"].ToString() + ",") ? "selected" : "") value="@item["ID"]">@item["Location_name"]</option>
+                                            }
+                                        }
+                                    </select>
+                                </div>                                
+                                <div class="col-lg-2 col-md-3 col-sm-6 form-group">
+                                    <label>Upload Attachment </label>
+                                    @Html.HiddenFor(modal => modal.AttachmentID)
+                                    <div id="divAttachmentShow" style="@(Model.AttachmentID > 0 ? "" : "display:none")">
+                                        <a class="achor-link" target="_blank" href="~/Attachments/@Model.AttachmentID@Model.ContentType">@Model.FileName</a>
+                                        <a style="color:red;cursor:pointer;" onclick="DeleteFile(@Model.AttachmentID);"><i class="fa fa-times" aria-hidden="true"></i></a>
+                                    </div>
+                                    <div id="divAttachmentUpload" style="@(Model.AttachmentID > 0 ? "display:none" : "")">
+                                        @Html.TextBoxFor(model => model.UploadAttachment, new { @class = "form-control", @type = "file", @onchange = "ValidateFile('UploadAttachment')" });
+                                        @Html.ValidationMessageFor(model => model.UploadAttachment, "", new { @class = "text-danger" })
+                                    </div>
+                                </div>
+								
+								<div class="col-lg-12  form-group">
+                                    <label>Description  </label>
+                                    @Html.TextAreaFor(model => model.Description, new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(model => model.Description, "", new { @class = "text-danger" })
+
+                                </div>
+                            </div>
+                        </div>
+                    
+					<div class="text-center mt-3-mb-5">
+                            <button type="button" class="btn cnl-btn ripplelink pull-right" onclick="ShowLoadingDialog();window.location='@Url.Action("AnnouncementList", new { src = clsApplicationSetting.EncryptQueryString(ViewBag.MenuID.ToString() + "*/Master/AnnouncementList") })';"><i class="fas fa-times"></i> Cancel</button>
+                            @if (Model.AnnouncementID != 0)
+                            {
+                                <button type="submit" class="btn mtr-g-grn btn-l ripplelink  pull-right" name="Command" value="Update"><i class="fas fa-pencil-alt"></i> Update</button>
+                            }
+                            else
+                            {
+                                <button type="submit" class="btn mtr-o-grn 	pull-right" name="Command" value="Add"><i class="fa fa-paper-plane" aria-hidden="true"></i> Submit</button>
+                            }
+					</div>
+                }
+
+
+          
+
+
+@section scripts    {
+    <script src="~/assets/design/Scripts/AddInit.js?v=@clsApplicationSetting.GetWebConfigValue("Version")"></script>
+    @System.Web.Optimization.Scripts.Render("~/bundle/unobtrusivejs")
+    <script>
+         function DeleteFile() {
+            ConfirmMsgBox('Do you really Want to Change Attachemnt?', '', function () {
+                $("#divAttachmentUpload").show();
+                $("#divAttachmentShow").hide();
+                $("#AttachmentID").val('0');
+            });
+    }
+    </script>
+}

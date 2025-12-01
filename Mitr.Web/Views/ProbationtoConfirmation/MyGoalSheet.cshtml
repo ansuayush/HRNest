@@ -1,0 +1,219 @@
+﻿@model  PTC.ProbationObjectives
+@{
+
+}
+
+<div class="inner-main p-3 defult-height">
+	<h1 class="heading-one mb-2">My Probation Objective Entry</h1>
+	<div class="row text-clr">
+		<div class="col-sm-3 form-group align-self-end">
+			<label>Employee Name </label>
+			<p>@Model.EMPName</p>
+		</div>
+		<div class="col-sm-1 form-group align-self-end">
+			<label>Employee Code </label>
+			<p>@Model.EMPCode</p>
+		</div>
+		<div class="col-sm-2 form-group align-self-end">
+			<label>Supervisor Name </label>
+			<p>@Model.AppraiserName</p>
+		</div>
+		<div class="col-sm-3 form-group align-self-end">
+			<label>Designaton </label>
+			<p>@Model.Designation</p>
+		</div>
+		<div class="col-sm-2 form-group align-self-end">
+			<label>Probation  End Date</label>
+			<p>@Model.ProbationDate</p>
+		</div>
+
+	</div>
+
+	@using (Ajax.BeginForm("MyGoalSheet", "ProbationtoConfirmation",
+						new { src = ViewBag.src },
+						new AjaxOptions { HttpMethod = "POST", OnSuccess = "OnSuccessModifyHierarchy" },
+					new { @id = "_ModifyHierarchyFrom" })
+					)
+	{
+		    @Html.AntiForgeryToken()
+		    @Html.HiddenFor(model => model.EMPID)
+		    @Html.HiddenFor(model => model.Id)
+		    @Html.HiddenFor(model => model.Approved)
+		<div class="row">
+			<div class="col-sm-12">
+				<table class="table  mt-2 vt-a">
+					<thead>
+						<tr>
+							<th width="33" class="text-center">S.No</th>
+							<th >KPA</th>
+							<th >Probation Objective</th>
+							<th width="50" >UOM</th>
+							<th width="50" class="text-right">Weightage</th>
+							<th width="50" class=" text-right">Target</th>
+
+
+						</tr>
+					</thead>
+					<tbody>
+					<tbody>
+						@{ int procount = 0;}
+						@if (Model.objectivesperiods != null)
+						{
+							for (int i = 0; i < Model.objectivesperiods.Count; i++)
+							{
+								procount++;
+
+								<tr>
+									<td class="text-center">@procount</td>
+									<td class="hdfobjid">
+										@Model.objectivesperiods[i].KPA
+										@Html.HiddenFor(modal => modal.objectivesperiods[i].Id)
+									</td>
+									<td>
+										<div class="d-flex">
+											<p class="td-text">@Model.objectivesperiods[i].ProbationObjective		</p>
+											<i class="fas fa-info-circle td-info w-20" data-placement="top" data-toggle="tooltip" title="" data-original-title="@Model.objectivesperiods[i].Remarks"></i>
+										</div>
+									</td>
+
+
+									<td>@Model.objectivesperiods[i].UOMType</td>
+									<td class="text-right">@Model.objectivesperiods[i].Weights</td>
+                                    <td>
+                                        @if (Model.objectivesperiods[i].UOMType == "Text")
+                                        {
+                                            @Html.TextBoxFor(model => model.objectivesperiods[i].Target, new { @class = "form-control text-right", @readonly = "readonly" })
+                                        }
+                                        else
+                                        {
+                                            @Html.TextBoxFor(model => model.objectivesperiods[i].Target, new { @class = "form-control text-right",@type="number" })
+                                            @Html.ValidationMessageFor(model => model.objectivesperiods[i].Target, "", new { @class = "text-danger" })
+                                        }
+
+                                    </td>
+
+
+
+								</tr>
+							}
+						}
+
+
+
+
+
+					</tbody>
+
+
+				</table>
+			</div>
+
+			<div class="col-sm-8 mx-auto">
+				<div class="row">
+					<div class="col-sm-12 form-group">
+						<strong>Overall Supervisor Comments</strong>
+						<hr class="mb-2 mt-1">
+						@Html.TextAreaFor(model => model.Commentors, new { @class = "form-control h-100 maxSize[1200]", @maxlength = "1200", @disabled = "disabled" })
+					</div>
+					<div class="col-sm-12 form-group">
+						<strong>Overall Comment</strong>
+						<hr class="mb-2 mt-1">
+
+						@Html.TextAreaFor(model => model.UserComment, new { @class = "form-control h-100 maxSize[1200]", @maxlength = "1200", @placeholder = "Enter Comment", onkeypress = "return blockSpecialChar(event)" })
+					</div>
+
+
+
+
+					@if (Model.resubmitLists != null)
+					{
+
+						if (Model.resubmitLists.Count > 0)
+						{
+							<div class="col-sm-12 form-group">
+								<strong>Resubmission Comment</strong>
+								<hr class="mb-2 mt-1">
+								<table class="table  table-bordered dt-responsive nowrap tbltick mb-0 new_width">
+									<tbody>
+										<tr>
+											<th width="100">Date</th>
+											<th width="200">Commented By</th>
+											<th>Comment</th>
+										</tr>
+
+										@if (Model.resubmitLists.Count > 0)
+										{
+											foreach (var item in Model.resubmitLists)
+											{
+												<tr>
+													<td>@item.createdat</td>
+													<td>@item.CommentBy</td>
+													<td>@item.Comment</td>
+												</tr>
+											}
+
+										}
+
+
+
+
+									</tbody>
+								</table>
+							</div>
+						}
+
+					}
+
+					<div class="col-sm-12 text-center">
+						@if (Model.Approved == 2 || Model.Approved == 4)
+						{
+							<button type="submit" class="btn mtr-o-grn btn-l ripplelink pull-right" name="Command" value="Save"><i class="fas fa-save"></i> Save</button>
+							<button type="submit" class="btn mtr-o-grn btn-l ripplelink pull-right" name="Command" value="Submit"><i class="fa fa-paper-plane" aria-hidden="true"></i> Submit</button>
+						}
+
+
+						<button type="button" class="btn cnl-btn btn-l ripplelink" onclick="ShowLoadingDialog();window.location='@Url.Action("MyGoalSheetList", new { src = clsApplicationSetting.EncryptQueryString(ViewBag.MenuID.ToString() + "*/ProbationtoConfirmation/MyGoalSheetList*0*2")  })';"><i class="fas fa-times"></i>Close</button>
+
+
+					</div>
+				</div>
+			</div>
+
+
+		</div>
+	}
+</div>
+@section scripts    {
+	@System.Web.Optimization.Scripts.Render("~/bundle/unobtrusivejs")
+	@Html.IncludeVersionedJs(Url.Content("~/assets/design/scripts/AddInit.js"))
+
+	<script>
+
+		function OnSuccessModifyHierarchy(obj) {
+			CloseLoadingDialog();
+			if (obj.Status) {
+				SuccessToaster(obj.SuccessMessage);
+		         if(obj.StatusCode==2){
+		        window.location.href = obj.RedirectURL
+		       }
+		   else{
+
+	        window.location.href = obj.RedirectURL
+		}
+			}
+			else {
+				FailToaster(obj.SuccessMessage);
+			}
+		}
+
+		function blockSpecialChar(e){
+
+        var k;
+        document.all ? k = e.keyCode : k = e.which;
+		if(k==39){
+		event.preventDefault();
+		}
+
+        }
+	</script>
+}

@@ -1,0 +1,185 @@
+﻿@model Mitr.Models.EmployeeExit.ResignationRequest
+@{
+    ViewBag.Title = "OrganisationExit";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@using (Ajax.BeginForm("OrganisationExit", "ExitEmployee",
+     new { src = clsApplicationSetting.EncryptQueryString(ViewBag.MenuID.ToString() + "*/ExitEmployee/OrganisationExit") },
+     new AjaxOptions { HttpMethod = "POST", OnSuccess = "BindTarget", OnFailure = "CloseLoadingDialog()", OnBegin = "ShowLoadingDialog();" },
+ new { @id = "OrganisationExitFrom" })
+ )
+{
+    <div class="inner-main defult-height p-3 pb-0">
+        <h1 class="heading-one mb-3">Organisation Exit </h1>
+        <div class="row">
+            <div class="col-xl-3 col-lg-4  wh-575 form-group">
+                <label>Request No</label>
+                <p>@Model.sRequestno</p>
+            </div>
+            <div class="col-xl-3 col-lg-4  wh-575 form-group">
+                <label>Request Date</label>
+                <p>@Model.sRequestdate</p>
+            </div>
+            <div class="col-sm-12"></div>
+            <div class="col-xl-3 col-lg-4 col-sm-6 wh-575 form-group">
+                <label>Employee Name <sup>*</sup></label>
+                <select class="form-control applyselect Mandatory" id="ddlEMP" onchange="HideErrorMessage(this)">
+                </select>
+                <span id="spddlEMP" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+            </div>
+            <div class="col-xl-3 col-lg-4 col-sm-6  wh-575 form-group">
+                <label>Relieving Date <sup>*</sup></label>
+                <input type="date" id="txtRDate" class="form-control Mandatory" onchange="HideErrorMessage(this)">
+                <span id="sptxtRDate" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+            </div>
+            <div class="col-sm-12"></div>
+            <div id="divEMPInfo" class="col-xl-6 col-lg-8 form-group box red" style="display: none;">
+                <ul class="list-unstyled inline-li m-0 rqt-dtl">
+                    <li></li>
+                    <li>
+                        <label class="lbl-clr" id="lblempname">	</label>
+                        <spna id="spempcode"></spna>  <span class="space-line">|</span> <span id="splocation"></span>
+                    </li>
+                    <li><label>Department</label><span id="spdept"></span></li>
+                    <li><label>Designation</label><span id="spdesg"></span> </li>
+                    <li>
+                        <label>Supervisor</label><span id="sphod"></span>
+                        <input type="hidden" id="hdfEMPID" />
+                    </li>
+                </ul>
+            </div>
+
+            <div class="col-sm-12"></div>
+            <div class="col-xl-6 col-lg-8  form-group">
+                <label>Reason for Termination <sup>*</sup></label>
+                <textarea placeholder="Enter Reason" class="form-control Mandatory" id="txtReason" onchange="HideErrorMessage(this)"></textarea>
+                <span id="sptxtReason" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+            </div>
+            <div class="col-sm-12 text-left">
+                <button type="button" name="Command" onclick="btnstart()" value="Add" class="btn mtr-o-grn btn-l ripplelink "> <i class="fa fa-paper-plane" aria-hidden="true"></i>Start Exit Process<span class="ink animate" style="height: 143px; width: 143px; left: 21.5px; top: -49.5px;"></span></button>
+                <button type="button" class="btn cnl-btn btn-l ripplelink"><i class="fas fa-times"></i>Close</button>
+            </div>
+        </div>
+    </div>
+}
+<div class="modal fade" id="int1" style="display:none">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content ">
+
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <h4 class="modal-title">Instructions</h4>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+
+            <!-- Modal body -->
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-sm-12 form-group">
+                        <h3 class="subheading">Instructions for Asset Handover</h3>
+                        <div class="table-responsive">
+                            <div id="tblInstructions">
+
+                            </div>
+
+                        </div>
+                    </div>
+                    <div class="col-sm-3 form-group">
+                        <label>Relieving Date</label>
+                        <input type="Date" id="txtRelievingDate" class="form-control" placeholder="Enter Task" name="">
+                    </div>
+                    <div class="col-sm-3 align-self-center">
+                        <input type="checkbox" id="annoance" name="Feedback">
+                        <label for="annoance" class="mb-0"> Deactivate Exit Survey</label>
+                    </div>
+                    <div class="col-sm-12">
+                        <h3 class="subheading">Instructions for Task Handover</h3>
+                    </div>
+                    <div class="col-sm-3 form-group">
+                        <label>Task <sup>*</sup></label>
+                        <input type="text" class="form-control" placeholder="Enter Task" name="" id="txttask" onchange="HideErrorMessage(this)">
+                        <span id="sptxttask" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+                    </div>
+                    <div class="col-sm-3 wh-575 form-group">
+                        <label>Select Employee  <sup>*</sup></label>
+                        <select class="form-control applyselect Mandatory" id="ddlEMPT" onchange="HideErrorMessage(this)">
+                        </select>
+                        <span id="spddlEMPT" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+                    </div>
+                    <div class="col-sm-2 wh-575 form-group">
+                        <label>Priority  <sup>*</sup></label>
+                        <select class="form-control applyselect Mandatory" id="ddlP" onchange="HideErrorMessage(this)">
+                            <option>Select</option>
+                            <option>High</option>
+                            <option>Medium</option>
+                            <option>Low</option>
+                        </select>
+                        <span id="spddlP" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+                    </div>
+                    <div class="col-sm-4 form-group align-self-end ">
+                        <button type="button" class="btn green-clr  m-0" onclick="AddHandoverTask();"><i class="fas fa-plus"></i>Add</button>
+                    </div>
+                    <div class="col-sm-12 form-group">
+                        <div class="table-responsive">
+                            <div id="tblHandOvertask">
+
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-12 form-group">
+                        <label>Direct Confirmation Remarks</label>
+                        <textarea class="form-control" placeholder="Enter Instructions " id="txtDCRemark"></textarea>
+                    </div>
+                    <div class="col-sm-12">
+                        <h3 class="subheading">Attachment</h3>
+                    </div>
+                    <div class="col-sm-3 form-group">
+                        <label>Upload</label>
+                        <input type="file" placeholder="Enter" class="form-control" id="fileAttachmentScopeofwork" onchange="UploadAttachmentFileScope()">
+                        <input type="hidden" id="hdnfileAttachmentScopeActualName" />
+                        <input type="hidden" id="hdnfileAttachmentScopeNewName" />
+                        <input type="hidden" id="hdnfileAttachmentScopeFileUrl" />
+                    </div>
+                    <div class="col-sm-5 form-group">
+                        <label>Description</label>
+                        <textarea class="form-control maxSize[1200]" placeholder="Enter Description" id="txtDescription"></textarea>
+                    </div>
+                    <div class="col-sm-4 form-group align-self-end ">
+                        <button type="button" class="btn green-clr  m-0" onclick="AddDocuments();"><i class="fas fa-plus"></i>Add</button>
+                    </div>
+                    <div class="col-sm-12 form-group">
+                        <div class="table-responsive">
+                            <div id="tblUploadingDocument">
+
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+                <!-- Modal footer -->
+                <div class="p-0 text-center ">
+                    <button type="button" class="btn cnl-btn ripplelink" data-dismiss="modal"><i class="fas fa-times"></i>Close</button>
+                    <button type="submit" name="Command" value="Add" class="btn blk-gdn-btn btn-l ripplelink " data-toggle="modal" data-target="#mailer1"><i class="fas fa-envelope-open"></i> Mailer</button>
+                    <button type="button" name="Command" value="Save" class="btn mtr-o-grn btn-l" onclick="SaveInstrunction()"><i class="fas fa-paper-plane" "></i> Submit</button>
+                    @*<a href="../other-department/admin-it_noc-request-list.html" class="btn mtr-o-grn btn-l "><i class="fas fa-paper-plane"></i>Submit</a>*@
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@section scripts    {
+    @System.Web.Optimization.Scripts.Render("~/bundle/unobtrusivejs")
+    @System.Web.Optimization.Scripts.Render("~/bundle/dataTablesjs")
+
+    <script src="~/assets/design/scripts/DevScriptExit/HROrganizationTerminate.js"></script>
+    <script src="~/assets/design/Scripts/AddInit.js?v=@clsApplicationSetting.GetWebConfigValue("Version")"></script>
+    <script>
+        function Reload() {
+          mId = "@clsApplicationSetting.EncryptQueryString(ViewBag.MenuID.ToString() + " * /ExitEmployee/OrganisationExit")";
+            url = "/ExitEmployee/OrganisationExit?src=" + mId ;
+           window.location.href = url;
+      }
+    </script>
+
+
+}

@@ -1,0 +1,407 @@
+﻿
+@model Mitr.Models.InitiateRecruitment
+@using System.Data
+@{
+    ViewBag.Title = "RecruitmentRequest";
+}
+
+@using (Ajax.BeginForm("InitiateRecruitment", "Recruitment",
+      new { src = ViewBag.src },
+      new AjaxOptions { HttpMethod = "POST", OnSuccess = "InitiateRecruitmentSuccess", OnFailure = "InitiateRecruitmentSuccess" },
+  new { @id = "InitiateRecruitmentSuccessFrom", enctype = "multipart/form-data" })
+  )
+{
+    @Html.HiddenFor(x => Model.RecruitmentRequestID)
+    <div class="inner-main mb-5 pb-0">
+        <h1 class="heading-one ">Initiate Recruitment  <span>Request No : @Model.RecruitmentRequestID</span></h1>
+        <h2 class="header-two"><i class="fas fa-info-circle"></i>Project Information</h2>
+        <div class="row">
+            <div class="col-lg-3 col-md-4 col-sm-6  form-group">
+                <label>Project Name</label>
+                @Html.TextBoxFor(x => Model.ProjectName, new { @class = "form-control", @readonly = "readonly" })
+            </div>
+            <div class="col-lg-3 col-md-4 col-sm-6  form-group">
+                <label>Project Manager</label>
+                @Html.HiddenFor(x => Model.ManagerID)
+                @Html.TextBoxFor(x => Model.Managername, new { @class = "form-control", @readonly = "readonly" })
+
+            </div>
+            <div class="col-lg-3 col-md-4 col-sm-6  form-group">
+                <label>Start Date</label>
+                @Html.TextBoxFor(x => Model.StartDate, new { @class = "form-control", @readonly = "readonly" })
+            </div>
+            <div class="col-lg-3 col-md-4 col-sm-6  form-group">
+                <label>End Date</label>
+                @Html.TextBoxFor(x => Model.EndDate, new { @class = "form-control", @readonly = "readonly" })
+            </div>
+        </div>
+        <h2 class="header-two"><i class="fas fa-users"></i>Hiring Details</h2>
+        <div class="row">
+            <div class="col-lg-3 col-md-4 col-sm-6  form-group">
+                <label>Job Title</label>
+                @Html.HiddenFor(x => Model.JobID)
+                @Html.TextBoxFor(x => Model.Title, new { @class = "form-control", @readonly = "readonly" })
+            </div>
+            <div class="col-lg-3 col-md-4 col-sm-6  form-group">
+                <label>Due Date</label>
+                @Html.TextBoxFor(x => Model.DueDate, new { @class = "form-control", @type = "date" })
+                @Html.ValidationMessageFor(model => model.DueDate, "", new { @class = "text-danger" })
+            </div>
+            <div class="col-lg-3 col-md-4 col-sm-6  form-group">
+                <label>%Time</label>
+                <input class="form-control" id="" name="" type="Number" value="" placeholder="Enter %Time">
+            </div>
+            <div class="col-lg-3 col-md-4 col-sm-6  form-group">
+                <label>Thematic Area</label>
+                @Html.HiddenFor(x => Model.ThemAreaID)
+                @Html.TextBoxFor(x => Model.ThematicArea, new { @class = "form-control", @readonly = "readonly" })
+            </div>
+            <div class="col-lg-3 col-md-4 col-sm-6  form-group">
+                <label>Location</label>
+                <select class="form-control applyselect ddLocation" id="@Html.IdFor(model => model.LocationID)" name="@Html.NameFor(model => model.LocationID)">
+                    @if (ViewBag.LocationList != null)
+                    {
+                        foreach (Mitr.Models.MiscLocation item in ViewBag.LocationList)
+                        {
+                            <option @(Model.LocationID == item.LocationID ? "selected" : "") value="@item.LocationID">@item.LocationName</option>
+                        }
+                    }
+                </select>
+            </div>
+        </div>
+        <h2 class="header-two"><i class="fas fa-file-alt"></i>JD Details</h2>
+        <div class="row">
+            <div class="col-lg-4 col-md-4 col-sm-6  form-group">
+                <label>Qualification</label>
+                @Html.TextAreaFor(x => Model.Qualification, new { @class = "form-control", @readonly = "readonly" })
+
+            </div>
+            <div class="col-lg-4 col-md-4 col-sm-6  form-group">
+                <label>Skills</label>
+                @Html.TextAreaFor(x => Model.Skill, new { @class = "form-control", @readonly = "readonly" })
+            </div>
+            <div class="col-lg-4 col-md-4 col-sm-6  form-group">
+                <label>Experience</label>
+                @Html.TextAreaFor(x => Model.Experience, new { @class = "form-control", @readonly = "readonly" })
+            </div>
+            <div class="col-lg-12 col-md-4 col-sm-6  form-group">
+                <label>Job Description</label>
+                @Html.TextAreaFor(x => Model.JobDescription, new { @class = "form-control", @readonly = "readonly" })
+            </div>
+
+            <div class="col-lg-3 col-md-4 col-sm-6  form-group">
+                <label>Staff Category</label>
+                <select class="form-control applyselect" id="@Html.IdFor(x => Model.StaffCategory)" name="@Html.NameFor(x => Model.StaffCategory)">
+                    <option>Select Staff Category</option>
+                    <option>Category</option>
+                    <option>Category</option>
+                    <option>Category</option>
+                    <option>Category</option>
+                </select>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-3">
+                <input type="checkbox" id="ric" name="@Html.NameFor(x => Model.ChkType)" @(string.IsNullOrEmpty(Model.ChkType) ? "checked" : "") value="Internal" class="chkRecruitment">
+                <label for="ric"> Recommend Internal Candidate </label>
+            </div>
+            <div class="col-sm-3">
+                <input type="checkbox" id="peh" name="@Html.NameFor(x => Model.ChkType)" value="External" class="chkRecruitment">
+                <label for="peh"> Process for External Hiring </label>
+            </div>
+
+        </div>
+        <div class="row divforinternalonly">
+            <div class="col-md-7">
+                <div id="divSelectedCandidate"></div>
+            </div>
+            <div class="col-sm-5">
+                <strong>Approval by</strong>
+                @if (Model.InternalLevelList == null)
+                {
+                    List<Mitr.Models.InternalLevel> Lis = new List<Mitr.Models.InternalLevel>();
+                    Mitr.Models.InternalLevel Ob = new Mitr.Models.InternalLevel();
+                    for (int i = 1; i <= 6; i++)
+                    {
+                        if (i < 6)
+                        {
+                            Ob = new Mitr.Models.InternalLevel();
+                            Ob.DocType = "Level " + i;
+                            Lis.Add(Ob);
+                        }
+                        else
+                        {
+                            Ob = new Mitr.Models.InternalLevel();
+                            Ob.DocType = "Final";
+                            Lis.Add(Ob);
+                        }
+                    }
+                    Model.InternalLevelList = Lis;
+
+                }
+                <table class="table mt-2">
+                    <tbody>
+                        @for (int i = 0; i < Model.InternalLevelList.Count; i++)
+                        {
+
+                            <tr>
+                                <td>
+                                    <strong>@Model.InternalLevelList[i].DocType</strong>
+
+                                    @Html.HiddenFor(x => Model.InternalLevelList[i].DocType)
+                                </td>
+                                @if (Model.InternalLevelList[i].DocType != "Final")
+                                {
+                                    <td>
+                                        <select class="form-control applyselect" id="@Html.IdFor(model => Model.InternalLevelList[i].ApprovalEMPID1)" name="@Html.NameFor(model => Model.InternalLevelList[i].ApprovalEMPID1)">
+                                            <option value="0">Select</option>
+                                            @if (Model.EmployeeList != null)
+                                            {
+                                                foreach (Mitr.Models.MiscEmployee item in Model.EmployeeList)
+                                                {
+                                                    <option value="@item.EMPID">@item.EMPName</option>
+                                                }
+                                            }
+                                        </select>
+                                    </td>
+                                    <td>
+                                        <select class="form-control applyselect" id="@Html.IdFor(model => Model.InternalLevelList[i].ApprovalEMPID2)" name="@Html.NameFor(model => Model.InternalLevelList[i].ApprovalEMPID2)">
+                                            <option value="0">Select</option>
+                                            @if (Model.EmployeeList != null)
+                                            {
+                                                foreach (Mitr.Models.MiscEmployee item in Model.EmployeeList)
+                                                {
+                                                    <option value="@item.EMPID">@item.EMPName</option>
+                                                }
+                                            }
+                                        </select>
+                                    </td>
+                                }
+                                else
+                                {
+                                    <td>
+                                        <select class="form-control applyselect ddfinalDecision" id="@Html.IdFor(model => Model.InternalLevelList[i].ApprovalEMPID1)" name="@Html.NameFor(model => Model.InternalLevelList[i].ApprovalEMPID1)">
+                                            <option value="0">Select</option>
+                                            @if (Model.EmployeeList != null)
+                                            {
+                                                foreach (Mitr.Models.MiscEmployee item in Model.EmployeeList)
+                                                {
+                                                    <option value="@item.EMPID">@item.EMPName</option>
+                                                }
+                                            }
+                                        </select>
+                                    </td>
+                                }
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-12 text-center mt-2">
+                <button type="button" class="btn mtr-o-grn btn-l ripplelink pull-right btnStaff"><i class="fas fa-user-check"></i>Staff Availability</button>
+
+                <button type="button" class="btn cnl-btn ripplelink  pull-right" onclick="ShowLoadingDialog();window.location='@Url.Action("RecruitmentPendancy", new { src = clsApplicationSetting.EncryptQueryString(ViewBag.MenuID.ToString() + "*/Recruitment/RecruitmentPendancy") })';"><i class="fas fa-times"></i> Cancel</button>
+                <button type="button" id="btnForward" class="btn mtr-o-grn btn-l ripplelink pull-right"><i class="fas fa-forward"></i>Forward To Manager</button>
+                <button type="submit" style="display:none;" id="btnFinalForward" name="Command" value="Forward"></button>
+            </div>
+        </div>
+    </div>
+
+
+}
+<div class="modal fade pop-dgn" id="staffavailabilityModal">
+    <div class="modal-dialog modal-xl	">
+        <div class="modal-content">
+            <!-- Modal Header -->
+            <div class="modal-header blk-gdn-btn">
+                <h4 class="modal-title"><i class="fas fa-user-check"></i>Staff Availability</h4>
+                <div class="close" data-dismiss="modal">&times;</div>
+            </div>
+            <!-- Modal body -->
+            <div class="modal-body p-1">
+
+                <div id="divTargetStaff"> </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@section scripts    {
+
+    @System.Web.Optimization.Scripts.Render("~/bundle/unobtrusivejs")
+    <script src="~/assets/design/Scripts/AddInit.js?v=@clsApplicationSetting.GetWebConfigValue("Version")"></script>
+    <script>
+
+         $('#btnForward').on('click', function (e) {
+             e.preventDefault();
+             e.stopPropagation();
+             var chk = $(".chkRecruitment:checked").val();
+             var a = $(".ddfinalDecision option:selected").val();
+             if (a === "0" && chk=="Internal") {
+                 swal("Final Decision Maker Can't be blank", "");
+             }
+             else {
+                 ConfirmMsgBox('Are you sure want to Submit', '', function () {
+                     $("#btnFinalForward").click();
+                 });
+             }
+    });
+
+
+
+    $(document).ready(function () {
+        SelectedCandidate_InternalList();
+    });
+
+        $(".txtSearch").on('keyup keypress', function (e) {
+            var value = $(this).val().toLowerCase();
+            $("#tblInternalStaff tbody tr").filter(function () {
+                $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+            });
+        });
+
+        $('.chkRecruitment').bind("change", function () {
+            var a = $(this).val();
+            $('input[name="' + this.name + '"]').not(this).prop('checked', false);
+            if (a === "Internal") {
+                $(".btnStaff").show();
+                    $(".divforinternalonly").show();
+            }
+            else {
+                $(".btnStaff").hide();
+                $(".divforinternalonly").hide();
+            }
+        });
+
+        $('.btnStaff').on('click', function (e) {
+    e.preventDefault();
+            e.stopPropagation();
+            var obj = $('.ddLocation');
+    StaffAvailabilityList(obj);
+});
+
+        $('.ddLocation').bind("change", function () {
+    StaffAvailabilityList(this);
+        });
+
+        function StaffAvailabilityList(obj) {
+
+                ShowLoadingDialog();
+            var LocationID = $(obj).find("option:selected").val();
+
+                $.ajax({
+                    url: "/Recruitment/_InternalStaffList",
+                    type: "Get",
+                    data: { src: EncryptQueryStringJSON(@ViewBag.MenuID+"*" + "/Recruitment/_InternalStaffList" + "*" + @ViewBag.ProjectDetID+"*" + LocationID+"*"+@Model.RecruitmentRequestID) },
+                    success: function (data) {
+                        $("#divTargetStaff").empty();
+                        $("#divTargetStaff").html(data);
+                        $("#staffavailabilityModal").modal('show');
+                        CloseLoadingDialog();
+                        $(".applyselect").select2();
+                        $(".txtSearch").on('keyup keypress', function (e) {
+                            var value = $(this).val().toLowerCase();
+                            $("#tblInternalStaff tbody tr").filter(function () {
+                                $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+                            });
+                        });
+
+                    },
+                    error: function (er) {
+                        alert(er);
+                        CloseLoadingDialog();
+
+                    }
+                });
+
+    }
+
+
+
+         function SelectedCandidate_InternalList() {
+
+                ShowLoadingDialog();
+                $.ajax({
+                    url: "/Recruitment/_SelectedCandidate_InternalList",
+                    type: "Get",
+                    data: { src: EncryptQueryStringJSON(@ViewBag.MenuID+"*" + "/Recruitment/_SelectedCandidate_InternalList" + "*" + @Model.RecruitmentRequestID+"*Y") },
+                    success: function (data) {
+                        $("#divSelectedCandidate").empty();
+                        $("#divSelectedCandidate").html(data);
+                        CloseLoadingDialog();
+
+
+                    },
+                    error: function (er) {
+                        alert(er);
+                        CloseLoadingDialog();
+
+                    }
+                });
+
+    }
+
+
+    function InternalStaffSuccess(obj)
+    {
+        if (obj.Status) {
+            SuccessToaster(obj.SuccessMessage);
+            $("#staffavailabilityModal").modal('hide');
+              SelectedCandidate_InternalList();
+
+        }
+        else {
+            FailToaster(obj.SuccessMessage);
+        }
+
+                }
+
+         function InitiateRecruitmentSuccess(obj)
+         {
+
+            if (obj.Status) {
+                SuccessToaster(obj.SuccessMessage);
+                window.location.href = obj.RedirectURL;
+
+
+            }
+            else {
+            FailToaster(obj.SuccessMessage);
+                 }
+
+            }
+
+
+    function DeleteInternalCandi(obj) {
+        var ICI = $(obj).closest("tr").find("input:hidden[name=ICI]").val();
+          var EN = $(obj).closest("tr").find("input:hidden[name=EN]").val();
+            ConfirmMsgBox('Are you sure want to delete Candidate'+ EN, '', function () {
+                $.ajax({
+                    url: "/CommonAjax/InternalCandidateJSON",
+                    type: "Get",
+                    async: true,
+                    data: { InternalCandidateID: ICI },
+                    success: function (data) {
+                        if (data==1) {
+                           SelectedCandidate_InternalList();
+                            SuccessToaster('Candidate Removed');
+                        }
+                        else {
+                            FailToaster('Can not delete this request');
+                        }
+                    },
+                    error: function (er) {
+                        alert(er);
+                    }
+                });
+            });
+        }
+
+
+    </script>
+
+}

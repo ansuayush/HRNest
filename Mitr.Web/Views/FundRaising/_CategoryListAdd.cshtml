@@ -1,0 +1,39 @@
+﻿@model Mitr.Models.MasterAll.Add
+@using (Ajax.BeginForm("SaveMasterAll", "FundRaising",
+        new { src = clsApplicationSetting.EncryptQueryString(ViewBag.MenuID + "*" + "/FundRaising/SaveMasterAll*" + ViewBag.ID) },
+         new AjaxOptions { HttpMethod = "POST", OnSuccess = "OnSuccess", OnBegin = "ShowLoadingDialog()" },
+            new { @id = "SaveMasterAllForm" })
+    )
+{
+
+
+    @Html.HiddenFor(x => Model.ID)
+    @Html.HiddenFor(x => Model.table_name)
+
+    <div class="row">
+        <div class="col-lg-10 form-group">
+            <label>Sector<sup>*</sup></label>
+            @Html.TextAreaFor(model => model.field_name, new { @class = "form-control" })
+            @Html.ValidationMessageFor(model => model.field_name, "", new { @class = "text-danger" })
+        </div>
+        <div class="col-lg-2 form-group">
+            <label>Priority </label>
+            @Html.TextBoxFor(model => model.Priority, new { @class = "form-control", @type = "Number" })
+            @Html.ValidationMessageFor(model => model.Priority, "", new { @class = "text-danger" })
+        </div>
+    </div>
+
+    <div class="text-center">
+    <button type="button" class="btn cnl-btn ripplelink" data-dismiss="modal"><i class="fas fa-times"></i>Close</button>
+
+        @if (Model.ID > 0)
+        {
+            <button type="submit" class="btn mtr-g-grn btn-l ripplelink pull-right" name="Command" value="Add"><i class="fa fa-paper-plane" aria-hidden="true"></i> Update</button>
+        }
+        else
+        {
+            <button type="submit" class="btn mtr-o-grn btn-l ripplelink pull-right" name="Command" value="Add"><i class="fa fa-paper-plane" aria-hidden="true"></i> Submit</button>
+        }
+    </div>
+
+}

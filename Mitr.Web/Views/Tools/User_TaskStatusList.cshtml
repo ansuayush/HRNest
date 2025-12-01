@@ -1,0 +1,122 @@
+﻿@model List<User_Task.StatusList>
+@{
+	var Modify = clsApplicationSetting.GetSessionValue("Modify");
+	string MenuID = "0";
+	if (ViewBag.MenuID != null)
+	{
+		MenuID = ViewBag.MenuID;
+	}
+
+}
+
+
+<div class="inner-main mb-5 pb-0">
+	@Html.Partial("ListHeader_Partial", "Task Status List")
+
+
+
+	<div class="row">
+		<div class="control-section">
+
+			@Html.EJS().Grid("FlatGrid").DataSource((List<User_Task.StatusList>)Model).GridLines(Syncfusion.EJ2.Grids.GridLine.Both).Columns(col =>
+	   {
+		   col.Field("StatusID").Visible(false).Add();
+		   col.Field("IsActive").Visible(false).Add();
+		   
+
+		   col.Field("RowNum").HeaderText("S.No").Width("50").Add();
+		   col.HeaderText("Action").TextAlign(Syncfusion.EJ2.Grids.TextAlign.Center).Template("#tmpAction").Width("80").Add();
+		   col.Field("Priority").HeaderText("Priority").Width("80").Add();
+		   col.Field("StatusName").HeaderText("Status Name").Width("100").Add();
+		   col.Field("DisplayName").HeaderText("Display Name").Width("100").Add();
+		   col.Field("StatusColor").HeaderText("Status Color").Width("100").Add();
+		   col.Field("UseFor").HeaderText("Use For").Width("100").Add();
+	   }).AllowPaging().PageSettings(page => page.PageCount(10)).Toolbar(new List<string>() { "Search" }).Render()
+
+		</div>
+	</div>
+</div>
+
+
+<div class="modal fade pop-dgn" id="ViewModal">
+	<div class="modal-dialog modal-lg">
+		<div class="modal-content">
+			<div class="modal-header blk-gdn-btn">
+				<h4 class="modal-title">
+					<i class="fa fa-plus"></i>Add Status
+				</h4>
+				<div class="close" data-dismiss="modal">&times;</div>
+			</div>
+			<div class="modal-body">
+				<div id="TagetDivAdd"></div>
+			</div>
+		</div>
+	</div>
+</div>
+
+
+<script id="tmpAction" type="text/x-template">
+	<input type="hidden" name="I" value="${StatusID}" />
+	
+	<a onclick="BindEdit(this)"><i class="fas fa-edit checkgreen" aria-hidden="true"></i> </a>
+
+
+</script>
+
+@Html.IncludeVersionedJs(Url.Content("~/assets/design/Scripts/SyncScripts.js"))
+@(Html.EJS().ScriptManager())
+
+
+@section scripts    {
+
+	@System.Web.Optimization.Scripts.Render("~/bundle/unobtrusivejs")
+	@Html.IncludeVersionedJs(Url.Content("~/assets/design/Scripts/AddInit.js"))
+<script>
+
+		function BindEdit(obj) {
+			var I = $(obj).closest("tr").find("input:hidden[name=I]").val();
+			ListHeaderAdd(I)
+	}
+
+	 function ListHeaderAdd(ID) {
+			   if (ID == undefined) {
+				   ID = 0;
+			   }
+				$.ajax({
+					url: "/Tools/_User_TaskStatusAdd",
+					type: "Get",
+					data: { src: EncryptQueryStringJSON(@ViewBag.MenuID+"*" + "/Tools/_User_TaskStatusAdd" + "*" + ID) },
+					success: function (data) {
+						$("#TagetDivAdd").empty();
+						$("#TagetDivAdd").html(data);
+						$("#ViewModal").modal("show");
+						$(".applyselect").select2();
+						var form = $("form")
+							.removeData("validator")
+							.removeData("unobtrusiveValidation");
+						$.validator.unobtrusive.parse(form);
+					},
+					error: function (er) {
+						alert(er);
+
+					}
+				});
+	}
+
+		function OnSuccess(obj) {
+		if (obj.Status) {
+
+			SuccessToaster(obj.SuccessMessage);
+			$("#ViewModal").modal("hide");
+			CloseLoadingDialog();
+			window.location.reload();
+		}
+		else {
+			CloseLoadingDialog()
+			FailToaster(obj.SuccessMessage);
+		}
+
+	}
+
+</script>
+}

@@ -1,0 +1,109 @@
+﻿@model  FundRaising.Reports
+@{
+    string MenuID = ViewBag.MenuID.ToString();
+}
+@section style{
+    @System.Web.Optimization.Styles.Render("~/bundle/dataTablecss")
+}
+@{
+    string PageName = "Report", IsHideDiv = "", DateType = "Date";    
+}
+<div class="mb-100">
+
+    @using (Ajax.BeginForm("_Reports", "FundRaising",
+            new { src = ViewBag.src },
+            new AjaxOptions { HttpMethod = "POST", OnSuccess = "BindTarget", OnBegin = "ShowLoadingDialog()", OnFailure = "OnPostFailure()" },
+        new { @id = "_ReportsForm", @autocomplete = "Off" })
+        )
+    {
+        <div class="inner-main mb-2">
+            <h1 class="heading-one mb-3">Lead Report</h1>
+            <div class="row">
+                <!---->
+                @Html.HiddenFor(x => Model.Doctype)
+                <div class="col-md-2 col-sm-4 form-group">
+                    <label style="display:@(DateType==""?"none":"")">From</label>
+                    @if (DateType == "Date")
+                    {
+                        @Html.TextBoxFor(model => model.StartDate, new { @class = "form-control", @type = "date" })
+                    }
+                    @Html.ValidationMessageFor(model => model.StartDate, "", new { @class = "text-danger" })
+                </div>
+                <div class="col-md-2 col-sm-4 form-group">
+                    <label style="display:@(DateType==""?"none":"")">To </label>
+                    @if (DateType == "Date")
+                    {
+                        @Html.TextBoxFor(model => model.EndDate, new { @class = "form-control", @type = "date" })
+                    }
+                    @Html.ValidationMessageFor(model => model.EndDate, "", new { @class = "text-danger" })
+                </div>
+                <div class="col-md-3 col-sm-4 form-group align-self-end">
+                    <button id="btnSearch" type="button" onclick="List()" style="display:@(DateType==""?"none":"")" name="Command" value="Search" class="btn mtr-g-grn btn-l  label-top"><i class="fas fa-search"></i>Search</button>
+                    <button id="ExportExcel" type="button"    value="Export" class="btn mtr-g-grn label-top"><i class="fas fa-download"></i>Export</button>
+
+                </div>
+                <div class="col-md-12 col-sm-4 form-group">
+                    <div id="TargetDivList"></div>
+                </div>
+            </div>
+        </div>
+
+
+
+    }
+</div>
+
+
+@section scripts    {
+    @System.Web.Optimization.Scripts.Render("~/bundle/dataTablesjs")
+
+    @System.Web.Optimization.Scripts.Render("~/bundle/unobtrusivejs")
+
+    @Html.IncludeVersionedJs(Url.Content("~/assets/design/Scripts/AddInit.js"))
+    @Html.IncludeVersionedJs(Url.Content("~/assets/design/Scripts/ToolTip.js"))
+
+    <script>
+        $(document).ready(function () {
+            $("#btnSearch").click();
+        });
+       function List() {
+           var Doctype = $("#Doctype").val();
+           var StartDate = $("#StartDate").val();
+           var EndDate = $("#EndDate").val();
+
+			$.ajax({
+                url: "/FundRaising/_Reports",
+				type: "Get",
+                data: { src: EncryptQueryStringJSON(@ViewBag.MenuID+"*" + "/FundRaising/_Reports" + "*" + Doctype + "*" + StartDate + "*" + EndDate) },
+                success: function (data)                {
+                    $("#TargetDivList").empty();
+                    $("#TargetDivList").html(data);
+                   // DatatableScriptsWithColumnSearch("table_Export");
+                    DatatableWithoutPaging("table_Export");
+				},
+				error: function (er) {
+					alert(er);
+
+				}
+			});
+    }
+        function BindTarget(args) {
+
+            CloseLoadingDialog();
+            $("#TargetDivList").empty();
+            $("#TargetDivList").html(args);
+        }
+        function OnSuccess(obj) {
+            if (obj.Status) {
+                SuccessToaster(obj.SuccessMessage);
+                window.location.href = obj.RedirectURL;
+            }
+            else {
+                CloseLoadingDialog();
+                FailToaster(obj.SuccessMessage);
+
+            }
+        }
+
+    </script>
+}

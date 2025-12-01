@@ -1,0 +1,263 @@
+﻿@using System.Data
+@model DataSet
+@{
+	string MenuID = "0";
+	if (ViewBag.MenuID != null)
+	{
+		MenuID = ViewBag.MenuID;
+	}
+}
+<div>
+	@if (ViewBag.Approve == 0)
+	{
+		@Html.EJS().Grid("FlatGrid").DataSource(Model.Tables[0]).RowSelected("rowSelected").RowDeselected("rowSelected").SelectionSettings(ss => ss.EnableToggle(true)).GridLines(Syncfusion.EJ2.Grids.GridLine.Both).Columns(col =>
+   {
+	   col.Field("CVPath").Visible(false).Add();
+	   col.Field("Approved").Visible(false).Add();
+	   col.Field("REC_AppID").Visible(false).Add();
+	   col.Field("REC_ReqID").Visible(false).Add();
+	   col.Field("REC_EVacancyID").Visible(false).Add();
+	   col.Field("RowNum").HeaderText("SNo").Width("50").Add();
+	   col.Field("Name").HeaderText("Candidate").Width("120").Add();
+	   col.Field("Gender").HeaderText("Gender").Width("60").Add();
+	   col.Field("ApplyDate").HeaderText("Date of Application").Width("100").Add();
+	   col.Field("Nationality").HeaderText("Nationality").Width("100").Add();
+	   col.Field("CurrentSalary").HeaderText("Annual Current Salary").Width("100").Add();
+	   col.Field("ExpectedSalary").HeaderText("Annual Expected Salary").Width("100").Add();
+	   col.Field("TotalExperience").HeaderText("Total Experience").Width("100").Add();
+	   col.HeaderText("Action").TextAlign(Syncfusion.EJ2.Grids.TextAlign.Center).Template("#tmpViewApplication").Width("100").Add();
+	   col.HeaderText("CV").TextAlign(Syncfusion.EJ2.Grids.TextAlign.Center).Template("#tmpDownloadCV").Width("100").Add();
+	   col.Type("checkbox").HeaderText("").Field("").Width("60").AllowFiltering(false).AllowSorting(false).Add();
+
+   }).AllowPaging().PageSettings(page => page.PageCount(10)).Toolbar(new List<string>() { "Search" }).Render()
+
+		<div class="col-sm-12 text-center">
+			@using (Ajax.BeginForm("SetScreening", "Recruit",
+							new { src = clsApplicationSetting.EncryptQueryString(ViewBag.MenuID.ToString() + "*/Recruit/SetScreening*" + ViewBag.REC_ReqID) },
+							new AjaxOptions { HttpMethod = "POST", OnSuccess = "OnSuccessSetScreening", OnBegin = "ShowLoadingDialog();", OnFailure = "CloseLoadingDialog();" },
+						new { @id = "SetScreeningFrom" })
+						)
+			{
+				<div class="col-sm-12 text-right">
+
+					<input type="hidden" id="HDNSelectedAPPID" name="HDNSelectedAPPID" value="" />
+
+
+					<div id="myModal" class="modal fade" role="dialog">
+						<div class="modal-dialog">
+							<div class="modal-content">
+								<div class="modal-header">
+									<h4 class="modal-title"><i class="fas fa-ban"></i>Reason for Rejection</h4>
+									<button type="button" class="close" data-dismiss="modal">&times;</button>
+
+								</div>
+								<div class="modal-body text-left">
+									<label>Reason</label>
+									<textarea name="Remarks" id="Remarks" class="form-control" placeholder="Enter"></textarea>
+								</div>
+								<div class=" text-center mt-2">
+									<button type="button" class="btn cnl-btn" data-dismiss="modal"><i class="fas fa-times"></i>Close</button>
+									<button type="submit" name="Command" value="Reject" class="btn mtr-o-grn btnSubmit"><i class="fa fa-paper-plane" aria-hidden="true"></i>Submit</button>
+								</div>
+							</div>
+						</div>
+					</div>
+
+					<div class="btn-group w-auto" role="group" aria-label="Basic example">
+
+						<button type="button" class="btn btn-secondary btn-lg" data-toggle="modal" data-target="#myModal">Reject</button>
+						<button type="submit" name="Command" value="Selected" class="btn btn-secondary btnSubmit">Screened and Select</button>
+						<button type="submit" name="Command" value="Screened" class="btn btn-secondary btnSubmit"> Screened</button>
+					</div>
+				</div>
+			}
+		</div>
+	}
+	else if (ViewBag.Approve == 1)
+	{
+		@Html.EJS().Grid("FlatGrid").DataSource(Model.Tables[0]).DataBound("dataBound").RowSelected("rowSelected").RowDeselected("rowSelected").SelectionSettings(ss => ss.EnableToggle(true)).GridLines(Syncfusion.EJ2.Grids.GridLine.Both).Columns(col =>
+   {
+	   col.Field("CVPath").Visible(false).Add();
+	   col.Field("Approved").Visible(false).Add();
+	   col.Field("REC_AppID").Visible(false).Add();
+	   col.Field("REC_ReqID").Visible(false).Add();
+	   col.Field("REC_EVacancyID").Visible(false).Add();
+	   col.Field("RowNum").HeaderText("SNo").Width("50").Add();
+	   col.Field("Name").HeaderText("Candidate").Width("120").Add();
+	   col.Field("Gender").HeaderText("Gender").Width("60").Add();
+	   col.Field("ApplyDate").HeaderText("Date of Application").Width("100").Add();
+	   col.Field("Nationality").HeaderText("Nationality").Width("100").Add();
+	   col.Field("CurrentSalary").HeaderText("Annual Current Salary").Width("100").Add();
+	   col.Field("ExpectedSalary").HeaderText("Annual Expected Salary").Width("100").Add();
+	   col.Field("TotalExperience").HeaderText("Total Experience").Width("100").Add();
+	   col.HeaderText("Action").TextAlign(Syncfusion.EJ2.Grids.TextAlign.Center).Template("#tmpViewApplication").Width("100").Add();
+	   col.HeaderText("CV").TextAlign(Syncfusion.EJ2.Grids.TextAlign.Center).Template("#tmpDownloadCV").Width("100").Add();
+	   col.Type("checkbox").HeaderText("").Field("").Width("60").AllowFiltering(false).AllowSorting(false).Add();
+   }).AllowPaging().PageSettings(page => page.PageCount(10)).Toolbar(new List<string>() { "Search" }).Render()
+
+
+		<div class="">
+			@using (Ajax.BeginForm("SetScreening", "Recruit",
+							new { src = clsApplicationSetting.EncryptQueryString(ViewBag.MenuID.ToString() + "*/Recruit/SetScreening*" + ViewBag.REC_ReqID) },
+							new AjaxOptions { HttpMethod = "POST", OnSuccess = "OnSuccessSetScreening", OnBegin = "ShowLoadingDialog();", OnFailure = "CloseLoadingDialog();" },
+						new { @id = "SetScreeningFrom" })
+						)
+			{
+				<div class="row">
+					<div class="col-lg-10 col-md-9 col-sm-12  form-group">
+						<input type="hidden" id="Remarks" name="Remarks" value="" />
+						<input type="hidden" id="HDNSelectedAPPID" name="HDNSelectedAPPID" value="" />
+						<label>Send To</label>
+						<select class="form-control applyselect" multiple="" name="ddScreeningApprover" id="ddScreeningApprover">
+							@if (Model.Tables[1] != null)
+							{
+								foreach (DataRow item in Model.Tables[1].Rows)
+								{
+									<option @(item["Exists"].ToString() == "Y" ? "selected" : "") value="@item["ID"]">@item["Name"]</option>
+								}
+							}
+						</select>
+					</div>
+					<div class="col-lg-12 text-center mt-2">
+
+						<div id="myModal" class="modal fade" role="dialog">
+							<div class="modal-dialog">
+								<div class="modal-content">
+									<div class="modal-header">
+										<h4 class="modal-title"><i class="fas fa-ban"></i>Reason for Rejection</h4>
+										<button type="button" class="close" data-dismiss="modal">&times;</button>
+
+									</div>
+									<div class="modal-body text-left">
+										<label>Reason</label>
+										<textarea name="Remarks" id="Remarks" class="form-control" placeholder="Enter"></textarea>
+									</div>
+									<div class="text-center mt-2">
+										<button type="button" class="btn cnl-btn" data-dismiss="modal"><i class="fas fa-times"></i>Close</button>
+										<button type="submit" name="Command" value="Reject" class="btn mtr-o-grn btnSubmit"><i class="fas fa-paper-plane"></i>Submit</button>
+									</div>
+								</div>
+							</div>
+						</div>
+
+						<button type="button" class="btn red-clr-bg" data-toggle="modal" data-target="#myModal"><i class="fas fa-ban"></i> Reject</button>
+
+						<button type="submit" name="Command" value="Forward" class="btn blk-gdn-btn  btnForward"><i class="fas fa-share"></i> Forward for Shortlisting</button>
+					</div>
+				</div>
+			}
+		</div>
+	}
+	else
+	{
+		@Html.EJS().Grid("FlatGrid").DataSource(Model.Tables[0]).GridLines(Syncfusion.EJ2.Grids.GridLine.Both).Columns(col =>
+   {
+	   col.Field("CVPath").Visible(false).Add();
+	   col.Field("Approved").Visible(false).Add();
+	   col.Field("REC_AppID").Visible(false).Add();
+	   col.Field("REC_ReqID").Visible(false).Add();
+	   col.Field("REC_EVacancyID").Visible(false).Add();
+	   col.Field("RowNum").HeaderText("SNo").Width("50").Add();
+	   col.Field("Name").HeaderText("Candidate").Width("120").Add();
+	   col.Field("Gender").HeaderText("Gender").Width("60").Add();
+	   col.Field("ApplyDate").HeaderText("Date of Application").Width("100").Add();
+	   col.Field("Nationality").HeaderText("Nationality").Width("100").Add();
+	   col.Field("CurrentSalary").HeaderText("Annual Current Salary").Width("100").Add();
+	   col.Field("ExpectedSalary").HeaderText("Annual Expected Salary").Width("100").Add();
+	   col.Field("TotalExperience").HeaderText("Total Experience").Width("100").Add();
+	   col.HeaderText("Action").TextAlign(Syncfusion.EJ2.Grids.TextAlign.Center).Template("#tmpViewApplication").Width("100").Add();
+	   col.HeaderText("CV").TextAlign(Syncfusion.EJ2.Grids.TextAlign.Center).Template("#tmpDownloadCV").Width("100").Add();
+
+   }).AllowPaging().PageSettings(page => page.PageCount(10)).Toolbar(new List<string>() { "Search" }).Render()
+		if (ViewBag.Approve != 2)
+		{
+			<div class="col-lg-10 col-md-9 col-sm-12  form-group">
+				<input type="hidden" id="Remarks" name="Remarks" value="" />
+				<input type="hidden" id="HDNSelectedAPPID" name="HDNSelectedAPPID" value="" />
+				<label>Send To</label>
+				<select class="form-control applyselect" multiple="" name="ddScreeningApprover" id="ddScreeningApprover">
+					@if (Model.Tables[1] != null)
+					{
+						foreach (DataRow item in Model.Tables[1].Rows)
+						{
+							<option @(item["Exists"].ToString() == "Y" ? "selected" : "") value="@item["ID"]">@item["Name"]</option>
+						}
+					}
+				</select>
+			</div>
+		}
+	}
+
+</div>
+
+
+<script id="tmpDownloadCV" type="text/x-template">
+	<a href="${CVPath}" target="_blank" class="green-clr mr-2"><i class="fas fa-download"></i>Download CV</a>
+
+</script>
+
+
+<script id="tmpViewApplication" type="text/x-template">
+	<input type="hidden" name="AppIID" value="${REC_AppID}" />
+	<a data-toggle="tooltip" data-original-title="View" onclick="ViewApplication(this)" class="blk-clr mr-2"><i class="fas fa-eye"></i>View</a>
+
+</script>
+
+<script>
+
+	function dataBound(args) {
+		var rowIndexes = [];
+		var grid = document.getElementById("FlatGrid").ej2_instances[0];
+		$("#HDNSelectedAPPID").val('');
+		grid.getCurrentViewRecords().forEach((data, index) => {
+			if (data.Approved === 3) {
+				rowIndexes.push(index);
+			}
+		});
+		grid.selectionModule.selectRows(rowIndexes);
+	}
+
+	function rowSelected(args) {
+		var grid = document.getElementById("FlatGrid").ej2_instances[0];
+		var selectedrowindex = grid.getSelectedRowIndexes();  // get the selected row indexes.
+		var selectedrecords = grid.getSelectedRecords();  // get the selected records.
+		$("#HDNSelectedAPPID").val('');
+		for (var i = 0; i < selectedrecords.length; i++) {
+			var ID = selectedrecords[i]['REC_AppID'];
+			var resultObj = $("#HDNSelectedAPPID");
+			var stringToAppend = resultObj.val().length > 0 ? resultObj.val() + "," : "";
+			resultObj.val(stringToAppend + ID);
+		}
+	}
+
+
+	$(".btnSubmit").click(function (e) {
+		var b = false;
+		var a = $("#HDNSelectedAPPID").val();
+		if (a) {
+			b = true;
+		}
+		else {
+			FailToaster('Select atlest one Checkbox');
+		}
+		return b;
+	});
+
+	$(".btnForward").click(function (e) {
+		var b = false;
+		var a = $("#HDNSelectedAPPID").val();
+		var Approver = $("#ddScreeningApprover option:selected").val();
+
+		if (a == "") {
+			FailToaster('Select atlest one Checkbox');
+		}
+		else if (!Approver) {
+			FailToaster('Select atlest one Approvers');
+		}
+		else {
+			b = true;
+		}
+		return b;
+	});
+</script>
+@(Html.EJS().ScriptManager())

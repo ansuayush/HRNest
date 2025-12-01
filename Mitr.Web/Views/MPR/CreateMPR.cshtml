@@ -1,0 +1,278 @@
+﻿@model MPR.CreateMPR
+@{
+	ViewBag.Title = "CreateMPR";
+}
+
+@{
+	string MenuID = ViewBag.MenuID.ToString();
+}
+@using (Ajax.BeginForm("CreateMPR", "MPR",
+		new { src = ViewBag.src },
+		new AjaxOptions { HttpMethod = "POST", OnSuccess = "OnCreateMPRSuccess", OnBegin = "ShowLoadingDialog();", OnFailure = "CloseLoadingDialog();" },
+	new { @id = "_CreateMPRFrom" })
+	)
+{
+
+	@Html.AntiForgeryToken()
+	@Html.HiddenFor(x => Model.MPRID)
+	@Html.HiddenFor(x => Model.MPRCode)
+	@Html.HiddenFor(x => Model.MPRDate)
+	@Html.HiddenFor(x => x.Version)
+	
+	<h1 class="heading-one mb-0 pb-0">Create MPR </h1>
+	<ul class="list-unstyled trl-rq pb-2">
+		<li>MPR Code .: @Model.MPRCode</li>
+		<li>Date: @Model.MPRDate</li>
+	</ul>
+	<div class="inner-main mb-5 pb-0 mt-0">
+		<div class="row wthree-575 text-clr">
+			<div class="col-lg-3 col-md-3 col-sm-6  form-group">
+				<label>MPR Name</label>
+				@Html.TextBoxFor(model => model.MPRName, new { @class = "form-control", @placeholder="Enter Name" })
+				@Html.ValidationMessageFor(model => model.MPRName, "", new { @class = "text-danger" })
+			</div>
+			<div class="col-lg-3 col-md-3 col-sm-6  form-group">
+				<label>Project</label>
+				@Html.DropDownListFor(x => Model.ProjectID, new SelectList(Model.ProjectList, "ProjectID", "ProjectName", Model.ProjectID), "Select Project",
+new { @class = "form-control  applyselect" })
+				@Html.ValidationMessageFor(model => Model.ProjectID, "", new { @class = "text-danger" })
+
+			</div>
+			<div class="col-lg-3 col-md-3 col-sm-6  form-group">
+				<label>State</label>
+				@Html.DropDownListFor(x => Model.StateID, new SelectList(Model.StateList, "StateID", "StateName", Model.StateID), "Select State",
+new { @class = "form-control  applyselect" })
+				@Html.ValidationMessageFor(model => Model.ProjectID, "", new { @class = "text-danger" })
+			</div>
+			<div class="col-lg-2 col-md-3 col-sm-6  form-group " id="box">
+				<label>Version</label>
+				<input type="text" class="form-control" readonly="readonly" placeholder="Ente Version" value="@Model.Version">
+			</div>
+
+			<div class="col-lg-12 text-right btn-pst mt-3">
+				<hr class="m-0 mb-1" />
+				<div class="btn-pst-ft">
+				<a class="btn mtr-g-grn btn-l  ripplelink" data-toggle="modal" data-target="#QuickSelection"><i class="fas fa-search"></i>Quick Selection</a>
+				@if (Model.MPRID > 0)
+				{
+					<button type="button" name="Command" value="Amend" class="btn blk-gdn-btn btn-l  ripplelink ConfirmAmendBtn"><i class="fas fa-edit"></i>Amend</button>
+					<button type="submit" id="btnAmend" name="Command" value="Amend" style="display:none" class="btn mtr-g-grn btn-l ripplelink "></button>
+				}
+				</div>
+			</div>
+
+			<div class="col-lg-12 mt-2"></div>
+
+			<div class="col-lg-3 form-group">
+				<label>Initiate Date</label>
+				@Html.TextBoxFor(model => model.InitiateDate, new { @class = "form-control", @type = "date" })
+				@Html.ValidationMessageFor(model => model.InitiateDate, "", new { @class = "text-danger" })
+			</div>
+
+			<div class="col-lg-3 form-group">
+				<label>MPR Approver Level 1</label>
+				@Html.DropDownListFor(x => Model.ApproverLevel1, new SelectList(Model.UserList, "LoginID", "UserName", Model.ApproverLevel1), "Select Approver 1",
+new { @class = "form-control  applyselect" })
+				@Html.ValidationMessageFor(model => Model.ApproverLevel1, "", new { @class = "text-danger" })
+			</div>
+			<div class="col-lg-3 form-group">
+				<label>MPR Approver Level 2</label>
+				@Html.DropDownListFor(x => Model.ApproverLevel2, new SelectList(Model.UserList, "LoginID", "UserName", Model.ApproverLevel2), "Select Approver 2",
+new { @class = "form-control  applyselect" })
+				@Html.ValidationMessageFor(model => Model.ApproverLevel2, "", new { @class = "text-danger" })
+			</div>
+
+			<div class="col-sm-12">
+				<div class="table-responsive">
+					<table class="table mt-0 table table-scroll" id="myIndicatorTable">
+						<thead>
+							<tr>
+								<th colspan="2" class="backgroundnone"></th>
+								<th colspan="6" class="backgroundnone text-center">
+									<strong class="green-clr">Set Authority Matrix</strong>
+								</th>
+							</tr>
+							<tr>
+								<th class="w-500">Section/Indicator</th>
+								<th class="w-100">
+									<div class="toggle-btn">
+										<input type="checkbox" class="toggle chkIndicator" id="chkAll" @(Model.CreateMPRDetails.Any(x=>x.IsActive)?"checked":"")>
+										<label for="chkAll"> <span class="off">Inactive</span> <span class="on">Active</span> </label>
+									</div>
+								</th>
+								<th class="w-100">Executor 1</th>
+								<th class="w-100">Executor 2</th>
+								<th class="w-100">Section Approver</th>
+							</tr>
+						</thead>
+						<tbody>
+							@if (Model.CreateMPRDetails.Count > 0)
+							{
+								var Section = Model.CreateMPRDetails.GroupBy(x => x.MPRSID)
+										 .Select(x => new
+										 {
+											 MPRSID = x.Key,
+											 SecName = x.Select(ex => ex.SecName).FirstOrDefault(),
+											 IsActive = x.OrderByDescending(ex => ex.IsActive).Select(ex => ex.IsActive).FirstOrDefault(),
+											 ApproverID = x.OrderByDescending(ex => ex.ApproverID).Select(ex => ex.ApproverID).FirstOrDefault(),
+											 ApproverName = x.Where(ex => ex.ApproverID == x.OrderByDescending(s => s.ApproverID).Select(s => ex.ApproverID).FirstOrDefault()).Select(ex => ex.ApproverName).FirstOrDefault()
+										 })
+										 .ToList();
+
+								var SubSection = Model.CreateMPRDetails.GroupBy(x => x.MPRSubSecID)
+										 .Select(x => new
+										 {
+											 MPRSubSecID = x.Key,
+											 MPRSID = x.Select(ex => ex.MPRSID).FirstOrDefault(),
+											 SecName = x.Select(ex => ex.SecName).FirstOrDefault(),
+											 SubSecName = x.Select(ex => ex.SubSecName).FirstOrDefault(),
+											 IsActive = x.OrderByDescending(ex => ex.IsActive).Select(ex => ex.IsActive).FirstOrDefault()
+
+										 })
+										 .ToList();
+
+								foreach (var Sitem in Section)
+								{
+									<tr class="lgt-bg">
+										<td class="green-clr"><strong class="secname">@Sitem.SecName</strong></td>
+										<td colspan="3">
+											<div class="toggle-btn">
+												<input type="checkbox" class="toggle MainSection" Sec="@Sitem.MPRSID" id="chkSec_@Sitem.MPRSID" @(Sitem.IsActive ? "checked" : "")>
+												<label for="chkSec_@Sitem.MPRSID"> <span class="off">Inactive</span> <span class="on">Active</span> </label>
+											</div>
+										</td>
+										<td>
+											<select class="form-control applyselect bindSectionApprover" SID="Sec_@Sitem.MPRSID">
+												<option value="">Select Approver</option>
+												@foreach (var item in Model.UserList)
+												{
+													<option @(Sitem.ApproverID == item.LoginID ? "selected" : "") value="@item.LoginID">@item.UserName </option>
+												}
+											</select>
+											@Html.ValidationMessageFor(model => Model.CreateMPRDetails[0].ApproverID, "", new { @class = "text-danger" })
+										</td>
+									</tr>
+									foreach (var Subitem in SubSection.Where(x => x.MPRSID == Sitem.MPRSID).ToList())
+									{
+										<tr>
+											<td class="pl-3"><strong>@Subitem.SubSecName</strong></td>
+											<td colspan="4">
+												<div class="toggle-btn">
+													<input type="checkbox" class="toggle chkSubSection ParentSection parent_@Sitem.MPRSID" Sec="@Subitem.MPRSID" subsec="@Subitem.MPRSubSecID" id="chkSubSec_@Subitem.MPRSubSecID" @(Subitem.IsActive ? "checked" : "")>
+													<label for="chkSubSec_@Subitem.MPRSubSecID"> <span class="off">Inactive</span> <span class="on">Active</span> </label>
+												</div>
+											</td>
+										</tr>
+
+										for (int i = 0; i < Model.CreateMPRDetails.Count; i++)
+										{
+											if (Model.CreateMPRDetails[i].MPRSID == Sitem.MPRSID && Model.CreateMPRDetails[i].MPRSubSecID == Subitem.MPRSubSecID)
+											{
+												<tr class="lgt-bg indicatorSection">
+													<td class="pl-4">
+														@Html.HiddenFor(x => Model.CreateMPRDetails[i].IndicatorID)
+														@Html.HiddenFor(x => Model.CreateMPRDetails[i].IndicatorName)
+														<strong>@Model.CreateMPRDetails[i].IndicatorName </strong>
+													</td>
+													<td>
+														<div class="toggle-btn">
+															<input type="checkbox" class="toggle chkIndicator child_@Model.CreateMPRDetails[i].MPRSubSecID" id="indicator_@i" name="@Html.NameFor(x=>Model.CreateMPRDetails[i].ChkIsActive)" @(Model.CreateMPRDetails[i].IsActive ? "checked" : "")>
+															<label for="indicator_@i"> <span class="off">Inactive</span> <span class="on">Active</span> </label>
+														</div>
+													</td>
+													<td>
+														@Html.DropDownListFor(x => Model.CreateMPRDetails[i].Executor1ID, new SelectList(Model.UserList, "LoginID", "UserName", Model.CreateMPRDetails[i].Executor1ID), "Select Executor 1", new { @class = "form-control  applyselect Executor1" })
+														@Html.ValidationMessageFor(model => Model.CreateMPRDetails[i].Executor1ID, "", new { @class = "text-danger" })
+													</td>
+													<td>
+														@Html.DropDownListFor(x => Model.CreateMPRDetails[i].Executor2ID, new SelectList(Model.UserList, "LoginID", "UserName", Model.CreateMPRDetails[i].Executor2ID), "Select Executor 2", new { @class = "form-control  applyselect Executor2" })
+														@Html.ValidationMessageFor(model => Model.CreateMPRDetails[i].Executor2ID, "", new { @class = "text-danger" })
+													</td>
+													<td>
+														<input type="hidden" id="@Html.IdFor(x=>Model.CreateMPRDetails[i].ApproverID)" name="@Html.NameFor(x=>Model.CreateMPRDetails[i].ApproverID)" class="Sec_@Model.CreateMPRDetails[i].MPRSID" value="@Sitem.ApproverID" />
+														<strong> <span class="green-clr spanApproverName spanSec_@Model.CreateMPRDetails[i].MPRSID">@Sitem.ApproverName</span></strong>
+													</td>
+												</tr>
+											}
+
+										}
+									}
+								}
+							}
+						</tbody>
+					</table>
+				</div>
+			</div>
+			<div class="col-lg-12 text-center mt-3">
+				<button type="submit" class="btn mtr-o-grn btn-l ripplelink pull-right" name="Command" value="Add"><i class="fa fa-paper-plane" aria-hidden="true"></i>Submit</button>
+				@Html.CreateAnchor(MenuID, "/MPR/MPRList", "Back", "btn cnl-btn btn-l ripplelink", "Click to go back", "fa fa-share", "")
+			</div>
+		</div>
+	</div>
+}
+	<div class="modal fade pop-dgn" id="QuickSelection">
+		<div class="modal-dialog modal-lg">
+			<div class="modal-content">
+
+				<div class="modal-header blk-gdn-btn">
+					<h4 class="modal-title"><i class="fas fa-search"></i>Quick Selection </h4>
+					<div class="close" data-dismiss="modal">&times;</div>
+				</div>
+				<div class="modal-body p-3">
+					<div class="row">
+						
+							<div class="col-lg-4 form-group slt-dgn">
+								<label class="lbl-abs">Executor 1</label>
+								<select id="ddE1" class="form-control applyselect">
+									<option value="">Executor 1</option>
+									@foreach (var item in Model.UserList)
+									{
+										<option value="@item.LoginID">@item.UserName </option>
+									}
+								</select>
+							</div>
+							<div class="col-lg-4 form-group slt-dgn">
+								<label class="lbl-abs">Executor 2</label>
+								<select id="ddE2" class="form-control applyselect">
+									<option value="">Executor 2</option>
+									@foreach (var item in Model.UserList)
+									{
+										<option value="@item.LoginID">@item.UserName </option>
+									}
+								</select>
+							</div>
+							<div class="col-lg-4 form-group slt-dgn">
+								<label class="lbl-abs">Section Approver</label>
+								<select id="ddSA" class="form-control applyselect">
+									<option value="">Section Approver</option>
+									@foreach (var item in Model.UserList)
+									{
+										<option value="@item.LoginID">@item.UserName </option>
+									}
+								</select>
+							</div>
+						<div class="col-md-12 text-center">
+							<button class="btn mtr-o-grn btn-l ripplelink pull-right ApplyQuickSelection" ><i class="fas fa-check"></i>Apply</button>
+						</div>
+						
+
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+
+
+
+@section scripts    {
+
+	@System.Web.Optimization.Scripts.Render("~/bundle/unobtrusivejs")
+
+
+	@Html.IncludeVersionedJs(Url.Content("~/assets/design/scripts/AddInit.js"))
+	@Html.IncludeVersionedJs(Url.Content("~/assets/design/scripts/PagesJS/CreateMPR.js"))
+	<script>
+
+	</script>
+}

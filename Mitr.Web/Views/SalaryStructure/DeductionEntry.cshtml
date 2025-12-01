@@ -1,0 +1,230 @@
+﻿@model Mitr.Models.SalaryStructure.Tabs
+@{
+    ViewBag.Title = "Deduction Entry";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@{
+    var Modify = clsApplicationSetting.GetSessionValue("Modify");
+}
+@{
+    string MenuID = "0";
+    if (ViewBag.MenuID != null)
+    {
+        MenuID = ViewBag.MenuID;
+    }
+}
+
+<div class="inner-main defult-height">
+    @Html.Partial("ListHeader_Partial", "Deduction Entry")
+	<div class="row">
+		<div class="col-sm-2 form-group">
+			<label class="lbl-abs">Month</label>
+			@Html.TextBoxFor(model => model.Date, new { @class = "form-control actdate h-45", @type = "month", @OnChange = "GetList('Mitr')" })
+			@Html.ValidationMessageFor(model => model.Date, "", new { @class = "text-danger" })
+			<input type="hidden" id="hdfid" value="" />
+		</div>
+
+		<div class="col-md-4 col-sm-12 col-xs-12">
+			<input type="file" id="FileAttachment" name="UploadedFile" class="file-inp" accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet/.xls" />
+
+		</div>
+		<div class="col-md-6 col-sm-12 col-xs-12 align-self-center">
+			<button type="button" class="btn mtr-g-grn" onclick="saveAttachment()"><i class="fas fa-file-alt"></i>Import</button>
+			<button type="button" class="btn blk-gdn-btn btn-l ripplelink" onclick="exportReportToExcelAll()"><i class="fas fa-file-excel"></i>Export</button>
+
+		</div>
+		
+	</div>
+
+
+    <div class="tab-main">
+        <ul id="tabs" class="nav nav-tabs " role="tablist">
+            <li class="nav-item"> <a id="tab-A" onclick="GetList('Mitr')" href="#Mitr" class="nav-link ripplelink active" data-toggle="tab" role="tab"><i class="fas fa-user-times"></i>Mitr</a> </li>
+            <li class="nav-item"> <a id="tab-B" onclick="GetList('NonMitr')" href="#NonMitr" class="nav-link ripplelink " data-toggle="tab" role="tab" aria-selected="true"><i class="fas fa-user-tag"></i>Non Mitr</a> </li>
+        </ul>
+        <div id="content" class="tab-content mt-2 shadow-box p-0" role="tablist">
+            <div id="Mitr" class="card tab-pane active show fade" role="tabpanel" aria-labelledby="tab-A">
+                <div class="card-header" role="tab" id="heading-A">
+                    <h5 class="mb-0"> <a class="collapsed" data-toggle="collapse" href="#collapse-A" aria-expanded="false" aria-controls="collapse-A">Mitr<i class="fas fa-cogs"></i></a> </h5>
+                </div>
+                <div id="collapse-A" class="collapse" role="tabpanel" data-parent="#content" aria-labelledby="heading-A">
+                    <!-- Start -->
+                    <div id="TagetDiv_Mitr">
+                    </div>
+                </div>
+                <!-- End -->
+            </div>
+            <div id="NonMitr" class="card tab-pane fade " role="tabpanel" aria-labelledby="tab-B">
+                <div class="card-header" role="tab" id="heading-B">
+                    <h5 class="mb-0">
+                        <!-- Note: `data-parent` removed from here -->
+                        <a data-toggle="collapse" href="#collapse-B" aria-expanded="true" aria-controls="collapse-B">Non Mitr<i class="fas fa-clock"></i></a>
+                    </h5>
+                </div>
+
+                <!-- Note: New place of `data-parent` -->
+                <div id="collapse-B" class="collapse show" data-parent="#content" role="tabpanel" aria-labelledby="heading-B">
+                    <div class="card-body p-0">
+                    
+                        <!-- Start -->
+                        <div id="TagetDiv_NonMitr">
+                        </div>
+
+                    </div>
+                    <!-- End -->
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+    
+@section scripts    {
+    @System.Web.Optimization.Scripts.Render("~/bundle/dataTablesjs")
+    @System.Web.Optimization.Scripts.Render("~/bundle/unobtrusivejs")
+    @Html.IncludeVersionedJs(Url.Content("~/assets/design/Scripts/AddInit.js"))
+    @Html.IncludeVersionedJs(Url.Content("~/assets/design/Scripts/ToolTip.js"))
+    <script>
+        $(document).ready(function () {
+            GetList("Mitr");
+        });
+       
+        function GetList(Tab) {
+            var dt = $("#Date").val();
+          $("#hdfid").val(Tab);
+            ShowLoadingDialog();
+                 var Src = EncryptQueryStringJSON(@ViewBag.MenuID+"*" + "/SalaryStructure/_DeductionEntry" + "*" + '0')
+                 var menuid =@ViewBag.MenuID;           
+                    $.ajax({
+                        url: "/SalaryStructure/_DeductionEntry",
+                        type: "Get",
+                        async: true,
+                        data: { src: Src, Emptype: Tab, Date: dt},
+                        success: function (data) {
+                            $("#TagetDiv_" + Tab).empty();
+                            $("#TagetDiv_" + Tab).html(data);
+                            $(".applyselect").select2();
+                            //DatatableScriptsWithColumnSearch("table_" + Tab);
+                          
+                            CloseLoadingDialog();
+                        },
+                        error: function (er) {
+                            CloseLoadingDialog();
+                            alert(er);
+
+                        }
+                    });
+        }
+        function OnSuccess(obj) {
+            if (obj.Status) {
+                SuccessToaster(obj.SuccessMessage);
+              //  window.location.href = obj.RedirectURL;
+                GetList(obj.AdditionalMessage);
+            }
+            else {
+                CloseLoadingDialog();
+                FailToaster(obj.SuccessMessage);
+
+            }
+        }  
+
+       
+             function saveAttachment() {
+        debugger;
+            var fileUpload = $("#FileAttachment").get(0);
+         var dt = $("#Date").val();
+        var empt=$("#hdfid").val();
+            var files = fileUpload.files;
+            // Create FormData object
+            if (files.length == 0) {
+                // showAndDismissAlert("danger","Please Choose File First.")
+                $("#FileAttachment").focus();
+                return
+            }
+            var fileData = new FormData();
+            if (files.length > 0) {
+                fileData.append("FileAttachment", files[0]);
+                 fileData.append('Emptype',   empt);
+                  fileData.append('Date', dt);
+                ShowLoadingDialog();
+                $.ajax({
+                    url: "/CommonAjax/DeductionEntrydoc",
+                    type: "POST",
+                    processData: false,
+                    contentType: false,
+                    data: fileData,
+                    success: function (response) {
+                         debugger;
+
+        var count=1;
+		                 var data=response.DeductionEntry.Component;
+                       $("#table_"+empt+" TBODY TR").each(function (i) {
+                       
+                         for (let j = 0; j < data.length; j++) {
+                     debugger;
+                         var Id=data[j].Id;
+                         var text=data[j].Empid;
+
+                         var EmpId = Number($(this).find("td:eq(0) input[type='hidden']").val());
+                        if(EmpId==text)
+                         {
+                     debugger;
+                        var member_info = $(this).find("td:eq(10) input[name='"+text+"-"+Id+"']").val(data[j].Amt);
+                        var member_info1 = $(this).find("td:eq(11) input[name='"+text+"-"+Id+"']").val(data[j].Amt);
+                        var member_info2 = $(this).find("td:eq(12) input[name='"+text+"-"+Id+"']").val(data[j].Amt);
+                         var member_info3 = $(this).find("td:eq(13) input[name='"+text+"-"+Id+"']").val(data[j].Amt);
+
+                       var member_info4 = $(this).find("td:eq(14) input[name='"+text+"-"+Id+"']").val(data[j].Amt);
+                        var member_info5 = $(this).find("td:eq(15) input[name='"+text+"-"+Id+"']").val(data[j].Amt);
+                        var member_info6 = $(this).find("td:eq(16) input[name='"+text+"-"+Id+"']").val(data[j].Amt);
+                         var member_info7 = $(this).find("td:eq(17) input[name='"+text+"-"+Id+"']").val(data[j].Amt);
+                          var member_info8 = $(this).find("td:eq(18) input[name='"+text+"-"+Id+"']").val(data[j].Amt);
+                    count++;
+                           }
+       
+                           }
+                  
+
+                           });
+
+                        $("#FileAttachment").val(null);
+                        //  window.location.reload();
+                        //alert(response.SuccessMessage);
+                        CloseLoadingDialog();
+                       // swal('', response.SuccessMessage);
+                      swal('', response.SuccessMessage);
+       
+        debugger;
+                        if (response.ID != "0") {
+                            $("#FileAttachment").val(null);
+      
+                        }
+                    }
+                });
+            }
+		}
+
+
+             function exportReportToExcelAll() {
+            var empt=$("#hdfid").val();
+            var tabel="table_"+empt+""
+            exportToExcelSahaj(tabel, 'DeductionEntry');
+        }
+    </script>
+
+    <script type="text/javascript">
+  $(document).ready(function () {
+    $('.selectall').click(function () {
+        $('.selectedId').prop('checked', this.checked);
+    });
+
+    $('.selectedId').change(function () {
+        var check = ($('.selectedId').filter(":checked").length == $('.selectedId').length);
+        $('.selectall').prop("checked", check);
+    });
+});
+</script>
+
+}
+

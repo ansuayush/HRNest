@@ -1,0 +1,331 @@
+﻿@model  SMPR.SMPREntry
+@{
+    string MenuID = "0";
+    long LoginID = 0;
+    long.TryParse(clsApplicationSetting.GetSessionValue("LoginID"), out LoginID);
+
+    if (ViewBag.MenuID != null)
+    {
+        MenuID = ViewBag.MenuID;
+    }
+
+}
+<h1 class="heading-one">SMPR Entry</h1>
+
+
+<div class="inner-main mb-5 pb-0">
+
+
+    <div class="row text-clr">
+        <div class="col-lg-12">
+            <div class="row wtwo-575">
+                <div class="col-lg-2 col-md-4 col-sm-4 form-group">
+                    <label>Due On</label>
+                    <p>@Model.DueOn</p>
+                </div>
+                <div class="col-lg-2 col-md-4 col-sm-4 form-group">
+                    <label>Project</label>
+                    <p>@Model.ProjectName</p>
+                </div>
+                <div class="col-lg-2 col-md-4 col-sm-4 form-group">
+                    <label>State</label>
+                    <p>@Model.StateName</p>
+                </div>
+                <div class="col-lg-2 col-md-4 col-sm-4 form-group">
+                    <label>Month</label>
+                    <p>@Model.MonthName</p>
+                </div>
+
+                <div class="col-lg-2 col-md-4 col-sm-4 form-group">
+                    <label>Version</label>
+                    <p>@Model.Version</p>
+                </div>
+            </div>
+        </div>
+
+    </div>
+    <div class="row">
+        <div class="col-md-8">
+            @if (Model.SMPRCommentsList.Count > 0)
+            {
+                <ul class="list-unstyled cmtlist ">
+                    @foreach (var item in Model.SMPRCommentsList.Where(x => x.SectionID == 0))
+                    {
+                        <li>
+                            <strong>@item.CreatedByName</strong> <span class="lgt-clr">@item.createddat</span>
+                            <div class="cmt-box">
+                                @item.Comment
+                            </div>
+                        </li>
+                    }
+                </ul>
+            }
+        </div>
+    </div>
+    @using (Html.BeginForm("SMPRAdd", "MPR",
+    new { src = ViewBag.src },
+    FormMethod.Post,
+    new
+    {
+        name = "_SMPRAddFrom",
+        id = "_SMPRAddFrom",
+        enctype = "multipart/form-data"
+    }))
+    {
+
+        @Html.AntiForgeryToken()
+
+        @Html.HiddenFor(model => Model.ProjectName)
+        @Html.HiddenFor(model => Model.StateName)
+        @Html.HiddenFor(model => Model.MonthName)
+        @Html.HiddenFor(model => Model.Version)
+
+        @Html.HiddenFor(model => Model.DueOn)
+        @Html.HiddenFor(model => Model.SMPRSubmitted)
+        @Html.HiddenFor(model => Model.LevelApproved)
+        @Html.HiddenFor(model => Model.Lock)
+        @Html.HiddenFor(model => Model.IsButtonShow)
+        <div class="row  text-clr">
+
+
+            <div class="col-sm-8">
+                @if (Model.SMPRSection.Count > 0)
+                {
+                    for (int s = 0; s < Model.SMPRSection.Count; s++)
+                    {
+                        <div class="header-two">@Model.SMPRSection[s].SecName </div>
+
+                        @Html.HiddenFor(model => Model.SMPRSection[s].SecID)
+                        @Html.HiddenFor(model => Model.SMPRSection[s].SecName)
+
+                        for (int SS = 0; SS < Model.SMPRSubSectionList.Count; SS++)
+                        {
+                            @Html.HiddenFor(model => Model.SMPRSubSectionList[SS].SecID)
+                            @Html.HiddenFor(model => Model.SMPRSubSectionList[SS].SecName)
+                            @Html.HiddenFor(model => Model.SMPRSubSectionList[SS].SubSecID)
+                            @Html.HiddenFor(model => Model.SMPRSubSectionList[SS].SubSecName)
+
+                            if (Model.SMPRSubSectionList[SS].SecID == Model.SMPRSection[s].SecID)
+                            {
+                                <table class="table mt-0 mb-1">
+                                    @{ int Count = 0;}
+                                    @for (int i = 0; i < Model.SMPRDetList.Count; i++)
+                                    {
+                                        if (Model.SMPRDetList[i].MPRSID == Model.SMPRSubSectionList[SS].SecID && Model.SMPRDetList[i].MPRSubSecID == Model.SMPRSubSectionList[SS].SubSecID)
+                                        {
+                                            Count++;
+                                            if (Count == 1)
+                                            {
+                                                <thead>
+                                                    <tr>
+                                                        <th class="w-10">S No.</th>
+                                                        <th class="w-100 pl-3">@Model.SMPRSubSectionList[SS].SubSecName</th>
+                                                        @if (Model.SMPRDetList[i].NoOfCol == 1)
+                                                        {
+                                                            <th class="w-100 text-right">@Model.SMPRDetList[i].ColText1 </th>
+                                                        }
+                                                        else if (Model.SMPRDetList[i].NoOfCol == 2)
+                                                        {
+                                                            <th class="w-100 text-right">@Model.SMPRDetList[i].ColText1 </th>
+                                                            <th class="w-100 text-right">@Model.SMPRDetList[i].ColText2 </th>
+                                                        }
+                                                        else if (Model.SMPRDetList[i].NoOfCol == 3)
+                                                        {
+                                                            <th class="w-100 text-right">@Model.SMPRDetList[i].ColText1 </th>
+                                                            <th class="w-100 text-right">@Model.SMPRDetList[i].ColText2 </th>
+                                                            <th class="w-100 text-right">@Model.SMPRDetList[i].ColText3 </th>
+                                                        }
+                                                    </tr>
+                                                </thead>
+                                            }
+                                            <tr>
+                                                <td>@Count</td>
+                                                <td class="pl-3 w-200">
+                                                    @Model.SMPRDetList[i].IndicatorName
+                                                    @Html.HiddenFor(x => Model.SMPRDetList[i].SMPRDetID)
+                                                    @Html.HiddenFor(x => Model.SMPRDetList[i].MPRIndicatorID)
+                                                    @Html.HiddenFor(x => Model.SMPRDetList[i].IndicatorName)
+                                                    @Html.HiddenFor(x => Model.SMPRDetList[i].MPRSubSecID)
+                                                    @Html.HiddenFor(x => Model.SMPRDetList[i].MPRSID)
+                                                    @Html.HiddenFor(x => Model.SMPRDetList[i].ColText1)
+                                                    @Html.HiddenFor(x => Model.SMPRDetList[i].NoOfCol)
+                                                    @Html.HiddenFor(x => Model.SMPRDetList[i].ColText2)
+                                                    @Html.HiddenFor(x => Model.SMPRDetList[i].ColText3)
+
+                                                    @Html.HiddenFor(x => Model.SMPRDetList[i].ColDataType1)
+                                                    @Html.HiddenFor(x => Model.SMPRDetList[i].ColDataType2)
+                                                    @Html.HiddenFor(x => Model.SMPRDetList[i].ColDataType3)
+
+                                                </td>
+                                                @if (Model.SMPRDetList[i].NoOfCol == 1)
+                                                {
+                                                    <td>
+
+                                                        @Html.TextAreaFor(model => Model.SMPRDetList[i].ExecuterVal1, new { @class = "form-control h-100", @placeholder = "Enter", @type = @Model.SMPRDetList[i].ColDataType1 })
+                                                        @Html.ValidationMessageFor(model => Model.SMPRDetList[i].ExecuterVal1, "", new { @class = "text-danger" })
+                                                    </td>
+                                                }
+                                                else if (Model.SMPRDetList[i].NoOfCol == 2)
+                                                {
+                                                    <td>
+                                                        @Html.TextBoxFor(model => Model.SMPRDetList[i].ExecuterVal1, new { @class = "form-control", @type = @Model.SMPRDetList[i].ColDataType1 })
+                                                        @Html.ValidationMessageFor(model => Model.SMPRDetList[i].ExecuterVal1, "", new { @class = "text-danger" })
+                                                    </td>
+                                                    <td>
+                                                        @Html.TextBoxFor(model => Model.SMPRDetList[i].ExecuterVal2, new { @class = "form-control", @type = @Model.SMPRDetList[i].ColDataType2 })
+                                                        @Html.ValidationMessageFor(model => Model.SMPRDetList[i].ExecuterVal2, "", new { @class = "text-danger" })
+                                                    </td>
+                                                }
+                                                else if (Model.SMPRDetList[i].NoOfCol == 3)
+                                                {
+                                                    if (Model.SMPRDetList[i].ColDataType3.ToUpper() == "SUM")
+                                                    {
+                                                        <td>
+                                                            @if (Model.SMPRDetList[i].ColText1 == "Till last month")
+                                                            {
+                                                                @Html.TextBoxFor(model => Model.SMPRDetList[i].ExecuterVal1, new { @class = "form-control txtval1", @onkeyup = "CalculateSum(this)", @type = @Model.SMPRDetList[i].ColDataType1, @readonly = "readonly" })
+                                                            }
+                                                            else
+                                                            {
+                                                                @Html.TextBoxFor(model => Model.SMPRDetList[i].ExecuterVal1, new { @class = "form-control txtval1", @onkeyup = "CalculateSum(this)", @type = @Model.SMPRDetList[i].ColDataType1 })
+                                                            }
+                                                            @Html.ValidationMessageFor(model => Model.SMPRDetList[i].ExecuterVal1, "", new { @class = "text-danger" })
+                                                        </td>
+                                                        <td>
+                                                            @Html.TextBoxFor(model => Model.SMPRDetList[i].ExecuterVal2, new { @class = "form-control txtval2", @onkeyup = "CalculateSum(this)", @type = @Model.SMPRDetList[i].ColDataType2 })
+                                                            @Html.ValidationMessageFor(model => Model.SMPRDetList[i].ExecuterVal2, "", new { @class = "text-danger" })
+                                                        </td>
+                                                        <td>
+                                                            @{
+                                                                if (!string.IsNullOrEmpty(Convert.ToString(Model.SMPRDetList[i].ExecuterVal1)))
+                                                                {
+                                                                    if (Convert.ToInt64(Model.SMPRDetList[i].ExecuterVal1) > 0 || Convert.ToInt64(Model.SMPRDetList[i].ExecuterVal2) > 0)
+                                                                    {
+                                                                        Model.SMPRDetList[i].ExecuterVal3 = Convert.ToString(Convert.ToInt64(Model.SMPRDetList[i].ExecuterVal1) + Convert.ToInt64(Model.SMPRDetList[i].ExecuterVal2));
+                                                                        @Html.TextBoxFor(model => Model.SMPRDetList[i].ExecuterVal3, new { @class = "form-control txtTotal", @type = @Model.SMPRDetList[i].ColDataType3, @readonly = "readonly" })
+                                                                        @Html.ValidationMessageFor(model => Model.SMPRDetList[i].ExecuterVal3, "", new { @class = "text-danger" })
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        @Html.TextBoxFor(model => Model.SMPRDetList[i].ExecuterVal3, new { @class = "form-control txtTotal", @type = @Model.SMPRDetList[i].ColDataType3, @readonly = "readonly" })
+                                                                        @Html.ValidationMessageFor(model => Model.SMPRDetList[i].ExecuterVal3, "", new { @class = "text-danger" })
+                                                                    }
+                                                                }
+                                                                else
+                                                                {
+                                                                    @Html.TextBoxFor(model => Model.SMPRDetList[i].ExecuterVal3, new { @class = "form-control txtTotal", @type = @Model.SMPRDetList[i].ColDataType3, @readonly = "readonly" })
+                                                                    @Html.ValidationMessageFor(model => Model.SMPRDetList[i].ExecuterVal3, "", new { @class = "text-danger" })
+                                                                }
+                                                            }
+                                                        </td>
+                                                    }
+                                                    else
+                                                    {
+                                                        <td>
+                                                            @Html.TextBoxFor(model => Model.SMPRDetList[i].ExecuterVal1, new { @class = "form-control txtval1", @type = @Model.SMPRDetList[i].ColDataType1 })
+                                                            @Html.ValidationMessageFor(model => Model.SMPRDetList[i].ExecuterVal1, "", new { @class = "text-danger" })
+                                                        </td>
+                                                        <td>
+                                                            @Html.TextBoxFor(model => Model.SMPRDetList[i].ExecuterVal2, new { @class = "form-control txtval2", @type = @Model.SMPRDetList[i].ColDataType2 })
+                                                            @Html.ValidationMessageFor(model => Model.SMPRDetList[i].ExecuterVal2, "", new { @class = "text-danger" })
+                                                        </td>
+                                                        <td>
+                                                            @{ if (Convert.ToInt64(Model.SMPRDetList[i].ExecuterVal1) > 0 || Convert.ToInt64(Model.SMPRDetList[i].ExecuterVal2) > 0)
+                                                                {
+                                                                    Model.SMPRDetList[i].ExecuterVal3 = Convert.ToString(Convert.ToInt64(Model.SMPRDetList[i].ExecuterVal1) + Convert.ToInt64(Model.SMPRDetList[i].ExecuterVal2));
+                                                                    @Html.TextBoxFor(model => Model.SMPRDetList[i].ExecuterVal3, new { @class = "form-control", @type = @Model.SMPRDetList[i].ColDataType3 })
+                                                                    @Html.ValidationMessageFor(model => Model.SMPRDetList[i].ExecuterVal3, "", new { @class = "text-danger" })
+                                                                }
+                                                                else
+                                                                {
+                                                                    @Html.TextBoxFor(model => Model.SMPRDetList[i].ExecuterVal3, new { @class = "form-control txtTotal", @type = @Model.SMPRDetList[i].ColDataType3, @readonly = "readonly" })
+                                                                    @Html.ValidationMessageFor(model => Model.SMPRDetList[i].ExecuterVal3, "", new { @class = "text-danger" })
+                                                                }
+                                                            }
+                                                        </td>
+                                                    }
+                                                }
+                                            </tr>
+                                        }
+
+                                    }
+                                </table>
+                                <div class="form-group">
+                                    <label>Analysis/Highlight - @Model.SMPRSection[s].SecName --> @Model.SMPRSubSectionList[SS].SubSecName</label>
+                                    <textarea class="form-control h-100" id="@Html.IdFor(model => Model.SMPRSubSectionList[SS].OverallReason)" name="@Html.NameFor(model => Model.SMPRSubSectionList[SS].OverallReason)">@(Model.SMPRCommentsList !=null? Model.SMPRCommentsList.Where(x => x.SectionID == Model.SMPRSubSectionList[SS].SubSecID).Select(x => x.Comment).FirstOrDefault():"")</textarea>
+                                    @Html.ValidationMessageFor(model => Model.SMPRSubSectionList[SS].OverallReason, "", new { @class = "text-danger" })
+                                </div>
+                            }
+                        }
+                    }
+                }
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-8">
+                @if (Model.SMPRCommentsList.Count > 0)
+                {
+                    <ul class="list-unstyled cmtlist ">
+                        @foreach (var item in Model.SMPRCommentsList.Where(x => x.SectionID == 0))
+                        {
+                            <li>
+                                <strong>@item.CreatedByName</strong> <span class="lgt-clr">@item.createddat</span>
+                                <div class="cmt-box">
+                                    @item.Comment
+                                </div>
+                            </li>
+                        }
+                    </ul>
+                }
+            </div>
+			<div class="col-md-12 mt-3">
+				@if (Model.Lock == 1)
+				{
+					<h2>Sorry This is Locked</h2>
+				}
+				@if (Model.IsButtonShow)
+				{
+
+					if (Convert.ToDateTime(Model.DueOn) <= Convert.ToDateTime(DateTime.Now.ToString("yyyy-MM-28")))
+					{
+						<button type="submit" id="btnSave" class="btn  mtr-g-grn btn-l ripplelink pull-right" name="Command" value="Save"><i class="fa fa-paper-plane" aria-hidden="true"></i> Save</button>
+						<button type="submit" class="btn mtr-o-grn  btn-l ripplelink pull-right" name="Command" value="Submit"><i class="fa fa-paper-plane" aria-hidden="true"></i> Submit</button>
+					}
+					else if (Convert.ToDateTime(Model.DueOn).AddMonths(-1) <= Convert.ToDateTime(DateTime.Now.ToString("yyyy-MM-28")))
+					{
+						<button type="submit" id="btnSave" class="btn  mtr-g-grn btn-l ripplelink pull-right" name="Command" value="Save"><i class="fa fa-paper-plane" aria-hidden="true"></i> Save</button>
+						<button type="submit" class="btn mtr-o-grn  btn-l ripplelink pull-right" name="Command" value="Submit"><i class="fa fa-paper-plane" aria-hidden="true"></i> Submit</button>
+					}
+				}
+				@Html.CreateAnchor(MenuID, "/MPR/SMPRList", "Back", "btn btn-l cnl-btn ripplelink", "", "", "")
+			</div>
+        </div>
+    }
+</div>
+
+    @section scripts    {
+        @System.Web.Optimization.Scripts.Render("~/bundle/unobtrusivejs")
+        @Html.IncludeVersionedJs(Url.Content("~/assets/design/Scripts/ToolTip.js"))
+        @Html.IncludeVersionedJs(Url.Content("~/assets/design/scripts/AddInit.js"))
+        <script>
+            function CalculateSum(obj) {
+                var a = Number($(obj).closest("tr").find(".txtval1").val());
+                var b = Number($(obj).closest("tr").find(".txtval2").val());
+                if (!a) {
+                    a = 0;
+                }
+                if (!b) {
+                    b = 0;
+                }
+                $(obj).closest("tr").find(".txtTotal").val(a + b);
+
+            }
+
+
+            $('#btnSave').click(function () {
+                $(this).closest('form').data("validator").cancelSubmit = true;
+                return true;
+            });
+
+        </script>
+    }

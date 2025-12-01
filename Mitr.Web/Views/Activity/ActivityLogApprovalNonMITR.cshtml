@@ -1,0 +1,392 @@
+﻿@using System.Data
+@model Mitr.Models.InputDate
+@section style{
+    @System.Web.Optimization.Styles.Render("~/bundle/dataTablecss")
+}
+<div class="inner-main" role="main">
+    @Html.Partial("HeaderMsg_Partial")
+    <h1 class="heading-one">Term Based Activity log Approval</h1>
+
+    @using (Ajax.BeginForm("_ActivityLogApprovalNonMITR", "Activity",
+            new { src = clsApplicationSetting.EncryptQueryString(ViewBag.MenuID.ToString() + "*/Activity/_ActivityLogApprovalNonMITR") },
+            new AjaxOptions { HttpMethod = "POST", OnSuccess = "BindTarget", OnBegin = "ShowLoadingDialog();", OnFailure = "CloseLoadingDialog();" },
+        new { @id = "_ActivityLogApprovalNonMITRFrom" })
+        )
+    {
+
+        <div class="tab-main">
+            <div class="row text-clr">
+                <div class="col-md-12">
+                    <ul id="tabs" class="nav nav-tabs " role="tablist">
+                        <li class="nav-item"> <a tabvalue="0" id="a1" class="nav-link active ripplelink AnchorApproval" data-toggle="tab" role="tab"><i class="fal fa-envelope-open"></i>Pending</a> </li>
+                        <li class="nav-item"> <a tabvalue="2" id="a2" class="nav-link ripplelink AnchorApproval" data-toggle="tab" role="tab"><i class="fas fa-ban"></i>Resubmitted</a> </li>
+                        <li class="nav-item"> <a tabvalue="1" id="a3" class="nav-link ripplelink AnchorApproval" data-toggle="tab" role="tab"><i class="fa fa-check" aria-hidden="true"></i>Approved</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-2 mt-3 form-group">
+                    <label class="lbl-abs">Select Month</label>
+                    @Html.HiddenFor(model => model.Approve)
+                    @Html.TextBoxFor(model => model.Date, new { @class = "form-control actdate h-30", @type = "month" })
+                    @Html.ValidationMessageFor(model => model.Date, "", new { @class = "text-danger" })
+                </div>
+                <div style="display:none">
+                    <button type="submit" class="btn mtr-g-grn btn-l ripplelink" id="btnSearch" name="Command" value="Search"><i class="fas fa-search"></i>Search</button>
+                </div>
+
+            </div>
+        </div>
+    }
+    <div id="TargetDiv"></div>
+
+</div>
+
+<div class="modal fade pop-dgn" id="ModalShowActiveLog">
+    <div class="modal-dialog popw--md">
+        <div class="modal-content">
+            <div class="modal-header blk-gdn-btn  ">
+                <h4 class="modal-title"><span id="spanempname"></span></h4>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+            <div class="modal-body ">
+
+                <div id="DivActiveLogPrvew"></div>
+            </div>
+            <div class="text-center mt-2">
+                <button type="button" class="btn cnl-btn ripplelink  " data-dismiss="modal">
+                    <i class="fas fa-times"></i>Close
+                </button>
+                <a class="btnShowPreview btn mtr-g-grn btn-l ripplelink ">View Detail</a>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+
+
+<div class="modal fade pop-dgn" id="ModalOTCO">
+    <div class="modal-dialog popw--md">
+        <div class="modal-content">
+            <div class="modal-header blk-gdn-btn  ">
+                <h4 class="modal-title"><span id="spanOTCOEMPName"></span></h4>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div id="DivOTCO"></div>
+            </div>
+            
+
+        </div>
+    </div>
+</div>
+
+
+<div class="modal fade pop-dgn" id="ModalPendingLeave">
+    <div class="modal-dialog popw--md">
+        <div class="modal-content">
+            <div class="modal-header blk-gdn-btn  ">
+                <h4 class="modal-title"><span id="spnPLHead"></span></h4>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+            <div class="modal-body p-0">
+                <div id="DivPL"></div>
+            </div>
+            <div class="p-2 text-center">
+                <button type="button" class="btn cnl-btn ripplelink  " data-dismiss="modal"><i class="fas fa-times"></i>Close</button>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<div class="modal  fade pop-dgn leave-pop" id="LeaveModal">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+
+            <div class="close" data-dismiss="modal">&times;</div>
+            <div class="modal-body p-0">
+                <div id="ModalTargetDiv"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade pop-dgn" id="ModalLeaveAttachment">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header blk-gdn-btn">
+                <h4 class="modal-title">Leave Attachment <span class="spnhead"></span> </h4>
+                <div class="close" data-dismiss="modal">&times;</div>
+            </div>
+            <div class="modal-body p-0">
+                <div id="LeaveAttachmentTarget"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+@section scripts    {
+    @System.Web.Optimization.Scripts.Render("~/bundle/dataTablesjs")
+    <script src="~/assets/design/Scripts/AddInit.js?v=@clsApplicationSetting.GetWebConfigValue("Version")"></script>
+    @System.Web.Optimization.Scripts.Render("~/bundle/unobtrusivejs");
+    <script src="~/assets/design/Scripts/PagesJS/ActivityLogApproval.js?v=@clsApplicationSetting.GetWebConfigValue("Version")"></script>
+    <script>
+       
+       
+        function validate(obj) {
+            var btnVal = $(obj).val();
+            var Ret = false;
+            var checked_checkboxes = $("#tableActiveLogApprove input[type=checkbox]:checked");
+            var reason = "";
+            $('.ApprovedRemarks').each(function (index) {
+                if ($(this).val() != "") {
+                    reason = $(this).val();
+                }
+            });
+
+            if (checked_checkboxes.length === 0) {
+                swal('please Select atleast one checkbox', '');
+            }
+            else if (reason === "" && btnVal =="Resubmit") {
+                FillRemarks(obj);
+            }
+            else {
+                Ret = true;
+                ShowLoadingDialog();
+            }
+            return Ret;
+        }
+        function FillRemarks(obj) {
+            swal("Write Remarks", {
+                text: "Please share reason for resubmission of activity log",
+                content: "input",
+            }).then(function (result) {
+                if (result != "") {
+                    $("#tableActiveLogApprove input[type=checkbox]:checked").closest("tr").find("td .ApprovedRemarks").val(result);
+                    $(obj).click();
+                }
+            });
+        }
+
+        $('#ModalPendingLeave').on('hidden.bs.modal', function () {
+
+            ShowLoadingDialog();
+            location.reload();
+        })
+
+        function GetPendingLeaveDuringTheMonth(EMPID,EMPNAme,Date)
+        {
+            $("#spnPLHead").html(EMPNAme);
+            var Date = $('#Date').val();
+            $.ajax({
+                url: "/Activity/_PendingLeaveDuringTheMonth",
+				type: "Get",
+                data: { src: EncryptQueryStringJSON(@ViewBag.MenuID+"*" + "/Activity/_PendingLeaveDuringTheMonth"),EMPID: EMPID, Date: Date },
+                success: function (data)
+                {
+                    $("#DivPL").empty();
+                    $("#DivPL").html(data);
+                    $("#ModalPendingLeave").modal({
+                        backdrop: 'static',
+                        keyboard: false
+                    });
+				},
+				error: function (er) {
+					alert(er);
+
+				}
+			});
+        }
+
+
+		$('#ModalShowActiveLog').on('hidden.bs.modal', function () {
+			$("#ModalShowActiveLog").removeClass('modal-fw');
+			$(".btnShowPreview").text('View Detail')
+
+		});
+
+        $(document).ready(function () {
+            $("#btnSearch").click();
+
+             $(".btnShowPreview").click(function () {
+					$(".hasdays").toggle();
+				 $("#ModalShowActiveLog").toggleClass('modal-fw');
+
+				 if ($(this).text() === "View Detail") {
+					 $(this).text('Back')
+				 }
+				 else {
+					 $(this).text('View Detail')
+				 }
+			 });
+        });
+        $('.AnchorApproval').on('click', function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+            var att = $(this).attr("tabvalue");
+            $(".AnchorApproval.active").removeClass("active");
+            $(this).addClass("active");
+            $("#Approve").val(att);
+            ShowLoadingDialog();
+            $("#btnSearch").click();
+        });
+
+        $('#Date').bind("change", function () {
+            ShowLoadingDialog();
+            $("#btnSearch").click();
+
+        });
+
+        function BindTarget(args) {
+            CloseLoadingDialog();
+            $("#TargetDiv").empty();
+            $("#TargetDiv").html(args);
+            $('[data-toggle="tooltip"]').tooltip();
+            DatatableScriptsWithColumnSearch("tableActiveLogApprove");
+            $('.bindViewActive').on('click', function (e) {
+                e.preventDefault();
+                e.stopPropagation();
+                var E = $(this).closest("tr").find("input:hidden[name=E]").val();
+                var N = $(this).closest("tr").find("input:hidden[name=N]").val();
+
+                getActiveLog(E,N);
+            });
+
+            BinCOOTPOpupDetails();
+
+
+             $('.SubmitResubmit').on('click', function (e) {
+                 e.preventDefault();
+                 e.stopPropagation();
+                  var E = $(this).closest("tr").find("input:hidden[name=E]").val();
+                var D = $(this).closest("tr").find("input:hidden[name=D]").val();
+                  var R = $(this).closest("tr").find("input:hidden[name=R]").val();
+                 ResbmitConfirmation(this,E,D,R);
+
+             });
+             $('.submitApproved').on('click', function (e) {
+                        e.preventDefault();
+                       e.stopPropagation();
+                  var E = $(this).closest("tr").find("input:hidden[name=E]").val();
+                 var D = $(this).closest("tr").find("input:hidden[name=D]").val();
+
+                 ConfirmMsgBox('Are You Sure want to proceed ?', '', function () {
+                     SubmitActivityApproval(E, D, "", 'Approved')
+                 })
+             });
+
+            $('.btnAllOTCOLeaveApprove').on('click', function (e) {
+                 e.preventDefault();
+                 e.stopPropagation();
+                  var E = $(this).closest("tr").find("input:hidden[name=E]").val();
+                var D = $(this).closest("tr").find("input:hidden[name=D]").val();
+                ConfirmMsgBox('Are You Sure want to proceed ?', '', function () {
+                     SubmitApprovalAllOTCOLeave(E, D);
+                 })
+            });
+
+            $('.bindUnApprovedLeave').on('click', function (e) {
+                e.preventDefault();
+                e.stopPropagation();
+                var E = $(this).closest("tr").find("input:hidden[name=E]").val();
+                var N = $(this).closest("tr").find("input:hidden[name=N]").val();
+                var D = $(this).closest("tr").find("input:hidden[name=D]").val();
+                GetPendingLeaveDuringTheMonth(E, N, D);
+            });
+
+            $(".btnActivity").click(function () {
+                return validate(this);
+            });
+        }
+
+        function getActiveLog(EMPID,EMPNAme)
+		{
+			ShowLoadingDialog();
+            $("#spanempname").html(EMPNAme);
+            var Date = $('#Date').val();
+            var model = { EMPID: EMPID, Date: Date }
+
+            $.ajax({
+                url: "/Activity/_ViewActivityLogwithSummary",
+				type: "Get",
+				data: { src: EncryptQueryStringJSON(@ViewBag.MenuID+"*" + "/Activity/_ViewActivityLogwithSummary"),EMPID: EMPID, Date: Date },
+                success: function (data)
+                {
+					$("#DivActiveLogPrvew").empty();
+                    $("#DivActiveLogPrvew").html(data);
+                    $("#ModalShowActiveLog").modal('show');
+					$(".hasdays").hide();
+					CloseLoadingDialog();
+				},
+				error: function (er) {
+					alert(er);
+
+				}
+			});
+        }
+
+        function ResbmitConfirmation(obj,E,D,R) {
+            swal("Reason For Resubmit:", {
+             content: "input",
+                })
+                .then((value) => {
+                    if ($.trim(value) != "") {
+                        SubmitActivityApproval(E,D,value,'Resubmit')
+                    }
+                    else {
+                       FailToaster('Remarks Can not be blank')
+                    }
+                });
+        }
+
+
+        function SubmitActivityApproval(EMPID,Date,Remarks,Command)
+        {
+            $.ajax({
+                url: "/Activity/_SubmitActiveLogApproval",
+				type: "Post",
+				data: { src: EncryptQueryStringJSON(@ViewBag.MenuID+"*" + "/Activity/_SubmitActiveLogApproval"),EMPID: EMPID, Date: Date,Remarks:Remarks,Command:Command },
+                success: function (objsss)
+                {
+                    if (objsss.Status)
+                    {
+                       SuccessToaster(objsss.SuccessMessage);
+                       $("#btnSearch").click();
+                    }
+                    else
+                    {
+                           FailToaster(objsss.SuccessMessage);
+                    }
+				},
+				error: function (er) {
+				}
+			});
+        }
+
+         function SubmitApprovalAllOTCOLeave(EMPID,Date)
+        {
+            $.ajax({
+                url: "/Activity/_ApprovalAllOTCOLeave",
+				type: "Post",
+				data: { src: EncryptQueryStringJSON(@ViewBag.MenuID+"*" + "/Activity/_ApprovalAllOTCOLeave"),EMPID: EMPID, Date: Date,Command:"Approved" },
+                success: function (objsss)
+                {
+                    if (objsss.Status)
+                    {
+                       SuccessToaster(objsss.SuccessMessage);
+                       $("#btnSearch").click();
+                    }
+                    else
+                    {
+                           FailToaster(objsss.SuccessMessage);
+                    }
+				},
+				error: function (er) {
+				}
+			});
+        }
+
+    </script>
+}

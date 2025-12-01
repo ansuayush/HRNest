@@ -1,0 +1,149 @@
+﻿
+@model Mitr.Models.LeaveMaster
+
+
+
+@using (Ajax.BeginForm("_LeaveAdd", "Master",
+        new { src = ViewBag.src },
+        new AjaxOptions { HttpMethod = "POST", OnSuccess = "OnSuccess" },
+    new { @id = "_LeaveAddFrom" })
+    )
+{
+
+    @Html.AntiForgeryToken()
+    @Html.HiddenFor(x => Model.LeaveID)
+    <div class="row">
+        <div class="col-lg-6 col-md-6 col-sm-6 form-group">
+            <label>Leave Name<sup>*</sup></label>
+            @Html.TextBoxFor(model => model.LeaveName, new { @class = "form-control" })
+            @Html.ValidationMessageFor(model => model.LeaveName, "", new { @class = "text-danger" })
+        </div>
+
+        <div class="col-lg-6 col-md-6 col-sm-6 form-group">
+            <label>Leave Type	<sup>*</sup></label>
+            @{
+                List<SelectListItem> LeaveTypeItem = new List<SelectListItem>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    {
+            new SelectListItem{Text="Full Paid",Value="1" },
+            new SelectListItem{Text="Not Paid",Value="2" }
+            };
+            }
+            @Html.DropDownListFor(model => model.LeaveType, new SelectList(LeaveTypeItem, "Value", "text", Model.LeaveType), new { @class = "form-control applyselect" })
+            @Html.ValidationMessageFor(model => model.LeaveType, "", new { @class = "text-danger" })
+        </div>
+        <div class="col-lg-6 col-md-6 col-sm-6 form-group">
+            <label>Due Type	<sup>*</sup></label>
+            @{
+                List<SelectListItem> DueTypeItem = new List<SelectListItem>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    {
+            new SelectListItem{Text="Monthly",Value="1" },
+            new SelectListItem{Text="Yearly",Value="2" }
+            };
+            }
+            @Html.DropDownListFor(model => model.DueType, new SelectList(DueTypeItem, "Value", "text", Model.DueType), new { @class = "form-control applyselect" })
+            @Html.ValidationMessageFor(model => model.DueType, "", new { @class = "text-danger" })
+        </div>
+        <div class="col-lg-6 col-md-6 col-sm-6 form-group">
+            <label>Leave Hours<sup>*</sup></label>
+            @Html.TextBoxFor(model => model.NOOfLeave, new { @class = "form-control" })
+            @Html.ValidationMessageFor(model => model.NOOfLeave, "", new { @class = "text-danger" })
+        </div>
+        @*<div class="col-lg-6 col-md-6 col-sm-6 form-group">
+            <label>Color for Applied Leave</label>
+
+            <select id="@Html.IdFor(model => model.ColorApplied)" name="@Html.NameFor(model => model.ColorApplied)" class="form-control applyselect">
+                <option Value="">Select</option>
+                <option @(Model.ColorApplied == "Orange" ? "selected" : "") Value="rgb(249,161,58)^Orange">Orange</option>
+                <option @(Model.ColorApplied == "Light Green" ? "selected" : "") Value="rgb(174,212,119)^Light Green">Light Green</option>
+                <option @(Model.ColorApplied == "Dark Green" ? "selected" : "") Value="rgb(79,134,154)^Dark Green">Dark Green</option>
+                <option @(Model.ColorApplied == "Mulberry" ? "selected" : "") Value="rgb(129,6,84)^Mulberry">Mulberry</option>
+                <option @(Model.ColorApplied == "Purple" ? "selected" : "") Value="rgb(105,32,126)^Purple">Purple</option>
+                <option @(Model.ColorApplied == "Lavender" ? "selected" : "") Value="rgb(112,130,192)^Lavender">Lavender</option>
+                <option @(Model.ColorApplied == "Purplish Blue" ? "selected" : "") Value="rgb(137,155,207)^Purplish Blue">Purplish Blue</option>
+                <option @(Model.ColorApplied == "Royal Blue" ? "selected" : "") Value="rgb(0,79,163)^Royal Blue">Royal Blue</option>
+            </select>
+            @Html.ValidationMessageFor(model => model.ColorApplied, "", new { @class = "text-danger" })
+        </div>
+        <div class="col-lg-6 col-md-6 col-sm-6 form-group">
+            <label>Color for Approved Leave</label>
+            <select id="@Html.IdFor(model => model.ColorAppproved)" name="@Html.NameFor(model => model.ColorAppproved)" class="form-control applyselect">
+                <option Value="">Select</option>
+                <option @(Model.ColorAppproved == "Orange" ? "selected" : "") Value="rgb(249,161,58)^Orange">Orange</option>
+                <option @(Model.ColorAppproved == "Light Green" ? "selected" : "") Value="rgb(174,212,119)^Light Green">Light Green</option>
+                <option @(Model.ColorAppproved == "Dark Green" ? "selected" : "") Value="rgb(79,134,154)^Dark Green">Dark Green</option>
+                <option @(Model.ColorAppproved == "Mulberry" ? "selected" : "") Value="rgb(129,6,84)^Mulberry">Mulberry</option>
+                <option @(Model.ColorAppproved == "Purple" ? "selected" : "") Value="rgb(105,32,126)^Purple">Purple</option>
+                <option @(Model.ColorAppproved == "Lavender" ? "selected" : "") Value="rgb(112,130,192)^Lavender">Lavender</option>
+                <option @(Model.ColorAppproved == "Purplish Blue" ? "selected" : "") Value="rgb(137,155,207)^Purplish Blue">Purplish Blue</option>
+                <option @(Model.ColorAppproved == "Royal Blue" ? "selected" : "") Value="rgb(0,79,163)^Royal Blue">Royal Blue</option>
+            </select>
+            @Html.ValidationMessageFor(model => model.ColorApplied, "", new { @class = "text-danger" })
+        </div>*@
+        <div class="col-lg-6 col-md-6 col-sm-6 form-group">
+            <label>Priority<sup>*</sup></label>
+            @Html.TextBoxFor(model => model.Priority, new { @class = "form-control" })
+            @Html.ValidationMessageFor(model => model.Priority, "", new { @class = "text-danger" })
+        </div>
+        <div class="col-lg-6 col-md-6 col-sm-6 form-group">
+            <label>Applicable For <sup>*</sup></label>
+            @Html.DropDownListFor(model => model.ApplicableFor, new List<SelectListItem>
+                                      {
+                                         new SelectListItem{Text="All",Value="All" },
+                                        new SelectListItem{Text="Male",Value="Male" },
+                                        new SelectListItem{Text="Female",Value="Female" } ,
+                                        new SelectListItem{Text="Others",Value="Others" }
+                                      },
+                  new { @class = "form-control  applyselect" })
+            @Html.ValidationMessageFor(model => model.ApplicableFor, "", new { @class = "text-danger" })
+        </div>
+        <div class="col-lg-12 col-md-12 col-sm-12 form-group">
+            <label>Others</label>
+            <ul class="list-unstyled">
+                <li>
+                    <input type="checkbox" @(Model.Leave_forword == 1 ? "checked" : "") id="chekLeave_forword" name="@Html.NameFor(x=>x.chkFDLeave)" onchange="ShowCarryforwrd()" />
+                    <label for="chekLeave_forword">Carry Forward to Next Year</label>
+                </li>
+                @*<li>
+                    <input type="checkbox" @(Model.status == 1 ? "checked" : "") id="chkApprovalRequired" name="@Html.NameFor(x=>x.chkApprovalRequired)" />
+                    <label for="chkApprovalRequired"> Approval Required</label>
+                </li>*@
+                <li>
+                    <input type="checkbox" @(Model.ShownLeave == 1 ? "checked" : "") id="chkShownLeaveBalance" name="@Html.NameFor(x=>x.chkShowleavebalance)" />
+                    <label for="chkShownLeaveBalance">Shown Leave Balance</label>
+                </li>
+            </ul>
+        </div>
+
+        <div id="DivCarryForward" class="col-lg-12">
+            <div class="row">
+                <div class="col-lg-6 form-group">
+                    <label>Carry Forward In Leave	</label>
+                    @Html.TextBoxFor(model => model.CFLeave, new { @class = "form-control" })
+                    @Html.ValidationMessageFor(model => model.CFLeave, "", new { @class = "text-danger" })
+
+                </div>
+                <div class="col-lg-6 form-group">
+                    <label>Carry Forward In Limit	</label>
+                    @Html.TextBoxFor(model => model.CFLimit, new { @class = "form-control" })
+                    @Html.ValidationMessageFor(model => model.CFLimit, "", new { @class = "text-danger" })
+
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <div class="row">
+
+        @if (Model.LeaveID > 0)
+        {
+            <button type="submit" class="btn mtr-o-grn btn-l ripplelink pull-right" name="Command" value="Add"><i class="fa fa-paper-plane" aria-hidden="true"></i> Update</button>
+        }
+        else
+        {
+            <button type="submit" class="btn mtr-o-grn btn-l ripplelink pull-right" name="Command" value="Add"><i class="fa fa-paper-plane" aria-hidden="true"></i> Submit</button>
+        }
+    </div>
+
+}

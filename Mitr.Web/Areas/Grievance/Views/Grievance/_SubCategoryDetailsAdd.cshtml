@@ -1,0 +1,283 @@
+﻿@model Mitr.Models.SubCategoryAssigneeDetails
+
+@Html.HiddenFor(model => Model.ID)
+@*@Html.HiddenFor(model => Model.Categoryid)*@
+@*@Html.HiddenFor(model => Model.SubCategoryid)*@
+@{ string SubcategoryName = string.Empty;}
+
+<div class="modal-header blk-gdn-btn">
+    <h4 class="modal-title"><i class="fa fa-plus"></i>@SubcategoryName</h4>
+    <button type="button" onclick="ShowLoadingDialog();window.location='@Url.Action("SubCategoryList", new { src = clsApplicationSetting.EncryptQueryString(ViewBag.MenuID.ToString() + "*/Grievance/SubCategoryList*0") })';" class="close" data-dismiss="modal"><i class="fas fa-times"></i></button>
+</div><!-- Modal body -->
+<div class="modal-body">
+    <!---Open--->
+    <div class="tab-main">
+        <ul id="tabs" class="nav nav-tabs " role="tablist">
+            <li class="nav-item"> <a id="tab-A" href="#assign" class="nav-link active ripplelink" data-toggle="tab" role="tab"><i class="far fa-file-alt"></i>Assign</a> </li>
+            <li class="nav-item"> <a id="tab-B" href="#sla" class="nav-link ripplelink" data-toggle="tab" role="tab"><i class="fa fa-check" aria-hidden="true"></i>SLA Policy</a></li>
+        </ul>
+        <div id="content" class="tab-content p-0" role="tablist">
+
+
+
+            <div id="assign" class="card tab-pane fade show active" role="tabpanel" aria-labelledby="tab-A">
+                <div class="card-header" role="tab" id="heading-A">
+                    <h5 class="mb-0">
+                        <!-- Note: `data-parent` removed from here -->
+                        <a data-toggle="collapse" href="#collapse-A" aria-expanded="true" aria-controls="collapse-A"><i class="far fa-file-alt"></i>Assign</a>
+                    </h5>
+                </div>
+
+                <!-- Note: New place of `data-parent` -->
+                <div id="collapse-A" class="collapse show" data-parent="#content" role="tabpanel" aria-labelledby="heading-A">
+                    <!---open-->
+                    <div class="card-body p-0 pt-3">
+                        @using (Ajax.BeginForm("SubCategoryAssigneeAdd", "Grievance",
+                        new { src = clsApplicationSetting.EncryptQueryString(ViewBag.MenuID + "*" + "/Grievance/SubCategoryAssigneeAdd*" + ViewBag.ID + "*" + ViewBag.CatID) },
+                        new AjaxOptions { HttpMethod = "POST", OnSuccess = "OnSuccess2", OnBegin = "ShowLoadingDialog()" },
+                        new { @id = "form" }))
+                        {
+                            <div class="row">
+
+                                <div class="col-sm-4 form-group">
+                                    @Html.HiddenFor(model => Model.ID)
+                                    @*@Html.HiddenFor(model => Model.Categoryid)*@
+                                    @Html.HiddenFor(model => Model.SubCategoryid)
+                                    <label>Location<sup>*</sup></label>
+
+                                    @Html.DropDownListFor(model => model.LocationID, new SelectList(Model.WorkLocationList, "ID", "Name", Model.LocationID), "select", new { @class = "form-control applyselect" })
+                                    @Html.ValidationMessageFor(model => model.LocationID, "", new { @class = "text-danger" })
+
+                                </div>
+                                <div class="col-sm-4 form-group">
+                                    <label>Primary Assign/Secretary<sup>*</sup></label>
+                                    @Html.DropDownListFor(model => model.AssigneeId, new SelectList(Model.EmployeeList, "ID", "Name", Model.AssigneeId), "select", new { @class = "form-control applyselect", onchange = "BindDropDownLevel(this)" })
+                                    @Html.ValidationMessageFor(model => model.AssigneeId, "", new { @class = "text-danger" })
+
+                                </div>
+                                <div class="col-sm-4 form-group"></div>
+
+                                <div class="col-sm-4 form-group">
+                                    <label>Level 1<sup>*</sup></label>
+                                    @Html.DropDownListFor(model => model.Level1Id, new SelectList(ViewBag.Level1List, "ID", "Name", Model.Level1Id), new { @class = "form-control applyselect", @multiple = "true", onchange = "BindDropDownLevel(this)" })
+                                    @Html.ValidationMessageFor(model => model.Level1Id, "", new { @class = "text-danger" })
+                                    <div class="mt-2">
+                                        @Html.CheckBoxFor(x => x.Level1EnableEmail, new { @class = "srcheck" })<label for="lvl1">Enable Email</label>
+                                    </div>
+                                </div>
+                                <div class="col-sm-4 form-group">
+                                    <label>Level 2</label>
+                                    @Html.DropDownListFor(model => model.Level2Id, new SelectList(ViewBag.Level2List, "ID", "Name", Model.Level2Id), new { @class = "form-control applyselect", @multiple = "true", onchange = "BindDropDownLevel(this)" })
+                                    @Html.ValidationMessageFor(model => model.Level2Id, "", new { @class = "text-danger" })
+                                    <div class="mt-2">
+                                        @Html.CheckBoxFor(x => x.Level2EnableEmail, new { @class = "srcheck" })<label for="lvl1">Enable Email</label>
+                                    </div>
+                                </div>
+                                <div class="col-sm-4 form-group">
+                                    <label>Level 3</label>
+                                    @Html.DropDownListFor(model => model.Level3Id, new SelectList(ViewBag.Level3List, "ID", "Name", Model.Level3Id), new { @class = "form-control applyselect", @multiple = "true" })
+                                    @Html.ValidationMessageFor(model => model.Level3Id, "", new { @class = "text-danger" })
+                                    <div class="mt-2">
+                                        @Html.CheckBoxFor(x => x.Level3EnableEmail, new { @class = "srcheck" })<label for="lvl1">Enable Email</label>
+                                    </div>
+                                </div>
+								<div class="col-sm-12 text-center">
+									<button type="button" class="btn blk-gdn-btn btn-l ripplelink" onclick="exportReportSubcategory()"><i class="fas fa-file-excel"></i>Export</button>
+									<button type="submit" class="btn mtr-o-grn"><i class="fas fa-save"></i>Save</button>
+									<button type="button" onclick="ShowLoadingDialog();window.location='@Url.Action("SubCategoryList", new { src = clsApplicationSetting.EncryptQueryString(ViewBag.MenuID.ToString() + "*/Grievance/SubCategoryList*0") })';" class="btn cnl-btn" data-dismiss="modal"><i class="fas fa-times"></i>Close</button>
+								</div>
+
+								<div class="col-sm-12">
+									<table id="Table1" class="table table-striped table-bordered dt-responsive nowrap tbltick new_width" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
+										<thead>
+											<tr>
+												<th>S.No.</th>
+												<th>Location</th>
+												<th>Primary Assignee/Secretary</th>
+												<th>Level 1</th>
+												<th>Level 2</th>
+												<th>Level 3</th>
+												<th width="25"></th>
+											</tr>
+											<tr class="searchbar">
+												<th class="searchhide"></th>
+												<th></th>
+												<th></th>
+												<th> </th>
+												<th> </th>
+												<th></th>
+												<th class="searchhide"></th>
+											</tr>
+										</thead>
+										<tbody>
+											@{ int Count = 0;}
+											@foreach (Mitr.Models.SubCategoryAssigneeDetails item in Model.SubCategoryAssigneeList)
+											{
+												@*@SubcategoryName= item.SubCategoryName;*@
+												Count++;
+												<tr class="@(item.IsActive == true ? "" : "trrowred")">
+													<td>@Count</td>
+													<td>@item.Location</td>
+													<td>@item.Assignee</td>
+													<td>@item.Level1</td>
+													<td>@item.Level2</td>
+													<td>@item.Level3</td>
+													<td>
+														@if (clsApplicationSetting.GetSessionValue("Modify") == "True")
+														{
+
+															<a title="Delete" onclick="Deleted(@item.ID,@item.Categoryid,@item.SubCategoryid);" data-toggle='tooltip'><i class="fa fa-times-circle crossred" aria-hidden="true"></i> </a>
+														}
+													</td>
+												</tr>
+											}
+										</tbody>
+
+
+									</table>
+
+									<table id="TableSubcategory" style="display:none" class="table table-striped table-bordered dt-responsive nowrap tbltick new_width">
+										<thead>
+											<tr>
+											
+												<th>Location</th>
+												<th>Primary Assignee/Secretary</th>
+												<th>Level 1</th>
+												<th>Level 2</th>
+												<th>Level 3</th>
+												<th width="25"></th>
+											</tr>
+										
+										</thead>
+										<tbody>
+										
+											@foreach (Mitr.Models.SubCategoryAssigneeDetails item in Model.SubCategoryAssigneeList)
+											{
+											
+												Count++;
+												<tr class="@(item.IsActive == true ? "" : "trrowred")">
+												
+													<td>@item.Location</td>
+													<td>@item.Assignee</td>
+													<td>@item.Level1</td>
+													<td>@item.Level2</td>
+													<td>@item.Level3</td>
+													
+												</tr>
+											}
+										</tbody>
+									</table>
+								</div>
+                            </div>
+                        }
+                    </div>
+                    <!---close-->
+                </div>
+            </div>
+
+
+            <div id="sla" class="card tab-pane fade" role="tabpanel" aria-labelledby="tab-B">
+                <div class="card-header" role="tab" id="heading-B">
+                    <h5 class="mb-0"> <a class="collapsed" data-toggle="collapse" href="#collapse-B" aria-expanded="false" aria-controls="collapse-B"><i class="fa fa-check" aria-hidden="true"></i> SLA Policy</a> </h5>
+                </div>
+                <div id="collapse-B" class="collapse" data-parent="#content" role="tabpanel" aria-labelledby="heading-B">
+                    <!---open-->
+                    <div class="card-body p-0 pt-3">
+                        @using (Ajax.BeginForm("SubCategorySLAPolicyAdd", "Grievance",
+                            new { src = clsApplicationSetting.EncryptQueryString(ViewBag.MenuID + "*" + "/Grievance/SubCategorySLAPolicyAdd*" + ViewBag.ID + "*" + ViewBag.CatID) },
+                            new AjaxOptions { HttpMethod = "POST", OnSuccess = "OnSuccess2", OnBegin = "ShowLoadingDialog()" },
+                            new { @id = "SubCategorySLAPolicyForm" }))
+                        {
+                            <div class="row">
+                                <div class="col-sm-12 form-group">
+                                    <table class="table mt-0" id="Slapolicy">
+                                        <thead>
+                                            <tr>
+                                                <th>Priority</th>
+                                                <th width="250" colspan="2">Action</th>
+                                                <th class="text-left">First Response (Hours)</th>
+                                                <th class="text-left">Follow Up - every (Hours)</th>
+                                                <th class="text-left">Escalation Level 1 (Hours)</th>
+                                                <th class="text-left">Escalation Level 2 (Hours)</th>
+                                                <th class="text-left">Escalation Level 3 (Hours)</th>
+                                                <th width="150" class="text-left">Ticket auto close after (Hours)</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @{ if (Model.SubCategorySLAPolicy != null)
+                                                {
+                                                    for (int i = 0; i < Model.SubCategorySLAPolicy.Count; i++)
+                                                    {
+                                                        <tr class="@( Model.SubCategorySLAPolicy[i].IsActive == true ? "" : "trrowred")">
+                                                            @Html.HiddenFor(x => Model.SubCategorySLAPolicy[i].ID)
+                                                            @Html.HiddenFor(x => Model.SubCategorySLAPolicy[i].SubCategoryid)
+                                                            <td>@Model.SubCategorySLAPolicy[i].Priority</td>
+                                                            <td>@Html.CheckBoxFor(x => x.SubCategorySLAPolicy[i].ActionDefault, new { @class = "chkDefault srcheck", onchange = "chkDefault(this)" })<label for="lvl1">Default</label>                                                </td>
+                                                            <td>@Html.CheckBoxFor(x => x.SubCategorySLAPolicy[i].ActionFreezed, new { @class = "chkFreezed srcheck", onchange = "chkFreezed(this)" })<label for="lvl1">Freezed</label>                                                </td>
+                                                            <td>@Html.TextBoxFor(model => Model.SubCategorySLAPolicy[i].FirstResponse, new { @class = "form-control sla", type = "number" })</td>
+                                                            <td>@Html.TextBoxFor(model => Model.SubCategorySLAPolicy[i].FollowUpEvery, new { @class = "form-control sla", type = "number" })</td>
+                                                            <td>@Html.TextBoxFor(model => Model.SubCategorySLAPolicy[i].EscalationLevel1, new { @class = "form-control sla", type = "number" })</td>
+                                                            <td>@Html.TextBoxFor(model => Model.SubCategorySLAPolicy[i].EscalationLevel2, new { @class = "form-control sla", type = "number" })</td>
+                                                            <td>@Html.TextBoxFor(model => Model.SubCategorySLAPolicy[i].EscalationLevel3, new { @class = "form-control sla", type = "number" })</td>
+                                                            <td>@Html.TextBoxFor(model => Model.SubCategorySLAPolicy[i].TicketAutoCloseAfter, new { @class = "form-control sla", type = "number" })</td>
+
+                                                        </tr>
+                                                        @*<tr>
+                                                                <td>Last Modified By</td>
+                                                                <td colspan="7">
+                                                                    User : <span>AKHILESH KUMAR TRIPATHI </span>
+                                                                </td>
+                                                                <td>@Html.LabelFor(model => Model.SubCategorySLAPolicy[i].CreateDat, new { @class = "form-control" })</td>
+                                                                IP :
+                                                                <span>183.83.215.83 </span>
+                                                            </tr>*@
+                                                    }
+                                                }
+                                            }
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <div class="col-sm-12 text-center">
+                                    <button type="submit" class="btn mtr-o-grn"><i class="fas fa-save"></i>Save</button>
+                                    <button type="button" onclick="ShowLoadingDialog();window.location='@Url.Action("SubCategoryList", new { src = clsApplicationSetting.EncryptQueryString(ViewBag.MenuID.ToString() + "*/Grievance/SubCategoryList*0") })';" class="btn cnl-btn" data-dismiss="modal"><i class="fas fa-times"></i>Close</button>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                    <!---close-->
+                </div>
+            </div>
+
+
+        </div>
+    </div>
+    <!---Close-->
+
+</div>
+
+
+@section scripts    {
+    @System.Web.Optimization.Scripts.Render("~/bundle/dataTablesjs")
+    @System.Web.Optimization.Scripts.Render("~/bundle/unobtrusivejs")
+    @*@Html.IncludeVersionedJs(Url.Content("~/assets/design/Scripts/AddInit.js"))
+        @Html.IncludeVersionedJs(Url.Content("~/assets/design/Scripts/ToolTip.js"))*@
+    @*<script>
+           $(document).ready(function () {
+              
+               $('.srcheck').click(function () {
+                   alert('hi');
+                   $('.srcheck').not(this).prop('checked', false);
+               });
+               $('.srcheck').click(function () {
+                  
+                   $(this).siblings('input:checkbox').prop('checked', true);
+               });
+               $('input:checkbox').click(function () {
+                  
+
+                   $('input:checkbox').not(this).prop('checked', true);
+               });<input class="srcheck" data-val="true" data-val-required="The ActionDefault field is required." id="SubCategorySLAPolicy_2__ActionDefault" name="SubCategorySLAPolicy[2].ActionDefault" onchange="ValidateSlaCkechbox(this)" type="checkbox" value="true">
+           });
+
+        </script>*@
+}

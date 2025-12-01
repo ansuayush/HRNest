@@ -1,0 +1,45 @@
+﻿@model IList<User_Task.Notes.List>
+
+<div class="x_content table-currency m-0">
+	<div class="table-responsive">
+		<table id="datatable-buttons" class="table table-striped table-bordered dt-responsive nowrap tbltick new_width" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
+			<thead>
+				<tr>
+					<th>S.no.</th>
+					<th>Status</th>
+					<th>Remarks</th>
+					<th>Next Date</th>
+					<th>Inserted Details</th>
+				</tr>
+				<tr class="searchbar">
+					<th class="searchhide"></th>
+					<th> </th>
+					<th> </th>
+					<th> </th>
+					<th></th>
+				</tr>
+			</thead>
+			<tbody>
+				@{ int Count = 0;}
+				@foreach (User_Task.Notes.List item in Model)
+				{
+					Count++;
+					<tr>
+						<td>@Count</td>
+
+						<td style="color:@item.StatusColor"> @item.DisplayName</td>
+						<td> @item.Remarks</td>
+						<td> @item.NextDate</td>
+						<td class="hrmagin0">
+							<div>
+								@item.createdat<br>
+								@item.modifiedName<br>
+								<strong>IP: </strong>@item.IPAddress
+							</div>
+						</td>
+					</tr>
+				}
+			</tbody>
+		</table>
+	</div>
+</div>

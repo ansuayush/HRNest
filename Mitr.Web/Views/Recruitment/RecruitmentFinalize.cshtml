@@ -1,0 +1,181 @@
+﻿@model Mitr.Models.FinalSelection
+@using System.Data
+@{
+    ViewBag.Title = "RecruitmentPereferences";
+}
+
+@using (Ajax.BeginForm("RecruitmentFinalize", "Recruitment",
+       new { src = clsApplicationSetting.EncryptQueryString(ViewBag.MenuID.ToString() + "*/Recruitment/RecruitmentFinalize*" + ViewBag.RecruitmentRequestID) },
+          new AjaxOptions { HttpMethod = "POST", OnSuccess = "FinalizeActionOnSuccess", OnFailure = "FinalizeActionOnSuccess" },
+      new { @id = "FinalizeActionOnSuccessFrom", enctype = "multipart/form-data" })
+      )
+{
+    @Html.AntiForgeryToken()
+
+    <h2 class="header-two">Recruitment Pereferences</h2>
+    <div class="row">
+        <div class="col-lg-3 col-md-4 col-sm-6  form-group">
+            <label>Project Name</label>
+            <p>@Model.RecruitmentRequest.ProjectName</p>
+        </div>
+        <div class="col-lg-3 col-md-4 col-sm-6  form-group">
+            <label>Project Manager</label>
+            <p>@Model.RecruitmentRequest.ManagerName</p>
+        </div>
+        <div class="col-lg-3 col-md-4 col-sm-6  form-group">
+            <label>Start Date</label>
+            <p>@Model.RecruitmentRequest.StartDate</p>
+        </div>
+        <div class="col-lg-3 col-md-4 col-sm-6  form-group">
+            <label>End Date</label>
+            <p>@Model.RecruitmentRequest.EndDate</p>
+        </div>
+    </div>
+    <h2 class="header-two"><i class="fas fa-users"></i>Hiring Details</h2>
+    <div class="row">
+        <div class="col-lg-3 col-md-4 col-sm-6  form-group">
+            <label>Job Title</label>
+            <p>@Model.RecruitmentRequest.JobTitle</p>
+        </div>
+        <div class="col-lg-3 col-md-4 col-sm-6  form-group">
+            <label>Due Date</label>
+            <p>@Model.RecruitmentRequest.DueDate</p>
+        </div>
+        <div class="col-lg-3 col-md-4 col-sm-6  form-group">
+            <label>%Time</label>
+            <p>20</p>
+        </div>
+
+        <div class="col-lg-3 col-md-4 col-sm-6  form-group">
+            <label>Location</label>
+            <p>@Model.RecruitmentRequest.Location</p>
+        </div>
+    </div>
+    <h2 class="header-two"><i class="fas fa-file-alt"></i>JD Details</h2>
+    <div class="row">
+        <div class="col-lg-12  form-group">
+            <label>Job Description</label>
+            <p>@Model.RecruitmentRequest.JobDescription</p>
+        </div>
+        <div class="col-lg-3 col-md-4 col-sm-6  form-group">
+            <label>Qualification</label>
+            <p>@Model.RecruitmentRequest.Qualification</p>
+        </div>
+        <div class="col-lg-3 col-md-4 col-sm-6  form-group">
+            <label>Skills</label>
+            <p>@Model.RecruitmentRequest.Skills</p>
+        </div>
+        <div class="col-lg-3 col-md-4 col-sm-6  form-group">
+            <label>Experience</label>
+            <p>@Model.RecruitmentRequest.Experience</p>
+        </div>
+        <div class="col-lg-3 col-md-4 col-sm-6  form-group">
+            <label>Staff Category</label>
+            <p>@Model.RecruitmentRequest.StaffCategory</p>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm-12">
+            <label for="ric"> Recommend Internal Candidate </label>
+        </div>
+        <div class="col-sm-12">
+            <strong>Staff List</strong>
+            <div class="table-responsive">
+                @if (ViewBag.FinalizedDataSet != null)
+                {
+                    <table class="table mt-2">
+                        <thead>
+                            <tr>
+                                @foreach (DataColumn item in ViewBag.FinalizedDataSet.Tables[0].Columns)
+                                {
+
+                                    if (item.ColumnName.Contains("#"))
+                                    {
+                                        <th scope="col" class="text-center" colspan="2">@item.ColumnName.Split('#')[0]</th>
+                                    }
+                                    else
+                                    {
+                                        <th scope="col" class="text-center"></th>
+
+                                    }
+                                }
+                            </tr>
+
+                            <tr>
+                                @foreach (DataColumn item in ViewBag.FinalizedDataSet.Tables[0].Columns)
+                                {
+
+                                    if (item.ColumnName.Contains("#"))
+                                    {
+                                        <th scope="col" class="text-center" colspan="2">@item.ColumnName.Split('#')[2]</th>
+                                    }
+                                    else
+                                    {
+                                        <th scope="col" rowspan="2">@item.ColumnName</th>
+
+                                    }
+                                }
+                            </tr>
+
+                        </thead>
+                        <tbody>
+
+                            @foreach (DataRow dtRow in ViewBag.FinalizedDataSet.Tables[0].Rows)
+                            {
+
+                                <tr>
+                                    @foreach (DataColumn dc in ViewBag.FinalizedDataSet.Tables[0].Columns)
+                                    {
+                                        string TDStyle = (dc.ColumnName.Contains("#") ? "colspan=2" : "");
+
+                                        if (dc.ColumnName.Contains("Final"))
+                                        {
+                                    <td>
+                                        @Html.RadioButtonFor(x => x.ApproveCandidate,@dtRow["CandidateID"].ToString(), new { @ID = "ChekAgree", @class = "chkagree" })
+                                        
+                                        <label for="ChekAgree" > </label>
+                                        @Html.ValidationMessageFor(model => model.ApproveCandidate, "", new { @class = "text-danger" })
+
+                                    </td>
+                                        }
+                                        else
+                                        {
+                                            <td @TDStyle><strong>@dtRow[dc].ToString()</strong></td>
+                                        }
+
+                                    }
+
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                }
+            </div>
+        </div>
+        <div class="col-lg-12 text-center mt-2">
+            <button type="submit" class="btn mtr-o-grn btn-l ripplelink pull-right" name="Command" value="Submit"><i class="fa fa-paper-plane" aria-hidden="true"></i>Submit</button>
+            <button type="button" onclick="ShowLoadingDialog();window.location='@Url.Action("RecruitmentRequests", new { src = clsApplicationSetting.EncryptQueryString(ViewBag.MenuID.ToString() + "*/Recruitment/RecruitmentRequests") })';" class="btn cnl-btn ripplelink  pull-right"><i class="fas fa-times"></i> Cancel</button>
+        </div>
+    </div>
+}
+
+@section scripts    {
+
+    @System.Web.Optimization.Scripts.Render("~/bundle/unobtrusivejs")
+    <script src="~/assets/design/Scripts/AddInit.js?v=@clsApplicationSetting.GetWebConfigValue("Version")"></script>
+
+    <script>
+
+
+        function FinalizeActionOnSuccess(obj) {
+            if (obj.Status) {
+                SuccessToaster(obj.SuccessMessage);
+                window.location = obj.RedirectURL;
+            }
+            else {
+                FailToaster(obj.SuccessMessage);
+            }
+
+        }
+    </script>
+}

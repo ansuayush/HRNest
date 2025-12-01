@@ -1,0 +1,23 @@
+﻿@model SMPR.SMPRLock
+
+@using (Ajax.BeginForm("SetSMPRLock", "MPR",
+	new { src = clsApplicationSetting.EncryptQueryString(ViewBag.MenuID.ToString() + "*/MPR/SetSMPRLock") },
+	new AjaxOptions { HttpMethod = "POST", OnSuccess = "SMPRLockSuccess", OnBegin = "ShowLoadingDialog();" },
+new { @id = "SetSMPRLockFrom" })
+)
+{
+	@Html.HiddenFor(x => Model.SMPRID)
+	@Html.HiddenFor(x => Model.Lock)
+	@Html.HiddenFor(x => Model.dtdate)
+	<div class="row">
+		<div class="col-sm-12 form-group">
+			<label>Remark</label>
+			@Html.TextAreaFor(model => model.LockRemarks, new { @class = "form-control" })
+			@Html.ValidationMessageFor(model => model.LockRemarks, "", new { @class = "text-danger" })
+		</div>
+	</div>
+	<div class="text-center ">
+		<button type="submit" class="btn mtr-o-grn btn-l ripplelink "><i class="fas fa-paper-plane"></i>Submit</button>
+		<button type="button" class="btn cnl-btn ripplelink" data-dismiss="modal"><i class="fas fa-times"></i>Close</button>
+	</div>
+}

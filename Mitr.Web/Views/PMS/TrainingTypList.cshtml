@@ -1,0 +1,77 @@
+﻿@model IList<Mitr.Models.PMS.TrainingTypeMaster.List>
+@{
+    var Modify = clsApplicationSetting.GetSessionValue("Modify");
+}
+@{
+    string MenuID = "0";    
+    if (ViewBag.MenuID != null)
+    {
+        MenuID = ViewBag.MenuID;
+    }
+}
+<div class="inner-main pb-0">
+    @Html.Partial("ListHeader_Partial", "Training Type Master")
+    <input type="hidden" id="hdnAddUrl" name="hdnAddUrl" value="@Url.Action("AddTrainingType",new { src = clsApplicationSetting.EncryptFriendly(ViewBag.MenuID+"*"+"/PMS/AddTrainingType*0") })" />
+    
+    <div class="row">      
+      
+        <div class="col-md-12 col-sm-12 col-xs-12">
+            @Html.EJS().Grid("Grid").DataSource((List<PMS.TrainingTypeMaster.List>)Model).GridLines(Syncfusion.EJ2.Grids.GridLine.Both).Columns(col =>
+       {
+           col.Field("Id").Visible(false).Add();
+           col.Field("RowNum").HeaderText("SNo.").Width("20").Add();
+           col.Field("TrainingName").HeaderText("Training Name").Width("100").Add();
+           col.Field("TrainingDesc").HeaderText("Training Description").Width("360").Add();        
+           col.HeaderText("Action").TextAlign(Syncfusion.EJ2.Grids.TextAlign.Center).Template("#tmpAction").Width("30").Add();
+
+       }).AllowPaging().PageSettings(page => page.PageSize(10)).Created("created").Toolbar(new List<string>() { "Search" }).Render()
+
+
+
+        </div>
+    </div>
+</div>
+
+
+<script id="tmpAction" type="text/x-template">
+    ${if('@Modify' === 'True')}
+    <input type="hidden" name="I" value="${Id}" />
+    <a onclick="BindEdit(this)"><i class="fas fa-eye"></i>View </a>
+    ${/if}
+</script>
+<script>
+    function created() {
+        var grid = document.getElementById("Grid").ej2_instances[0];
+        document.getElementById(grid.element.id + "_searchbar").addEventListener('keyup', () => {
+            grid.search(event.target.value)
+        });
+    }
+</script>
+@Html.IncludeVersionedJs(Url.Content("~/assets/design/Scripts/SyncScripts.js"))
+
+@(Html.EJS().ScriptManager())
+
+@section scripts    {
+    @System.Web.Optimization.Scripts.Render("~/bundle/unobtrusivejs")
+
+    @Html.IncludeVersionedJs(Url.Content("~/assets/design/Scripts/ToolTip.js"))
+
+    @Html.IncludeVersionedJs(Url.Content("~/assets/design/Scripts/SyncScripts.js"))
+    @Html.IncludeVersionedJs(Url.Content("~/assets/tableToExcel.js"))
+    <script>       
+       
+   
+        function ListAdd(ID) {
+            var ID = Number(ID);
+            var MenuID = Number('@MenuID');
+            ShowLoadingDialog();
+            var url = "/PMS/AddTrainingType?src=" + EncryptQueryStringJSON(MenuID + "*" + "/PMS/AddTrainingType" + "*" + ID);
+            window.location.href = url;
+    }
+   
+    </script>
+
+
+
+}
+

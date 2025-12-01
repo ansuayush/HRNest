@@ -1,0 +1,77 @@
+﻿
+@model IList<EmployeeExit.HRList>
+@{
+	var Modify = clsApplicationSetting.GetSessionValue("Modify");
+}
+<style>
+    .highlight-cell {
+        background-color: #ffcccc; /* Light red background for the cell */
+        color: #000; /* Black text color */
+    }
+</style>
+<div class="row">
+
+	<div class="col-sm-12">
+
+		<div class="control-section">
+			@Html.EJS().Grid("Grid").DataSource((List<EmployeeExit.HRList>)Model).GridLines(Syncfusion.EJ2.Grids.GridLine.Both).Columns(col =>
+       {
+           col.Field("ID").Visible(false).Add();
+           col.Field("RowNum").HeaderText("SNo.").Width("30").Add();
+
+           col.Field("EMPCode").HeaderText("Employee Code").Width("80").Add();
+
+           col.Field("EMPName").HeaderText("Employee Name").Width("150").Add();
+           col.Field("LocationName").HeaderText("Location").Width("80").Add();
+           col.Field("DeptName").HeaderText("Department").Width("120").Add();
+           col.Field("DegName").HeaderText("Designation").Width("120").Add();
+           col.Field("Reldate").HeaderText("Relieving Date").Width("80").Add();
+           col.Field("ReqDate").HeaderText("Request Date").Width("80").Add();
+           col.Field("Dayleft").HeaderText("Days left").Width("80").Add();
+           col.HeaderText("Action").TextAlign(Syncfusion.EJ2.Grids.TextAlign.Center).Template("#tmpAction").Width("60").Add();
+
+       }).AllowPaging().PageSettings(page => page.PageSize(10)).Created("created").RowDataBound("rowDataBound").Toolbar(new List<string>() { "Search" }).Render()
+
+		</div>
+
+
+
+	</div>
+</div>
+
+
+<script id="tmpAction" type="text/x-template">
+    <input type="hidden" name="I" value="${ID}" />
+    @if (ViewBag.Approve == 0)
+    {
+        <a onclick="Modify(this)"><i class="fas fa-eye"></i>Proceed </a>
+    }
+    else
+    {
+        <a onclick="Modify(this)"><i class="fas fa-eye"></i>View </a>
+    }
+</script>
+<script>
+    function created() {
+        var grid = document.getElementById("Grid").ej2_instances[0];
+        document.getElementById(grid.element.id + "_searchbar").addEventListener('keyup', () => {
+            grid.search(event.target.value)
+        });
+	}
+    function rowDataBound(args) {
+        // Get the Days left value for the current row
+        const daysLeft = args.data.Dayleft;
+
+        // Check if Days left is 7 or less
+        if (daysLeft <= 7) {
+            // Find the specific cell for the "Days left" column and apply a CSS class
+            const dayLeftCell = args.row.querySelector('[aria-label*="Days left"]');
+            if (dayLeftCell) {
+                dayLeftCell.classList.add("highlight-cell");
+            }
+        }
+    }
+</script>
+@Html.IncludeVersionedJs(Url.Content("~/assets/design/Scripts/SyncScripts.js"))
+
+@(Html.EJS().ScriptManager())

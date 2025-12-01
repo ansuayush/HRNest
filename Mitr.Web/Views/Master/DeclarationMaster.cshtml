@@ -1,0 +1,239 @@
+﻿@model Mitr.Models.DeclarationMaster
+
+@section style{
+	@System.Web.Optimization.Styles.Render("~/bundle/dataTablecss")
+}
+
+
+	<div class="inner-main defult-height">
+		<h1 class="heading-one mb-0">
+			@*Declaration Master
+				<span class="hdbtn"><a href="" data-toggle="modal" data-target="#ad" class="btn mtr-g-grn btn-l ripplelink "><i class="fa fa-plus"></i>Add</a></span>*@
+			@Html.Partial("ListHeader_Partial", "Declaration Master")
+		</h1>
+
+		<div class="table-responsive">
+			<table class="table mt-4">
+				<thead>
+					<tr>
+						<th width="10">S.No</th>
+						<th>Declaration Name</th>
+						<th width="100">Frequency</th>
+						<th width="150">Due Date	</th>
+						<th width="100">At Onboarding</th>
+						<th>Employee Type 	</th>
+						<th width="150"> Remarks	 </th>
+						<th width="200">Attachment	</th>
+						@*<th width="150">Content</th>*@
+						<th width="50">Action</th>
+					</tr>
+				</thead>
+				<tbody>
+					@if (Model.listdeclarationMasters != null)
+					{
+						int count = 0;
+						foreach (var item in Model.listdeclarationMasters)
+						{
+							count++;
+
+							//string result = string.Empty;
+							//if (item.Content != "")
+							//{
+							//	result = item.Content.Substring(3, item.Content.Length - 7);
+							//}
+							//else
+							//{
+							//	result = "";
+							//}
+
+							<tr>
+								<td>@count</td>
+
+								<td>@item.Declarationname</td>
+
+								<td>@item.Frequency</td>
+
+								<td>@item.DueDate</td>
+
+								<td>@item.AtOnboarding</td>
+
+								<td>@item.EmployeeType</td>
+
+								<td><p class="ellipsis  m-0">@item.Remark</p></td>
+								<td><a href="@item.Attachement">@item.file_Name</a></td>
+								@*<td><p class="ellipsis m-0"> @result </p></td>*@
+							<td>
+								<input type="hidden" name="I" value="@item.Id" />
+								<input type="hidden" name="N" value="@item.Declarationname" />
+
+								@*@if (item.IsActive == 1)
+		{
+			<a data-toggle="tooltip" data-original-title="Click to DeActivate" list="DeclarationMaster" op="0" class="AIsActive"><i class="fa fa-check-circle checkgreen" aria-hidden="true"></i></a>
+		}
+		else
+		{
+			<a data-toggle="tooltip" data-original-title="Click to Activate" list="DeclarationMaster" op="1" class="AIsActive"><i class="fa fa-times-circle crossred" aria-hidden="true"></i></a>
+		}*@
+								@if (clsApplicationSetting.GetSessionValue("Modify") == "True")
+								{
+									@Html.Raw(item.IsActive == 1
+								   ? "<a  data-toggle='tooltip' data-original-title='Click to DeActivate' list='DeclarationMaster' OP='0' class='AIsActive' > <i class='fa fa-check-circle checkgreen' aria-hidden='true'></i></a>"
+								   : "<a data-toggle='tooltip' data-original-title='Click to Activate' list='DeclarationMaster' OP='1'  class='AIsActive' > <i class='fa fa-times-circle crossred' aria-hidden='true'></i></a>")
+
+									<a title="Edit" onclick="ListHeaderAdd(@item.Id);" data-toggle='tooltip'><i class="fas fa-edit checkgreen" aria-hidden="true"></i> </a>
+								}
+
+								@*<a title="Edit" onclick="ListHeaderAdd(@item.Id);" data-toggle="modal" data-target="#adview"><i class="fas fa-edit checkgreen"></i></a>*@
+							</td>
+							</tr>
+						}
+
+					}
+
+
+
+
+				</tbody>
+			</table>
+		</div>
+
+	</div>
+	<!---->
+
+<div class="modal fade pop-dgn" id="ViewModal">
+	<div class="modal-dialog modal-lg">
+		<div class="modal-content">
+
+			<div class="modal-header blk-gdn-btn">
+				<h4 class="modal-title"><i class="fas fa-print"></i>Add Declaration	</h4>
+				<div class="close" data-dismiss="modal">&times;</div>
+			</div>
+			<!-- Modal body -->
+			<div class="modal-body">
+				<div id="TagetDiv">
+
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+@section scripts    {
+	@System.Web.Optimization.Scripts.Render("~/bundle/dataTablesjs")
+	@System.Web.Optimization.Scripts.Render("~/bundle/unobtrusivejs")
+	@Html.IncludeVersionedJs(Url.Content("~/assets/design/Scripts/AddInit.js"))
+	@Html.IncludeVersionedJs(Url.Content("~/assets/design/Scripts/ToolTip.js"))
+	@Html.IncludeVersionedJs(Url.Content("~/assets/design/Scripts/ckeditor.js"))
+	<script>
+		function ListDActive(CMSID) {
+			debugger;
+			
+			if (CMSID == undefined) {
+				CMSID = 0;
+			}
+
+			$.ajax({
+				url: "/CommonAjax/ActiveDeclaration",
+				type: "Get",
+				async: true,
+				data: { ID: CMSID, Doctype: "DeActive" },
+				success: function (data) {
+					if (data == 1) {
+						SuccessToaster(' Record DeActivate successfully');
+						window.location.reload();
+					}
+					else {
+						FailToaster('Can not Active.')
+					}
+				},
+				error: function (er) {
+					alert(er);
+				}
+			});
+		}
+		function ListActive(CMSID) {
+			debugger;
+		
+			if (CMSID == undefined) {
+				CMSID = 0;
+			}
+			if (CMSID > 0) {
+			
+					$.ajax({
+						url: "/CommonAjax/ActiveDeclaration",
+						type: "Get",
+						async: true,
+						data: { ID: CMSID, Doctype: "Active" },
+						success: function (data) {
+							if (data == 1) {
+								SuccessToaster(' Record Active successfully');
+								window.location.reload();
+							}
+							else {
+								FailToaster('Can not Active.')
+							}
+						},
+						error: function (er) {
+							alert(er);
+						}
+					});
+				}
+
+			
+		}
+		function ListHeaderAdd(CMSID) {
+			debugger;
+			ShowLoadingDialog();
+        if (CMSID == undefined)
+        {
+            CMSID = 0;
+        }
+			$.ajax({
+				url: "/Master/_AddDeclarationMaster",
+				type: "Get",
+				data: { src: EncryptQueryStringJSON(@ViewBag.MenuID+"*" + "/Master/_AddDeclarationMaster" + "*" + CMSID) },
+                success: function (data)
+                {
+					$("#TagetDiv").empty();
+					$("#TagetDiv").html(data);
+					ClassicEditor
+						.create(document.querySelector('#Content'), {
+							// toolbar: [ 'heading', '|', 'bold', 'italic', 'link' ]
+						})
+						.then(editor => {
+							window.editor = editor;
+						})
+						.catch(err => {
+							console.error(err.stack);
+						});
+					$("#ViewModal").modal("show");
+					$(".applyselect").select2();
+					CloseLoadingDialog();
+
+
+					var form = $("form")
+						.removeData("validator")
+						.removeData("unobtrusiveValidation");
+					$.validator.unobtrusive.parse(form);
+
+				},
+				error: function (er) {
+					CloseLoadingDialog();
+
+				}
+			});
+            }
+
+    function OnSuccess(obj)
+    {
+		if (obj.Status) {
+			SuccessToaster(obj.SuccessMessage);
+            window.location.reload();
+        }
+        else {
+            FailToaster(obj.SuccessMessage);
+			CloseLoadingDialog();
+        }
+
+    }
+	</script>
+}

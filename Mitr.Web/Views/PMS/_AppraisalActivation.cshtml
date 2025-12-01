@@ -1,0 +1,193 @@
+﻿@model IList<PMS.AppraisalAct>
+@{
+	var Modify = clsApplicationSetting.GetSessionValue("Modify");
+}
+
+	<div class="tab-main ">
+		<ul id="tabs" class="nav nav-tabs " role="tablist">
+			<li class="nav-item"> <a id="tab-A" href="#active-log" class="nav-link active ripplelink" data-toggle="tab" role="tab"><i class="far fa-clock"></i>Pending</a> </li>
+			<li class="nav-item"> <a id="tab-B" href="#leaves" class="nav-link ripplelink" data-toggle="tab" role="tab"><i class="fas fa-cogs"></i>Processed</a> </li>
+
+
+		</ul>
+		<div id="content" class="tab-content p-0" role="tablist">
+			<div id="active-log" class="card tab-pane fade show active" role="tabpanel" aria-labelledby="tab-A">
+				<div class="card-header" role="tab" id="heading-A">
+					<h5 class="mb-0">
+						<a data-toggle="collapse" href="#collapse-A" aria-expanded="true" aria-controls="collapse-A">Pending  <i class="fas fa-envelope-open"></i></a>
+					</h5>
+				</div>
+
+				<div id="collapse-A" class="collapse show" data-parent="#content" role="tabpanel" aria-labelledby="heading-A">
+
+
+
+					
+						@Html.EJS().Grid("FlatGrid").DataSource((List<PMS.AppraisalAct>)Model.Where(x => x.Approved == 0).ToList()).RowSelected("rowSelected").RowDeselected("rowSelected").SelectionSettings(ss => ss.EnableToggle(true)).GridLines(Syncfusion.EJ2.Grids.GridLine.Both).Columns(col =>
+				   {
+					   col.Field("PMS_EID").Visible(false).Add();
+					   col.Field("EMPCode").HeaderText("Employee Code").Width("40").Add();
+					   col.Field("EMPName").HeaderText("Employee Name").Width("200").Add();
+					   col.Field("DepartmentsName").HeaderText("Department").Width("80").Add();
+					   col.Field("Designation").HeaderText("Designation").Width("100").Add();
+					   col.Field("LocationName").HeaderText("Location").Width("60").Add();
+					    col.Type("checkbox").HeaderText("").Field("").Width("20").AllowFiltering(false).AllowSorting(false).Add();
+					  
+
+
+				   }).AllowPaging().PageSettings(page => page.PageCount(10)).Toolbar(new List<string>() { "Search" }).Render()
+
+
+					
+							<div class="col-sm-12 text-center">
+								
+								<button type="button" data-toggle="modal" data-target="#AddModal" class="btn mtr-o-grn btn-l ripplelink"><i class="fas fa-cogs"></i>Process<span class="ink animate" style="height: 100px; width: 100px; left: 24px; top: -33px;"></span></button>
+
+
+							</div>
+
+
+				</div>
+			</div>
+
+			<div id="leaves" class="card tab-pane fade" role="tabpanel" aria-labelledby="tab-B">
+
+				<div class="card-header" role="tab" id="heading-B">
+					<h5 class="mb-0"> <a class="collapsed" data-toggle="collapse" href="#collapse-B" aria-expanded="false" aria-controls="collapse-B">Processed <i class="fas fa-check"></i></a> </h5>
+				</div>
+
+				<div id="collapse-B" class="collapse" data-parent="#content" role="tabpanel" aria-labelledby="heading-B">
+					@Html.EJS().Grid("FlatGrid1").DataSource((List<PMS.AppraisalAct>)Model.Where(x => x.Approved == 1).ToList()).RowSelected("rowSelected1").RowDeselected("rowSelected1").SelectionSettings(ss => ss.EnableToggle(true)).GridLines(Syncfusion.EJ2.Grids.GridLine.Both).Columns(col =>
+			   {
+				   col.Field("PMS_EID").Visible(false).Add();
+				   
+				   col.Field("EMPCode").HeaderText("Employee Code").Width("100").Add();
+				   col.Field("EMPName").HeaderText("Employee Name").Width("200").Add();
+				   col.Field("DepartmentsName").HeaderText("Department").Width("100").Add();
+				   col.Field("Designation").HeaderText("Designation").Width("100").Add();
+				   col.Field("LocationName").HeaderText("Location").Width("100").Add();
+				   col.Field("AppraiserName").HeaderText("Appraiser").Width("100").Add();
+
+				   col.Field("AppraisalEntryStart").HeaderText("Entry Start Date").Width("100").Add();
+				   col.Field("AppraisalEntryEnd").HeaderText("Entry End Date").Width("100").Add();
+				   col.Field("AppraisalReviewStart").HeaderText("Review Start Date").Width("100").Add();
+				   col.Field("AppraisalReviewEnd").HeaderText("Review End Date").Width("100").Add();
+				   col.Type("checkbox").HeaderText("").Field("").Width("30").AllowFiltering(false).AllowSorting(false).Add();
+			   }).AllowPaging().PageSettings(page => page.PageCount(10)).Toolbar(new List<string>() { "Search" }).Render()
+
+
+
+					<div class="col-sm-12 text-center">
+
+						<button type="button" data-toggle="modal" data-target="#AddModal" class="btn mtr-o-grn btn-l ripplelink"><i class="fas fa-cogs"></i>Process<span class="ink animate" style="height: 100px; width: 100px; left: 24px; top: -33px;"></span></button>
+
+
+					</div>
+				</div>
+			</div>
+
+		</div>
+	</div>
+
+
+<div class="modal fade pop-dgn" id="AddModal">
+	<div class="modal-dialog modal-lg">
+		<div class="modal-content">
+
+			<div class="modal-header blk-gdn-btn">
+				<h4 class="modal-title"><i class="fas fa-cogs"></i> Process <span id="spnHead"></span></h4>
+				<div class="close" data-dismiss="modal">&times;</div>
+			</div>
+			<div class="modal-body p-2">
+				@using (Ajax.BeginForm("AppraisalActApproval", "PMS",
+							new { src = clsApplicationSetting.EncryptQueryString(ViewBag.MenuID.ToString() + "*/PMS/AppraisalActApproval") },
+							new AjaxOptions { HttpMethod = "POST", OnSuccess = "OnSuccessAppraisalActApproval" },
+						new { @id = "AppraisalActApprovalFrom" })
+						)
+				{
+
+					@Html.AntiForgeryToken()
+					
+						<div class="table-responsive">
+							<table id="datatable" class="table table-scroll">
+								<thead>
+									<tr>
+										<th>Task Name</th>
+										<th class="w-100">Start Date</th>
+										<th class="w-100">End Date</th>
+
+									</tr>
+								</thead>
+								<tbody>
+									<tr>
+										<td>Self Appraisal </td>
+										<td>
+											<input type="hidden" id="HDNSelectedKPAID" name="HDNSelectedKPAID" value="" />
+
+											<input name="txtAppraisalEntryStart" type="date" class="form-control">
+										</td>
+										<td><input name="txtAppraisalEntryEnd" type="date" class="form-control"></td>
+									</tr>
+									<tr>
+										<td>Performance Appraisal Review</td>
+										<td><input name="txtAppraisalReviewStart" type="date" class="form-control"></td>
+										<td><input name="txtAppraisalReviewEnd" type="date" class="form-control"></td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+					
+					<div class="col-sm-12 text-center mt-3">
+
+						<button type="button" class="btn btn-l cnl-btn ripplelink " data-dismiss="modal"><i class="fas fa-times"></i>Close</button>
+						<button type="submit" name="Command" value="Approved" class="btn mtr-o-grn btn-l ripplelink btnSubmit"> <i class="fas fa-save"></i>Save </button>
+					</div>
+				}
+				</div>
+		</div>
+	</div>
+</div>
+
+
+<script>
+	function rowSelected(args) {
+		var grid = document.getElementById("FlatGrid").ej2_instances[0];
+		var selectedrowindex = grid.getSelectedRowIndexes();  // get the selected row indexes.
+		var selectedrecords = grid.getSelectedRecords();  // get the selected records.
+		$("#HDNSelectedKPAID").val('');
+		for (var i = 0; i < selectedrecords.length; i++) {
+			var ID = selectedrecords[i]['PMS_EID'];
+			var resultObj = $("#HDNSelectedKPAID");
+			var stringToAppend = resultObj.val().length > 0 ? resultObj.val() + "," : "";
+			resultObj.val(stringToAppend + ID);
+		}
+	}
+
+	function rowSelected1(args) {
+		var grid = document.getElementById("FlatGrid1").ej2_instances[0];
+		var selectedrowindex = grid.getSelectedRowIndexes();  // get the selected row indexes.
+		var selectedrecords = grid.getSelectedRecords();  // get the selected records.
+		$("#HDNSelectedKPAID").val('');
+		for (var i = 0; i < selectedrecords.length; i++) {
+			var ID = selectedrecords[i]['PMS_EID'];
+			var resultObj = $("#HDNSelectedKPAID");
+			var stringToAppend = resultObj.val().length > 0 ? resultObj.val() + "," : "";
+			resultObj.val(stringToAppend + ID);
+		}
+	}
+
+	$(".btnSubmit").click(function (e) {
+
+		var b = false;
+		var a = $("#HDNSelectedKPAID").val();
+		if (a) {
+			b = true;
+		}
+		else {
+			FailToaster('Select atlest one Checkbox');
+		}
+		return b;
+	});
+
+</script>
+@(Html.EJS().ScriptManager())

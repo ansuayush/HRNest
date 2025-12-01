@@ -1,0 +1,225 @@
+﻿@model Mitr.Models.Interview.Round
+
+@using System.Data
+
+
+@using (Ajax.BeginForm("_AddInterviewRound", "Recruit",
+		new { src = ViewBag.src },
+		new AjaxOptions { HttpMethod = "POST", OnSuccess = "ActionOnSuccess", OnBegin = "ShowLoadingDialog()" },
+	new { @id = "_AddJobRoundFrom" })
+	)
+{
+	@Html.HiddenFor(model => model.REC_InterviewSetID)
+	@Html.AntiForgeryToken()
+<div class="row">
+	<div class="col-lg-6 col-md-6 col-sm-6  form-group">
+		<label>Round Name</label>
+		@Html.TextBoxFor(model => model.RoundName, new { @class = "form-control", @placeholder = "Enter Round Name" })
+		@Html.ValidationMessageFor(model => model.RoundName, "", new { @class = "text-danger" })
+
+	</div>
+
+	<div class="col-lg-4 col-md-4 col-sm-6  align-self-center  form-group">
+		<label>Negotiation Round</label>
+		<ul class="list-unstyled inline-li m-0">
+              
+              <li>
+                <div class="radio-button">
+                  @Html.RadioButtonFor(model => model.IsNegotiationRound, "true", new { id = "Yes" })
+				  @Html.Label("Yes", "Yes",new {@class="radio-label mb-0" })
+                </div>
+              </li>
+              <li>
+                <div class="radio-button">
+                  @Html.RadioButtonFor(model => model.IsNegotiationRound, "false", new { id = "No" })
+				  @Html.Label("No", "No", new { @class = "radio-label mb-0" })
+                </div>
+              </li>
+            </ul>
+		
+
+		
+
+	</div>
+	<div class="col-lg-2 col-md-2 col-sm-6  form-group">
+		<label>Priority<sup>*</sup></label>
+		@Html.TextBoxFor(model => model.Priority, new { @class = "form-control" })
+		@Html.ValidationMessageFor(model => model.Priority, "", new { @class = "text-danger" })
+	</div>
+	<div class="col-lg-12  form-group">
+		<label>Round Descripton</label>
+		@Html.TextAreaFor(model => model.RoundDesc, new { @class = "form-control", @placeholder = "Enter Round Descripton" })
+		@Html.ValidationMessageFor(model => model.RoundDesc, "", new { @class = "text-danger", @placeholder = "text-danger" })
+
+	</div>
+
+	<div class="col-sm-12">
+		<strong class="green-clr">Member Setting</strong>
+
+		<div class="table-responsive">
+			<table class="table table-scroll" id="tblmember">
+				<thead>
+					<tr>
+						<th class="width-40">S No</th>
+						<th>Member Type</th>
+						<th>Member Name</th>
+						<th>Email</th>
+						<th></th>
+
+					</tr>
+
+				</thead>
+				<tbody>
+					@{ int count = 0;
+						if (Model.MemberList == null)
+						{
+							List<Mitr.Models.Interview.Member> List = new List<Mitr.Models.Interview.Member>();
+							List.Add(new Mitr.Models.Interview.Member());
+							Model.MemberList = List;
+						}
+
+					}
+
+					@for (int i = 0; i < Model.MemberList.Count; i++)
+					{
+						count++;
+						<tr>
+							<td>
+								@Html.HiddenFor(model => model.MemberList[i].REC_InterviewSetID)
+								<label id="span_@count" name="span_@count">@count </label>
+							</td>
+							<td>
+								<select id="@Html.IdFor(x => Model.MemberList[i].RoundMemberType)" name="@Html.NameFor(x => Model.MemberList[i].RoundMemberType)" class="form-control applyselect ddmembertype">
+									<option @(Model.MemberList[i].RoundMemberType == "Internal" ? "selected" : "") value="Internal">Internal</option>
+									<option @(Model.MemberList[i].RoundMemberType == "External" ? "selected" : "") value="External">External</option>
+								</select>
+								@Html.ValidationMessageFor(model => model.MemberList[i].RoundMemberType, "", new { @class = "text-danger" })
+							</td>
+							<td class="Internal" style="@(string.IsNullOrEmpty(Model.MemberList[i].RoundMemberType) || Model.MemberList[i].RoundMemberType=="Internal" ?"":"display:none")">
+								<select id="@Html.IdFor(x => Model.MemberList[i].EMPID)" name="@Html.NameFor(x => Model.MemberList[i].EMPID)" class="form-control applyselect ddEmpList">
+									<option value="0">Select</option>
+									@foreach (var item in ViewBag.EmployeeList)
+									{
+										<option @(Model.MemberList[i].EMPID == item.EMPID ? "selected" : "") email="@item.Email" value="@item.EMPID">@(item.EMPName+"["+ item.EMPCode + "]"+" ["+item.Email+"]")</option>
+									}
+								</select>
+								@Html.ValidationMessageFor(model => model.MemberList[i].EMPID, "", new { @class = "text-danger" })
+
+							</td>
+							<td class="External" style="@(Model.MemberList[i].RoundMemberType=="External"?"":"display:none")">
+								@Html.TextBoxFor(model => model.MemberList[i].Name, new { @class = "form-control txtname" })
+								@Html.ValidationMessageFor(model => model.MemberList[i].Name, "", new { @class = "text-danger" })
+							</td>
+							<td>
+								@Html.TextBoxFor(model => model.MemberList[i].Email, new { @class = "form-control txtemail", @placeholder = "Enter Email Id" })
+								@Html.ValidationMessageFor(model => model.MemberList[i].Email, "", new { @class = "text-danger" })
+							</td>
+							<td class="text-center">
+								@if (count > 1)
+								{
+									<a onclick="DeleteRow(this)" data-toggle='tooltip' data-original-title='Remove'> <i class='fas fa-window-close red-clr m-0'></i></a>
+								}
+							</td>
+						</tr>
+					}
+
+
+				</tbody>
+			</table>
+		</div>
+		<div class="text-right mt-2"><button type="button" class="btn green-clr ripplelink btnAddRowMember"><i class="fas fa-plus"></i> Add Row</button></div>
+	</div>
+
+
+
+
+	<div class="col-sm-12">
+		<strong class="green-clr">Slot Setting</strong>
+
+		<div class="table-responsive">
+			<table class="table table-scroll" id="tblSlot">
+				<thead>
+					<tr>
+						<th class="width-40">S No</th>
+						<th>Date</th>
+						<th>From Time</th>
+						<th>To Time</th>
+						<th class="w-55">Max CV</th>
+						<th class="w-33"></th>
+
+					</tr>
+
+				</thead>
+				<tbody>
+					@{ int Scount = 0;
+						if (Model.SlotList == null || Model.SlotList.Count==0)
+						{
+							List<Mitr.Models.Interview.Slot> SList = new List<Mitr.Models.Interview.Slot>();
+							Mitr.Models.Interview.Slot sd = new Interview.Slot();
+							//sd.SlotDate = DateTime.Now.Date.ToString("yyyy-MM-dd");
+							SList.Add(sd);
+							Model.SlotList = SList;
+						}
+
+					}
+
+					@for (int i = 0; i < Model.SlotList.Count; i++)
+					{
+						Scount++;
+					<tr>
+						<td>
+							@Html.HiddenFor(model => model.SlotList[i].REC_InterviewSetID)
+							<label id="Sspan_@count" name="Sspan_@Scount">@Scount </label>
+						</td>
+						<td>
+							
+							@Html.TextBoxFor(model => model.SlotList[i].SlotDate, new { @class = "form-control", @type = "date"})
+							@Html.ValidationMessageFor(model => model.SlotList[i].SlotDate, "", new { @class = "text-danger" })
+						</td>
+
+						<td>
+							@Html.TextBoxFor(model => model.SlotList[i].FromTime, new { @class = "form-control", @type = "time" })
+							@Html.ValidationMessageFor(model => model.SlotList[i].FromTime, "", new { @class = "text-danger" })
+						</td>
+						<td>
+							@Html.TextBoxFor(model => model.SlotList[i].ToTime, new { @class = "form-control", @type = "time" })
+							@Html.ValidationMessageFor(model => model.SlotList[i].ToTime, "", new { @class = "text-danger" })
+						</td>
+						<td>
+							@Html.TextBoxFor(model => model.SlotList[i].MAXCV, new { @class = "form-control text-center", @placeholder="0" })
+							@Html.ValidationMessageFor(model => model.SlotList[i].MAXCV, "", new { @class = "text-danger" })
+						</td>
+						<td class="text-center">
+							@if (Scount > 1)
+							{
+								<a onclick="DeleteSlotRow(this)" data-toggle='tooltip' data-original-title='Remove'> <i class='fas fa-window-close red-clr m-0'></i></a>
+							}
+						</td>
+					</tr>
+					}
+
+
+				</tbody>
+			</table>
+		</div>
+		<div class="text-right mt-2"><button type="button" class="btn green-clr ripplelink btnAddRowSlot"><i class="fas fa-plus"></i> Add Row</button></div>
+		<div class="row">
+			<div class="col-md-12 text-center mt-2">
+				<button type="submit" name="Command" value="Add" class="btn mtr-o-grn btn-l ripplelink "><i class="fas fa-save"></i>Save</button>
+				<button type="button" class="btn cnl-btn ripplelink  pull-right" data-dismiss="modal"><i class="fas fa-times"></i> Close</button>
+			</div>
+
+		</div>
+
+	</div>
+
+</div>
+
+}
+
+<script>
+	$(document).ready(function () {
+		$('[data-toggle="tooltip"]').tooltip();
+		
+	});
+</script>

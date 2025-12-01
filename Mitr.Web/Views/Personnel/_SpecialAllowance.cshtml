@@ -1,0 +1,80 @@
+﻿@model IList<SpecialAllowance>
+
+<div class="row">
+    <div class="col-md-12 col-sm-12 col-xs-12">
+        <div class="card p-0">
+            <div class="card-body p-0">
+                <div class="x_content table-currency mt-0">
+                    <div class="table-responsive">
+                        <table id="tablePMSStatus" class="table mt-0" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
+                            <thead>
+                                <tr>
+                                    <th>S.no.</th>
+                                    <th>Employee Code</th>
+                                    <th>Employee Name</th>
+                                    <th>Date of joining</th>
+                                    <th>Date of Resignation</th>
+                                    <th>Hourly Rate</th>
+                                    <th>Structure</th>
+                                    <th>Employment Type</th>
+                                    <th>Work Location</th>
+                                    <th>Medical Reimbursement Entitlement Amount</th>
+                                    <th>Paid Amount</th>
+                                    <th>Balance</th>
+                                    <th>Bonus</th>
+                                </tr>
+                                <tr class="searchbar">
+                                    <th class="searchhide"></th>
+                                    <th></th>
+                                    <th></th>
+                                    <th></th>
+                                    <th></th>
+                                    <th></th>
+                                    <th></th>
+                                    <th></th>
+                                    <th></th>
+                                    <th></th>
+                                    <th></th>
+                                    <th></th>
+                                    <th></th>
+
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @{int Count = 0;}
+                                @foreach (Mitr.Models.SpecialAllowance item in Model)
+                                {
+                                    Count++;
+                                    <tr>
+                                        <td>@Count</td>
+                                        <td>@item.EmployeeCode</td>
+                                        <td>@item.EmployeeName</td>
+                                        <td>@Convert.ToDateTime(item.Dateofjoining).ToString("dd-MM-yyyy")</td>
+                                        <td>
+                                            @if (Convert.ToDateTime(item.DateofResignation).ToString("dd-MM-yyyy") != "01-01-1990")
+                                            {
+                                                Convert.ToDateTime(item.DateofResignation).ToString("dd-MM-yyyy");
+                                            }
+                                            else { item.DateofResignation = string.Empty; }
+                                    </td>
+                                    <td>@item.HourlyRate</td>
+                                    <td>@item.Structure</td>
+                                    <td>@item.EmploymentType</td>
+                                    <td>@item.WorkLocation</td>
+                                    <td>@item.MedicalReimbursementEntitlementAmount</td>
+                                    <td>@item.PaidAmount</td>
+                                    <td>@item.Balance</td>
+                                    <td>@item.Bonus</td>
+
+                                </tr>
+                            }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+<!--- -->

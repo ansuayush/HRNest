@@ -1,0 +1,44 @@
+﻿
+@{
+	var Modify = clsApplicationSetting.GetSessionValue("Modify");
+}
+<div class="row">
+
+	<div class="col-sm-12">
+
+		<div class="control-section">
+			@Html.EJS().Grid("Grid").DataSource((List<PMS.UOM.List>)Model).GridLines(Syncfusion.EJ2.Grids.GridLine.Both).Columns(col =>
+	   {
+		   col.Field("PMSUOMID").Visible(false).Add();
+		   col.Field("RowNum").HeaderText("SNo.").Width("30").Add();
+		   col.Field("Name").HeaderText("UOM").Width("530").Add();
+		   col.Field("Type").HeaderText("Type").Width("50").Add();
+		   col.Field("AutoRating").HeaderText("Auto Calculate Rating").Width("80").Add();
+		   col.HeaderText("Action").TextAlign(Syncfusion.EJ2.Grids.TextAlign.Center).Template("#tmpAction").Width("40").Add();
+
+	   }).AllowPaging().PageSettings(page => page.PageSize(10)).Toolbar(new List<string>() { "Search" }).Render()
+
+		</div>
+	</div>
+</div>
+
+<script id="tmpAction" type="text/x-template">
+	${if('@Modify' === 'True')}
+	<input type="hidden" name="I" value="${PMSUOMID}" />
+	<input type="hidden" name="N" value="${Name}" />
+
+	<a onclick="BindEdit(this)"><i class="fas fa-edit" aria-hidden="true"></i> </a>
+
+	${if(IsActive)}
+	<a title='Click to DeActivate' onclick="BindIsActive(this)" list='UOMList' OP='0' class='AIsActive'> <i class='fa fa-check-circle checkgreen' aria-hidden='true'></i></a>
+	${else}
+	<a title='Click to Activate' onclick="BindIsActive(this)" list='UOMList' OP='1' class='AIsActive'> <i class='fa fa-times-circle crossred' aria-hidden='true'></i></a>
+	${/if}
+	${/if}
+</script>
+
+
+
+@Html.IncludeVersionedJs(Url.Content("~/assets/design/Scripts/SyncScripts.js"))
+
+@(Html.EJS().ScriptManager())

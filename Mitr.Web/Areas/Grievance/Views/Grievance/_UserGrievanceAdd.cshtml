@@ -1,0 +1,92 @@
+﻿
+@model Mitr.Models.UserGrievance
+@using (Ajax.BeginForm("UserGrievanceAdd", "Grievance",
+		new { src = clsApplicationSetting.EncryptQueryString(ViewBag.MenuID + "*" + "/Grievance/UserGrievanceAdd*" + ViewBag.ID) },
+		 new AjaxOptions { HttpMethod = "POST", OnSuccess = "OnSuccess", OnBegin = "ShowLoadingDialog()" },
+			new { @id = "form", enctype = "multipart/form-data" }))
+{
+
+
+	@Html.HiddenFor(x => Model.SubcatAssingid)
+	@Html.HiddenFor(x => Model.UserId)
+	@Html.HiddenFor(x => Model.Locationid)
+	@Html.HiddenFor(x => Model.Mobile)
+
+	<div class="row">
+		<div class="col-sm-4 form-group">
+			<label>Category Name<sup>*</sup></label>
+			@Html.DropDownListFor(model => model.Categoryid, new SelectList(Model.CategoryList, "ID", "Name", Model.Categoryid), "select", new { @class = "form-control applyselect", onchange = "BindDropDown(this)" })
+			@*@Html.DropDownListFor(model => model.Categoryid, new SelectList(Model.CategoryList, "ID", "Name", Model.Categoryid), "select", new { @class = "form-control applyselect" })*@
+			@Html.ValidationMessageFor(model => model.Categoryid, "", new { @class = "text-danger" })
+
+			<div class="mt-2" id="chkAnonymous" style="display:none">
+				@Html.CheckBoxFor(x => x.IsAnonymous, new { @class = "srcheck" })<label for="lvl1">It can be anonymous " Please tick here if you want to file this grievance as anonymous"</label>
+			</div>
+		</div>
+
+		<div class="col-sm-4 form-group">
+			<label>Sub Category Name<sup>*</sup></label>
+			@Html.DropDownListFor(model => model.Subcatid, new SelectList(Model.SubCategoryList, "ID", "Name", Model.Subcatid), "select", new { @class = "form-control applyselect", onchange = "BindDropDownPriority(this)" })
+			@Html.ValidationMessageFor(model => model.Subcatid, "", new { @class = "text-danger" })
+		</div>
+
+		<div class="col-sm-4 form-group">
+			<label>Priority<sup>*</sup></label>
+			@Html.DropDownListFor(model => model.Priorityid, new SelectList(Model.PriorityList, "ID", "Name", Model.Priorityid), "select", new { @class = "form-control applyselect" })
+			@Html.ValidationMessageFor(model => model.Priorityid, "", new { @class = "text-danger" })
+
+
+		</div>
+
+		<div class="col-sm-6 form-group">
+			<label>Category Description<sup>*</sup></label>
+			<p><label id="CategoryDescription"> </label>  </p>
+		</div>
+
+		<div class="col-sm-6 form-group">
+			<label>Sub category Description<sup>*</sup></label>
+			<p><label id="SubcategoryDescription"> </label>  </p>
+		</div>
+
+		<div class="col-sm-12 form-group">
+			<label>Share your Grievance<sup>*</sup></label>
+			@Html.TextAreaFor(model => model.Description, new { @class = "form-control h-100", @placeholder = "Enter" })
+			@Html.ValidationMessageFor(model => model.Description, "", new { @class = "text-danger" })
+
+		</div>
+
+
+		<div class="col-sm-6 form-group">
+			<label>Attachment 1 <i class="fas fa-info-circle" data-toggle="tooltip" title="If you have more than two attachments please zip them in one folder and then attach"></i></label>
+			@Html.TextBoxFor(model => model.UploadFile1, new { @class = "form-control UploadAtch1", @type = "file" })
+			@Html.ValidationMessageFor(model => model.UploadFile1, "", new { @class = "text-danger" })
+
+			@*<input type="file" id="UploadFile1" name="UploadFile1" />*@
+		</div>
+
+		<div class="col-sm-6 form-group">
+			<label>Attachment 2 <i class="fas fa-info-circle" data-toggle="tooltip" title="If you have more than two attachments please zip them in one folder and then attach"></i></label>
+			@Html.TextBoxFor(model => model.UploadFile2, new { @class = "form-control", @type = "file" })
+			@Html.ValidationMessageFor(model => model.UploadFile2, "", new { @class = "text-danger" })
+		</div>
+
+
+
+
+		<div class="col-sm-12 text-center">
+			<button type="button" class="btn cnl-btn ripplelink" data-dismiss="modal"><i class="fas fa-times"></i>Close</button>
+			@if (Model.ID > 0)
+			{
+				<button type="submit" class="btn mtr-g-grn btn-l ripplelink pull-right" name="Command" value="Add"><i class="fa fa-paper-plane" aria-hidden="true"></i> Update</button>
+			}
+			else
+			{
+				<button type="submit" class="btn mtr-o-grn btn-l ripplelink pull-right" name="Command" value="Add"><i class="fa fa-paper-plane" aria-hidden="true"></i> Submit</button>
+			}
+		</div>
+	</div>
+
+}
+
+
+

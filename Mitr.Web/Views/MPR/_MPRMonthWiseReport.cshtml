@@ -1,0 +1,347 @@
+﻿@model IList<MPRReports.AchievementList>
+@{        
+    string existingIndecator = "";
+    var lstProject = Model.GroupBy(x => x.StateName)
+       .Select(x => new
+       {
+           StateName = x.Select(ex => ex.StateName).FirstOrDefault(),
+           StateID = x.Select(ex => ex.StateID).FirstOrDefault()
+
+       }).ToList();
+    var lstProjectList = Model.GroupBy(x => x.ProjectName)
+       .Select(x => new
+       {
+           ProjectName = x.Select(ex => ex.ProjectName).FirstOrDefault()
+
+       }).ToList();
+
+    var lstMonth = Model.GroupBy(x => x.Month)
+.Select(x => new
+{
+    Month = x.Select(ex => ex.Month).FirstOrDefault()
+
+}).ToList();
+}
+<style>
+    :before, :after {
+        font-family: inherit;
+    }
+     
+</style>
+<style>
+    .num {
+        mso-number-format:"0";
+    }
+</style>
+
+ 
+<h1 class="heading-one ">Month Wise Achievement</h1>
+<div class="row">
+    <div class="col-md-12 col-sm-12 col-xs-12">
+        <div class="card p-0">
+            <div class="card-body p-0">
+                <div class="x_content table-currency mt-0">
+                    <div class="table-responsive">
+                        <table id="datatable-buttons" class="table table-striped table-bordered dt-responsive nowrap tbltick new_width" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
+                            <thead>
+                                <tr style="text-align:center">
+                                    <th></th>
+                                    @{ int colspan = 0; int columncount = 0; int TotalCols = 0; int totalOfTotal = 0; int totalOfTotal1 = 0; int totalOfTotal2 = 0; }
+                                    @foreach (var item in lstProject)
+                                    {
+                                        colspan = 0;
+                                        var d1 = Model.Where(x => x.StateID == item.StateID).Select(x => x.ProjectName).Distinct().ToList();
+                                        var tColum = (d1.Count) * ((lstMonth.Count * 3) + 3);
+                                        <th colspan="@tColum">@item.StateName</th>
+                                    }
+                                    <th colspan="3"></th>
+                                </tr>
+                                <tr style="text-align:center">
+                                    <th></th>
+                                    @foreach (var item in lstProject)
+                                    {
+                                        colspan = 0;
+                                        foreach (var itemState in Model.Where(x => x.StateID == item.StateID).Select(x => x.ProjectName).Distinct().ToList())
+                                        {
+                                            //colspan = Convert.ToInt32(Model.Where(x => x.StateID == item.StateID && x.ProjectName == itemState).Select(x => x.NoOfCol).FirstOrDefault());
+                                            //if (colspan == 2)
+                                            //{
+                                            //    colspan = colspan + 1;
+                                            //}
+                                            var tColum1 = ((lstMonth.Count * 3)+3);
+                                            TotalCols = TotalCols + tColum1;
+                                            <th colspan="@tColum1">@itemState</th>                                            
+                                        }
+                                       
+                                        
+                                    }
+                                    <th colspan="3">Total of All Project</th>
+                                
+                                </tr>                             
+                            </thead>
+                            <tbody>
+                                <tr style="text-align:center">
+                                    <td>Month</td>
+
+                                    @foreach (var item in lstProjectList)
+                                    {
+                                        foreach (var item1 in lstMonth)
+                                        {
+                                            <td colspan="3">@item1.Month</td>
+                                        }
+                                         <td colspan="3">Total</td>
+                                    }
+
+                                </tr>
+
+
+                                @{string header1 = "", header2 = "", header3 = "", NoofCol = ""; }
+                                @foreach (var lstCategory in Model.Select(x => x.SecName).Distinct().ToList())
+                                {
+                                    var data = TotalCols + 1;
+                                    <tr style="color:green;width:100px;font-size:small">
+                                        <td><b> @lstCategory</b></td>
+                                        <td colspan="@TotalCols"></td>
+                                    </tr>
+                                    foreach (var lstSubCategory in Model.Where(n => n.SecName == lstCategory).Select(x => x.SubSecName).Distinct().ToList())
+                                    {
+                                         
+                            <tr>
+                                <td style="background-color:darkgoldenrod;width:100px"> @lstSubCategory</td>
+                                @foreach (var item in lstProject)
+                                {
+                                    foreach (var itemState in Model.Where(x => x.StateID == item.StateID).Select(x => x.ProjectID).Distinct().ToList())
+                                    {
+                                        foreach (var itemMonth in lstMonth)
+                                        {
+                                            var lstcols = Model.GroupBy(x => new { x.ColText1, x.ColText2, x.ColText3, x.ProjectID, x.StateID, x.SecName, x.SubSecName, x.Month })
+                                       .Select(b => new
+                                       {
+                                           StateID = b.Key.StateID,
+                                           ProjectID = b.Key.ProjectID,
+                                           SecName = b.Key.SecName,
+                                           SubSecName = b.Key.SubSecName,
+                                           ColText1 = b.Key.ColText1,
+                                           ColText2 = b.Key.ColText2,
+                                           ColText3 = b.Key.ColText3,
+                                           Months = b.Key.Month
+
+                                       }).Where(n => n.ProjectID == itemState && n.StateID == item.StateID && n.SecName == lstCategory && n.SubSecName == lstSubCategory && n.Months == itemMonth.Month);
+
+                                            foreach (var itemcols in lstcols)
+                                            {
+                                                header1 = itemcols.ColText1;
+                                                header2 = itemcols.ColText2;
+                                                header3 = itemcols.ColText3;
+                                                if (header3 == "")
+                                                {
+                                                    header3 = "Total";
+                                                }
+                                                <td><b>@header1 </b></td>
+                                                <td><b>@header2 </b></td>
+                                                <td><b>@header3 </b></td>
+
+                                            }
+                                            var d = lstcols.ToList();
+                                            if (d.Count == 0)
+                                            {
+                                                <td></td>
+                                                <td></td>
+                                                <td></td>
+                                            }
+
+                                        }
+                                        if (header3 == "")
+                                        {
+                                            header3 = "Total";
+                                        }
+
+                                        <td><b>@header1 </b></td>
+                                        <td><b>@header2 </b></td>
+                                        <td><b>@header3 </b></td>
+
+                                    }
+
+
+                                }
+                                <td><b>@header1 </b></td>
+                                <td><b>@header2 </b></td>
+                                <td><b>@header3 </b></td>
+                            </tr>
+                                        foreach (var lstIndicator in Model.Where(n => n.SecName == lstCategory && n.SubSecName == lstSubCategory).Select(x => x.IndicatorName).Distinct().ToList())
+                                        {
+                                            totalOfTotal = 0;
+                                            totalOfTotal1 = 0;
+                                            totalOfTotal2 = 0;
+                                            string ExValue1 = "", ExValue2 = "", ExValue3 = "", Coldatatype = "", ExValue1Total = "", ExValue2Total = "", ExValue3Total = "", NoofColumn = "";
+                            <tr>
+                                <td> @lstIndicator</td>
+                                @foreach (var item in lstProject)
+                                {
+
+                                    foreach (var itemState in Model.Where(x => x.StateID == item.StateID).Select(x => x.ProjectID).Distinct().ToList())
+                                    {
+                                        string tilllastMonth = "";
+                                        int nonCum1 = 0;
+                                        int nonCum2 = 0;
+                                        int nonCum3 = 0;
+                                        foreach (var itemMonth in lstMonth)
+                                        {
+
+
+                                            var lstcols = Model.GroupBy(x => new { x.ColText1, x.ColText2, x.ColText3, x.ProjectID, x.StateID, x.SecName, x.SubSecName, x.ExecuterVal1, x.ExecuterVal2, x.ExecuterVal3, x.IndicatorName, x.ColDataType1, x.Month, x.FromData, x.NoOfCol })
+                                        .Select(b => new
+                                        {
+                                            StateID = b.Key.StateID,
+                                            ProjectID = b.Key.ProjectID,
+                                            SecName = b.Key.SecName,
+                                            SubSecName = b.Key.SubSecName,
+                                            ColText1 = b.Key.ColText1,
+                                            ColText2 = b.Key.ColText2,
+                                            ColText3 = b.Key.ColText3,
+                                            ExecuterVal1 = b.Key.ExecuterVal1,
+                                            ExecuterVal2 = b.Key.ExecuterVal2,
+                                            ExecuterVal3 = b.Key.ExecuterVal3,
+                                            IndicatorName = b.Key.IndicatorName,
+                                            ColDataType1 = b.Key.ColDataType1,
+                                            Months = b.Key.Month,
+                                            FromData = b.Key.FromData,
+                                            NoofCol = b.Key.NoOfCol
+                                        }).Where(n => n.ProjectID == itemState && n.StateID == item.StateID && n.SecName == lstCategory && n.SubSecName == lstSubCategory && n.IndicatorName == lstIndicator && n.Months == itemMonth.Month);
+                                            foreach (var itemcols in lstcols)
+                                            {
+
+                                                ExValue1 = itemcols.ExecuterVal1;
+                                                ExValue2 = itemcols.ExecuterVal2;
+                                                ExValue3 = itemcols.ExecuterVal3;
+                                                ExValue1Total = ExValue1.ToString();
+                                                ExValue2Total = ExValue2.ToString();
+                                                ExValue3Total = ExValue3.ToString();
+                                                if (itemcols.FromData == "Cumulative-Yes")
+                                                {
+
+                                                    if (tilllastMonth != "")
+                                                    {
+                                                        ExValue1 = tilllastMonth;
+                                                        ExValue3 = (Convert.ToInt32(ExValue1) + Convert.ToInt32(ExValue2)).ToString();
+                                                    }
+                                                    else
+                                                    {
+                                                        ExValue3 = (Convert.ToInt32(ExValue1) + Convert.ToInt32(ExValue2)).ToString();
+                                                    }
+                                                    tilllastMonth = ExValue3;
+
+                                                    ExValue1Total = ExValue1.ToString();
+                                                    ExValue2Total = ExValue2.ToString();
+                                                    ExValue3Total = ExValue3.ToString();
+                                                    //totalOfTotal +=Convert.ToInt32(ExValue3);
+                                                }
+                                                else
+                                                {
+                                                    if (tilllastMonth != "")
+                                                    {
+                                                        if (Convert.ToInt32(itemcols.NoofCol) > 2)
+                                                        {
+                                                            ExValue3 = (Convert.ToInt32(ExValue1) + Convert.ToInt32(ExValue2)).ToString();
+                                                        }
+                                                    }
+                                                    tilllastMonth = ExValue3;
+
+                                                    nonCum1 = Convert.ToInt32(nonCum1) + Convert.ToInt32(ExValue1);
+                                                    if (Convert.ToInt32(itemcols.NoofCol) > 2)
+                                                    {
+                                                        nonCum2 = Convert.ToInt32(nonCum2) + Convert.ToInt32(ExValue2);
+                                                    }
+                                                    else
+                                                    {
+                                                        nonCum2 = Convert.ToInt32(ExValue2);
+                                                    }
+                                                    nonCum3 = Convert.ToInt32(nonCum3) + Convert.ToInt32(ExValue3);
+
+                                                }
+
+                                                if (itemcols.ColDataType1 == "Number")
+                                                {
+
+
+                                                }
+                                                else
+                                                {
+                                                    ExValue1Total = "";
+                                                    ExValue2Total = "";
+                                                    ExValue3Total = "";
+                                                }
+
+                                            }
+
+                                            var d = lstcols.ToList();
+                                            if (d.Count == 0)
+                                            {
+                                                <td></td>
+                                                <td></td>
+                                                <td></td>
+                                            }
+                                            else
+                                            {
+
+                                                <td data-t="n">@ExValue1</td>
+                                                <td data-t="n">@ExValue2</td>
+                                                <td data-t="n">@ExValue3</td>
+                                            }
+
+
+
+                                        }
+                                        if (nonCum3 != 0)
+                                        {
+
+                                            ExValue1Total = nonCum1.ToString();
+                                            ExValue2Total = nonCum2.ToString();
+                                            ExValue3Total = nonCum3.ToString();
+                                            nonCum3 = 0;
+
+                                        }
+
+                                        <td data-t="n">@ExValue1Total</td>
+                                        <td data-t="n">@ExValue2Total</td>
+                                        <td data-t="n">@ExValue3Total</td>
+                                        if (ExValue3Total != "")
+                                        {
+                                            totalOfTotal += Convert.ToInt32(ExValue3Total);
+                                        }
+                                        if (ExValue1Total != "")
+                                        {
+                                            totalOfTotal1 += Convert.ToInt32(ExValue1Total);
+                                        }
+                                        if (ExValue2Total != "")
+                                        {
+                                            totalOfTotal2 += Convert.ToInt32(ExValue2Total);
+                                        }
+                                    }
+
+
+                                    ExValue1Total = "";
+                                    ExValue2Total = "";
+                                    ExValue3Total = "";
+                                }
+                                <td   data-t="n">@totalOfTotal1</td>
+                                <td   data-t="n">@totalOfTotal2</td>
+                                <td   data-t="n">@totalOfTotal</td>
+
+                            </tr>
+                                        }
+                                    }
+
+                                }
+
+
+                            </tbody> 
+                        </table>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+</div>

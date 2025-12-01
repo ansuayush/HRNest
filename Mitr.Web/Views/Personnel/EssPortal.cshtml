@@ -1,0 +1,46 @@
+﻿@using System.Data
+@model DataSet
+@{
+    ViewBag.Title = "EssPortal";
+}
+<div class="inner-main">
+    <h1 class="heading-one">Employee Self Service Portal</h1>
+    <div class="row">
+   
+    @foreach (DataRow item in Model.Tables[0].Rows)
+    {
+        string RouteURL = "";
+        if(item["RouteURL"].ToString().Length<=2)
+        {
+            RouteURL+="/Personnel/ESSPDF?src=" + clsApplicationSetting.EncryptQueryString(ViewBag.MenuID.ToString() + "*/Personnel/ESSPDF*"+item["RouteURL"].ToString());
+        }
+        else
+        {
+            RouteURL+=item["RouteURL"]+"?src=" + clsApplicationSetting.EncryptQueryString(ViewBag.MenuID.ToString() + "*"+@item["RouteURL"]);
+        }
+
+        <div class="col-md-3">
+            <div class="plans">            
+                <a href="@RouteURL" class="plan basic-plan box-plan" >                    
+                    <div class="plan-content"> 
+                        <img loading="lazy" src="@item["ImageName"]" alt="" />
+                        <div class="plan-details">@item["MENU_NAME"]</div>
+                     </div>
+
+                </a>
+            </div>
+        </div>
+          
+          
+
+        
+            @*<a href="@RouteURL">
+                <div class="box-design shadow-two">
+                    <div class="crl-img shadow-two">
+                    <img src="@item["ImageName"]" alt="Salary Slip icon"></div>@item["MENU_NAME"]
+                </div>
+            </a>*@
+        
+    }
+    
+</div>

@@ -1,0 +1,132 @@
+﻿@using System.Data
+@model DataSet
+
+
+<strong>Staff List</strong>
+
+<div class="scroll h-247 mt-2">
+
+	<table class="table fixedth gry-tbl mt-0">
+		<thead>
+			<tr>
+				<th scope="col" class="text-center w-50" rowspan="2">Sno.</th>
+				<th scope="col" rowspan="2">Name</th>
+				<th scope="col" class="text-center" colspan="3">Impacts</th>
+				<th rowspan="2" class="w-50 text-center">Action</th>
+			</tr>
+			<tr>
+				<th scope="col" rowspan="1">Relocation</th>
+				<th scope="col" rowspan="1">Job Title</th>
+				<th scope="col" rowspan="1">Pillar</th>
+			</tr>
+		</thead>
+		<tbody>
+			@{ int Count = 0;}
+			@if (Model.Tables[0].Rows.Count > 0)
+			{
+				foreach (DataRow item in Model.Tables[0].Rows)
+				{
+					Count++;
+					<tr>
+						<td class="text-center">
+							@Count
+							<input type="hidden" name="IStaffID" value="@item["REC_IStaffID"]" />
+							<input type="hidden" name="EMPID" value="@item["EMPID"]" />
+							<input type="hidden" name="EMPName" value="@item["EMP_Name"]" />
+						</td>
+						<td>@item["emp_name"] (@item["emp_code"]) </td>
+						<td>
+							@item["RelocationByHR"].ToString()
+							@if ((item["Relocation"].ToString() != item["RelocationByHR"].ToString()) || item["RelocationByHR"].ToString() == "Yes")
+							{
+								<div class="pr">
+									<div class="dropdown">
+										<div class="drop-pophr" data-toggle="dropdown" aria-expanded="true"> <i class="fas fa-info-circle"></i> </div>
+										<div class="dropdown-menu" role="menu" x-placement="top-start" style="position: absolute; will-change: transform; top: 0px; left: 0px; transform: translate3d(65px, -73px, 0px);">
+											<ul class="list-unstyled text-clr two-clm tr-pophover p-2">
+												<li>
+													<strong>Old Location</strong>
+													<p>@item["Location"].ToString()</p>
+												</li>
+												<li>
+													<strong>New Location</strong>
+													<p>@item["Current_Location"].ToString()</p>
+												</li>
+											</ul>
+										</div>
+									</div>
+								</div>
+							}
+						</td>
+						<td>
+							@item["JobTitleByHR"].ToString()
+
+							@if ((item["JobTitle"].ToString() != item["JobTitleByHR"].ToString()) || item["JobTitleByHR"].ToString() == "Yes")
+							{
+								<div class="pr">
+									<div class="dropdown">
+										<div class="drop-pophr" data-toggle="dropdown" aria-expanded="true"> <i class="fas fa-info-circle"></i> </div>
+										<div class="dropdown-menu" role="menu" x-placement="top-start" style="position: absolute; will-change: transform; top: 0px; left: 0px; transform: translate3d(65px, -73px, 0px);">
+											<ul class="list-unstyled text-clr two-clm tr-pophover p-2">
+												<li>
+													<strong>Old Job</strong>
+													<p>@item["Job"].ToString()</p>
+												</li>
+												<li>
+													<strong>New Job</strong>
+													<p>@item["Current_Job"].ToString()</p>
+												</li>
+											</ul>
+										</div>
+									</div>
+								</div>
+							}
+
+						</td>
+						<td>
+							@item["PillarByHR"].ToString()
+
+							@if ((item["Pillar"].ToString() != item["PillarByHR"].ToString()) || item["PillarByHR"].ToString() == "Yes")
+							{
+								<div class="pr">
+									<div class="dropdown">
+										<div class="drop-pophr" data-toggle="dropdown" aria-expanded="true"> <i class="fas fa-info-circle"></i> </div>
+										<div class="dropdown-menu" role="menu" x-placement="top-start" style="position: absolute; will-change: transform; top: 0px; left: 0px; transform: translate3d(65px, -73px, 0px);">
+											<ul class="list-unstyled text-clr two-clm tr-pophover p-2">
+												<li>
+													<strong>Old Pillar</strong>
+													<p>@item["TH_Areas"].ToString()</p>
+												</li>
+												<li>
+													<strong>New Pillar</strong>
+													<p>@item["Current_TH_Areas"].ToString()</p>
+												</li>
+											</ul>
+										</div>
+									</div>
+								</div>
+							}
+
+						</td>
+						<td class="text-center">
+							@if (item["REC_isdeleted"].ToString() != "0")
+							{
+								<a class="btn-c" data-toggle="tooltip" onclick="DeleteIStaff(this)" data-original-title="Delete"><b><i class="fas fa-trash-alt"></i></b></a>
+							}
+						</td>
+					</tr>
+				}
+			}
+			else
+			{
+				<tr class="e-emptyrow">
+					<td colspan="6">
+						No Records Found
+					</td>
+				</tr>
+			}
+		</tbody>
+
+	</table>
+</div>
+

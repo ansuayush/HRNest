@@ -1,0 +1,63 @@
+﻿@model PMS
+
+<div class="inner-main mb-5 pb-0">
+    <div class="page-ctn">
+        <div class="col-sm-5"><h1 class="heading-one ">Self Appraisal </h1></div>
+        @using (Ajax.BeginForm("PerformanceAppraisalReport", "PMS",
+        new { src =ViewBag.src },
+        new AjaxOptions { HttpMethod = "POST", OnSuccess = "onRPTsuccess", OnBegin = "ShowLoadingDialog()" },
+        new { @id = "PerformanceAppraisalReportForm", enctype = "multipart/form-data" })
+        )       
+        {
+            <div class="row">
+
+                <div class="col-lg-2 col-md-2 col-sm-2 slt-srh form-group">
+                    <label class="lbl-abs">Select Appraisal Period</label>
+                    @Html.DropDownListFor(x => Model.FYID, new SelectList(ViewBag.FinYearList, "ID", "Year", Model.FYID), "Select Period",
+            new { @class = "form-control  applyselect ddapplyaction" })
+                    @Html.ValidationMessageFor(model => Model.FYID, "", new { @class = "text-danger" })
+                </div>
+                @*<div class="col-lg-2 col-md-2 col-sm-2 slt-srh form-group">
+                        <label class="lbl-abs">Employee</label>
+                        @Html.DropDownListFor(x => Model.Empid, new SelectList(ViewBag.EmpList, "EMPID", "EMPName", Model.Empid), "Select",
+                new { @class = "form-control  applyselect" })
+                        @Html.ValidationMessageFor(model => Model.Empid, "", new { @class = "text-danger" })
+                    </div>*@
+                <div class="col-sm-8 text-right align-self-center">
+                    <button type="submit" id="btnSearch" class="btn mtr-g-grn" name="Command" value="Download"><i class="fas fa-download"></i> Download</button>
+                </div>
+
+            </div>
+        }
+
+        @*<div id="TargetDiv">@Html.Partial("_Loading")</div>*@
+    </div>
+</div>
+@section scripts    {
+    @*@System.Web.Optimization.Scripts.Render("~/bundle/unobtrusivejs")*@
+    @Html.IncludeVersionedJs(Url.Content("~/assets/design/Scripts/ToolTip.js"))
+    @System.Web.Optimization.Scripts.Render("~/assets/design/Scripts/AddInit.js")
+
+    <script>
+			$(document).ready(function () {
+				//$("#btnSearch").click();
+			});
+        function onRPTsuccess(objdata) {
+            alert(objdata.SuccessMessage)
+            var format = "pdf";           
+           // if (objdata.status) {
+                //window.open("/Attachments/PDF/" + objdata.SuccessMessage + "." + format + "", "_blank", "toolbar=yes,scrollbars=yes,resizable=yes,top=200,left=200,width=1000,height=600");
+            window.open("/Attachments/PDF/Appraisal_Report." + format + "", "_blank", "toolbar=yes,scrollbars=yes,resizable=yes,top=200,left=200,width=1000,height=600");
+                CloseLoadingDialog();
+          //  }
+           // else {
+            //    swal(objdata.msg, '');
+           //     CloseLoadingDialog();
+
+           // }
+
+        }
+			
+    </script>
+
+}

@@ -1,0 +1,80 @@
+﻿@model Mitr.Models.SalaryDetails
+
+@{
+    ViewBag.Title = "SalaryDetails";
+}
+<h1 class="heading-one">Salary Details</h1>
+
+@Html.Partial("HeaderMsg_Partial")
+<div class="shadow-box p-2">
+
+
+    @using (Ajax.BeginForm("_SalaryDetails", "Personnel",
+           new { src = clsApplicationSetting.EncryptQueryString(ViewBag.MenuID.ToString() + "*/Personnel/_SalaryDetails") },
+           new AjaxOptions { HttpMethod = "POST", OnSuccess = "ActionOnSuccess", OnFailure = "ActionOnSuccess" },
+       new { @id = "_SalaryDetailsFrom" })
+       )
+    {
+
+
+        @Html.AntiForgeryToken()
+    <div class="row">
+        <div class="col-sm-3 form-group">
+            <label>	Financial Year</label>
+            <select id="@Html.IdFor(model=>model.FinYearID)" name="@Html.NameFor(model=>model.FinYearID)" class="form-control  applyselect">
+                @foreach (var item in Model.FinyearList)
+                {
+                    <option ShowFromDate="@item.ShowFromDate" ShowToDate="@item.ShowToDate" value="@item.ID">@item.year</option>
+                }
+            </select>
+            @Html.ValidationMessageFor(n => n.FinYearID, "", new { @class = "text-danger" })
+
+        </div>
+        <div class="col-sm-3 form-group ">
+            <label>Period </label>
+            <strong>    <span id="SpnPeriod" class="lb"><br> </span></strong>
+        </div>
+
+        <div class="col-sm-3 form-group align-self-center ">
+            <button type="submit" id="btnViewButton" class="btn ripplelink"><i class="fa-paper-plane"></i> View</button>
+            <button type="button" class="btn cnl-btn ripplelink  pull-right" onclick="ShowLoadingDialog();window.location='@Url.Action("EssPortal",new { src = clsApplicationSetting.EncryptQueryString(ViewBag.MenuID.ToString() + "*/Personnel/EssPortal")})';"><i class="fas fa-times"></i> Cancel</button>
+        </div>
+    </div>
+
+
+    }
+    <div id="TargetDiv"></div>
+
+</div>
+
+@section scripts    {
+    <script src="~/assets/design/Scripts/AddInit.js?v=@clsApplicationSetting.GetWebConfigValue("Version")"></script>
+    @System.Web.Optimization.Scripts.Render("~/bundle/unobtrusivejs");
+
+    <script>
+        $(document).ready(function () {
+
+            $("#btnViewButton").click();
+            FillPeriod();
+        });
+
+        $("#FinYearID").bind("change", function () {
+             $("#btnViewButton").click();
+            FillPeriod();
+        });
+
+        function ActionOnSuccess(obj) {
+
+            $("#TargetDiv").empty();
+            $("#TargetDiv").html(obj);
+            CloseLoadingDialog()
+            }
+
+    function FillPeriod() {
+        
+        var ToDate = $("#FinYearID option:selected").attr("ShowToDate");
+        var FromDate = $("#FinYearID option:selected").attr("ShowFromDate");
+        $("#SpnPeriod").html(FromDate+" - "+ToDate);
+    }
+    </script>
+}

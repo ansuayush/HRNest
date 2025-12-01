@@ -1,0 +1,284 @@
+﻿@model Mitr.Models.BudgetMaster.AddTrainingWorkshopSeminarTypes
+@{
+    ViewBag.Title = "AddTrainingWorkshop";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@using (Ajax.BeginForm("AddTrainingWorkshop", "Budget",
+        new { src = ViewBag.src },
+        new AjaxOptions { HttpMethod = "POST", OnSuccess = "OnSuccess" },
+    new { @id = "AddTrainingWorkshop" })
+    )
+{
+    @Html.HiddenFor(modal => Model.Id)
+    <div class="inner-main mb-5">
+        <div class="row">
+            <div class="col-sm-4">
+                <h1 class="heading-one mb-3">Add Training and Workshop Seminar Types</h1>
+            </div>
+
+        </div>
+        <div class="row">
+            <div class="col-sm-3 form-group">
+                <label>Module </label>
+                @Html.DropDownListFor(model => model.Module, new SelectList(Enum.GetValues(typeof(AllEnum.Module_BudgetType))), "Select Module", new { @class = "form-control" })
+                @Html.ValidationMessageFor(model => model.Module, "", new { @class = "text-danger" })
+
+            </div>
+            <div class="col-sm-3 form-group">
+                <label>Training Name</label>
+                @Html.TextBoxFor(model => model.TrainingName, new { @class = "form-control" })
+                @Html.ValidationMessageFor(model => model.TrainingName, "", new { @class = "text-danger" })
+
+            </div>
+            <div class="col-sm-12"></div>
+            <div class="col-sm-3 wf-575 form-group">
+                <label>Item</label>
+                <input type="text" id="txtitem" class="form-control" placeholder="Enter" name="">
+            </div>
+            <div class="col-sm-2 wf-575 form-group">
+                <label>Unit</label>
+
+                @Html.DropDownList("ddlunit", new SelectList(Enum.GetNames(typeof(AllEnum.Module_BudgetTypeUnit))), "Select ", new { @class = "form-control" })
+              
+            </div>
+            <div class="col-sm-2 wf-575 form-group">
+                <label>Rate</label>
+                <input type = "number" class="form-control" id="txtrate" placeholder="Enter" name="">
+            </div>
+
+            <div class="col-sm-2 wf-575 form-group align-self-end">
+                <button type="button" class="btn mtr-g-grn m-0" id="btnrow"><i class="fas fa-plus"></i>Add</button>
+            </div>
+            <div class="col-sm-8 form-group ">
+                <div class="table-responsive">
+                    <div class="table-responsive">
+                        <table class="table mt-0" id="tblProjects">
+
+                            <thead>
+                                <tr>
+                                    <th class="w-50">SNo.</th>
+                                    <th>Item</th>
+                                    <th>Unit</th>
+                                    <th>Rate</th>
+                                    <th class="w-50">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @{ int procount = 0;}
+                                @if (Model.ListTrainingDetails != null)
+                                {
+                                    for (int i = 0; i < Model.ListTrainingDetails.Count; i++)
+                                    {
+                                        procount++;
+                                        <tr>
+                                            <td class="hfNewId">
+                                                @Html.HiddenFor(modal => Model.ListTrainingDetails[i].Id)
+
+                                                <label id="span_@i" name="span_@i">@procount </label>
+                                                @Html.HiddenFor(modal => Model.ListTrainingDetails[i].TrainingWorkshopid)
+
+                                            </td>
+                                            <td>@Html.TextBoxFor(model => model.ListTrainingDetails[i].Item, new { @class = "form-control text-right valid", @readonly= "readonly"})</td>
+                                            <td>@Html.TextBoxFor(model => model.ListTrainingDetails[i].Unit, new { @class = "form-control text-right valid", @readonly = "readonly" })</td>
+                                            <td lass="tw-100">@Html.TextBoxFor(model => model.ListTrainingDetails[i].Rate, new { @class = "form-control text-right valid", @type = "number" })</td>
+                                            <td>
+                                                <i onclick='DeleteRow(this)' class="fas fa-trash-alt red-clr"></i>
+                                            </td>
+
+                                        </tr>
+                                    }
+
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="mt-3 text-center">
+            <button type="submit" class="btn mtr-o-grn " name="Command" value="Add"><i class="fas fa-save"></i>Save</button>
+            <button type="button" class="btn cnl-btn" onclick="ShowLoadingDialog();window.location='@Url.Action("TrainingWorkshopSeminar", new { src = clsApplicationSetting.EncryptQueryString(ViewBag.MenuID.ToString() + "*/Budget/TrainingWorkshopSeminar*0")  })';"><i class="fas fa-times"></i> Close</button>
+         
+        </div>
+    </div>
+}
+@Html.IncludeVersionedJs(Url.Content("~/assets/design/js/jquery-3.4.1.min.js"))
+@section scripts    {
+    @System.Web.Optimization.Scripts.Render("~/bundle/unobtrusivejs")
+<script type="text/javascript">
+        $(document).ready(function () {
+
+        });
+        $("#btnrow").click(function () {
+            $(".notifyjs-wrapper").click();
+            var CombinationExist = true;
+            var txtitem = '', txtrate = '';
+            var txtitem = $("#txtitem").val();
+            var ddlunit = $("#ddlunit").val()
+            var txtrate = $("#txtrate").val();
+            var InnerHTML = "";
+            if (txtitem == "") {
+                $.notify($("#txtitem"), "Hey, you missed this field!", "error");
+                $("#txtitem").focus();
+                CombinationExist = false;
+            }
+            if (txtrate == "") {
+                $.notify($("#txtrate"), "Hey, you missed this field!", "error");
+                $("#txtrate").focus();
+                CombinationExist = false;
+            }
+            if (ddlunit == "Select") {
+                $.notify($("#ddlunit"), "Hey, you missed this field!", "error");
+                $("#ddlunit").focus();
+                CombinationExist = false;
+            }
+            if (CombinationExist == true) {
+                var Count = parseInt($('#tblProjects').find("tbody tr").length);
+                InnerHTML += "<tr>";
+                InnerHTML += "<td><label id='span_" + Count + "'  Name='span_" + Count + "'>" + (Count + 1) + "</label>";
+                InnerHTML += "<input type='hidden' id=\"ListTrainingDetails" + Count + "__Item\" name=\"ListTrainingDetails[" + Count + "].Item\" value='" + txtitem + "' class = 'hfItem' />";
+                InnerHTML += "<input type='hidden' id=\"ListTrainingDetails" + Count + "__Unit\" name=\"ListTrainingDetails[" + Count + "].Unit\" value='" + ddlunit + "' class = 'hfUnit' />";
+                InnerHTML += "<input type='hidden' id=\"ListTrainingDetails" + Count + "__Rate\" name=\"ListTrainingDetails[" + Count + "].Rate\" value='" + txtrate + "' class='hfRate' /> </td>";
+                InnerHTML += "<td><input type='Text' readonly='readonly' class = 'form-control text-right' id=\"ListTrainingDetails" + Count + "__Item\" name=\"ListTrainingDetails[" + Count + "].Item\" value='" + txtitem + "' /></td>";
+                InnerHTML += "<td><input type='Text' readonly='readonly' class = 'form-control text-right' id=\"ListTrainingDetails" + Count + "__Unit\" name=\"ListTrainingDetails[" + Count + "].Unit\" value='" + ddlunit + "' /></td>";
+                InnerHTML += "<td class='tw-100'><input  type = 'number'  class = 'form-control text-right' id=\"ListTrainingDetails" + Count + "__Rate\" name=\"ListTrainingDetails[" + Count + "].Rate\" value='" + txtrate + "' /></td>";
+                InnerHTML += "<td><a onclick='DeleteRow(this)'><i class='fas fa-trash-alt red-clr'></i></a></td > ";
+                InnerHTML += "</tr>";
+                $('#tblProjects').append(InnerHTML);
+                $('[data-toggle="tooltip"]').tooltip();
+                $("#txtitem").val("");
+                $("#txtrate").val("");
+				//$('#Module').val("").trigger("change");
+				//$('#TrainingName').val("").trigger("change");
+            }
+            else {
+
+            }
+        });
+
+
+
+    function DeleteRow(obj) {
+       
+            var count = 0;
+            var ID = parseInt($(obj).closest('tr').find("td.hfNewId input[type='hidden']").val());
+            var TotalRowCount = $('#tblProjects').find("tbody tr").length;
+            var srno = TotalRowCount;
+        if (isNaN(ID)) {
+
+            ConfirmMsgBox("Are you sure want to delete", '', function () {
+               
+                    $(obj).closest('tr').remove();
+                $("#tblProjects TBODY TR").each(function (i) {
+                   
+                        srno = srno - 1;
+                        $(this).closest("tr").find("label").each(function () {
+                            $(this).attr({
+                                'id': function (_, id) { var arr = id.split('_'); return id.replace(arr[1], i); },
+                            });
+                            $(this).html(i + 1)
+                        });
+
+                        $(this).closest("tr").find("input").each(function () {
+                            $(this).attr({
+                                'id': function (_, id) { return id.replace('_' + (parseInt(i) + 1) + '_', '_' + i + '_'); },
+                                'name': function (_, name) { return name.replace('[' + (parseInt(i) + 1) + ']', '[' + i + ']'); },
+                            });
+                        });
+                        $(this).closest("tr").find("select").each(function () {
+                            $(this).attr({
+                                'id': function (_, id) { return id.replace('_' + (parseInt(i) + 1) + '_', '_' + i + '_'); },
+                                'name': function (_, name) { return name.replace('[' + (parseInt(i) + 1) + ']', '[' + i + ']'); },
+                            });
+                        });
+                        $(this).closest("tr").find("label").each(function () {
+
+                            if ($(this).attr("data-valmsg-for")) {
+                                $(this).attr({
+                                    'data-valmsg-for': function (_, name) { return name.replace('[' + (parseInt(i) + 1) + ']', '[' + i + ']'); },
+                                });
+                            }
+                            if ($(this).attr("for")) {
+                                $(this).attr({
+                                    'for': function (_, id) { return id.replace('_' + (parseInt(i) + 1) + '_', '_' + i + '_'); },
+                                });
+                            }
+                        });
+                    });
+
+                })
+
+
+            }
+            else {
+            ConfirmMsgBox("Are you sure want to delete", '', function () {
+				debugger;
+                    $(obj).closest('tr').remove();
+                    $("#tblProjects TBODY TR").each(function (i) {
+
+                        srno = srno - 1;
+                        $(this).closest("tr").find("label").each(function () {
+                            $(this).attr({
+                                'id': function (_, id) { var arr = id.split('_'); return id.replace(arr[1], i); },
+                            });
+                            $(this).html(i + 1)
+                        });
+
+                        $(this).closest("tr").find("input").each(function () {
+                            $(this).attr({
+                                'id': function (_, id) { return id.replace('_' + (parseInt(i) + 1) + '_', '_' + i + '_'); },
+                                'name': function (_, name) { return name.replace('[' + (parseInt(i) + 1) + ']', '[' + i + ']'); },
+                            });
+                        });
+                        $(this).closest("tr").find("select").each(function () {
+                            $(this).attr({
+                                'id': function (_, id) { return id.replace('_' + (parseInt(i) + 1) + '_', '_' + i + '_'); },
+                                'name': function (_, name) { return name.replace('[' + (parseInt(i) + 1) + ']', '[' + i + ']'); },
+                            });
+                        });
+                        $(this).closest("tr").find("label").each(function () {
+
+                            if ($(this).attr("data-valmsg-for")) {
+                                $(this).attr({
+                                    'data-valmsg-for': function (_, name) { return name.replace('[' + (parseInt(i) + 1) + ']', '[' + i + ']'); },
+                                });
+                            }
+                            if ($(this).attr("for")) {
+                                $(this).attr({
+                                    'for': function (_, id) { return id.replace('_' + (parseInt(i) + 1) + '_', '_' + i + '_'); },
+                                });
+                            }
+                        });
+                    });
+                    var dataObject = JSON.stringify({
+                        'ID': ID,
+                        'Doctype': 'TrainingWorkshopDet',
+                    });
+                    var data = $.parseJSON($.ajax({
+                        url: '/CommonAjax/DelRecord_CommonJson',
+                        type: "post",
+                        data: dataObject,
+                        contentType: 'application/json',
+                        async: false
+                    }).responseText);
+                    return data;
+                });
+            }
+
+
+        }
+        function OnSuccess(obj) {
+            if (obj.Status) {
+                SuccessToaster(obj.SuccessMessage);
+                window.location.href = obj.RedirectURL
+
+            }
+            else {
+                CloseLoadingDialog();
+                FailToaster(obj.SuccessMessage);
+
+            }
+        }
+</script>
+}

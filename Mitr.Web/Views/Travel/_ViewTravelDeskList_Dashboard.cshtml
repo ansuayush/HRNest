@@ -1,0 +1,208 @@
+﻿@model IList<Mitr.Models.TravelDeskList>
+
+
+
+
+	<div id="content" class="tab-content p-0" role="tablist">
+		<div id="active-log" class="card tab-pane fade show active" role="tabpanel" aria-labelledby="tab-A">
+			<div class="card-header" role="tab" id="heading-A">
+				<h5 class="mb-0"> <a data-toggle="collapse" href="#collapse-A" aria-expanded="true" aria-controls="collapse-A">Open Request <i class="fas fa-envelope-open"></i></a> </h5>
+			</div>
+			<div id="collapse-A" class="collapse show" data-parent="#content" role="tabpanel" aria-labelledby="heading-A">
+				<ul class="list-unstyled rqt-list list-rsp trldsklst surrqts scroll boxfrheigh">
+					@{ int copunt = 0;}
+					@foreach (var item in Model)
+					{
+						copunt++;
+						<li>
+
+							<div class="row viewRequest">
+
+								<div class="col-sm-1">
+									<div class="left-dtl-r d-none">@copunt</div>
+									<div class="left-dtl-r"> <small> @item.ReqNo </small> </div>
+									<input type="hidden" name="TRI" value="@item.TravelRequestID" />
+								</div>
+								<div class="col-sm-5">
+									<div class="cntr-dtl-r">
+										<strong>@item.TravellerName</strong> <br>
+										<small class="trldte">@Html.Raw(@item.TravelDetails)</small><br>
+									</div>
+								</div>
+								<div class="col-sm-3">
+									<div class="cntr-dtl-pst">
+										<small class="red-clr"><strong>  @item.Status </strong></small><br />
+										<small class="trllct">@item.RequestDate</small>
+										<div class="cntr-dtl-pst green-clr">
+											<small>
+												@if (item.IsTicketRequired == 1)
+												{<i class="fas fa-ticket-alt"></i>
+												}
+												@if (item.IsHotelRequired == 1)
+												{
+													<i class="fas fa-utensils"></i>
+												}
+
+											</small>
+										</div>
+									</div>
+								</div>
+
+							</div>
+
+						</li>
+					}
+				</ul>
+
+			</div>
+		</div>
+		@*<div id="leaves" class="card tab-pane fade" role="tabpanel" aria-labelledby="tab-B">
+			<div class="card-header" role="tab" id="heading-B">
+				<h5 class="mb-0"> <a class="collapsed" data-toggle="collapse" href="#collapse-B" aria-expanded="false" aria-controls="collapse-B">Leaves <i class="fas fa-database"></i></a> </h5>
+			</div>
+			<div id="collapse-B" class="collapse" data-parent="#content" role="tabpanel" aria-labelledby="heading-B">
+				<ul class="list-unstyled rqt-list left-abs scroll boxfrheigh trldsklst">
+					@{ int copunt1 = 0;}
+					@foreach (var item in Model.Where(x => x.isbooked == 2 || x.BookBy== "Travel Agent"))
+					{
+						copunt1++;
+						<li>
+							<div class="row viewRequest">
+								<div class="col-sm-1">
+									<div class="left-dtl-r d-none">@copunt1</div>
+									<div class="left-dtl-r"> <small> @item.ReqNo </small> </div>
+									<input type="hidden" name="TRI" value="@item.TravelRequestID" />
+								</div>
+								<div class="col-sm-5">
+									<div class="cntr-dtl-r">
+										<strong>@item.TravellerName</strong> <br>
+										<small class="trldte">@Html.Raw(@item.TravelDetails)</small><br>
+									</div>
+								</div>
+								<div class="col-sm-3">
+									<div class="cntr-dtl-pst">
+										<small class="red-clr"><strong>  @item.Status </strong></small><br />
+										<small class="trllct">@item.RequestDate</small>
+										<div class="cntr-dtl-pst green-clr">
+											<small>
+												@if (item.IsTicketRequired == 1)
+												{<i class="fas fa-ticket-alt"></i>
+												}
+												@if (item.IsHotelRequired == 1)
+												{
+													<i class="fas fa-utensils"></i>
+												}
+											</small>
+										</div>
+									</div>
+								</div>
+							</div>
+
+						</li>
+					}
+				</ul>
+			</div>
+		</div>
+		<div id="legacy" class="card tab-pane fade" role="tabpanel" aria-labelledby="tab-B">
+			<div class="card-header" role="tab" id="heading-B">
+				<h5 class="mb-0"> <a class="collapsed" data-toggle="collapse" href="#collapse-B" aria-expanded="false" aria-controls="collapse-B">Leaves <i class="fas fa-database"></i></a> </h5>
+			</div>
+			<div id="collapse-B" class="collapse" data-parent="#content" role="tabpanel" aria-labelledby="heading-B">
+				<ul class="list-unstyled rqt-list left-abs scroll boxfrheigh trldsklst">
+					@{ int copunt2 = 0;}
+					@foreach (var item in Model.Where(x => x.isbooked == 1))
+					{
+						copunt2++;
+						<li>
+							<div class="row viewRequest">
+								<div class="col-sm-1">
+									<div class="left-dtl-r d-none">@copunt2</div>
+									<div class="left-dtl-r"> <small> @item.ReqNo </small> </div>
+									<input type="hidden" name="TRI" value="@item.TravelRequestID" />
+								</div>
+								<div class="col-sm-5">
+									<div class="cntr-dtl-r">
+										<strong>@item.TravellerName</strong> <br>
+										<small class="trldte">@Html.Raw(@item.TravelDetails)</small><br>
+									</div>
+								</div>
+								<div class="col-sm-3">
+									<div class="cntr-dtl-pst">
+										<small class="red-clr"><strong>  @item.Status </strong></small><br />
+										<small class="trllct">@item.RequestDate</small>
+										<div class="cntr-dtl-pst green-clr">
+											<small>
+												@if (item.IsTicketRequired == 1)
+												{<i class="fas fa-ticket-alt"></i>
+												}
+												@if (item.IsHotelRequired == 1)
+												{
+													<i class="fas fa-utensils"></i>
+												}
+
+
+
+											</small>
+										</div>
+									</div>
+								</div>
+							</div>
+
+						</li>
+					}
+				</ul>
+			</div>
+		</div>*@
+	</div>
+
+
+
+<script src="~/assets/design/js/sweetalert2.js?v=@clsApplicationSetting.GetWebConfigValue("Version")"></script>
+<script>
+	$('.viewRequest').on('click', function (e) {
+		
+           ShowLoadingDialog();
+            e.preventDefault();
+            e.stopPropagation();
+            $(this).closest("li").addClass("selected").siblings().removeClass("selected");
+             var TRI = $(this).closest("li").find("input:hidden[name=TRI]").val();
+              ViewTravelRequest(TRI);
+            });
+        function ViewTravelRequest(TravelRequestID) {
+          var ID = Number(TravelRequestID);
+			$.ajax({
+                url: "/Travel/_ViewTravelRequest_ForDesk",
+				type: "Get",
+				data: { src: EncryptQueryStringJSON(@ViewBag.MenuID+"*" + "/Travel/_ViewTravelRequest_ForDesk" + "*" + ID) },
+                success: function (data)
+                {
+					$("#targetDiv").empty();
+                    $("#targetDiv").html(data);
+                    CloseLoadingDialog();
+
+				},
+				error: function (er) {
+                    FailToaster(er);
+                    CloseLoadingDialog();
+				}
+			});
+        }
+	var anchors = $("#tabs li a").click(function() {
+             debugger;
+             $(this).addClass("active")
+	  anchors.not(this).removeClass("active")
+		       var text=  $(this).text();
+	          if (text=="Open Requests")
+	         {
+	        TravelDeskboardlist(10);
+	          }
+	else if(text=="Billing"){
+	TravelDeskboardlist(11);
+	}
+	else if(text=="Legacy Data"){
+	TravelDeskboardlist(12);
+	}
+            
+            })
+
+</script>

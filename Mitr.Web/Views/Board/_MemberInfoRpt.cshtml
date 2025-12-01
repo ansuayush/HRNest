@@ -1,0 +1,87 @@
+﻿@using System.Data
+@model Mitr.Models.SingleMemberDetails
+
+
+<table class="table prfole-info-list table-striped mt-0">
+    <tbody>
+
+
+
+        <tr>
+            <td><strong><i class="fas fa-id-card-alt"></i>Membership No.</strong></td>
+
+            <td>@Model.memship_no</td>
+        </tr>
+        <tr>
+            <td><strong><i class="fas fa-calendar-alt"></i>Member Name	 </strong></td>
+
+            <td>@Model.member_name</td>
+        </tr>
+
+        <tr>
+            <td><strong><i class="fas fa-users"></i>Title</strong></td>
+
+            <td>Member</td>
+        </tr>
+        <tr>
+            <td><strong><i class="fas fa-user-tie"></i>Father's Name  </strong></td>
+
+            <td>@Model.father_name</td>
+        </tr>
+        <tr>
+            <td><strong><i class="fas fa-user-tie"></i>Residential Address</strong> </td>
+            <td>@Model.address</td>
+        </tr>
+        <tr>
+            <td><strong><i class="fas fa-user"></i>E-mail</strong> </td>
+
+            <td>@Model.email</td>
+        </tr>
+
+        <tr>
+            <td><strong><i class="fas fa-envelope"></i>Mobile No. </strong>  </td>
+
+            <td>@Model.mobile</td>
+        </tr>
+        <tr>
+            <td><strong><i class="fas fa-envelope"></i>PAN </strong></td>
+
+            <td>@Model.panno</td>
+        </tr>
+
+        <tr>
+            <td><strong><i class="fas fa-list-alt"></i>Ward/circle where assessed to tax </strong>  </td>
+
+            <td>@Model.ward_accessed  </td>
+        </tr>
+
+        <tr>
+            <td><strong><i class="fas fa-calendar-alt"></i>Source of Income/Nature of Business	</strong>  </td>
+
+            <td>@Model.source_income </td>
+        </tr>
+        <tr>
+            <td><strong><i class="fas fa-calendar-alt"></i>Name of current employer and designation</strong>  </td>
+
+            <td> @Model.currentdet_emp </td>
+        </tr>
+
+        <tr>
+            <td><strong><i class="fas fa-calendar-alt"></i>Date of Joining	</strong>  </td>
+
+            <td>@Model.doj </td>
+        </tr>
+        <tr>
+            <td><strong><i class="fas fa-calendar-alt"></i>Date of Renewal	</strong>  </td>
+
+            <td> @Model.renewal_date </td>
+        </tr>
+        <tr>
+            <td><strong><i class="fas fa-calendar-alt"></i>Date of Leaving	</strong>  </td>
+
+            <td>@Model.leaving_date</td>
+        </tr>
+
+
+    </tbody>
+</table>

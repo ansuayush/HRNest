@@ -1,0 +1,198 @@
+﻿@model Mitr.Models.SalaryStructure.BenefitStructureAdd
+@using (Ajax.BeginForm("_BenefitStructureAdd", "SalaryStructure",
+        new { src = clsApplicationSetting.EncryptQueryString(ViewBag.MenuID + "*" + "/SalaryStructure/_BenefitStructureAdd*" + ViewBag.ID) },
+         new AjaxOptions { HttpMethod = "POST", OnSuccess = "OnSuccess", OnBegin = "ShowLoadingDialog()" },
+            new { @id = "_BenefitStructureAddForm" })
+    )
+{
+    @Html.HiddenFor(x => Model.id)
+    <div class="row">
+        <div class="col-lg-4 col-md-6 col-sm-6 form-group">
+            <label>Structure Name<sup>*</sup></label>
+            @Html.TextBoxFor(model => model.Structure, new { @class = "form-control", @placeholder = "Enter" })
+            @Html.ValidationMessageFor(model => model.Structure, "", new { @class = "text-danger" })
+        </div>
+        <div class="col-lg-4 col-md-6 col-sm-6 form-group">
+            <label>Category<sup>*</sup></label>
+            @Html.EnumDropDownListFor(model => model.Category, "Select", htmlAttributes: new { @class = "form-control applyselect" })
+            @Html.ValidationMessageFor(model => model.Category, "", new { @class = "text-danger" })
+        </div>
+        <div class="col-sm-12 form-group">
+            <div class="table-responsive">
+                <table class="table mt-0">
+                    <thead>
+                        <tr>
+                            <th class="w-33">S.No </th>
+                            <th width="200">Benefit Name </th>
+                            <th class="w-80">Status</th>
+                            <th class="tw-100">Formula / Amount</th>
+                            <th class="w-150">Select Formula / Enter Amount </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @for (int i = 0; i < Model.LstDet.Count; i++)
+                        {
+                            <tr>
+                                <td>
+                                    @(i+1)
+                                    @Html.HiddenFor(x => Model.LstDet[i].id)
+                                    @Html.HiddenFor(x => Model.LstDet[i].Benefitid)
+                                    @Html.HiddenFor(x => Model.LstDet[i].Benefit)
+                                    @Html.HiddenFor(x => Model.LstDet[i].isactive, new { @class="IsActive" })
+                                </td>
+                                <td>@Model.LstDet[i].Benefit</td>
+                                <td>
+                                    <div class="toggle-btn">
+                                        <input type="checkbox" class="toggle chkmain" id="Opted_@i"  @(Model.LstDet[i].isactive == 1 ? "checked" : "")>
+                                        <label for="Opted_@i"> <span class="off">Inactive</span> <span class="on">Active</span> </label>
+                                    </div>
+                                </td>
+                                <td>
+                                    @Html.EnumDropDownListFor(model => model.LstDet[i].CalculationType, "Select", htmlAttributes: new { @class = "form-control applyselect fa" })
+                                   
+                                    @Html.ValidationMessageFor(model => Model.LstDet[i].CalculationType, "", new { @class = "text-danger" })
+                                </td>
+                                <td>
+                                    <div class="fomula" style="display: @(Model.LstDet[i].CalculationType.ToString()=="Formula"?"block":"none");">
+                                        @Html.DropDownListFor(model => model.LstDet[i].Formulaid, new SelectList(ViewBag.List, "ID", "Name", Model.LstDet[i].Formulaid), "Select", new { @class = "form-control applyselect ddlFormulaid" })
+                                        @Html.ValidationMessageFor(model => model.LstDet[i].Formulaid, "", new { @class = "text-danger" })
+                                    </div>
+                                    <div class="amount" style="display:  @(Model.LstDet[i].CalculationType.ToString()=="Amount"?"block":"none");">
+                                        @Html.TextBoxFor(model => model.LstDet[i].Amount, new { @class = "form-control txtAmount", @placeholder = "Enter", @Type = "Number" })
+                                    </div>
+                                </td>
+                            </tr>
+
+                        }
+
+
+
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="text-center">
+    @if (Model.id > 0)
+        {
+            <button type="submit" class="btn mtr-g-grn btn-l ripplelink pull-right" name="Command" value="Add"><i class="fa fa-paper-plane" aria-hidden="true"></i> Update</button>
+        }
+        else
+        {
+            <button type="submit" class="btn mtr-o-grn btn-l ripplelink pull-right" name="Command" value="Add"><i class="fa fa-paper-plane" aria-hidden="true"></i> Save</button>
+            @*<button type="submit" class="btn mtr-o-grn btn-l ripplelink pull-right" name="Command" value="AddNew"><i class="fa fa-paper-plane" aria-hidden="true"></i> Save & New</button>*@
+        }
+        <button type="button" class="btn cnl-btn ripplelink" data-dismiss="modal"><i class="fas fa-times"></i>Close</button>
+
+        
+    </div>
+
+}
+<script type="text/javascript">
+    $('.fa').on('change', function () {      
+        $(this).closest("tr").find(".fomula").css('display', 'none');
+        if ($(this).find("option:selected").text() === 'Formula') {
+            $(this).closest("tr").find(".fomula").css('display', 'block');
+            var $cells = $(this).closest("tr").find(".ddlFormulaid");
+                        $cells.each(function () {
+                            $(this).rules('add', {
+                                required: true,
+                                messages: {
+                                    required: "Hey! You missed this field."
+                                }
+                            });
+                        });
+            var $cells1 = $(this).closest("tr").find(".txtAmount");
+                          $cells1.each(function () {
+                        $(this).rules('add', {
+                            required: false,
+                            messages: {
+                                required: ""
+                            }
+                        });
+                    });
+            }        
+        $(this).closest("tr").find(".amount").css('display', 'none');
+        if ($(this).find("option:selected").text() === 'Amount') {
+            $(this).closest("tr").find(".amount").css('display', 'block');
+
+            var $cells = $(this).closest("tr").find(".ddlFormulaid");
+                    $cells.each(function () {
+                        $(this).rules('add', {
+                            required: false,
+                            messages: {
+                                required: ""
+                            }
+                        });
+                    });
+
+            var $cells1 = $(this).closest("tr").find(".txtAmount");
+                    $cells1.each(function () {
+                        $(this).rules('add', {
+                            required: true,
+                            messages: {
+                                required: "Hey! You missed this field."
+                            }
+                        });
+                    });
+            }
+    });
+    $('.chkmain').change(function () {
+        MakeManditory(this)
+    });
+    function MakeManditory(obj) {
+       
+        var $cells = $(obj).closest("tr").find(".fa")
+        if ($(obj).is(':checked'))
+        {
+            $(obj).closest("tr").find(".IsActive").val('1');
+                $cells.each(function () {
+                $(this).rules('add', {
+                    required: true,
+                    messages: {
+                        required: "Hey! You missed this field."
+                    }
+                });
+            });
+        }
+        else
+        {
+            $(obj).closest("tr").find(".IsActive").val('0');
+            $cells.each(function () {
+                $(this).rules('add', {
+                    required: false,
+                    messages: {
+                        required: ""
+                    }
+                });
+            });
+        }
+        //var $cells = $(obj).closest("tr").find("td select");
+        //if ($(obj).is(':checked')) {            
+        //    $(obj).closest("tr").find(".IsActive").val('1');
+        //    $cells.each(function () {
+        //        $(this).rules('add', {
+        //            required: true,
+        //            messages: {
+        //                required: "Hey! You missed this field."
+        //            }
+        //        });
+        //    });
+        //} else {            
+        //    $(obj).closest("tr").find(".IsActive").val('0');
+        //    $cells.each(function () {
+        //        $(this).rules('add', {
+        //            required: false,
+        //            messages: {
+        //                required: ""
+        //            }
+        //        });
+        //        if ($(this).attr('type') == 'text') {
+        //            $(this).val('');
+        //        }
+
+        //    });
+        //}
+    }
+</script>

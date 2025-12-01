@@ -1,0 +1,392 @@
+﻿@model  Project.DonorsReport
+@{
+    string MenuID = ViewBag.MenuID.ToString();
+}
+@Html.Partial("_ProjectHeader")
+
+
+<div class="mb-100">
+
+    @using (Ajax.BeginForm("DonorsReport", "Projects",
+            new { src = ViewBag.src },
+            new AjaxOptions { HttpMethod = "POST", OnSuccess = "OnSuccess", OnBegin = "ShowLoadingDialog()", OnFailure = "OnPostFailure()" },
+        new { @id = "DonorsReportFrom", @autocomplete = "Off", @enctype = "multipart/form-data" })
+        )
+    {
+        @Html.HiddenFor(x => x.ID)
+        <div class="inner-main mb-3 pb-0">
+
+            <div class="table-responsive">
+                <table id="TableReferencesList" class="table table-stripted lg-table mb-0 mt-0">
+                    <thead>
+                        <tr>
+                            <th rowspan="2">S.No</th>
+                            <th rowspan="2">Report Name (Narrative/ Financial) </th>
+                            <th class="tw-100 text-center" colspan="2">Period of Reporting </th>
+                            <th class="tw-100" rowspan="2">Due date for submission </th>
+                            <th class="tw-100" rowspan="2">Allocated to </th>
+                            <th class="tw-100" rowspan="2">Download</th>
+                            <th class="w-150" rowspan="2">
+                                Template <i class="fas fa-info-circle td-info" data-toggle="tooltip" data-placement="top" data-original-title="Report will be validated in attachment section"></i>
+                            </th>
+                            <th class="w-50" rowspan="2"></th>
+                        </tr>
+                        <tr>
+                            <th class="tw-100">From</th>
+                            <th class="tw-100">To</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model.reportList != null)
+                        {
+                            int Rcount = 0;
+                            for (int i = 0; i < Model.reportList.Count; i++)
+                            {
+                                Rcount++;
+                                <tr>
+                                    <td>
+                                        @Html.HiddenFor(model => Model.reportList[i].ID, new { @class = "hdnID" })
+                                        @Html.HiddenFor(model => Model.reportList[i].AttachmentID)
+                                        <label id="span_@Rcount" name="span_@Rcount">@Rcount </label>
+                                    </td>
+                                    <td>
+                                        @Html.TextBoxFor(model => Model.reportList[i].ReportName, new { @class = "form-control", @onkeydown = "GetAutofill(this);" })
+                                        @Html.ValidationMessageFor(model => Model.reportList[i].ReportName, "", new { @class = "text-danger" })
+                                    </td>
+                                    <td>
+                                        @Html.TextBoxFor(model => Model.reportList[i].FromDate, new { @class = "form-control FromDate", @type = "date", @onblur = "Validatedate(this)" })
+                                        @Html.ValidationMessageFor(model => Model.reportList[i].FromDate, "", new { @class = "text-danger" })
+                                    </td>
+                                    <td>
+                                        @Html.TextBoxFor(model => Model.reportList[i].ToDate, new { @class = "form-control ToDate", @type = "date", @onblur = "Validatedate(this)" })
+                                        @Html.ValidationMessageFor(model => Model.reportList[i].ToDate, "", new { @class = "text-danger" })
+                                    </td>
+                                    <td>
+                                        @Html.TextBoxFor(model => Model.reportList[i].SubmissionDate, new { @class = "form-control", @type = "date" })
+                                        @Html.ValidationMessageFor(model => Model.reportList[i].SubmissionDate, "", new { @class = "text-danger" })
+                                    </td>
+                                    <td>
+                                        @Html.DropDownListFor(n => n.reportList[i].AllocatedTo, new SelectList(Model.EMPList, "ID", "Name", Model.reportList[i].AllocatedTo), "Select",
+                                new { @class = "form-control  applyselect" })
+                                        @Html.ValidationMessageFor(model => model.reportList[i].AllocatedTo, "", new { @class = "text-danger" })
+                                    </td>
+                                    <td>
+                                        @if (Model.reportList[i].AttachmentID > 0)
+                                        {
+                                            <a target="_blank" href="@Model.reportList[i].AttachmentPath" class="color-green">Download</a>
+
+                                            <a class="remove float-right" data-toggle="tooltip" data-original-title="Delete" onclick="DeleteAttachment(this)">
+                                                <i class="fa fa-trash red-clr" aria-hidden="true"></i>
+                                            </a>
+                                        }
+                                    </td>
+                                    <td>
+                                        @Html.TextBoxFor(model => Model.reportList[i].upload, new { @class = "form-control", @type = "file" })
+                                        @Html.ValidationMessageFor(model => Model.reportList[i].upload, "", new { @class = "text-danger" })
+                                    </td>
+                                    <td class="text-center">
+                                        @if (Rcount > 1)
+                                        {
+                                            <a onclick="DeleteRow(this)" data-toggle="tooltip" data-original-title="Remove"  class="remove"><i class="fas fa-window-close red-clr" aria-hidden="true"></i></a>
+                                        }
+                                        else
+                                        {
+                                            <a class="disabled"><i class="fas fa-window-close" aria-hidden="true"></i></a>
+                                        }
+                                    </td>
+                                </tr>
+                            }
+                        }
+                    </tbody>
+                </table>
+                <div class="text-right mt-2">
+                    <a class="btn mtr-g-grn m-0" onclick="AddNewRow(this)"><strong><i class="fas fa-plus"></i>Add</strong></a>
+                </div>
+            </div>
+
+        </div>
+
+
+		<div class="ftr-btn">
+
+			@if (clsApplicationSetting.GetSessionValue("RolesName") == "C3 Admin")
+			{
+				<button type="submit" class="btn mtr-o-grn " name="Command" value="Add"><i class="fas fa-paper-plane"></i>Submit</button>
+			}
+			else
+			{
+				<button type="submit" disabled class="btn mtr-o-grn " name="Command" value="Add"><i class="fas fa-paper-plane"></i>Submit</button>
+			}
+
+			@if (Model.Inactive == 0 && Model.ID > 0)
+			{
+				<button type="submit" class="btn mtr-o-grn " name="Command" value="Live"><i class="fas fa-paper-plane"></i>Make It Live</button>
+			}
+			@*<a class="btn blk-gdn-btn" data-toggle="tooltip" data-original-title="Go Next" href="@Url.Action("Attachment",new { src = clsApplicationSetting.EncryptFriendly(ViewBag.MenuID+"*"+"/Projects/Attachment*"+Model.ID) })">
+			Next <i class="fas fa-angle-double-right m-0"></i>
+		</a>*@
+			<a class="btn cnl-btn" href="@Url.Action("SpecialConditions",new { src = clsApplicationSetting.EncryptFriendly(ViewBag.MenuID+"*"+"/Projects/SpecialConditions*"+Model.ID) })">
+				<i class="fas fa-angle-double-left m-0"></i>  Back
+			</a>
+			<a class="btn cnl-btn" href="@Url.Action("ProjectRegistrationList",new { src = clsApplicationSetting.EncryptFriendly(ViewBag.MenuID+"*"+"/Projects/ProjectRegistrationList") })">
+				<i class="fas fa-times"></i> Close
+			</a>
+		</div>
+
+
+    }
+
+</div>
+
+
+@section scripts    {
+    @System.Web.Optimization.Scripts.Render("~/bundle/unobtrusivejs")
+    @Html.IncludeVersionedJs(Url.Content("~/assets/design/scripts/AddInit.js"))
+    @Html.IncludeVersionedJs(Url.Content("~/assets/design/js/jquery.autocomplete.min.js"))
+    <script>
+        function AddNewRow(obj) {
+            var Table = $(obj).parent("div").parent('div').find('table');
+            $('.applyselect').select2("destroy");
+            var TableID = $(Table).attr('ID');
+            var LastTRCount = parseInt($('#' + TableID + '').find("tbody tr").length) - 1;
+            var $tableBody = $('#' + TableID + '').find("tbody"),
+                $trLast = $tableBody.find("tr:last"),
+                $trNew = $trLast.clone();
+            $trNew.find("td:last").html('<a onclick="DeleteRow(this)" class="remove"><i class="fas fa-window-close red-clr" aria-hidden="true"></i></a>')
+            $trNew.find("label").each(function () {
+                if ($(this).attr("id")) {
+                    $(this).attr({
+                        'id': function (_, id) { var arr = id.split('_'); return id.replace(arr[1], LastTRCount + 1); },
+                    });
+                    $(this).html(parseInt($('#' + TableID + '').find("tbody tr").length) + 1)
+                }
+                if ($(this).attr("for")) {
+                    $(this).attr({
+                        'for': function (_, id) { var arr = id.split('_'); return id.replace(arr[1], LastTRCount + 1); },
+                    });
+                }
+            });
+            $trNew.find("select").each(function (i) {
+                $(this).attr({
+                    'id': function (_, name) { return name.replace('_' + LastTRCount + '_', '_' + (parseInt(LastTRCount) + 1) + '_'); },
+                    'name': function (_, name) { return name.replace('[' + LastTRCount + ']', '[' + (parseInt(LastTRCount) + 1) + ']'); },
+                });
+                $(this).val('');
+            });
+
+            $trNew.find("input").each(function (i) {
+                $(this).attr({
+                    'id': function (_, name) { return name.replace('_' + LastTRCount + '_', '_' + (parseInt(LastTRCount) + 1) + '_'); },
+                    'name': function (_, name) { return name.replace('[' + LastTRCount + ']', '[' + (parseInt(LastTRCount) + 1) + ']'); },
+                });
+                $(this).val('')
+            });
+
+            $trNew.find("span").each(function (i) {
+                if ($(this).attr("data-valmsg-for")) {
+                    $(this).attr({
+                        'data-valmsg-for': function (_, name) { return name.replace('[' + LastTRCount + ']', '[' + (parseInt(LastTRCount) + 1) + ']'); }
+                    });
+                }
+                if ($(this).attr("for")) {
+                    $(this).attr({
+                        'for': function (_, name) { return name.replace('_' + LastTRCount + '_', '_' + (parseInt(LastTRCount) + 1) + '_'); }
+                    });
+                }
+            });
+
+            $trNew.find(".color-green").text('');
+
+            $trLast.after($trNew);
+            var form = $("#DonorsReportFrom").closest("form");
+            form.removeData('validator');
+            form.removeData('unobtrusiveValidation');
+            $.validator.unobtrusive.parse(form);
+            $(".applyselect").select2();
+        }
+
+
+        function DeleteRow(obj) {
+            var Response = 0;
+            var ID = $(obj).closest('tr').find('.hdnID').val();
+            var Table = $(obj).closest('table');
+            var TableID = $(Table).attr('ID');
+            var Doctype = "ProjectDonorsReport";
+
+
+            ConfirmMsgBox("Are you sure want to delete", '', function () {
+                if (ID) {
+                    var data = DelRecord_Common(ID, Doctype);
+                    if (data.Status) {
+                        Response = 1;
+                    }
+                    else {
+                        FailToaster(data.SuccessMessage);
+                    }
+                }
+                if (Response == 1 || !ID) {
+                    var TotalRowCount = $('#' + TableID + '').find("tbody tr").length;
+
+                    $(obj).closest('tr').remove();
+                    $('#' + TableID + ' TBODY TR').each(function (i) {
+                        $(this).closest("tr").find("label").each(function () {
+                            $(this).attr({
+                                'id': function (_, id) { var arr = id.split('_'); return id.replace(arr[1], i); },
+                            });
+                            $(this).html(i + 1)
+                        });
+
+
+                        $(this).closest("tr").find("input").each(function () {
+                            $(this).attr({
+                                'id': function (_, id) { return id.replace('_' + (parseInt(i) + 1) + '_', '_' + i + '_'); },
+                                'name': function (_, name) { return name.replace('[' + (parseInt(i) + 1) + ']', '[' + i + ']'); },
+                            });
+                        });
+
+                        $(this).closest("tr").find("select").each(function () {
+                            $(this).attr({
+                                'id': function (_, id) { return id.replace('_' + (parseInt(i) + 1) + '_', '_' + i + '_'); },
+                                'name': function (_, name) { return name.replace('[' + (parseInt(i) + 1) + ']', '[' + i + ']'); },
+                            });
+                        });
+
+                        $(this).closest("tr").find("span").each(function () {
+                            if ($(this).attr("data-valmsg-for")) {
+                                $(this).attr({
+                                    'data-valmsg-for': function (_, name) { return name.replace('[' + (parseInt(i) + 1) + ']', '[' + i + ']'); },
+                                });
+                            }
+                            if ($(this).attr("for")) {
+                                $(this).attr({
+                                    'for': function (_, id) { return id.replace('_' + (parseInt(i) + 1) + '_', '_' + i + '_'); },
+                                });
+                            }
+                        });
+                    });
+                    var form = $("#DonorsReportFrom").closest("form");
+                    form.removeData('validator');
+                    form.removeData('unobtrusiveValidation');
+                    $.validator.unobtrusive.parse(form);
+
+
+                }
+            })
+        }
+
+
+        function OnSuccess(obj) {
+            if (obj.Status) {
+                SuccessToaster(obj.SuccessMessage);
+                window.location.href = obj.RedirectURL;
+            }
+            else {
+                CloseLoadingDialog();
+                FailToaster(obj.SuccessMessage);
+
+            }
+        }
+
+
+
+        function Validatedate(obj) {
+            var a = $(obj).closest("tr").find(".FromDate").val();
+            var b = $(obj).closest("tr").find(".ToDate").val();
+            if (a != "" && b != "") {
+                var date1 = new Date(a);
+                var date2 = new Date(b);
+                if (date2 < date1) {
+                    $(obj).closest("tr").find(".ToDate").val('');
+                    SuccessToaster("To date can't be less than from date");
+                }
+            }
+        }
+
+        function MakeItLive() {
+            ShowLoadingDialog();
+            var ID = $("#ID").val();
+            $.ajax({
+                url: "/Projects/SetProjectMakeItLive",
+                type: "Post",
+                data: {
+                    src: EncryptQueryStringJSON(MenuID + "*" + "/Projects/SetProjectMakeItLive" + "*" + ID)
+                },
+                success: function (obj) {
+                    if (obj.Status) {
+                        SuccessToaster(obj.SuccessMessage);
+                        window.location.reload();
+                    }
+                    else {
+                        CloseLoadingDialog();
+                        FailToaster(obj.SuccessMessage);
+
+                    }
+                }
+            });
+
+        }
+
+
+        // Initialize ajax autocomplete:
+        var ProjectDonorReport = new Array();
+
+        $(document).ready(function () {
+            GetLatestTask();
+        });
+        function GetLatestTask() {
+            ProjectDonorReport = [];
+            var data = GetDropDownData(0, "ProjectDonorsReport")
+            $(data).each(function (i, news) {
+                ProjectDonorReport.push({
+                    value: news.Name,
+                    data: news.Name
+                });
+            });
+        }
+
+        function GetAutofill(obj) {
+            var ID = $(obj).attr('id');
+            $("#" + ID).autocomplete({
+                lookup: ProjectDonorReport,
+
+                lookupFilter: function (suggestion, originalQuery, queryLowerCase) {
+                    // use for when check 1st Word is searched world
+                    //var re = new RegExp('\\b' + $.Autocomplete.utils.escapeRegExChars(queryLowerCase), 'gi');
+                    // Search Whole alpabate in string
+                    var re = new RegExp($.Autocomplete.utils.escapeRegExChars(queryLowerCase), 'gi');
+                    return re.test(suggestion.value);
+                },
+                onSelect: function (suggestion) {
+                    $('#selction-ajax').html('You selected: ' + suggestion.value + ', ' + suggestion.data);
+                },
+                onHint: function (hint) {
+                    $('#autocomplete-ajax-x').val(hint);
+                },
+                onInvalidateSelection: function () {
+                    $('#selction-ajax').html('You selected: none');
+                }
+            });
+        }
+
+
+
+        function DeleteAttachment(obj) {
+            var ID = $(obj).closest('tr').find('.hdnID').val();
+            if (ID) {
+                ConfirmMsgBox("Are you sure want to delete", '', function () {
+                    ShowLoadingDialog();
+                    var data = DelRecord_Common(ID, 'ProjectDonorsReport_Attachment');
+                    if (data.Status) {
+                        window.location.reload();
+                    }
+                    else {
+                        FailToaster(data.SuccessMessage);
+                        CloseLoadingDialog();
+
+                    }
+                })
+            }
+        }
+        
+    </script>
+}

@@ -1,0 +1,79 @@
+﻿@{
+    Layout = null;
+
+}
+<!DOCTYPE html>
+
+
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="@Url.Content("~/assets/design/images/favicon.png")" type="image/png" sizes="50x50">
+    @Html.IncludeVersionedCss(Url.Content("~/assets/design/css/bootstrap.min.css"))
+    @Html.IncludeVersionedCss(Url.Content("~/assets/design/css/animate.min.css"))
+    @Html.IncludeVersionedCss(Url.Content("~/assets/design/css/login.min.css"))
+    @Html.IncludeVersionedCss(Url.Content("~/assets/design/css/responsive.min.css"))
+
+
+    <style type="text/css">
+        .unknowpg-dgn {
+            background: #fefbff;
+            padding: 50px;
+            display: table;
+            margin: 90px auto;
+            text-align: center;
+            font-size: 15px;
+            font-weight: bold;
+            color: #a9a9a9;
+            width: 500px;
+            border-radius: 30px;
+            box-shadow: -9px 17px 24px -2px rgba(197,177,177,0.75);
+            -webkit-box-shadow: -9px 17px 24px -2px rgba(197,177,177,0.75);
+            -moz-box-shadow: -9px 17px 24px -2px rgba(197,177,177,0.75);
+        }
+
+            .unknowpg-dgn img {
+                width: 200px;
+                margin-bottom: 20px;
+            }
+    </style>
+
+</head>
+<body class="login-bg">
+    <div class="l-header">
+        <div class="l-header-inner u-cf">
+            <div class="l-header-item u-pull-left">
+                <span class="l-header-item-logo">
+                </span>
+            </div>
+            <div class="l-contents">
+                <div class="container-fluid">
+                    <div class="unknowpg-dgn">
+                        <img src="https://cdn.pixabay.com/photo/2017/03/09/12/31/error-2129569_960_720.jpg">
+                        @if (TempData["LoginErrorMsg"] != null)
+                        {
+                            if (TempData["LoginErrorMsg"].ToString() != "")
+                            {
+                                <p>
+                                    @TempData["LoginErrorMsg"]
+                                </p>
+                            }
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    @Html.IncludeVersionedJs(Url.Content("~/assets/design/js/jquery-3.4.1.min.js"))
+    @Html.IncludeVersionedJs(Url.Content("~/assets/design/js/popper.min.js"))
+    @Html.IncludeVersionedJs(Url.Content("~/assets/design/js/bootstrap.min.js"))
+    @Html.IncludeVersionedJs(Url.Content("/assets/design/js/wow.min.js"))
+    <script>
+        wow = new WOW();
+        wow.init();
+    </script>
+
+</body>
+</html>

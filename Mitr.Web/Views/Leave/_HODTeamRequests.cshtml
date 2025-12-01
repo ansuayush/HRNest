@@ -1,0 +1,223 @@
+﻿@model IList<Mitr.Models.ApplyLeaveList>
+<!-- tab--->
+<div class="tab-main mb-3">
+    <ul id="tabs" class="nav nav-tabs " role="tablist">
+        <li class="nav-item"> <a id="tab-d" href="#tm" class="nav-link active ripplelink" data-toggle="tab" role="tab"><i class="fas fa-users"></i>Team Requests</a> </li>
+        
+        <li class="nav-item"> <a id="tab-f" href="#spleaves" class="nav-link ripplelink" data-toggle="tab" role="tab"><i class="fas fa-check"></i>Approved</a> </li>
+        <li class="nav-item"> <a id="tab-h" href="#sprejected" class="nav-link ripplelink" data-toggle="tab" role="tab"><i class="fas fa-ban"></i>Rejected</a> </li>
+		<li class="tab-right"><a onclick="ShowLoadingDialog();window.location='@Url.Action("LeaveRequestApproval", new { src = clsApplicationSetting.EncryptQueryString(ViewBag.MenuID.ToString() + "*/Leave/LeaveRequestApproval") })';" class="mtr-o-grn scroll-btm btn rgt-pst">Show All</a></li>
+    </ul>
+    @if (Model != null)
+    {
+        <div id="content" class="tab-content shadow-box p-0" role="tablist">
+            <div id="tm" class="card tab-pane fade show active" role="tabpanel" aria-labelledby="tab-d">
+                <div class="card-header" role="tab" id="heading-e">
+                    <h5 class="mb-0">
+                        <a data-toggle="collapse" href="#collapse-e" aria-expanded="true" aria-controls="collapse-f">Team Requests <i class="fas fa-users"></i></a>
+                    </h5>
+                </div>
+                <div id="collapse-e" class="collapse show" data-parent="#content" role="tabpanel" aria-labelledby="heading-e">
+                    <div class="card-body p-0">
+                        <ul class="list-unstyled rqt-list scroll height-316">
+
+                            @if (Model.Where(x => x.Approved == 0).ToList().Count > 0)
+                            {
+                                int count = 0;
+                                foreach (var item in Model.Where(x => x.Approved == 0).ToList())
+                                {
+                                    count++;
+                                    <li>
+                                        <div class="row">
+                                            <div class="col-sm-3">
+                                                <div class="left-dtl-r">
+                                                    @count) <strong>@item.EMPName</strong><br />
+                                                    <small>  @item.DocNo<span>|</span>@item.RequestDate</small>
+                                                </div>
+                                            </div>
+                                            <div class="col-sm-7">
+                                                <div class="cntr-dtl-r">
+                                                    <strong>@item.LeaveName</strong><br />
+                                                    @item.StartDate to @item.EndDate (@item.hoursDayWise)
+                                                </div>
+                                                @if (item.RFC > 0)
+                                                {
+                                                    <div class="rfcRequestdiv">
+                                                        <span>RFC</span>
+
+                                                    </div>
+                                                }
+                                            </div>
+                                            <div class="col-sm-2">
+                                                <div class="right-dtl-r">
+                                                    <input type="hidden" name="L" value="@item.LeaveLogID" />
+                                                    <input type="hidden" name="E" value="@item.EMPID" />
+                                                    <input type="hidden" name="D" value="@item.StartDate" />
+                                                    
+                                                    <a class="btn-p anchorpopup" data-toggle="tooltip" data-original-title="@item.Status"><i class="far fa-clock"></i></a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </li>
+                                }
+                            }
+                            else
+                            {
+                                <li>
+
+                                    <div class="no-dat-dv">
+                                        <img src="~/assets/images/not-found-image.png" alt="">
+
+                                        <p class="mtr-o-clr">No Record Found</p>
+
+
+                                    </div>
+
+                                </li>
+                            }
+
+                        </ul>
+                        <!-- -->
+                    </div>
+                </div>
+            </div>
+            
+            <div id="spleaves" class="card tab-pane fade" role="tabpanel" aria-labelledby="tab-hg">
+                <div class="card-header" role="tab" id="heading-g">
+                    <h5 class="mb-0"> <a class="collapsed" data-toggle="collapse" href="#collapse-g" aria-expanded="false" aria-controls="collapse-g">Approved <i class="fas fa-check"></i></a> </h5>
+                </div>
+                <div id="collapse-g" class="collapse" data-parent="#content" role="tabpanel" aria-labelledby="heading-g">
+
+                    <!-- -->
+                    <ul class="list-unstyled rqt-list scroll height-316">
+                        @if (Model.Where(x => x.Approved == 1 || x.Approved == 3 || x.Approved == 4).ToList().Count > 0)
+                        {
+                            int count = 0;
+                            foreach (var item in Model.Where(x => x.Approved == 1 || x.Approved == 3 || x.Approved == 4).ToList())
+                            {
+                                count++;
+                                <li>
+                                    <div class="row">
+                                        <div class="col-sm-3">
+                                            <div class="left-dtl-r">
+                                                @count) <strong>@item.EMPName</strong><br />
+                                                <small>  @item.DocNo<span>|</span>@item.RequestDate</small>
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-7">
+                                            <div class="cntr-dtl-r">
+                                                <strong>@item.LeaveName</strong><br />
+                                                @item.StartDate to @item.EndDate (@item.hoursDayWise)
+                                            </div>
+                                            @if (item.RFC > 0)
+                                            {
+                                                <div class="rfcRequestdiv">
+                                                    <span>RFC</span>
+
+                                                </div>
+                                            }
+                                        </div>
+                                        <div class="col-sm-2">
+                                            <div class="right-dtl-r">
+                                                <input type="hidden" name="L" value="@item.LeaveLogID" />
+                                                <input type="hidden" name="E" value="@item.EMPID" />
+                                                <input type="hidden" name="D" value="@item.StartDate" />
+                                                <a class="btn-a anchorpopup" data-toggle="tooltip" data-original-title="@item.Status">
+                                                    <i class="fa fa-check" aria-hidden="true"></i>
+                                                </a>
+                                               
+                                            </div>
+                                        </div>
+                                    </div>
+                                </li>
+                            }
+                        }
+                        else
+                        {
+                            <li>
+
+                                <div class="no-dat-dv">
+                                    <img src="~/assets/images/not-found-image.png" alt="">
+
+                                    <p class="mtr-o-clr">No Record Found</p>
+
+
+                                </div>
+
+                            </li>
+                        }
+                    </ul>
+                    <!-- -->
+                </div>
+            </div>
+            <div id="sprejected" class="card tab-pane fade" role="tabpanel" aria-labelledby="tab-f ">
+                <div class="card-header" role="tab" id="heading-f">
+                    <h5 class="mb-0"> <a class="collapsed" data-toggle="collapse" href="#collapse-f" aria-expanded="false" aria-controls="collapse-f"> Rejected <i class="fas fa-ban"></i> </a> </h5>
+                </div>
+                <div id="collapse-f" class="collapse" role="tabpanel" data-parent="#content" aria-labelledby="heading-f">
+                    <!-- -->
+                    <ul class="list-unstyled rqt-list scroll height-316">
+                        @if (Model.Where(x => x.Approved == 2 || x.Approved == 5).ToList().Count > 0)
+                        {
+                            int count = 0;
+                            foreach (var item in Model.Where(x => x.Approved == 2 || x.Approved == 5).ToList())
+                            {
+                                count++;
+                                <li>
+                                    <div class="row">
+                                        <div class="col-sm-3">
+                                            <div class="left-dtl-r">
+                                                @count) <strong>@item.EMPName</strong><br />
+                                                <small>  @item.DocNo<span>|</span>@item.RequestDate</small>
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-7">
+                                            <div class="cntr-dtl-r">
+                                                <strong>@item.LeaveName</strong><br />
+                                                @item.StartDate to @item.EndDate (@item.hoursDayWise)
+                                            </div>
+                                            @if (item.RFC > 0)
+                                            {
+                                                <div class="rfcRequestdiv">
+                                                    <span>RFC</span>
+
+                                                </div>
+                                            }
+                                        </div>
+                                        <div class="col-sm-2">
+                                            <div class="right-dtl-r">
+                                                <input type="hidden" name="L" value="@item.LeaveLogID" />
+                                                <input type="hidden" name="E" value="@item.EMPID" />
+                                                <input type="hidden" name="D" value="@item.StartDate" />
+                                                <a class="btn-p anchorpopup" data-toggle="tooltip" data-original-title="@item.Status">
+                                                    <i class="fa fa-ban" aria-hidden="true"></i>
+                                                </a>
+                                               
+                                            </div>
+                                        </div>
+                                    </div>
+                                </li>
+                            }
+                        }
+                        else
+                        {
+                            <li>
+
+                                <div class="no-dat-dv">
+                                    <img src="~/assets/images/not-found-image.png" alt="">
+
+                                    <p class="mtr-o-clr">No Record Found</p>
+
+
+                                </div>
+
+                            </li>
+                        }
+                    </ul>
+                    <!-- -->
+                </div>
+            </div>
+        </div>
+    }
+</div>
+<!--- close tab --->

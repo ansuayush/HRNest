@@ -1,0 +1,79 @@
+﻿@model IList<MPRReports.MPRReportExcel>
+@{        
+
+}
+<style>
+    :before, :after {
+        font-family: inherit;
+    }
+     
+</style>
+<style>
+    .num {
+        mso-number-format:"0";
+    }
+</style>
+
+ 
+<h1 class="heading-one ">MPR Report</h1>
+<div class="row">
+    <div class="col-md-12 col-sm-12 col-xs-12">
+        <div class="card p-0">
+            <div class="card-body p-0">
+                <div class="x_content table-currency mt-0">
+                    <div class="table-responsive">
+                        <table id="datatable-buttons" class="table table-striped table-bordered dt-responsive nowrap tbltick new_width" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
+                            <thead>
+                                <tr style="text-align:center">
+                                    <th>MPRName</th>
+                                    <th>ProjectName</th>
+                                    <th>StateName</th>
+                                    <th>MonthName</th>
+                                    <th>Executor1</th>
+                                    <th>Executor2</th>
+                                    <th>LastDateExecutor</th>
+                                    <th>SectionApproval</th>
+                                    <th>LastDateSectionApproval</th>
+                                    <th>Level1	</th>
+                                    <th>LastDateLevel1</th>
+                                    <th>Level2</th>
+                                    <th>LastDateLevel2</th>
+                                    <th>Status</th>
+                                    <th>MPRStatus	</th>
+                                    <th>TAT</th>
+                                </tr>
+                                                        
+                            </thead>
+                            <tbody>
+                                @foreach (var lstCategory in Model.ToList())
+                                {
+                                    <tr>
+                                        <td>@lstCategory.MPRName</td>
+                                        <td>@lstCategory.ProjectName</td>
+                                        <td>@lstCategory.StateName</td>
+                                        <td>@lstCategory.MonthName</td>
+                                        <td>@lstCategory.Executor1</td>
+                                        <td>@lstCategory.Executor2</td>
+                                        <td>@lstCategory.LastDateExecutor</td>
+                                        <td>@lstCategory.SectionApproval</td>
+                                        <td>@lstCategory.LastDateSectionApproval</td>
+                                        <td>@lstCategory.Level1	</td>
+                                        <td>@lstCategory.LastDateLevel1</td>
+                                        <td>@lstCategory.Level2</td>
+                                        <td>@lstCategory.LastDateLevel2</td>
+                                        <td>@lstCategory.Status</td>
+                                        <td>@lstCategory.MPRStatus	</td>
+                                        <td>@lstCategory.TAT</td>
+                                    </tr>
+                                }
+
+                                </tbody> 
+                        </table>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+</div>

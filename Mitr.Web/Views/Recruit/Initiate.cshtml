@@ -1,0 +1,222 @@
+﻿
+@model Mitr.Models.Recruit.Initiate
+@using System.Data
+@{
+	ViewBag.Title = "Initiate";
+}
+
+@using (Ajax.BeginForm("Initiate", "Recruit",
+	  new { src = ViewBag.src },
+	  new AjaxOptions { HttpMethod = "POST", OnSuccess = "InitiateSuccess",OnBegin= "ShowLoadingDialog();" ,OnFailure= "CloseLoadingDialog();" },
+  new { @id = "InitiateFrom", enctype = "multipart/form-data" })
+  )
+{
+
+	<div class="inner-main mb-5 pb-0">
+		<h1 class="heading-one ">Initiate Recruitment </h1>
+		<h2 class="header-two"><i class="fas fa-info-circle"></i>Project Information</h2>
+		<div class="row">
+			<div class="col-lg-3 col-md-4 col-sm-6  form-group">
+				<label>Project Name</label>
+				@Html.HiddenFor(x => Model.ProjectID)
+				@Html.HiddenFor(x => Model.ProjectDetailID)
+				@Html.TextBoxFor(x => Model.ProjectName, new { @class = "form-control", @readonly = "readonly" })
+			</div>
+			<div class="col-lg-3 col-md-4 col-sm-6  form-group">
+				<label>Project Manager</label>
+				@Html.HiddenFor(x => Model.ManagerID)
+				@Html.TextBoxFor(x => Model.Managername, new { @class = "form-control", @readonly = "readonly" })
+
+			</div>
+			<div class="col-lg-3 col-md-4 col-sm-6  form-group">
+				<label>Start Date</label>
+				@Html.TextBoxFor(x => Model.StartDate, new { @class = "form-control", @readonly = "readonly" })
+			</div>
+			<div class="col-lg-3 col-md-4 col-sm-6  form-group">
+				<label>End Date</label>
+				@Html.TextBoxFor(x => Model.EndDate, new { @class = "form-control", @readonly = "readonly" })
+			</div>
+		</div>
+		<h2 class="header-two"><i class="fas fa-users"></i>Hiring Details</h2>
+		<div class="row">
+            <div class="col-lg-3 col-md-4 col-sm-6  form-group">
+                <label>Job Title<sup style="color: red;">*</sup></label>
+                @*@Html.HiddenFor(x => Model.JobID)
+        @Html.TextBoxFor(x => Model.Title, new { @class = "form-control" })*@
+                @Html.DropDownListFor(model => model.JobID, new SelectList(@ViewBag.JobId, "JobID", "Title"), "Select", new { @class = "form-control applyselect" })
+                @Html.ValidationMessageFor(model => model.JobID, "", new { @class = "text-danger" })
+            </div>
+
+			<div class="col-lg-3 col-md-4 col-sm-6  form-group">
+				<label>%Time</label>
+				@Html.TextBoxFor(x => Model.Time_Per, new { @class = "form-control" })
+			</div>
+			<div class="col-lg-3 col-md-4 col-sm-6  form-group">
+				<label>Thematic Area</label>
+				@Html.HiddenFor(x => Model.ThemAreaID)
+				@Html.TextBoxFor(x => Model.ThematicArea, new { @class = "form-control", @readonly = "readonly" })
+			</div>
+            <div class="col-lg-3 col-md-4 col-sm-6  form-group">
+                <label>Location<sup style="color: red;">*</sup></label>
+                @*@Html.HiddenFor(x => Model.LocationID)
+        @Html.TextBoxFor(x => Model.LocatioNName, new { @class = "form-control" })*@
+                @Html.DropDownListFor(model => model.LocationID, new SelectList(@ViewBag.WorkLocation, "ID", "Name"), "Select", new { @class = "form-control applyselect" })
+                @Html.ValidationMessageFor(model => model.LocationID, "", new { @class = "text-danger" })
+            </div>
+			<div class="col-lg-3 col-md-4 col-sm-6  form-group">
+				<label>Job Sub Title<sup style="color: red;">*</sup></label>
+				@Html.TextBoxFor(x => Model.Job_SubTitle, new { @class = "form-control", @placeholder="Enter"})
+				@Html.ValidationMessageFor(model => model.Job_SubTitle, "", new { @class = "text-danger" })
+			</div>
+			<div class="col-lg-3 col-md-4 col-sm-6  form-group">
+				<label>Due Date<sup style="color: red;">*</sup></label>
+				@Html.TextBoxFor(x => Model.DueDate, new { @class = "form-control", @type = "date" })
+				@Html.ValidationMessageFor(model => model.DueDate, "", new { @class = "text-danger" })
+			</div>
+		</div>
+		<h2 class="header-two"><i class="fas fa-file-alt"></i>JD Details</h2>
+		<div class="row">
+			<div class="col-lg-6 col-md-6 col-sm-12  form-group">
+				<label>Job Description<sup style="color: red;">*</sup><label>
+				@Html.TextAreaFor(x => Model.JobDescription, new { @class = "form-control"})
+			</div>
+			<div class="col-lg-6 col-md-6 col-sm-12  form-group">
+				<label>Qualification<sup style="color: red;">*</sup></label>
+				@Html.TextAreaFor(x => Model.Qualification, new { @class = "form-control"})
+
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-lg-6 col-md-6 col-sm-6  form-group">
+				<label>Skills<sup style="color: red;">*</sup></label>
+				@Html.HiddenFor(model => model.Skills)
+				<select data-val='true' data-val-required="Skills Can't be Blank" id="@Html.IdFor(x => Model.SkillsID)" name="@Html.NameFor(x => Model.SkillsID)" multiple="multiple" class="form-control applyselect">
+					@if (ViewBag.Skills != null)
+					{
+						
+						foreach (var item in ViewBag.Skills)
+						{
+							if (string.IsNullOrEmpty(Model.Skills))
+							{
+								<option value="@item.ID"> @item.Name</option>
+							}
+							else
+							{
+								<option @(("#" + Model.Skills.Replace(",", "#,#") + "#").Contains(("#" + item.ID + "#").ToString()) ? "selected" : "") value="@item.ID"> @item.Name</option>
+							}
+						}
+					}
+				</select>
+				@Html.ValidationMessageFor(model => model.Skills, "", new { @class = "text-danger" })
+			</div>
+
+			<div class="col-lg-2 col-md-2 col-sm-6  form-group">
+				<label>Min. Experience<sup style="color: red;">*</sup></label>
+				<div class="input-group w-80">
+
+					@Html.TextBoxFor(x => Model.Experience, new { @class = "form-control" })
+					<div class="input-group-prepend">
+						<span class="input-group-text" id="basic-addon1">Yrs</span>
+					</div>
+				</div>
+			</div>
+
+		</div>
+
+		<div class="row">
+			<div class="col-lg-12 text-center mb-2">
+				<button type="submit" class="btn  mtr-o-grn mb-0 btn-l ripplelink" name="Command" value="Add"><i class="fas fa-cogs"></i> Proceed</button>
+			</div>
+
+		</div>
+	</div>
+
+
+}
+
+
+
+@section scripts    {
+
+	@System.Web.Optimization.Scripts.Render("~/bundle/unobtrusivejs")
+	@Html.IncludeVersionedJs(Url.Content("~/assets/design/Scripts/ckeditor.js"))
+	@Html.IncludeVersionedJs(Url.Content("~/assets/design/Scripts/AddInit.js"))
+
+<script>
+		$(document).ready(function () {
+			loadEditor();
+	
+
+
+		});
+	function loadEditor() {
+		ClassicEditor
+			.create(document.querySelector('#JobDescription'), {
+				// toolbar: [ 'heading', '|', 'bold', 'italic', 'link' ]
+			})
+			.then(editor => {
+				window.editor = editor;
+				YourEditor = editor;
+			})
+			.catch(err => {
+				console.error(err.stack);
+			});
+		ClassicEditor
+			.create(document.querySelector('#Qualification'), {
+				// toolbar: [ 'heading', '|', 'bold', 'italic', 'link' ]
+			})
+			.then(editor => {
+				window.editor = editor;
+				YourEditorql = editor;
+			})
+			.catch(err => {
+				console.error(err.stack);
+			});
+	}
+
+	
+
+
+		function InitiateSuccess(obj) {
+			console.log(obj)
+
+			if (obj.Status) {
+				SuccessToaster(obj.SuccessMessage);
+				window.location.href = obj.RedirectURL;
+			}
+			else {
+				CloseLoadingDialog();
+				FailToaster(obj.SuccessMessage);
+			}
+		}
+
+		$("#JobID").change(function () {
+			var JobId = $("#JobID").val();
+			//var ProjectdetId = $("#ProjectDetailID").val();
+			//ShowLoadingDialog();
+			//var url = "/Recruit/Initiate?src=" + EncryptQueryStringJSON(MenuID + "*" + "/Recruit/Initiate" + "*" + ProjectdetId + "*" + JobId);
+			//window.location.href = url;
+			//CloseLoadingDialog();
+			$.ajax({
+				url: "/CommonAjax/GetJobTypeFill",
+				type: "Get",
+				async: true,
+				data: { JobId: JobId },
+				success: function (data) {
+					YourEditor.setData(data[0].Description);
+					YourEditorql.setData(data[0].QualificationDet);
+					$("#Experience").val(data[0].Experience);
+					$("#Job_SubTitle").val(data[0].Title);
+					$('#SkillsID [value=' + parseInt(data[0].Skills) + ']').attr('selected', 'true').trigger("change");
+				
+					CloseLoadingDialog();
+				},
+				error: function (er) {
+					CloseLoadingDialog();
+				}
+			});
+		});
+
+
+</script>
+}

@@ -1,0 +1,509 @@
+﻿@using System.Data
+@model IList<Mitr.Models.InterviewSelection.Round>
+@{
+    string MenuID = ViewBag.MenuID.ToString();
+}
+<div class="inner-main mb-5 pb-0">
+    <h1 class="heading-one ">Selection Process</h1>
+
+    @{ Html.RenderAction("_EViewRequests", "Recruit", new { src = clsApplicationSetting.EncryptQueryString(MenuID + " */Recruit/_EViewRequests*" + ViewBag.REC_ReqID + "*N") }); }
+
+
+    <h2 class="header-two">
+        <i class="fas fa-info-circle"></i>
+        Choose slot
+    </h2>
+    <div class="mb-5 pb-0">
+        <div class="tab-main tab-main-scd mb-3">
+            <ul id="tabs" class="nav nav-tabs " role="tablist">
+                @{ int countA = 0;}
+                @foreach (var item in Model)
+                {
+                    countA++;
+                    <li class="nav-item">
+                        <a id="tab-B" href="#A_@countA" class="nav-link @(countA==1?"active":"") ripplelink" data-toggle="tab" role="tab">
+                            <strong>@item.RoundName</strong>
+                        </a>
+                    </li>
+                }
+            </ul>
+            <div id="content" class="tab-content shadow-box p-0" role="tablist">
+                @{ int countB = 0;}
+                @foreach (var item in Model)
+                {
+                    countB++;
+                    <div id="A_@countB" class="card tab-pane fade @(countB==1?"show active":"")" role="tabpanel" aria-labelledby="tab-B">
+                        <div class="card-header" role="tab" id="heading-B">
+                            <h5 class="mb-0">
+                                <a class="collapsed" data-toggle="collapse" href="#collapse-1" aria-expanded="false" aria-controls="collapse-B">@item.RoundName</a>
+                            </h5>
+                        </div>
+                        <div id="collapse-1" class="collapse" data-parent="#content" role="tabpanel" aria-labelledby="heading-B">
+                            <div class="card-body">
+                                <div class="row">
+                                    @if (!string.IsNullOrEmpty(item.RoundDesc))
+                                    {
+                                        <div class="col-sm-12 mt-2">
+                                            <strong>Description</strong>
+                                            <p>@item.RoundDesc</p>
+                                        </div>
+                                    }
+                                    <div class="col-sm-12">
+                                        <div class="table-responsive">
+                                            <table class="table">
+                                                <thead>
+                                                    <tr>
+                                                        <th class="w-33">Sno.</th>
+                                                        <th>Candidate Name </th>
+                                                        <th>Gender</th>
+                                                        <th>Date of Application</th>
+                                                        <th>Nationality</th>
+                                                        <th>Current Salary</th>
+                                                        <th>Expected Salary</th>
+                                                        <th>Total Experience</th>
+                                                        <th class="w-180">CV</th>
+                                                        <th class="w-100">Action</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    @if (item.ApplicationList != null)
+                                                    {
+                                                        int Count = 0;
+
+
+                                                        foreach (var item12 in item.ApplicationList)
+                                                        {
+                                                            Count++;
+                                                    <tr>
+                                                        <td>
+                                                            <input type="hidden" name="SETID" value="@item12.REC_InterviewSetID" />
+                                                            <input type="hidden" name="AppIID" value="@item12.REC_AppID" />
+                                                            <input type="hidden" name="I" value="@item12.REC_ReqID" />
+                                                            @Count
+                                                        </td>
+                                                        <td>
+                                                            @item12.Name
+                                                        </td>
+                                                        <td>
+                                                            @item12.Gender
+                                                        </td>
+                                                        <td>
+                                                            @item12.ApplyDate
+                                                        </td>
+                                                        <td>
+                                                            @item12.Nationality
+                                                        </td>
+                                                        <td>
+                                                            @item12.CurrentSalary
+                                                        </td>
+                                                        <td>
+                                                            @item12.ExpectedSalary
+                                                        </td>
+                                                        <td>
+                                                            @item12.TotalExperience
+                                                        </td>
+                                                        <td>
+                                                            <a data-toggle="tooltip" data-original-title="View" data-placement="left" onclick="ViewApplication(this)" class="blk-clr mr-2"><i class="fas fa-eye"></i>View</a>
+                                                            <a href="@item12.CVPath" target="_blank" class="green-clr mr-2"><i class="fas fa-download"></i>Download CV</a>
+                                                        </td>
+                                                        <td class="text-center">
+                                                            @if (item12.Rejected == 3)
+                                                            {
+                                                            <span class="green-clr">Confirmed</span>
+                                                            }
+                                                            else if (item12.Rejected == 1)
+                                                            {
+                                                                <span class="red-clr">Rejected</span>
+                                                                if (!string.IsNullOrEmpty(item12.Reason))
+                                                                {
+                                                                    <i class="fas fa-info-circle td-info" data-toggle="tooltip" data-placement="right" data-original-title="@item12.Reason"></i>
+                                                                }
+                                                            } 
+                                                            else
+                                                            {
+                                                                <!-- If neither of the above conditions is met, show action buttons -->
+                                                                <div class="icon-thread">
+                                                                    <a class="BtnMoveTalent"><i class="fas fa-user-slash"></i></a>
+                                                                    <a class="BtnMoveRound"><i class="fas fa-angle-double-right"></i></a>
+                                                                    <a class="BtnSelectCandi"><i class="fas fa-check-circle"></i></a>
+                                                                </div>
+                                                            }
+                                                        </td>
+
+
+
+
+
+
+
+                                                    </tr>
+                                                        }
+                                                    }
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+
+
+            </div>
+
+        </div>
+        <div class="col-lg-12 text-center mt-2">
+            <div class="row">
+                <div class="col-lg-6 col-md-6 col-sm-12 mx-auto">
+                    <ul class="list-unstyled inlin-list mx-auto" style="display: table;">
+                        <li class="mr-3"><i class="fas fa-user-slash red-clr"></i>Drop Candidate: 1</li>
+                        <li class="mr-3"><i class="fas fa-angle-double-right mtr-o-clr"></i>Next Round Candidate: 1</li>
+                        <li><i class="fas green-clr fa-check-circle"></i>Selected Candidate: 1</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="col-lg-12 text-center mt-2">
+                <a href="/Recruit/SelectionProcessList?src=FF89198726DEB7CF7F9572BE92A10A8F2B1FC83759C5AAA0EF996DB57FE8ED68CD" class="btn cnl-btn ripplelink  pull-right"> Close</a>
+            </div>
+		</div>
+    </div>
+</div>
+<div class="modal fade pop-dgn" id="ActionModal">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header blk-gdn-btn">
+                <h4 class="modal-title"><i class="fas fa-plus"></i><span id="spnHead"></span> </h4>
+                <div class="close" data-dismiss="modal">&times;</div>
+            </div>
+            <div class="modal-body">
+                <div id="TargetActionDiv"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="modal fade pop-dgn" id="ViewAppModal">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+
+            <div class="modal-header blk-gdn-btn">
+                <h4 class="modal-title">Application Form</h4>
+                <div class="close" data-dismiss="modal">&times;</div>
+            </div>
+            <div class="modal-body">
+                <div id="DivViewApp"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@section scripts    {
+
+    @System.Web.Optimization.Scripts.Render("~/bundle/unobtrusivejs")
+    @Html.IncludeVersionedJs(Url.Content("~/assets/design/Scripts/AddInit.js"))
+    <script src="~/assets/design/Scripts/AddInit.js?v=@clsApplicationSetting.GetWebConfigValue("Version")"></script>
+    <script>
+
+
+
+		$(".BtnMoveTalent").click(function (e) {
+			_MoveToPoolOrReject(this);
+		});
+
+		$(".BtnMoveRound").click(function (e) {
+			_MoveToRound(this);
+		});
+
+
+		$(".BtnSelectCandi").click(function (e) {
+
+			_SelectCandidate(this);
+		});
+
+		function _MoveToPoolOrReject(obj) {
+			var REC_ReqID = $(obj).closest("tr").find("input:hidden[name=I]").val();
+			var REC_InterviewSetID = $(obj).closest("tr").find("input:hidden[name=SETID]").val();
+			var REC_AppID = $(obj).closest("tr").find("input:hidden[name=AppIID]").val();
+			ShowLoadingDialog();
+			$.ajax({
+				url: "/Recruit/_MoveToPoolOrReject",
+				type: "Get",
+				data: { src: EncryptQueryStringJSON(@ViewBag.MenuID+"*" + "/Recruit/_MoveToPoolOrReject" + "*" + REC_ReqID + "*" + REC_AppID + "*" + REC_InterviewSetID) },
+                success: function (data)
+                {
+					$("#TargetActionDiv").empty();
+					$("#TargetActionDiv").html(data);
+					$("#ActionModal").modal("show");
+					$("#spnHead").html("Reason");
+					CloseLoadingDialog();
+                    var form = $("form")
+                .removeData("validator")
+                .removeData("unobtrusiveValidation");
+                    $.validator.unobtrusive.parse(form);
+				},
+				error: function (er) {
+					alert(er);
+				}
+			});
+    }
+
+
+		function _MoveToRound(obj) {
+			debugger;
+			var REC_ReqID = $(obj).closest("tr").find("input:hidden[name=I]").val();
+			var REC_InterviewSetID = $(obj).closest("tr").find("input:hidden[name=SETID]").val();
+			var REC_AppID = $(obj).closest("tr").find("input:hidden[name=AppIID]").val();
+			ShowLoadingDialog();
+			$.ajax({
+				url: "/Recruit/_MoveToRound",
+				type: "Get",
+				data: { src: EncryptQueryStringJSON(@ViewBag.MenuID+"*" + "/Recruit/_MoveToRound" + "*" + REC_ReqID + "*" + REC_AppID + "*" + REC_InterviewSetID) },
+                success: function (data)
+                {
+					$("#TargetActionDiv").empty();
+					$("#TargetActionDiv").html(data);
+					$("#ActionModal").modal("show");
+					$("#spnHead").html("Move to Round");
+					CloseLoadingDialog();
+                    var form = $("form")
+                .removeData("validator")
+                .removeData("unobtrusiveValidation");
+					$.validator.unobtrusive.parse(form);
+					$(".applyselect").select2();
+
+					$('#RoundID').bind("change", function () {
+						BindSlot(this);
+					});
+
+
+
+				},
+				error: function (er) {
+					alert(er);
+				}
+			});
+    }
+
+
+
+		function _SelectCandidate(obj) {
+			var REC_ReqID = $(obj).closest("tr").find("input:hidden[name=I]").val();
+			var REC_InterviewSetID = $(obj).closest("tr").find("input:hidden[name=SETID]").val();
+			var REC_AppID = $(obj).closest("tr").find("input:hidden[name=AppIID]").val();
+			ShowLoadingDialog();
+			$.ajax({
+				url: "/Recruit/_SelectCandidate",
+				type: "Get",
+				data: { src: EncryptQueryStringJSON(@ViewBag.MenuID+"*" + "/Recruit/_SelectCandidate" + "*" + REC_ReqID + "*" + REC_AppID + "*" + REC_InterviewSetID) },
+                success: function (data)
+                {
+					$("#TargetActionDiv").empty();
+					$("#TargetActionDiv").html(data);
+					$("#ActionModal").modal("show");
+					$("#spnHead").html("Select Candidate");
+					CloseLoadingDialog();
+                    var form = $("form")
+                .removeData("validator")
+                .removeData("unobtrusiveValidation");
+					$.validator.unobtrusive.parse(form);
+
+					$(".applyselect").select2();
+					$('#RoundID').bind("change", function () {
+						BindSlot(this);
+					});
+				},
+				error: function (er) {
+					alert(er);
+				}
+			});
+    }
+
+
+		function BindSlot(obj)
+		{
+			var RoundID = $(obj).find(":selected").val();
+			if (RoundID != "") {
+				ShowLoadingDialog();
+				$.ajax({
+					url: "/CommonAjax/GetInterviewSlot",
+					type: "Get",
+					async: true,
+					data: { RoundID: RoundID },
+					success: function (data) {
+						$("#SlotID").empty();
+						$("#SlotID").append($("<option     />").val("").text("Select Slot"));
+						$(data).each(function () {
+							$("#SlotID").append($("<option />").val(this.ID).text(this.Name));
+							$("#SlotID").select2();
+						});
+						CloseLoadingDialog();
+					},
+					error: function (er) {
+						CloseLoadingDialog();
+					}
+				});
+			} else {
+				$("#SlotID").empty();
+				$("#SlotID").append($("<option     />").val("").text("Select"));
+			}
+
+		}
+
+			function ViewApplication(obj)
+		{
+			var AppIID = $(obj).closest("tr").find("input:hidden[name=AppIID]").val();
+			$.ajax({
+				url: "/Recruit/_ViewApplications",
+				type: "Get",
+				data: { src: EncryptQueryStringJSON(@ViewBag.MenuID+"*" + "/Recruit/_ViewApplications" + "*" + AppIID) },
+				success: function (args) {
+					CloseLoadingDialog();
+					$("#DivViewApp").empty();
+					$("#DivViewApp").html(args);
+					$("#ViewAppModal").modal('show');
+				},
+				error: function (er) {
+					CloseLoadingDialog()
+				}
+			});
+		}
+
+
+		function AddNewRow() {
+			var LastTRCount = parseInt($('#tbleAttach').find("tbody tr").length) - 1;
+			//$('.applyselect').select2("destroy");
+			var $tableBody = $('#tbleAttach').find("tbody"),
+				$trLast = $tableBody.find("tr:last"),
+				$trNew = $trLast.clone();
+			$trNew.find("td:last").html('<a onclick="DeleteRow(this)" class="remove" data-toggle="tooltip" title="Remove"><i class="fas fa-window-close red-clr m-0" aria-hidden="true"></i></a>')
+
+			$trNew.find("a.anchorlink").each(function () {
+				$(this).text('');
+				$(this).removeAttr('href');
+
+			});
+
+			$trNew.find("div").each(function () {
+				$(this).attr({
+					'id': function (_, id) { var arr = id.split('_'); return id.replace(arr[1], LastTRCount + 1); },
+				});
+
+			});
+
+			$trNew.find("label").each(function () {
+				$(this).attr({
+					'id': function (_, id) { var arr = id.split('_'); return id.replace(arr[1], LastTRCount + 1); },
+				});
+				$(this).html(parseInt($('#tbleAttach').find("tbody tr").length) + 1)
+			});
+
+			$trNew.find("input").each(function (i) {
+				$(this).attr({
+					'id': function (_, name) { return name.replace('_' + LastTRCount + '_', '_' + (parseInt(LastTRCount) + 1) + '_'); },
+					'name': function (_, name) { return name.replace('[' + LastTRCount + ']', '[' + (parseInt(LastTRCount) + 1) + ']'); },
+				});
+				$(this).val('')
+			});
+
+			$trNew.find("textarea").each(function (i) {
+				$(this).attr({
+					'id': function (_, name) { return name.replace('_' + LastTRCount + '_', '_' + (parseInt(LastTRCount) + 1) + '_'); },
+					'name': function (_, name) { return name.replace('[' + LastTRCount + ']', '[' + (parseInt(LastTRCount) + 1) + ']'); },
+				});
+				$(this).val('')
+			});
+
+			$trNew.find("span").each(function (i) {
+				if ($(this).attr("data-valmsg-for")) {
+					$(this).attr({
+						'data-valmsg-for': function (_, name) { return name.replace('[' + LastTRCount + ']', '[' + (parseInt(LastTRCount) + 1) + ']'); }
+					});
+				}
+				if ($(this).attr("for")) {
+					$(this).attr({
+						'for': function (_, name) { return name.replace('_' + LastTRCount + '_', '_' + (parseInt(LastTRCount) + 1) + '_'); }
+					});
+				}
+			});
+
+			$trLast.after($trNew);
+			var form = $("#_InterviewFrom").closest("form");
+			form.removeData('validator');
+			form.removeData('unobtrusiveValidation');
+			$.validator.unobtrusive.parse(form);
+
+		}
+
+		function DeleteRow(obj) {
+			var count = 0;
+			var TotalRowCount = $('#tbleAttach').find("tbody tr").length;
+			ConfirmMsgBox("Are you sure want to delete", '', function () {
+
+				$(obj).closest('tr').remove();
+				$("#tbleAttach TBODY TR").each(function (i) {
+					$(this).closest("tr").find("label").each(function () {
+						$(this).attr({
+							'id': function (_, id) { var arr = id.split('_'); return id.replace(arr[1], i); },
+						});
+						$(this).html(i + 1)
+					});
+
+					$(this).closest("tr").find("div").each(function () {
+						$(this).attr({
+							'id': function (_, id) { var arr = id.split('_'); return id.replace(arr[1], i); },
+						});
+					});
+
+
+					$(this).closest("tr").find("input").each(function () {
+						$(this).attr({
+							'id': function (_, id) { return id.replace('_' + (parseInt(i) + 1) + '_', '_' + i + '_'); },
+							'name': function (_, name) { return name.replace('[' + (parseInt(i) + 1) + ']', '[' + i + ']'); },
+						});
+
+					});
+					$(this).closest("tr").find("textarea").each(function () {
+						$(this).attr({
+							'id': function (_, id) { return id.replace('_' + (parseInt(i) + 1) + '_', '_' + i + '_'); },
+							'name': function (_, name) { return name.replace('[' + (parseInt(i) + 1) + ']', '[' + i + ']'); },
+						});
+
+					});
+					$(this).closest("tr").find("span").each(function () {
+						if ($(this).attr("data-valmsg-for")) {
+							$(this).attr({
+								'data-valmsg-for': function (_, name) { return name.replace('[' + (parseInt(i) + 1) + ']', '[' + i + ']'); },
+							});
+						}
+						if ($(this).attr("for")) {
+							$(this).attr({
+								'for': function (_, id) { return id.replace('_' + (parseInt(i) + 1) + '_', '_' + i + '_'); },
+							});
+						}
+					});
+				});
+				var form = $("#_InterviewFrom").closest("form");
+				form.removeData('validator');
+				form.removeData('unobtrusiveValidation');
+				$.validator.unobtrusive.parse(form);
+
+			})
+		}
+
+		function ActionOnSuccess(obj) {
+
+			if (obj.Status) {
+				SuccessToaster(obj.SuccessMessage);
+				window.location.reload();
+			}
+			else {
+				CloseLoadingDialog();
+				FailToaster(obj.SuccessMessage);
+			}
+		}
+
+    </script>
+}

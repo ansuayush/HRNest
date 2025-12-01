@@ -1,0 +1,41 @@
+﻿@model Mitr.Models.BudgetMaster.IndirectCostRate
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Ledger</th>
+            <th class="w-80">Indirect Cost Rate</th>
+        </tr>
+    </thead>
+    <tbody>
+        @{
+            string MenuID = "0";
+            if (ViewBag.MenuID != null)
+            {
+                MenuID = ViewBag.MenuID;
+            }
+
+
+
+        }
+        @if (Model.listIndirectCostRate.Count > 0)
+        {
+            for (int i = 0; i < Model.listIndirectCostRate.Count; i++)
+            {
+                <tr>
+                    <td>
+                        <strong>
+                            @Model.listIndirectCostRate[i].Ledger
+                            @Html.HiddenFor(model => model.listIndirectCostRate[i].LedgerId)
+                        </strong>
+                    </td>
+                    <td>
+                        @Html.TextBoxFor(model => model.listIndirectCostRate[i].IndirectCostRate, new { @class = "form-control text-right", @onkeypress = "return isNumberKey(event,this)" })
+                        @Html.HiddenFor(model => model.listIndirectCostRate[i].Id)
+                    </td>
+                </tr>
+            }
+        }
+    </tbody>
+</table>
+@Html.IncludeVersionedJs(Url.Content("~/assets/design/scripts/CustomValidate.js"))

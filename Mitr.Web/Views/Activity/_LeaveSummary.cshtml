@@ -1,0 +1,68 @@
+﻿@model	List<LeaveSummary>
+@{
+	ViewBag.Title = "_LeaveSummary";
+}
+
+<div class="row">
+
+	<div class="col-sm-12 form-group">
+
+		<div class="table-responsive">
+			<table class="table mt-0">
+				<tr>
+					<th class="w-30 text-center">S.No</th>
+					<th class="w-50">Request No.</th>
+					<th class="w-50">Leave Date</th>
+					<th class="w-100">Leave Type</th>
+					<th class="w-50">Hours</th>
+					<th class="w-50">Status</th>
+				</tr>
+				@{ int count = 0, rowspan = 0; string DocNo = "";}
+				@foreach (var item in Model)
+				{
+					count++;
+					rowspan = Model.Where(x => x.Doc_No == item.Doc_No).Count();
+				<tr>
+					<td class="text-center">@count</td>
+					@if (DocNo == "" || DocNo != item.Doc_No)
+					{
+						<td rowspan="@rowspan"><strong >Req#@item.Doc_No</strong></td>
+					}
+					<td>@item.Date</td>
+					<td>
+						@item.LeaveName
+						@if (item.RFC > 0)
+						{
+							<span class="rfcRequestdiv badge float-right">
+								RFC
+							</span>
+						}
+					</td>
+					<td class="text-right">@item.Hours</td>
+					@if (item.RFC > 0)
+					{
+						<td class="red-clr"><strong><i class="fas fa-clock"></i>Pending</strong></td>
+					}
+					else if (item.Approved == 1 || item.Approved == 4)
+					{
+						<td class="green-clr"><strong><i class="fas fa-check green-clr "></i>@item.Status</strong></td>
+					}
+					else if (item.Approved == 2 || item.Approved == 5)
+					{
+						<td class="red-clr"><strong><i class="fa fa-times"></i>@item.Status</strong></td>
+					}
+					else
+					{
+						<td class="red-clr"><strong><i class="fas fa-clock"></i>@item.Status</strong></td>
+					}
+				</tr>
+					DocNo = item.Doc_No;
+				}
+			</table>
+		</div>
+
+	</div>
+	<div class="col-sm-12 text-center mt-3">
+		<button type="button" class="btn cnl-btn ripplelink " data-dismiss="modal"><i class="fas fa-times"></i>Close</button>
+	</div>
+</div>

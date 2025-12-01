@@ -1,0 +1,244 @@
+﻿@using System.Data;
+@model Mitr.Models.DeclarationReport
+@{
+	Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@section style{
+	@System.Web.Optimization.Styles.Render("~/bundle/dataTablecss")
+}
+<div class="inner-main defult-height">
+	<div class="row">
+		<div class="col-sm-12">
+			<h1 class="heading-one mb-3">Employee Declaration</h1>
+		</div>
+		<div class="col-md-2  form-group">
+			<label>Financial Year</label>
+
+			@Html.DropDownListFor(model => model.FYId, new SelectList(ViewBag.FinYearList, "ID", "Year"), "Select Period", new { @class = "form-control applyselect " })
+		</div>
+		@{
+			List<SelectListItem> list = new List<SelectListItem>
+{
+												new SelectListItem{Text="Select",Value="" },
+													new SelectListItem{Text="Mitr",Value="Mitr" },
+												  new SelectListItem{Text="Non Mitr",Value="Non Mitr" }
+
+								};
+		}
+		<div class="col-md-2  form-group">
+			<label>Employee Type</label>
+			@Html.DropDownListFor(model => model.EmpType, new SelectList(list, "Value", "text"), new { @class = "form-control applyselect " })
+
+		</div>
+		<div class="col-md-8  form-group align-self-end">
+			<button type="submit" class="btn mtr-g-grn btn-l ripplelink" id="btnSearch" name="Command" value="Search"><i class="fas fa-search"></i>Search</button>
+			@*<button type="button" class="btn cnl-btn" onclick="ShowLoadingDialog();window.location='@Url.Action("EmployeesExcelToExport", new { src = clsApplicationSetting.EncryptQueryString(ViewBag.MenuID.ToString() + "*/Master/EmployeesExcelToExport*0*2")  })';"><i class="fas fa-times"></i> Download</button>*@
+			@*<a class="btn mtr-g-grn download"   target="_blank" href="/Master/EmployeesExcelToExportReport" ><i class="fas fa-download"></i>Export Format</a>*@
+			<button type="button" class="btn mtr-g-grn btn-l ripplelink" id="btnExportAll" value="Search"><i class="fas fa-file-excel"></i>Export</button>
+		</div>
+
+	</div>
+	<div id="TagetDiv">
+
+	</div>
+
+	@*<div class="table-responsive">
+			<table id="datatable-buttons" class="table mt-0">
+				<thead>
+					<tr>
+
+
+						@{
+							DataSet ds = Common_SPU.fnGetEmployeesDeclartionData(3, "Mitr");
+							DataTable dt = ds.Tables[0];
+							for (int j = 1; j < dt.Columns.Count; j++)
+							{
+								var column = dt.Columns[j].ToString();
+								<th width="100">@column	</th>
+
+							}
+						}
+
+
+
+					</tr>
+					<tr class="searchbar">
+
+						@{
+							DataSet ds1 = Common_SPU.fnGetEmployeesDeclartionData(3, "Mitr");
+							DataTable dt1 = ds.Tables[0];
+							for (int j = 1; j < dt1.Columns.Count; j++)
+							{
+								var column = dt.Columns[j].ToString();
+								<th class="searchbar"></th>
+
+							}
+						}
+
+
+
+					</tr>
+				</thead>
+				<tbody>
+
+
+					@for (int i = 0; i < dt.Rows.Count; i++)
+					{
+						int count = 1;
+						<tr>
+
+							@for (int j = 1; j < dt.Columns.Count; j++)
+							{
+								string columnName = dt.Columns[j].ToString();
+
+
+
+								<td>@dt.Rows[i][columnName].ToString()</td>
+
+								count++;
+
+							}
+
+						</tr>
+					}
+
+
+
+				</tbody>
+			</table>
+
+		</div>*@
+
+
+</div>
+@section scripts    {
+	@System.Web.Optimization.Scripts.Render("~/bundle/dataTablesjs")
+
+	@System.Web.Optimization.Scripts.Render("~/bundle/unobtrusivejs")
+
+	@Html.IncludeVersionedJs(Url.Content("~/assets/design/Scripts/AddInit.js"))
+	@Html.IncludeVersionedJs(Url.Content("~/assets/design/Scripts/ToolTip.js"))
+	@Html.IncludeVersionedJs(Url.Content("~/assets/tableToExcel.js"))
+	<script type="text/javascript">
+		$(document).ready(function () {
+			showtable(0,"Mitr")
+
+		});
+
+		//$("#EmpType").change(function () {
+		//	debugger;
+		//	var Type = $("#EmpType").val();
+		//	var FId = $("#FYId").val();
+		//	if (parseInt(FId) > 0 && Type != 'Select Period') {
+		//		$(".download").show();
+		//		$(".download").attr("href", "/Master/EmployeesExcelToExportReport?FId=" + FId + " &Type=" + Type + "");
+		//	}
+
+		//})
+		//$("#FYId").change(function () {
+		//	debugger;
+		//	var Type = $("#EmpType").val();
+		//	var FId = $("#FYId").val();
+		//	if (parseInt(FId) > 0 && Type != 'Select Period') {
+		//		$(".download").show();
+		//		$(".download").attr("href", "/Master/EmployeesExcelToExportReport?FId=" + FId + " &Type=" + Type + "");
+		//	}
+
+		//})
+	@*$("#btndownload").click(function () {
+		debugger
+		var Fid = parseInt($("#FYId").val());
+		var Etype = $("#EmpType").val();
+		if (Fid > 0 && (Etype == "Mitr" || Etype == "Non Mitr")) {
+				$.ajax({
+					url: "/Master/EmployeesExcelToExportReport",
+				type: "Get",
+				async: true,
+					data: { src: EncryptQueryStringJSON(@ViewBag.MenuID+"*" + "/Master/EmployeesExcelToExportReport" + "*" + Fid + "*" + Etype) },
+				success: function (data) {
+
+
+
+
+
+				},
+				error: function (er) {
+					alert(er);
+
+				}
+			});
+		}
+		else {
+			SuccessToaster('Please Select list');
+		}
+
+	});*@
+	$("#btnSearch").click(function () {
+		var Fid = parseInt($("#FYId").val());
+		var Etype = $("#EmpType").val();
+		if (Fid > 0 && (Etype == "Mitr" || Etype == "Non Mitr")) {
+			showtable(Fid, Etype);
+		}
+		else {
+			SuccessToaster('Please Select list');
+		}
+
+	});
+	function showtable(FID,EType) {
+
+
+			ShowLoadingDialog();
+			$.ajax({
+				url: "/Master/_ReportDeclaration",
+				type: "Get",
+				async: true,
+				data: { src: EncryptQueryStringJSON(@ViewBag.MenuID+"*" + "/Master/_ReportDeclaration" + "*" + FID + "*" + EType) },
+				success: function (data) {
+					debugger;
+					$("#TagetDiv").empty();
+					$("#TagetDiv").html(data);
+					CloseLoadingDialog();
+
+
+
+				},
+				error: function (er) {
+					alert(er);
+
+				}
+			});
+
+
+
+	}
+
+		function OnSuccess(obj) {
+
+
+			if (obj.Status) {
+
+				//  SuccessToaster(obj.SuccessMessage);
+				window.location.reload();
+			}
+			else {
+				CloseLoadingDialog();
+				FailToaster(obj.SuccessMessage);
+
+			}
+		}
+		$("#btnExportAll").click(function (e) {
+			exportReportToExcelAll()
+		});
+		function exportReportToExcelAll() {
+
+			let table = document.getElementsByTagName("table"); // you can use document.getElementById('tableId') as well by providing id to the table tag
+			TableToExcel.convert(table[0], { // html code may contain multiple tables so here we are refering to 1st table tag
+				name: `Declartion_Report.xlsx`, // fileName you could use any name
+				sheet: {
+					name: 'Sheet 1' // sheetName
+				}
+			});
+		}
+	</script>
+}

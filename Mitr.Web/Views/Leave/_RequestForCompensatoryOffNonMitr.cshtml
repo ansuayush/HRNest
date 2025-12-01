@@ -1,0 +1,96 @@
+﻿@using System.Data
+@model IList<Mitr.Models.RequestCompensatoryOffList>
+
+
+
+@using (Ajax.BeginForm("_ActionRequestForCompensatoryOff", "Leave",
+        new { src = clsApplicationSetting.EncryptQueryString(ViewBag.MenuID.ToString() + "*/Leave/_ActionRequestForCompensatoryOff") },
+        new AjaxOptions { HttpMethod = "POST", OnSuccess = "OnSuccessRequest" },
+    new { @id = "_ActionRequestForCompensatoryOff" })
+    )
+{
+
+    @Html.AntiForgeryToken()
+
+    <div class="x_content table-currency mt-0">
+        <div class="table-responsive">
+            <table id="tableApprove" class="table mt-0">
+                <thead>
+                    <tr>
+                        <th class="w-30">S.No.</th>
+                        <th class="w-100">Emp Name</th>
+                        <th class="w-350">Project Name	</th>                        
+                        <th class="w-70">Date</th>
+                        <th class="w-70 text-right">Hours Worked	</th>
+                        <th class="w-70 text-right">Hour Applied	</th>
+                        <th class="w-30 text-center">
+                            <input type="checkbox" class="newwidth" id="checkAll" name="ChkAll" value="All" />
+                            <label for="checkAll" data-toggle="tooltip" data-original-title="Select All"></label>
+                        </th>
+
+
+                    </tr>
+                    <tr class="searchbar">
+                        <th class="searchhide"> </th>
+                        <th></th>                       
+                        <th></th>
+                        <th></th>
+                        <th></th>
+                        <th></th>
+
+
+                        <th class="searchhide"> </th>
+
+
+                    </tr>
+                </thead>
+                <tbody>
+                    @{ int Count = 0;}
+                    @for (int i = 0; i < Model.Count; i++)
+                    {
+
+                        Count++;
+                    <tr>
+                        <td>
+                            @Count
+                            @Html.HiddenFor(x => Model[i].CompensatoryOffID)
+                            @Html.HiddenFor(x => Model[i].EMPID)
+                        </td>
+                        <td> @Model[i].EmpName</td>
+                        <td> @Model[i].proj_name</td>                       
+                        <td> @Model[i].Date</td>
+                        <td class="text-right">
+                            @Model[i].hours
+                            @Html.HiddenFor(x => Model[i].hours, new { @class = "appliedhours" }) Hrs
+                        </td>
+                        <td class="text-right">
+                            @Html.TextBoxFor(model => model[i].Applied_hours, new { @class = "form-control text-right aaprovedhours", @Max = "" + Model[i].hours + "" })
+                            @Html.ValidationMessageFor(model => model[i].Applied_hours, "", new { @class = "text-danger" })
+                        </td>
+                        <td class="text-center">
+                            <input type="checkbox" class="newwidth chksingle" id="Chksingle_@Count" name="@Html.NameFor(x=>Model[i].CheckSelected)" />
+                            <label for="Chksingle_@Count"></label>
+                        </td>
+
+
+                    </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+
+    <div class="row">
+
+        <div class="col-sm-12 text-center">
+            <button type="submit" class="btn mtr-o-grn btn-l btnCompensatory pull-right" name="Command" value="Apply"><i class="fa fa-paper-plane" aria-hidden="true"></i>Apply</button>
+            <button type="button" class="btn cnl-btn ripplelink" data-dismiss="modal"><i class="fas fa-times"></i>Close</button>
+        </div>
+
+
+    </div>
+
+
+
+}

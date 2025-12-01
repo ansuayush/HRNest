@@ -1,0 +1,540 @@
+﻿@model Personnels.FinanceViewVoucher
+
+@{
+	string MenuID = "0";
+	if (ViewBag.MenuID != null)
+	{
+		MenuID = ViewBag.MenuID;
+	}	
+}
+@using (Ajax.BeginForm("_FinanceViewVoucher", "Personnel",
+		new { src = ViewBag.src },
+		new AjaxOptions { HttpMethod = "POST", OnSuccess = "OnSuccess", OnBegin = "ShowLoadingDialog();", OnFailure = "CloseLoadingDialog();" },
+	new { name = "_FinanceViewVoucherForm", @id = "_FinanceViewVoucher" })
+	)
+{
+	@Html.AntiForgeryToken()
+	@Html.HiddenFor(x => Model.FYId)
+	@Html.HiddenFor(x => Model.EmpId)
+	@Html.HiddenFor(x => Model.HeadId)
+	@Html.HiddenFor(x => Model.ClaimId)
+	@Html.HiddenFor(x => Model.ClaimType)
+	@Html.HiddenFor(x => Model.Entitlement)
+	@Html.HiddenFor(x => Model.UptoPaid)
+	@Html.HiddenFor(x => Model.TotalAmount)
+	@Html.HiddenFor(x => Model.RequestNo)
+	@Html.HiddenFor(x => Model.RequestDate)
+	@Html.HiddenFor(x => Model.Approved)
+	@Html.HiddenFor(x => Model.Action)
+
+	<div class="inner-main pb-0">
+		@*<h1 class="heading-one">@Model.RequestNo (@Model.EmployeeName) </h1>*@
+		<div class="row">
+			<div class="col-md-12 form-group">
+				<h2 class="heading-one mb-0">Reimbursable Benefit Claim Form</h2>
+			</div>
+			<div class="col-sm-4 form-group">
+				<label>Employee Name </label>
+				<p>@Model.EmployeeName</p>
+			</div>
+			<div class="col-sm-2 form-group">
+				<label>Employee Code </label>
+				<p>@Model.EmployeeCode</p>
+			</div>
+			<div class="col-sm-2 form-group">
+				<label>Location </label>
+				<p>@Model.Location</p>
+			</div>
+			<div class="col-sm-4 form-group">
+				<label>Designation </label>
+				<p>@Model.Designation</p>
+			</div>
+
+			<div class="col-md-12 form-group">
+				<h2 class="heading-one mb-0">@Model.HeadName</h2>
+			</div>
+			<div class="col-sm-2 form-group p-center ">
+				<label>Request No</label>
+				<p>@Model.RequestNo</p>
+
+			</div>
+			<div class="col-sm-2 form-group p-center">
+				<label>Request Date</label>
+				<p> @(Convert.ToDateTime(Model.RequestDate).ToString("dd/MM/yyyy"))</p>
+			</div>
+			<div class="col-sm-2 form-group p-center p-none">
+				<label>Entitlement</label>
+				<p class="fn-bold text-right">@Model.Entitlement.ToString("#,##0")</p>
+			</div>
+			<div class="col-sm-2 form-group p-center">
+				<label>Under Process</label>
+				<p class="fn-bold text-right">@Model.UnderProcess.ToString("#,##0")</p>
+			</div>
+			<div class="col-sm-2 form-group p-center">
+				<label>Paid</label>
+				<p class="fn-bold text-right">@Model.UptoPaid.ToString("#,##0")</p>
+			</div>
+			<div class="col-sm-2 form-group p-center p-none">
+				<label>Balance</label>
+				<p class="fn-bold text-right"><i class="fas fa-rupee-sign"></i>@Model.BalanceAmt.ToString("#,##0")</p>
+			</div>
+
+			<div class="col-md-12 form-group mb-1">
+				<div id="divvouchertable">
+					<div class='table-responsive'>
+						<table id="tblvoucher" class="table v-top table-stripted lg-table mb-0 mt-0">
+							<thead>
+								<tr>
+									<th width="10">SNo. </th>
+									@if (Model.ClaimType == "RLIC")
+									{
+										<th width="230">Insurance Company</th>
+										<th width="80">Policy No.</th>
+										<th width="80">Start Date</th>
+										<th width="80">End Date</th>
+										<th width="100">Insured Person</th>
+										<th width="120">Amount of Premium </th>
+										<th width="70">Receipt No.</th>
+										<th width="100">Receipt Date</th>
+										<th>Remark</th>
+									}
+									@if (Model.ClaimType == "RMed")
+									{
+										<th width="150">Bill No.</th>
+										<th width="100">Bill Date</th>
+										<th width="100">Bill Amount</th>
+										<th width="200">Name of Patient</th>
+										<th width="200">Relation with Employee</th>
+										<th>Remark</th>
+									}
+									@if (Model.ClaimType == "ROth")
+									{
+										<th width="100">Bill/Invoice No</th>
+										<th width="120">Bill/Invoice Date</th>
+										<th width="100">Amount</th>
+										<th width="180">Details of bill/invoice</th>
+										<th>Particulars</th>
+										<th width="120">Attachment No.</th>
+									}
+								</tr>
+							</thead>
+							<tbody>
+								@if (Model.ClaimType == "RLIC")
+								{
+									if (Model.insuranceentry != null)
+									{
+										int Rcount = 0;
+										for (int i = 0; i < Model.insuranceentry.Count; i++)
+										{
+											Rcount++;
+											<tr>
+												<td>
+													<div class='sno'>
+														@Html.HiddenFor(model => Model.insuranceentry[i].Id)
+														<label id="span_@Rcount" name="span_@Rcount">@Rcount </label>
+													</div>
+												</td>
+												<td>
+													@Model.insuranceentry[i].InsuranceCompany
+												</td>
+												<td>
+													@Model.insuranceentry[i].PolicyNo
+												</td>
+												<td>
+													@(Convert.ToDateTime(Model.insuranceentry[i].StartDate).ToString("dd/MM/yyyy"))
+
+												</td>
+												<td>
+													@(Convert.ToDateTime(Model.insuranceentry[i].EndDate).ToString("dd/MM/yyyy"))
+												</td>
+												<td>
+													@Model.insuranceentry[i].InsuredPerson
+												</td>
+												<td class="text-right">
+													@Model.insuranceentry[i].PremiumAmount.ToString("#,##0")
+												</td>
+												<td>
+													@Model.insuranceentry[i].ReceiptNo
+												</td>
+												<td>
+													@(Convert.ToDateTime(Model.insuranceentry[i].ReceiptDate).ToString("dd/MM/yyyy"))
+												</td>
+												<td>
+													@Model.insuranceentry[i].Reason
+												</td>
+											</tr>
+										}
+									}
+								}
+								@if (Model.ClaimType == "RMed")
+								{
+									if (Model.medicalentry != null)
+									{
+										int Rcount = 0;
+										for (int i = 0; i < Model.medicalentry.Count; i++)
+										{
+											Rcount++;
+											<tr>
+												<td>
+													<div class='sno'>
+														@Html.HiddenFor(model => Model.medicalentry[i].Id)
+														<label id="span_@Rcount" name="span_@Rcount">@Rcount </label>
+													</div>
+												</td>
+												<td>
+													@Model.medicalentry[i].BillNo
+												</td>
+												<td>
+													@(Convert.ToDateTime(Model.medicalentry[i].BillDate).ToString("dd/MM/yyyy"))
+												</td>
+												<td class="text-right">
+													@Model.medicalentry[i].BillAmt.ToString("#,##0")
+												</td>
+												<td>
+													@Model.medicalentry[i].PatientName
+												</td>
+												<td>
+													@Model.medicalentry[i].PatientRelation
+												</td>
+												<td>
+													@Model.medicalentry[i].Remark
+												</td>
+											</tr>
+										}
+									}
+								}
+								@if (Model.ClaimType == "ROth")
+								{
+									if (Model.otherentry != null)
+									{
+										int Rcount = 0;
+										for (int i = 0; i < Model.otherentry.Count; i++)
+										{
+											Rcount++;
+											<tr>
+												<td>
+													<div class='sno'>
+														@Html.HiddenFor(model => Model.otherentry[i].Id)
+														<label id="span_@Rcount" name="span_@Rcount">@Rcount </label>
+													</div>
+												</td>
+												<td>
+													@Model.otherentry[i].BillNo
+												</td>
+												<td>
+													@(Convert.ToDateTime(Model.otherentry[i].BillDate).ToString("dd/MM/yyyy"))
+												</td>
+												<td class="text-right">
+													@Model.otherentry[i].BillAmt.ToString("#,##0")
+												</td>
+												<td>
+													@Model.otherentry[i].DetailsBill
+												</td>
+												<td>
+													@Model.otherentry[i].Particulars
+												</td>
+												<td>
+													@Model.otherentry[i].AttachmentNo
+												</td>
+											</tr>
+										}
+									}
+								}
+							</tbody>
+							<tfoot>
+								<tr class="green-clr lgt-mtr-o-bg">
+									<th class="w-50 text-center"></th>
+									@if (Model.ClaimType == "RLIC")
+									{
+										<th></th>
+										<th></th>
+										<th></th>
+										<th></th>
+										<th class="text-right fn-bold">Total</th>
+										<th class="text-right fn-bold"><span id="spnTotal">@Model.TotalAmount.ToString("#,##0")</span></th>
+										<th></th>
+										<th></th>
+										<th></th>
+									}
+									@if (Model.ClaimType == "RMed")
+									{
+										<th></th>
+										<th class="text-right fn-bold">Total</th>
+										<th class="text-right fn-bold"><span id="spnTotal">@Model.TotalAmount.ToString("#,##0")</span></th>
+										<th></th>
+										<th></th>
+										<th></th>
+									}
+									@if (Model.ClaimType == "ROth")
+									{
+										<th></th>
+										<th class="text-right fn-bold">Total</th>
+										<th class="text-right fn-bold"><span id="spnTotal">@Model.TotalAmount.ToString("#,##0")</span></th>
+										<th></th>
+										<th></th>
+										<th></th>
+									}
+								</tr>
+							</tfoot>
+						</table>
+					</div>
+				</div>
+			</div>
+			@if (ViewBag.Print == "Y")
+			{
+				if (Model.Approved == 1)
+				{
+					<div class="col-md-12 form-group">
+						<hr>
+						<span class="hr-aps"><i class="fas fa-rupee-sign"></i>@Model.Action</span>
+					</div>
+					<div id="dvpayment" class="col-sm-12 mb-0">
+						<div class="row">
+							<div class="col-md-3 col-sm-6 form-group">
+								<label>Paid Date</label>
+								<p>@Convert.ToDateTime(Model.PaidDate).ToString("dd/MM/yyyy")</p>
+							</div>
+							<div class="col-md-3 col-sm-6 form-group">
+								<label>Paid Amount</label>
+								<p class="fn-bold">@Model.PaidAmount.ToString("#,##0")</p>
+							</div>
+							<div class="col-md-3 col-sm-6 form-group">
+								<label>Project Code</label>
+								@Html.DropDownListFor(n => Model.ProjectId, new SelectList(Model.projectcode, "Id", "ProjectCode", Model.ProjectId), "Select",
+								new { @class = "form-control sltdisabled", @Disabled = "disabled" })
+							</div>
+							<div class="col-md-3 col-sm-6 form-group">
+								<label>Reason for change in paid amount</label>
+								<p>@Model.Reason</p>
+							</div>
+							<div class="col-md-3 col-sm-6 form-group">
+								<label>Account No</label>
+								<p>@Model.AccountNo</p>
+							</div>
+							<div class="col-md-3 col-sm-6 form-group">
+								<label>Bank Name</label>
+								<p>@Model.BankName</p>
+							</div>
+							<div class="col-md-3 col-sm-6 form-group">
+								<label>Neft Code</label>
+								<p>@Model.NeftCode</p>
+							</div>
+							<div class="col-md-3 col-sm-6 form-group">
+								<label>Branch</label>
+								<p>@Model.Branch</p>
+							</div>
+						</div>
+					</div>
+				}
+				else if (Model.Approved == 2)
+				{
+					<div class="col-md-12 form-group">
+						<hr>
+						<span class="hr-aps"><i class="fas fa-ban"></i>Reject</span>
+					</div>
+					<div class="col-sm-12 form-group">
+						<label>Reason</label>
+						<p>@Model.Reason</p>
+					</div>
+				}
+			}
+			else
+			{
+				if (Model.Action == "Reject")
+				{
+					<div class="col-md-12 form-group">
+						<hr>
+						<span class="hr-aps"><i class="fas fa-ban"></i>@Model.Action</span>
+					</div>
+					<div class="col-sm-12 form-group">
+						<label>Reason</label>
+						@Html.TextAreaFor(model => Model.Reason, new { @class = "form-control h-100", @placeholder = "reason for rejection" })
+						@Html.ValidationMessageFor(model => Model.Reason, "", new { @class = "text-danger" })
+					</div>
+				}
+				else
+				{
+					<div class="col-md-12 form-group">
+						<hr>
+						<span class="hr-aps"><i class="fas fa-rupee-sign"></i>@Model.Action</span>
+					</div>
+					<div id="dvpayment" class="col-sm-12 mb-0">
+						<div class="row">
+							<div class="col-md-3 col-sm-6 form-group">
+								<label>Paid Date</label>
+								@if (Model.Approved == 0)
+								{
+									@Html.TextBoxFor(model => Model.PaidDate, new { @class = "form-control", Type = "date", @placeholder = "Paid date" })
+									@Html.ValidationMessageFor(model => Model.PaidDate, "", new { @class = "text-danger" })
+								}
+								else
+								{
+									<p>@(Convert.ToDateTime(Model.PaidDate).ToString("dd/MM/yyyy"))</p>
+								}
+							</div>
+							<div class="col-md-3 col-sm-6 form-group">
+								<label>Paid Amount</label>
+								@if (Model.Approved == 0)
+								{
+									@Html.TextBoxFor(model => Model.PaidAmount, new { @class = "form-control text-right", @placeholder = "Paid Amount" })
+									@Html.ValidationMessageFor(model => Model.PaidAmount, "", new { @class = "text-danger" })
+								}
+								else
+								{
+									<p>@Model.PaidAmount.ToString("#,##0")</p>
+								}
+							</div>
+							<div class="col-md-3 col-sm-6 form-group">
+								<label>Project Code</label>
+								@if (Model.Approved == 0)
+								{
+									@Html.DropDownListFor(n => Model.ProjectId, new SelectList(Model.projectcode, "Id", "ProjectCode", Model.ProjectId), "Select",
+									  new { @class = "form-control  applyselect" })
+									@Html.ValidationMessageFor(model => model.ProjectId, "", new { @class = "text-danger" })
+								}
+								else
+								{
+									@Html.DropDownListFor(n => Model.ProjectId, new SelectList(Model.projectcode, "Id", "ProjectCode", Model.ProjectId), "Select",
+									  new { @class = "form-control sltdisabled", @Disabled = "disabled" })
+								}
+
+							</div>
+							<div class="col-md-3 col-sm-6 form-group">
+								<label>Reason for change in paid amount</label>
+								@if (Model.Approved == 0)
+								{
+									@Html.TextBoxFor(model => Model.Reason, new { @class = "form-control", @placeholder = "Reason for change in paid amount" })
+									@Html.ValidationMessageFor(model => Model.Reason, "", new { @class = "text-danger" })
+								}
+								else
+								{
+									<p>@Model.Reason</p>
+								}
+							</div>
+							<div class="col-md-3 col-sm-6 form-group">
+								<label>Account No</label>
+								@if (Model.Approved == 0)
+								{
+									@Html.TextBoxFor(model => Model.AccountNo, new { @class = "form-control", @placeholder = "Account No" })
+									@Html.ValidationMessageFor(model => Model.AccountNo, "", new { @class = "text-danger" })
+								}
+								else
+								{
+									<p>@Model.AccountNo</p>
+								}
+							</div>
+							<div class="col-md-3 col-sm-6 form-group">
+								<label>Bank Name</label>
+								@if (Model.Approved == 0)
+								{
+									@Html.TextBoxFor(model => Model.BankName, new { @class = "form-control", @placeholder = "Bank Name" })
+									@Html.ValidationMessageFor(model => Model.BankName, "", new { @class = "text-danger" })
+								}
+								else
+								{
+									<p>@Model.BankName</p>
+								}
+							</div>
+							<div class="col-md-3 col-sm-6 form-group">
+								<label>Neft Code</label>
+								@if (Model.Approved == 0)
+								{
+									@Html.TextBoxFor(model => Model.NeftCode, new { @class = "form-control", @placeholder = "Neft Code" })
+									@Html.ValidationMessageFor(model => Model.NeftCode, "", new { @class = "text-danger" })
+								}
+								else
+								{
+									<p>@Model.NeftCode</p>
+								}
+							</div>
+							<div class="col-md-3 col-sm-6 form-group">
+								<label>Branch</label>
+								@if (Model.Approved == 0)
+								{
+									@Html.TextBoxFor(model => Model.Branch, new { @class = "form-control", @placeholder = "Branch" })
+									@Html.ValidationMessageFor(model => Model.Branch, "", new { @class = "text-danger" })
+								}
+								else
+								{
+									<p>@Model.Branch</p>
+								}
+							</div>
+						</div>
+					</div>
+				}
+			}
+		</div>
+		<div class="row">
+			@if (Model.Approved == 1 || ViewBag.Print == "Y")
+			{
+				<div class="col-sm-6 text-left mt-5">
+					<div class="ml-3">
+						<strong>(Signature)</strong>
+						<p class="sgn-name"><strong>@Model.EmployeeName</strong></p>
+					</div>
+					
+				</div>
+
+				<div class="col-sm-6 text-right mt-5 align-self-top">
+					<div class="mr-3"><strong>(Authroised Signatory) </strong></div>
+				</div>
+			}
+			<div class="col-sm-12 text-center mt-3">
+				@if (Model.Approved == 0 && ViewBag.Print == "")
+				{
+					<button type="submit" class="btn mtr-o-grn btn-l ripplelink pull-right" name="Command" value="Add"><i class="fa fa-paper-plane" aria-hidden="true"></i>Submit</button>
+				}
+				else
+				{
+					<a id="Print" class="btn mtr-g-grn btn-l ripplelink pull-right"><i class="fas fa-print"></i>Print</a>
+				}
+				<button type="button" class="btn cnl-btn ripplelink  " data-dismiss="modal"><i class="fas fa-times"></i>Close</button>
+			</div>
+		</div>
+	</div>
+}
+
+<script type="text/javascript">
+	function updateTextView(_obj) {
+		var num = getNumber(_obj.val());
+		if (num == 0) {
+			_obj.val('');
+		} else {
+			_obj.val(num.toLocaleString());
+		}
+	}
+	function getNumber(_str) {
+		var arr = _str.split('');
+		var out = new Array();
+		for (var cnt = 0; cnt < arr.length; cnt++) {
+			if (isNaN(arr[cnt]) == false) {
+				out.push(arr[cnt]);
+			}
+		}
+		return Number(out.join(''));
+	}
+	document.getElementById("Print").onclick = function () {
+		printElement(document.getElementById("printvoucher"));
+	};
+	function printElement(elem) {
+		var domClone = elem.cloneNode(true);
+
+		var $printSection = document.getElementById("printSection");
+
+		if (!$printSection) {
+			var $printSection = document.createElement("div");
+			$printSection.id = "printSection";
+			document.body.appendChild($printSection);
+		}
+
+		$printSection.innerHTML = "";
+		$printSection.appendChild(domClone);
+		window.print();
+	}
+
+	$(document).ready(function () {
+		$('.amtcomma').on('keyup', function () {
+			updateTextView($(this));
+		});
+	});
+</script>

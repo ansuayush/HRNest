@@ -1,0 +1,32 @@
+﻿
+@model PTC.Hierarchy.Update
+
+@using (Ajax.BeginForm("_ModifyHierarchy", "ProbationtoConfirmation",
+							new { src = ViewBag.src },
+							new AjaxOptions { HttpMethod = "POST", OnSuccess = "OnSuccessModifyHierarchy" },
+						new { @id = "_ModifyHierarchyFrom" })
+						)
+{
+
+	@Html.AntiForgeryToken()
+	<div class="row">
+		<div class="col-sm-12 form-group">
+			<label>Supervisor </label>
+			<p>@Model.AppraiserName</p>
+			@Html.HiddenFor(x => Model.Id)
+			@Html.HiddenFor(x => Model.EMPID)
+		</div>
+		<div class="col-sm-6 form-group">
+			<label>Confirmer <span class="required">*</span> </label>
+			@Html.DropDownListFor(x => Model.Confirmer, new SelectList(Model.EmployeeList, "ID", "Name", Model.Confirmer), "Select Confirmer",
+		 new { @class = "form-control  applyselect" })
+			@Html.ValidationMessageFor(model => Model.Confirmer, "", new { @class = "text-danger" })
+		</div>
+		
+		<div class="col-lg-12 text-center mt-3">
+
+			<button type="button" data-dismiss="modal" class="btn cnl-btn ripplelink  pull-right"><i class="fas fa-times"></i> Close</button>
+			<button type="submit" class="btn mtr-o-grn btn-l ripplelink pull-right" name="Command" value="Add"><i class="fas fa-save"></i>Save</button>
+		</div>
+	</div>
+}

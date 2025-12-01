@@ -1,0 +1,72 @@
+﻿
+
+@model IList<Mitr.Models.Exit.LevelApprovals.List>
+
+@{
+    string MenuID = "0";
+    if (ViewBag.MenuID != null)
+    {
+        MenuID = ViewBag.MenuID;
+    }
+    var Modify = clsApplicationSetting.GetSessionValue("Modify");
+}
+<div class="control-section">
+    @if (ViewBag.Approve == 0)
+    {
+        @Html.EJS().Grid("FlatGrid").DataSource((List<Exit.LevelApprovals.List>)Model).GridLines(Syncfusion.EJ2.Grids.GridLine.Both).Columns(col =>
+   {
+
+       col.Field("Exit_ID").Visible(false).Add();
+       col.Field("Exit_APP_ID").Visible(false).Add();
+       col.Field("EMP_ID").Visible(false).Add();
+       col.Field("RowNum").HeaderText("S.No").Width("50").Add();
+       col.Field("Req_No").HeaderText("Req No").Width("80").Add();
+       col.Field("Req_Date").HeaderText("Request Date").Width("80").Add();
+       col.Field("RelievingDate").HeaderText("Relieving Date").Width("80").Add();
+       col.Field("emp_code").HeaderText("EMP Code").Width("80").Add();
+       col.Field("emp_name").HeaderText("EMP Name").Width("80").Add();
+       col.Field("Department").HeaderText("Department").Width("150").Add();
+       col.Field("DesignationName").HeaderText("Designation").Width("150").Add();
+       col.Field("location_name").HeaderText("Location").Width("80").Add();
+       col.HeaderText("Action").TextAlign(Syncfusion.EJ2.Grids.TextAlign.Center).Template("#tmpAction").Width("100").Add();
+
+   }).AllowPaging().PageSettings(page => page.PageCount(10)).Toolbar(new List<string>() { "Search" }).Render()
+    }
+    else
+    {
+          @Html.EJS().Grid("FlatGrid").DataSource((List<Exit.LevelApprovals.List>)Model).GridLines(Syncfusion.EJ2.Grids.GridLine.Both).Columns(col =>
+     {
+         col.Field("Exit_ID").Visible(false).Add();
+         col.Field("Exit_APP_ID").Visible(false).Add();
+         col.Field("EMP_ID").Visible(false).Add();
+         col.Field("DaysLeft").Visible(false).Add();
+
+         col.Field("RowNum").HeaderText("S.No").Width("50").Add();
+         col.Field("Req_No").HeaderText("Req No").Width("80").Add();
+         col.Field("Req_Date").HeaderText("Request Date").Width("80").Add();
+         col.Field("RelievingDate").HeaderText("Relieving Date").Width("80").Add();
+         col.Field("emp_code").HeaderText("EMP Code").Width("80").Add();
+         col.Field("emp_name").HeaderText("EMP Name").Width("80").Add();
+         col.Field("Department").HeaderText("Department").Width("150").Add();
+         col.Field("DesignationName").HeaderText("Designation").Width("150").Add();
+         col.Field("location_name").HeaderText("Location").Width("80").Add();
+         col.HeaderText("Action").TextAlign(Syncfusion.EJ2.Grids.TextAlign.Center).Template("#tmpAction").Width("100").Add();
+
+     }).AllowPaging().PageSettings(page => page.PageCount(10)).Toolbar(new List<string>() { "Search" }).Render()
+    }
+</div>
+
+
+
+<script id="tmpAction" type="text/x-template">
+    ${if('@Modify' === 'True')}
+    <input type="hidden" name="I" value="${Exit_APP_ID}" />
+    <input type="hidden" name="N" value="${Exit_ID}" />
+    <a onclick="BindEdit(this)"><i class="fas fa-cogs"></i>Process </a>
+    ${/if}
+</script>
+
+
+@Html.IncludeVersionedJs(Url.Content("~/assets/design/Scripts/SyncScripts.js"))
+
+@(Html.EJS().ScriptManager())

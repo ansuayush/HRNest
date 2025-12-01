@@ -1,0 +1,150 @@
+﻿@model Mitr.Models.JobPost
+@{
+    ViewBag.Title = "PostRecruitment";
+}
+@using (Html.BeginForm("ApproveJobPost", "Recruitment",
+ new { src = clsApplicationSetting.EncryptQueryString(ViewBag.MenuID.ToString() + "*/Recruitment/ApproveJobPost*" + ViewBag.RecruitmentRequestID) },
+ FormMethod.Post,
+new
+{
+    name = "ApproveJobPostForm",
+    id = "ApproveJobPostForm",
+    @class = "form-horizontal form-label-left input_mask",
+    enctype = "multipart/form-data"
+}))
+{
+    @Html.AntiForgeryToken()
+    @Html.HiddenFor(x => x.Location)
+    @Html.HiddenFor(x => x.RecruitmentRequestID)
+    <h2 class="header-two">Recruitment Approval</h2>
+    <div class="row">
+        <div class="col-lg-3 col-md-4 col-sm-6  form-group">
+            <label>Project Name</label>
+            <p>@Model.ProjectName</p>
+        </div>
+        <div class="col-lg-3 col-md-4 col-sm-6  form-group">
+            <label>Project Manager</label>
+            <p>@Model.ManagerName</p>
+        </div>
+        <div class="col-lg-3 col-md-4 col-sm-6  form-group">
+            <label>Start Date</label>
+            <p>@Model.StartDate</p>
+        </div>
+        <div class="col-lg-3 col-md-4 col-sm-6  form-group">
+            <label>End Date</label>
+            <p>@Model.EndDate</p>
+        </div>
+        <div class="col-lg-3 col-md-4 col-sm-6  form-group">
+            <label>Location</label>
+            <p>@Model.Location</p>
+        </div>
+    </div>
+    <h2 class="header-two"><i class="fas fa-users"></i>Hiring Details</h2>
+    <div class="row">
+        <div class="col-lg-3 col-md-4 col-sm-6  form-group">
+            <label>Job Title</label>
+            @Html.TextBoxFor(model => model.JobTitle, new { @class = "form-control" })
+            @Html.ValidationMessageFor(model => model.JobTitle, "", new { @class = "text-danger" })
+        </div>
+        <div class="col-lg-3 col-md-4 col-sm-6  form-group">
+            <label>Due Date</label>
+            @Html.TextBoxFor(model => model.DueDate, new { @class = "form-control", @type = "date" })
+            @Html.ValidationMessageFor(model => model.DueDate, "", new { @class = "text-danger" })
+        </div>
+        <div class="col-lg-3 col-md-4 col-sm-6  form-group">
+            <label>%Time</label>
+            <p>20</p>
+        </div>
+    </div>
+    <h2 class="header-two"><i class="fas fa-file-alt"></i>JD Details</h2>
+    <div class="row">
+        <div class="col-lg-12  form-group">
+            <label>Job Description</label>
+            @Html.TextAreaFor(model => model.JobDescription, new { @class = "form-control" })
+            @Html.ValidationMessageFor(model => model.JobDescription, "", new { @class = "text-danger" })
+        </div>
+        <div class="col-lg-3 col-md-4 col-sm-6  form-group">
+            <label>Qualification</label>
+            @Html.TextBoxFor(model => model.Qualification, new { @class = "form-control" })
+            @Html.ValidationMessageFor(model => model.Qualification, "", new { @class = "text-danger" })
+        </div>
+        <div class="col-lg-3 col-md-4 col-sm-6  form-group">
+            <label>Skills</label>
+            @Html.TextBoxFor(model => model.Skills, new { @class = "form-control" })
+            @Html.ValidationMessageFor(model => model.Skills, "", new { @class = "text-danger" })
+        </div>
+        <div class="col-lg-3 col-md-4 col-sm-6  form-group">
+            <label>Experience</label>
+            @Html.TextBoxFor(model => model.Experience, new { @class = "form-control" })
+            @Html.ValidationMessageFor(model => model.Experience, "", new { @class = "text-danger" })
+        </div>
+        <div class="col-lg-3 col-md-4 col-sm-6  form-group">
+            <label>Staff Category</label>
+            <p>@Model.StaffCategory</p>
+        </div>
+    </div>
+
+    <h2 class="header-two"><i class="fas fa-file-alt"></i>Vacancy Announcement</h2>
+    <div class="row">
+        <div class="col-sm-3">
+            <input type="checkbox" id="ric" name="@Html.NameFor(x => Model.AnnouncementType)" @(Model.AnnouncementType == "Website Announcement" ? "checked" : "") value="Website Announcement" class="chkRecruitment">
+            <label for="ric"> Website Announcement </label>
+        </div>
+        <div class="col-sm-3">
+            <input type="checkbox" id="peh" name="@Html.NameFor(x => Model.AnnouncementType)" @(Model.AnnouncementType == "Internal Announcement" ? "checked" : "") value="Internal Announcement" class="chkRecruitment">
+            <label for="peh"> Internal Announcement </label>
+        </div>
+        <div class="col-sm-3">
+            <input type="checkbox" id="ss" name="@Html.NameFor(x => Model.AnnouncementType)" @(Model.AnnouncementType == "Other Announcement" ? "checked" : "") value="Other Announcement" class="chkRecruitment">
+            <label for="ss"> Other Announcement </label>
+        </div>
+        @Html.ValidationMessageFor(model => model.AnnouncementType, "", new { @class = "text-danger" })
+
+    </div>
+    <div class="row">
+
+        <div class="col-lg-12  form-group">
+            <label>Announcement Description</label>
+            @Html.TextAreaFor(model => model.Announcement, new { @class = "form-control" })
+            @Html.ValidationMessageFor(model => model.Announcement, "", new { @class = "text-danger" })
+        </div>
+
+        <div class="col-lg-3 col-md-4 col-sm-6  form-group">
+            <label>Start Date</label>
+            @Html.TextBoxFor(model => model.AnnouncementStartDate, new { @class = "form-control", @type = "date" })
+            @Html.ValidationMessageFor(model => model.AnnouncementStartDate, "", new { @class = "text-danger" })
+        </div>
+        <div class="col-lg-3 col-md-4 col-sm-6  form-group">
+            <label>End Date</label>
+            @Html.TextBoxFor(model => model.AnnouncementEndDate, new { @class = "form-control", @type = "date" })
+            @Html.ValidationMessageFor(model => model.AnnouncementEndDate, "", new { @class = "text-danger" })
+        </div>
+        <div class="col-lg-6 col-md-6 col-sm-6  form-group">
+            <label>Link</label>
+            @Html.TextBoxFor(model => model.Link, new { @class = "form-control" })
+            @Html.ValidationMessageFor(model => model.Link, "", new { @class = "text-danger" })
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-12 text-center mt-2">
+
+            <button type="submit" class="btn mtr-o-grn btn-l ripplelink pull-right" name="Command" value="Forward"><i class="fa fa-paper-plane" aria-hidden="true"></i>Submit and Approved</button>
+            <button type="button" onclick="ShowLoadingDialog();window.location='@Url.Action("PendingComExtList", new { src = clsApplicationSetting.EncryptQueryString(ViewBag.MenuID.ToString() + "*/Recruitment/PendingComExtList") })';" class="btn cnl-btn ripplelink  pull-right"><i class="fas fa-times"></i> Cancel</button>
+
+
+        </div>
+    </div>
+}
+
+@section scripts    {
+
+    @System.Web.Optimization.Scripts.Render("~/bundle/unobtrusivejs")
+    <script src="~/assets/design/Scripts/AddInit.js?v=@clsApplicationSetting.GetWebConfigValue("Version")"></script>
+
+    <script>
+
+
+
+    </script>
+}

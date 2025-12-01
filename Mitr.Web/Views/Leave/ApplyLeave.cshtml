@@ -1,0 +1,280 @@
+﻿@model Mitr.Models.Leave
+@{
+    /**/
+
+    ViewBag.Title = "LeaveRequest";
+    string FixHolidays = ClsCommon.GetFixHolidaysByEmpid(clsApplicationSetting.GetSessionValue("EMPID").ToString());
+}
+
+@{
+	string MenuID = ViewBag.MenuID.ToString();
+	//string WorkingHours = clsApplicationSetting.GetConfigValue("WorkingHours"); comment by shailendra on 10092024
+	string LeaveApplyRule = clsApplicationSetting.GetConfigValue("LeaveApplyRule");
+	string DailyLeaveOption = clsApplicationSetting.GetConfigValue("DailyLeaveOption");
+
+	string SQL = @"select top 1 SS_EmployeeSalary.workingHours from SS_EmployeeSalary left join master_all as tblSubcategory on tblSubcategory.id=SS_EmployeeSalary.subcategoryid and tblSubcategory.table_name='SS_Subcategory' where empid=" + clsApplicationSetting.GetSessionValue("EMPID") + " and   SS_EmployeeSalary.isdeleted=0 order by SS_EmployeeSalary.id desc";
+	string WorkingHours = clsDataBaseHelper.ExecuteSingleResult(SQL);
+}
+@section style{
+    @Html.IncludeVersionedCss(Url.Content("~/assets/design/js/calendar/lib/main.css"))
+
+}
+@Html.Partial("HeaderMsg_Partial")
+<div class="row ">
+    <div class="col-lg-6 col-md-12 mb-5">
+
+        @using (Ajax.BeginForm("ApplyLeave", "Leave",
+            new { src = ViewBag.src },
+            new AjaxOptions { HttpMethod = "POST", OnSuccess = "OnLeaveSuccess", OnBegin = "ShowLoadingDialog();", OnFailure = "CloseLoadingDialog();" },
+        new { @id = "LeaveRequestForm", @enctype = "multipart/form-data" })
+        )
+        {
+
+            @Html.AntiForgeryToken()
+            <div class="shadow-box h-540">
+                <h2 class="heading-grd heading-btn blk-gdn-btn m-0 p-0 dpl-t">
+                    <p class="hd-p"><i class="far fa-calendar-check"></i> New Leave Request </p>
+                    <div class="spn-dtl">
+
+                        <div class="media">
+                            <div class="media-body text-center">
+                                <strong>Supervisor's Name </strong>
+                                <h4>@Model.LeaveEmp.HODName</h4>
+                            </div>
+                        </div>
+                    </div>
+                </h2>
+                <div class="leavelist fullwidth">
+                    <div class="row d-flex mt-2 mb-2">
+
+                        <div class="col-md-3">
+                            <div class="form-group slt-dgn">
+                                <label class="lbl-abs">Leave Type</label>
+                                @Html.DropDownListFor(x => Model.LeaveTypeID, new SelectList(Model.LeaveTypeList, "ID", "LeaveName", Model.LeaveTypeID), "Select",
+    new { @class = "form-control  applyselect  ddleaveType" })
+                                @Html.ValidationMessageFor(model => Model.LeaveTypeID, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+                        <div class="col-md-3 col-sm-6 halfcol-575">
+                            <div class="form-group">
+                                <label class="lbl-abs">From</label>
+                                @Html.TextBoxFor(model => Model.StartDate, new { @class = "form-control actdate", Type = "date", @placeholder = "Start Date" })
+                                @Html.ValidationMessageFor(model => Model.StartDate, "", new { @class = "text-danger" })
+
+                            </div>
+                        </div>
+                        <div class="col-md-3 col-sm-6 halfcol-575">
+                            <div class="form-group">
+                                <label class="lbl-abs">To</label>
+                                @Html.TextBoxFor(model => Model.EndDate, new { @class = "form-control actdate", Type = "date", @placeholder = "End Date" })
+                                @Html.ValidationMessageFor(model => Model.EndDate, "", new { @class = "text-danger" })
+
+
+                            </div>
+                        </div>
+                        <div class="col-md-3 text-left form-group">
+                            <button type="button" style="display:none" class="green-clr btn btn-pd btnOk"><i class="fas fa-check"></i>OK </button>
+                            <a class="green-clr btn btn-pd btnAddRow "><i class="fas fa-plus"></i> Add Row</a>
+                        </div>
+
+                    </div>
+                </div>
+                <div class="row pl-2 pr-2 d-flex">
+                    <div class="col-md-12 form-group mb-1">
+                        <div id="DivLeaveRequestTable" class="scroll">
+                            <div class='table-responsive'>
+                                <table id='tblApplyLeave' class='table table-list' style='border:0px'>
+                                    <tbody>
+                                        @{int trancount = 0;}
+                                        @for (int i = 0; i < Model.LeaveTranList.Count; i++)
+                                        {
+                                            trancount++;
+                                            <tr>
+                                                <td><div class='sno'><label id="lblCount_@trancount">@trancount</label></div></td>
+                                                <td>
+                                                    @Html.TextBoxFor(model => Model.LeaveTranList[i].LeaveDate, new { @class = "form-control txtDate", Type = "date", @placeholder = "Date" })
+                                                    @Html.ValidationMessageFor(model => Model.LeaveTranList[i].LeaveDate, "", new { @class = "text-danger" })
+                                                </td>
+                                                <td>
+                                                    @Html.DropDownListFor(x => Model.LeaveTranList[i].LeaveType, new SelectList(Model.LeaveTypeList, "ID", "LeaveName"), "Select Leave Type", new { @class = "form-control  applyselect ddleaveType" })
+                                                    @Html.ValidationMessageFor(model => Model.LeaveTranList[i].LeaveType, "", new { @class = "text-danger" })
+                                                </td>
+                                                <td width="50" class="lvtdslt">
+                                                    <select class='applyselect txthours' id="@Html.IdFor(x=>Model.LeaveTranList[i].LeaveHours)" name="@Html.NameFor(x=>Model.LeaveTranList[i].LeaveHours)">
+                                                        @if (LeaveApplyRule == "Hourly")
+                                                        {
+                                                            int totalHours = string.IsNullOrEmpty(WorkingHours) ? 0 : Convert.ToInt32(WorkingHours);
+
+                                                            for (int j = 1; j <= Convert.ToInt32(totalHours); j++)
+                                                            {
+                                                                <option @(WorkingHours == j.ToString() ? "selected" : "") value="@j">@j</option>
+                                                            }
+                                                        }
+                                                        else
+                                                        {
+                                                            if (DailyLeaveOption.Contains(','))
+                                                            {
+                                                                foreach (var item in DailyLeaveOption.Split(','))
+                                                                {
+                                                                    <option @(WorkingHours == item.Split('@')[1] ? "selected" : "") value="@item.Split('@')[1].ToString()">@item.Split('@')[0].ToString()</option>
+                                                                }
+                                                            }
+                                                        }
+                                                    </select>
+                                                </td>
+                                                <td>
+                                                    @if (trancount > 1)
+                                                    {
+                                                        <a class="deleterow"> <span class='close'>X</span></a>
+                                                    }
+                                                </td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <div class="text-right">
+                            @*<a class="green-clr btn btn-pd btnAddRow "><i class="fas fa-plus"></i> Add Row</a>*@
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    <div class="col-lg-12 text-right align-self-center">
+                        <strong>Total: <span id="spnTotalHour">@WorkingHours</span> @((LeaveApplyRule == "Hourly" ? "Hrs." : "Days"))</strong>
+
+                    </div>
+
+                    <div class="col-md-12 form-group">
+                        <label>Remarks, if any</label>
+                        @Html.TextAreaFor(model => Model.Remarks, new { @class = "form-control height-70", @placeholder = "Enter Remarks", @cols = "4", @rows = "4" })
+                        @Html.Raw(HttpUtility.HtmlDecode(Html.ValidationMessageFor(m => m.Remarks, "", new { @class = "text-danger" }).ToHtmlString()))
+
+                    </div>
+                    <div class="col-lg-12 form-group">
+                        <strong class="font-md">
+                            <i class="fas fa-phone-volume"></i> Emergency Details @Html.CreateTooltip("fas fa-info-circle", "Can be edited, applicable for this request only", "")
+                        </strong>
+
+                        <hr class="mt-1 mb-0" />
+                    </div>
+                    <div class="col-lg-4 form-group">
+                        <label>Name</label>
+                        @Html.TextBoxFor(model => Model.EmergencyContactName, new { @class = "form-control ", @placeholder = "Contact Name", @maxlength = "100" })
+                        @Html.ValidationMessageFor(model => Model.EmergencyContactName, "", new { @class = "text-danger" })
+                    </div>
+                    <div class="col-lg-4 form-group">
+                        <label>Contact No</label>
+                        @Html.TextBoxFor(model => Model.EmergencyContactNo, new { @class = "form-control ", Type = "text", @placeholder = "Contact No", @maxlength = "20" })
+                        @Html.ValidationMessageFor(model => Model.EmergencyContactNo, "", new { @class = "text-danger" })
+                    </div>
+                    <div class="col-lg-4 form-group">
+                        <label>Contact Relation</label>
+                        @Html.TextBoxFor(model => Model.EmergencyContactRelation, new { @class = "form-control ", Type = "text", @placeholder = "Contact Relation", @maxlength = "50" })
+                        @Html.ValidationMessageFor(model => Model.EmergencyContactRelation, "", new { @class = "text-danger" })
+                    </div>
+
+                    <div class="col-md-12 form-group divEDD" style="display:none;">
+                        <label class="lblEDD">Expected Delivery Date</label>
+                        @Html.TextBoxFor(model => Model.ExpectedDeliveryDate, new { @class = "form-control", Type = "date", @placeholder = "Expected Delivery Date" })
+                        @Html.ValidationMessageFor(model => Model.ExpectedDeliveryDate, "", new { @class = "text-danger" })
+
+                    </div>
+                    <div class="divCLSL col-md-12" style="display:none;">
+                        <div class="row ">
+                            <div class="col-lg-12"><strong class="green-clr">Attachment</strong></div>
+                            @{
+                                string[] AttachmentType = new string[2] { "Medical Certificate", "Fitness Certificate" };
+                                List<Mitr.Models.LeaveAttachment> AttachList = new List<Mitr.Models.LeaveAttachment>();
+                                foreach (var item in AttachmentType)
+                                {
+                                    Mitr.Models.LeaveAttachment objAttch = new Mitr.Models.LeaveAttachment();
+                                    objAttch.AttachmentType = item;
+                                    AttachList.Add(objAttch);
+                                }
+                                Model.LeaveAttachmentList = AttachList;
+                            }
+                            @for (int i = 0; i < Model.LeaveAttachmentList.Count; i++)
+                            {
+
+                                <div class="col-sm-6">
+                                    <div class="attachedleave">
+                                        <label>@(i + 1) . @Model.LeaveAttachmentList[i].AttachmentType</label>
+                                        @Html.HiddenFor(model => Model.LeaveAttachmentList[i].AttachmentType)
+
+                                        @Html.TextBoxFor(model => Model.LeaveAttachmentList[i].UploadFile, new { @class = "form-control uploadCertificate", Type = "file" })
+                                        @Html.ValidationMessageFor(model => Model.LeaveAttachmentList[i].UploadFile, "", new { @class = "text-danger" })
+                                    </div>
+                                </div>
+
+                            }
+                            <div class="col-sm-12 text-right mb-2 red-clr">
+                                <span>@clsApplicationSetting.AllowedFileSize("Image")</span>
+                                <span>@clsApplicationSetting.GetWebConfigValue("AllowedImageUploadExtension").Replace("|", ", ") </span>
+                            </div>
+                        </div>
+
+                    </div>
+                    <div class="col-sm-12 text-right">
+                        @Html.CreateAnchor(MenuID, "/Leave/LeaveDashboard", "Back", "btn cnl-btn btn-l ripplelink", "Click to go back", "fas fa-arrow-left", "")
+                        <button type="submit" name="Command" value="Add" id="btnSubmit" style="display:none"> </button>
+                        <button type="button" class="btn mtr-o-grn btn-l ripplelink btnApplyLeave "> <i class="fa fa-paper-plane" aria-hidden="true"></i> Submit </button>
+
+                    </div>
+
+                </div>
+            </div>
+        }
+    </div>
+
+    <div class="col-lg-6 col-md-12 mb-5">
+        <div class="shadow-box p-2">
+
+            <div class="row">
+                <div class="col-md-12 mb-3">
+
+
+
+                    <!---@Html.CreateColorPopHover("unique-id", "fas fa-info-circle  info-clr leaveinfoclr",
+                         new List<(string, string)>
+                               {
+                                 ("Weekly Off", "light-wo wo-br-clr"),
+                                 ("Holiday", "light-hd holiday"),
+                                 ("Pending Leave", "light-pl pendingleave"),
+                                 ("Leave Approved", "light-al approvedleave"),
+                                 ("Select Leave", "light-sl selectleave")
+                               }
+                    )--->
+                    <div class="@(FixHolidays.Contains("Saturday")?"":"fc-day-sat-on")">
+                        <div id='calendar'>
+                            @Html.Partial("_Loading")
+                        </div>
+                    </div>					
+                </div>
+                <div class="col-md-12">
+                    <strong class="font-md"><i class="fas fa-hourglass-half"></i>Leave Balances </strong>
+                    <hr class="mt-1 mb-2">
+                    <div id="DivLeaveBalance" style="position: relative; height:130px">
+						@Html.Partial("_Loading")
+					</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+
+@section scripts    {
+    @Html.IncludeVersionedJs(Url.Content("~/assets/design/js/calendar/lib/main.js"))
+    @Html.IncludeVersionedJs(Url.Content("~/assets/design/scripts/PagesJS/FillCalendar.js"))
+    @Html.IncludeVersionedJs(Url.Content("~/assets/design/scripts/PagesJS/ApplyLeave.js"))
+
+    @System.Web.Optimization.Scripts.Render("~/bundle/unobtrusivejs")
+    @Html.IncludeVersionedJs(Url.Content("~/assets/design/Scripts/ToolTip.js"))
+
+
+
+}

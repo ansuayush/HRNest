@@ -1,0 +1,48 @@
+﻿@model Mitr.Models.Miscellaneous
+
+<div class="inner-main defult-height pb-0">
+
+
+@Html.Partial("HeaderMsg_Partial")
+
+@using (Html.BeginForm("OTPValidate", "Account", FormMethod.Post,
+new
+{
+    name = "OTPValidateForm",
+    id = "OTPValidateForm",
+    @class = "login-form",
+    enctype = "multipart/form-data"
+}))
+{
+
+    @Html.AntiForgeryToken()
+
+
+   <div class="text-center boxcenter">
+          <img src="/assets/design/images/validate-image.png" alt="">
+            <div class="input-group text-left input-group-dgn">
+              <label for="OTP" class="lbl-abs">OTP</label>
+                @Html.TextBoxFor(model => model.OTP, new { @class = "form-control", @placeholder="Enter OTP" })
+                @Html.ValidationMessageFor(model => model.OTP, "", new { @class = "text-danger" })
+              
+              <div class="input-group-btn">
+                  
+                  <button type="submit" name="Command" value="Add"   class="btn mtr-g-grn "><i class="fas fa-key"></i>Validate</button> 
+              </div>
+
+
+
+            </div> 
+
+            <button type="submit" name="Command" value="Resend"   class="btn mtr-o-grn"><i class="fa fa-recycle"></i> Resend</button>
+        </div>
+    
+
+
+}
+
+</div>
+@section scripts    {
+    <script src="~/assets/design/Scripts/AddInit.js?v=@clsApplicationSetting.GetWebConfigValue("Version")"></script>
+    @System.Web.Optimization.Scripts.Render("~/bundle/unobtrusivejs")
+}

@@ -1,0 +1,38 @@
+﻿@model IList<Mitr.Models.Attachments>
+<div class="scroll h-80 mb-2">
+    <table class="table mt-0" id="tbltraveldoc">
+        <thead>
+            <tr>
+                <th>Sno</th>
+                <th>Description</th>
+                <th>Attachment</th>
+                    <th class="td-100"></th>
+                
+            </tr>
+        </thead>
+        <tbody>
+            @if (Model != null)
+            {
+                int couint = 0;
+                foreach (Mitr.Models.Attachments item in Model)
+                {
+                    couint++;
+                    <tr>
+                        <td>@couint</td>
+                        <td>
+                            @item.Description
+                            <input type="hidden" name="TDID" value="@item.AttachmentID" />
+                        </td>
+                        <td><a href="~/Attachments/@item.AttachmentID@item.ContentType"><strong class="green-clr"><i class="fas fa-paperclip"></i>@item.FileName</strong></a></td>
+                       
+                            <td class="text-center">
+                                <a class="deletedoc"><i class="fas fa-trash-alt red-clr"></i></a>
+                            </td>
+                        
+                    </tr>
+                }
+            }
+
+        </tbody>
+    </table>
+</div>

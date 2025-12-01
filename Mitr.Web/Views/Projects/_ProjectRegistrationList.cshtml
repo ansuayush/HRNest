@@ -1,0 +1,55 @@
+﻿@model IList<Project.List>
+@{
+    var Modify = clsApplicationSetting.GetSessionValue("Modify");
+}
+<div class="row">
+
+    <div class="col-sm-12">
+
+        <div class="control-section">
+            @Html.EJS().Grid("Grid").DataSource((List<Project.List>)Model).GridLines(Syncfusion.EJ2.Grids.GridLine.Both).Columns(col =>
+	   {
+		   col.Field("ID").Visible(false).Add();
+		   col.Field("RowNum").HeaderText("SNo.").Width("30").Add();
+
+		   col.Field("doc_no").HeaderText("Project code").Width("80").Add();
+
+		   col.Field("donor_Name").HeaderText("Main Donor").Width("150").Add();
+		   col.Field("DonorPOC").HeaderText("Donor's POC").Width("80").Add();
+		   col.Field("ProgramsName").HeaderText("Program").Width("120").Add();
+		   col.Field("proj_name").HeaderText("Project Name").Width("120").Add();
+		   col.Field("start_date").HeaderText("Start Date").Width("80").Add();
+		   col.Field("end_date").HeaderText("End Date").Width("80").Add();
+		   col.Field("Currency_Name").HeaderText("Currency Name").Width("80").Add();
+		   col.Field("amount").TextAlign(Syncfusion.EJ2.Grids.TextAlign.Right).Format("N").HeaderText("Amount").Width("80").Add();
+		   col.Field("ManagerName").HeaderText("Manager").Width("100").Add();
+		   col.Field("Status").HeaderText("Status").Width("100").Add();
+		   col.HeaderText("Action").TextAlign(Syncfusion.EJ2.Grids.TextAlign.Center).Template("#tmpAction").Width("60").Add();
+
+	   }).AllowPaging().PageSettings(page => page.PageSize(10)).Created("created").Toolbar(new List<string>() { "Search" }).Render()
+
+        </div>
+
+
+
+    </div>
+</div>
+
+
+<script id="tmpAction" type="text/x-template">
+    ${if('@Modify' === 'True')}
+    <input type="hidden" name="I" value="${ID}" />
+    <a onclick="BindEdit(this)"><i class="fas fa-eye"></i>View </a>
+    ${/if}
+</script>
+<script>
+    function created() {
+        var grid = document.getElementById("Grid").ej2_instances[0];
+        document.getElementById(grid.element.id + "_searchbar").addEventListener('keyup', () => {
+            grid.search(event.target.value)
+        });
+    }
+</script>
+@Html.IncludeVersionedJs(Url.Content("~/assets/design/Scripts/SyncScripts.js"))
+
+@(Html.EJS().ScriptManager())

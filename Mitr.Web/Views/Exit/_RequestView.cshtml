@@ -1,0 +1,120 @@
+﻿@model Exit.Request_View
+
+<div class="row">
+    <div class="col-sm-12 form-group">
+        @Html.HiddenFor(x => x.Exit_ID)
+        <ul class="list-unstyled inline-li m-0 rqt-dtl">
+            <li>
+                <label class="lbl-clr">Created by</label>
+                <br>
+                @Model.CreatedByName
+              
+
+            </li>
+            <li>
+                <label class="lbl-clr">Employee</label>
+                <br>
+                @Model.EMP_Name
+                <span class="space-line">|</span>
+                @Model.EMP_Code
+            </li>
+            <li>
+                <label>Department</label>
+                <br>
+                @Model.Department
+            </li>
+            <li>
+                <label>Designation</label>
+                <br>
+                @Model.DesignationName
+            </li>
+
+        </ul>
+    </div>
+    <div class="col-sm-6">
+        <div class="row">
+            <div class="col-sm-6 wh-575 form-group">
+                <label>Request No</label>
+                <p>@Model.Req_No</p>
+            </div>
+            <div class="col-sm-6 wh-575 form-group">
+                <label>Request Date</label>
+                <p>@Model.Req_Date</p>
+            </div>
+            <div class="col-sm-6 form-group">
+                <label>Reason for Resignation</label>
+                <p>@Model.Resignation_Reason</p>
+            </div>
+            <div class="col-sm-6 form-group" data-popover-content="#comment1" data-toggle="popover" data-placement="right" data-original-title="" title="">
+                <label>Comment</label>
+                <p>@ClsCommon.ShortString(Model.Comment, 50) <a href="#">View</a></p>
+                <div id="comment1" style="display: none">
+                    <div class="popover-body">
+                        <button type="button" class="popover-close close"> <i class="fas fa-times"></i> </button>
+                        @Model.Comment
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-12 form-group"> <strong>Notice Period as per Policy: <span class="red-clr">@Model.NoticePeriod Days</span></strong> </div>
+            <div class="col-sm-6 form-group">
+                <label>Relieving date as per policy</label>
+                <p>
+                    @Model.Actual_RelievingDate
+                </p>
+            </div>
+            <div class="col-sm-12 form-group">
+                <ul class="list-unstyled inline-li m-0">
+                    <li>
+                        <label class="m-0">Serve full notice period?</label>
+                    </li>
+                    <li>
+                        <div class="radio-button">
+                            <input id="yes1" name="@Html.NameFor(x=>x.IsServeNotice)" type="radio" disabled @(Model.IsServeNotice == 1 ? "checked" : "")>
+                            <label for="yes1" class="radio-label mb-0">Yes</label>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="radio-button">
+                            <input id="no1" name="@Html.NameFor(x=>x.IsServeNotice)" type="radio" disabled @(Model.IsServeNotice == 0 ? "checked" : "")>
+                            <label for="no1" class="radio-label mb-0">No</label>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+            <div class="col-sm-12 divhide" style="@(Model.IsServeNotice == 0?"":"display:none")">
+                <div class="row">
+                    <div class="col-sm-6 wh-575 form-group">
+                        <label>Expected Relieving Date</label>
+                        <p>@Model.RelievingDate</p>
+                    </div>
+                    <div class="col-sm-6 form-group">
+                        <label>Reason for not serving full notice period</label>
+                        <p>@Model.ReasonForNotServingNotice</p>
+                    </div>
+                </div>
+            </div>
+            @if (Model.IsRetained)
+            {
+                <div class="col-sm-12 retaindiv">
+                    <div class="row">
+                        <div class="col-sm-2 form-group">
+                            <label>Retained By</label>
+                            <p>@Model.RetainedBy (@Model.RetainedAt_Level)</p>
+                        </div>
+                        @if (@Model.Retained_Attachment > 0)
+                        {
+                            <div class="col-sm-2 form-group">
+                                <label>Retained Attachment</label>
+                                <p><a href="@Model.Retained_AttachmentPath" target="_blank"><i class="fa fa-download"></i> Download</a></p>
+                            </div>
+                        }
+                        <div class="col-sm-6 form-group">
+                            <label>Retained Remarks</label>
+                            <p>@Model.Retained_Remarks</p>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>

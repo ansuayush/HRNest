@@ -1,0 +1,471 @@
+﻿
+@model Mitr.Model.OtherBenefitPayment
+@{
+	Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+<div class="inner-main">
+	<h1 class="heading-one ">Other Benefit Payment</h1>
+
+	@using (Ajax.BeginForm("_OtherBenefitPayment", "EmployeeSalary",
+			new { src = clsApplicationSetting.EncryptQueryString(ViewBag.MenuID.ToString() + "*/EmployeeSalary/_OtherBenefitPayment*" + ViewBag.FYID) },
+			  new AjaxOptions { HttpMethod = "POST", OnSuccess = "BindTarget", OnBegin = "ShowLoadingDialog()" },
+		new { @id = "__OtherBenefitPaymentFrom" }))
+	{
+		<div class="row">
+			<div class="col-lg-3 col-md-3 col-sm-3  form-group">
+				<label class="lbl-abs">Select Month</label>
+				@Html.TextBoxFor(model => model.PaidDate, new { @class = "form-control actdate ddapplyaction", @type = "month" })
+				@Html.ValidationMessageFor(model => model.PaidDate, "", new { @class = "text-danger" })
+			</div>
+			<div class="col-lg-3 col-md-3 col-sm-3  form-group">
+				<label class="lbl-abs">Select Year</label>
+				@Html.DropDownListFor(x => Model.FYID, new SelectList(ViewBag.FinYearList, "ID", "Year", Model.FYID), new { @class = "form-control  applyselect ddapplyaction" })
+				@Html.ValidationMessageFor(model => Model.FYID, "", new { @class = "text-danger" })
+			</div>
+			@if (Model.EmpID == 0)
+			{
+				<div class="col-lg-3 col-md-3 col-sm-3  form-group">
+					<label class="lbl-abs">Employee Name</label>
+					@Html.DropDownListFor(model => model.EmpID, new SelectList(Model.EmployeeList, "ID", "Name", Model.EmpID), "All", new { @class = "form-control applyselect ddapplyaction" })
+					@Html.ValidationMessageFor(model => model.EmpID, "", new { @class = "text-danger" })
+
+				</div>
+			}
+
+			<div class="col-lg-3 col-md-3 col-sm-3  form-group">
+				<button type="button" class="btn blk-gdn-btn btn-l ripplelink" onclick="exportReportToExcelAll()"><i class="fas fa-file-excel"></i>Export</button>
+			</div>
+			<div class="col-md-4 col-sm-12 col-xs-12">
+				<input type="file" id="FileAttachment" name="UploadedFile" class="file-inp" accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet/.xls" />
+
+			</div>
+			<div class="col-md-6 col-sm-12 col-xs-12 align-self-center">
+				<button type="button" class="btn mtr-g-grn" onclick="saveimport()"><i class="fas fa-file-alt"></i>Import</button>
+
+			</div>
+		</div>
+
+	}
+
+	<div id="TargetDiv"></div>
+</div>
+
+@section scripts    {
+	@System.Web.Optimization.Scripts.Render("~/bundle/dataTablesjs")
+	@System.Web.Optimization.Scripts.Render("~/bundle/unobtrusivejs")
+	<script type="text/javascript">
+        $(document).ready(function () {
+            BindData();
+        });
+        $('.ddapplyaction').bind("change", function () {
+            $("#btnSearch").click();
+        });
+        $(".ddapplyaction").bind("change", function () {
+            BindData();
+        });
+        function OnSuccess(obj) {
+            if (obj.Status) {
+                SuccessToaster(obj.SuccessMessage);
+                window.location.reload();
+
+            }
+            else {
+                CloseLoadingDialog();
+                FailToaster(obj.SuccessMessage);
+            }
+        }
+        function BindTarget(args) {
+            ShowLoadingDialog();
+            $("#TargetDiv").empty();
+            $("#TargetDiv").html(args);
+            $('[data-toggle="tooltip"]').tooltip();
+            $(".applyselect").select2();
+            CloseLoadingDialog();
+        }
+
+        function BindData() {
+            ShowLoadingDialog();
+            $("#TargetDiv").empty();
+            var FYID = $("#FYID").find('option:selected').val();
+            var EmpID = $("#EmpID").find('option:selected').val();
+            var PaidDate = $("#PaidDate").val();
+            if (FYID == undefined) {  FYID = 0;}
+			$.ajax({
+                url: "/EmployeeSalary/_OtherBenefitPayment",
+				type: "Post",
+                data: { src: EncryptQueryStringJSON(@ViewBag.MenuID+"*" + "/EmployeeSalary/_OtherBenefitPayment" + "*" + FYID + "*" + EmpID + "*" + PaidDate) },
+                success: function (data)
+                {
+                    $("#TargetDiv").empty();
+                    $("#TargetDiv").html(data);
+                    $("#FYID").select2();
+                    $("#EmpID").select2();
+                    CloseLoadingDialog();
+				},
+                error: function (er) {
+					alert(er);
+				}
+            });
+
+        }
+
+   function Add(ID, Name, Component) {
+    if (ID == undefined) { ID = 0;}
+     var PaidDate = $("#PaidDate").val();
+	$.ajax({
+        url: "/EmployeeSalary/_BonusPaymentEntry",
+		type: "Get",
+        data: { src: EncryptQueryStringJSON(@ViewBag.MenuID+"*" + "/EmployeeSalary/_BonusPaymentEntry" + "*" + ID + "*" + Name + "*" + Component + "*" + PaidDate)},
+        success: function (data)
+        {
+            $("#TagetDivPaid").empty();
+            $("#TagetDivPaid").html(data);
+            $("#PaidModal").modal("show");
+            var form = $("form")  .removeData("validator") .removeData("unobtrusiveValidation");
+            $.validator.unobtrusive.parse(form);
+            $("#ProjectID").select2();
+
+		},
+        error: function (er) {
+			alert(er);
+		}
+	});
+    }
+    function ListView(ID, Name, Component) {
+     if (ID == undefined) {  ID = 0; }
+	$.ajax({
+        url: "/EmployeeSalary/_BonusPaymentDetails",
+		type: "Get",
+        data: { src: EncryptQueryStringJSON(@ViewBag.MenuID+"*" + "/EmployeeSalary/_BonusPaymentDetails" + "*" + ID + "*" + Name + "*" +Component)},
+        success: function (data)
+        {
+            $("#TagetDivView").empty();
+            $("#TagetDivView").html(data);
+            $("#ViewModal").modal("show");
+             var form = $("form").removeData("validator") .removeData("unobtrusiveValidation");
+            $.validator.unobtrusive.parse(form);
+		},
+        error: function (er) {
+
+			alert(er);
+
+		}
+	});
+}
+
+           function AddNewRow() {
+            var LastTRCount = parseInt($('#tblBonusPaymentEntry').find("tbody tr").length) - 1;
+            var $tableBody = $('#tblBonusPaymentEntry').find("tbody"),
+                $trLast = $tableBody.find("tr:last"),
+                $trNew = $trLast.clone();
+                $trNew.find("td:last").html('<a onclick="DeleteRow(this)" class="remove"><i class="fas fa-window-close red-clr" aria-hidden="true"></i></a>')
+                $trNew.find("label").each(function () {
+                $(this).attr({
+                    'id': function (_, id) { var arr = id.split('_'); return id.replace(arr[1], LastTRCount + 1); },
+                });
+                $(this).html(parseInt($('#tblBonusPaymentEntry').find("tbody tr").length) + 1)
+            });
+
+            $trNew.find("select").each(function (i) {
+                $(this).attr({
+                    'id': function (_, name) { return name.replace('_' + LastTRCount + '_', '_' + (parseInt(LastTRCount) + 1) + '_'); },
+                    'name': function (_, name) { return name.replace('[' + LastTRCount + ']', '[' + (parseInt(LastTRCount) + 1) + ']'); },
+                });
+
+            });
+            $trNew.find("input").each(function (i) {
+                $(this).attr({
+                    'id': function (_, name) { return name.replace('_' + LastTRCount + '_', '_' + (parseInt(LastTRCount) + 1) + '_'); },
+                    'name': function (_, name) { return name.replace('[' + LastTRCount + ']', '[' + (parseInt(LastTRCount) + 1) + ']'); },
+                });
+                $(this).val('')
+            });
+            $trNew.find("textarea").each(function (i) {
+                $(this).attr({
+                    'id': function (_, name) { return name.replace('_' + LastTRCount + '_', '_' + (parseInt(LastTRCount) + 1) + '_'); },
+                    'name': function (_, name) { return name.replace('[' + LastTRCount + ']', '[' + (parseInt(LastTRCount) + 1) + ']'); },
+                });
+                $(this).val('')
+            });
+
+            $trNew.find("span").each(function (i) {
+                if ($(this).attr("data-valmsg-for")) {
+                    $(this).attr({
+                        'data-valmsg-for': function (_, name) { return name.replace('[' + LastTRCount + ']', '[' + (parseInt(LastTRCount) + 1) + ']'); }
+                    });
+                }
+                if ($(this).attr("for")) {
+                    $(this).attr({
+                        'for': function (_, name) { return name.replace('_' + LastTRCount + '_', '_' + (parseInt(LastTRCount) + 1) + '_'); }
+                    });
+                }
+            });
+            $trLast.after($trNew);
+            clearlist(parseInt(LastTRCount) + 1);
+            var form = $("form");
+            form.removeData('validator');
+            form.removeData('unobtrusiveValidation');
+            $.validator.unobtrusive.parse(form);
+            $('[data-toggle="tooltip"]').tooltip();
+            $(".applyselect").select2();
+
+        }
+
+    function DeleteRow(obj) {
+        var count = 0;
+        var ID = parseInt($(obj).closest('tr').find("td.hdftableid input[type='hidden']").val());
+        var TotalRowCount = $('#tblBonusPaymentEntry').find("tbody tr").length;
+        var srno = TotalRowCount;
+        if (isNaN(ID)) {
+            ConfirmMsgBox("Are you sure want to delete this row", '', function () {
+                $(obj).closest('tr').remove();
+                $("#tblBonusPaymentEntry TBODY TR").each(function (i) {
+                    srno = srno - 1;
+                    $(this).closest("tr").find("label").each(function () {
+                        $(this).attr({
+                            'id': function (_, id) { var arr = id.split('_'); return id.replace(arr[1], i); },
+                        });
+                        $(this).html(i + 1)
+                    });
+
+                    $(this).closest("tr").find("input").each(function () {
+                        $(this).attr({
+                            'id': function (_, id) { return id.replace('_' + (parseInt(i) + 1) + '_', '_' + i + '_'); },
+                            'name': function (_, name) { return name.replace('[' + (parseInt(i) + 1) + ']', '[' + i + ']'); },
+                        });
+                    });
+                    $(this).closest("tr").find("select").each(function () {
+                        $(this).attr({
+                            'id': function (_, id) { return id.replace('_' + (parseInt(i) + 1) + '_', '_' + i + '_'); },
+                            'name': function (_, name) { return name.replace('[' + (parseInt(i) + 1) + ']', '[' + i + ']'); },
+                        });
+                    });
+                    $(this).closest("tr").find("label").each(function () {
+                        if ($(this).attr("data-valmsg-for")) {
+                            $(this).attr({
+                                'data-valmsg-for': function (_, name) { return name.replace('[' + (parseInt(i) + 1) + ']', '[' + i + ']'); },
+                            });
+                        }
+                        if ($(this).attr("for")) {
+                            $(this).attr({
+                                'for': function (_, id) { return id.replace('_' + (parseInt(i) + 1) + '_', '_' + i + '_'); },
+                            });
+                        }
+                    });
+                });
+                calculateTotal();
+            })
+
+        }
+        else {
+            ConfirmMsgBox("Are you sure want to delete this row", '', function () {
+                $(obj).closest('tr').remove();
+                $("#tblBonusPaymentEntry TBODY TR").each(function (i) {
+                    srno = srno - 1;
+                    $(this).closest("tr").find("label").each(function () {
+                        $(this).attr({
+                            'id': function (_, id) { var arr = id.split('_'); return id.replace(arr[1], i); },
+                        });
+                        $(this).html(i + 1)
+                    });
+
+                    $(this).closest("tr").find("input").each(function () {
+                        $(this).attr({
+                            'id': function (_, id) { return id.replace('_' + (parseInt(i) + 1) + '_', '_' + i + '_'); },
+                            'name': function (_, name) { return name.replace('[' + (parseInt(i) + 1) + ']', '[' + i + ']'); },
+                        });
+                    });
+                    $(this).closest("tr").find("select").each(function () {
+                        $(this).attr({
+                            'id': function (_, id) { return id.replace('_' + (parseInt(i) + 1) + '_', '_' + i + '_'); },
+                            'name': function (_, name) { return name.replace('[' + (parseInt(i) + 1) + ']', '[' + i + ']'); },
+                        });
+                    });
+                    $(this).closest("tr").find("label").each(function () {
+
+                        if ($(this).attr("data-valmsg-for")) {
+                            $(this).attr({
+                                'data-valmsg-for': function (_, name) { return name.replace('[' + (parseInt(i) + 1) + ']', '[' + i + ']'); },
+                            });
+                        }
+                        if ($(this).attr("for")) {
+                            $(this).attr({
+                                'for': function (_, id) { return id.replace('_' + (parseInt(i) + 1) + '_', '_' + i + '_'); },
+                            });
+                        }
+                    });
+                });
+                calculateTotal();
+                var dataObject = JSON.stringify({
+                    'ID': ID,
+                    'Doctype': 'BudgetSublineActivity',
+                });
+                var data = $.parseJSON($.ajax({
+                    url: '/CommonAjax/DelRecord_CommonJson',
+                    type: "post",
+                    data: dataObject,
+                    contentType: 'application/json',
+                    async: false
+                }).responseText);
+                return data;
+            });
+
+        }
+
+    }
+
+    function clearlist(obj) {
+        $("#ProjectID").empty();
+        $("#ProjectID").append($("<option />").val("").text("Select"));
+
+    }
+    function DeleteViewItem(ID, EmpID) {
+
+            ConfirmMsgBox("Are you sure want to delete this row", '', function () {
+                if (ID == undefined) {  ID = 0; }
+                if (EmpID == undefined) { EmpID = 0; }
+                $.ajax({
+                    url: "/EmployeeSalary/DeleteBonusPaidEntry",
+                    type: "Post",
+                    data: { src: EncryptQueryStringJSON(@ViewBag.MenuID+"*" + "/EmployeeSalary/DeleteBonusPaidEntry" + "*" + ID + "*" + EmpID) },
+                    success: function (data) {
+                        $("#TagetDivView").empty();
+                        $("#TagetDivView").html(data);
+                        $("#ViewModal").modal("show");
+                        var form = $("form")
+                            .removeData("validator")
+                            .removeData("unobtrusiveValidation");
+                        $.validator.unobtrusive.parse(form);
+                        OnSuccess(obj)
+                    },
+                    error: function (er) {
+                        alert(er);
+
+                    }
+                });
+            });
+          }
+	</script>
+	<script>
+            function exportReportToExcelAll() {
+                 exportToExcelSahaj('OtherBenefitPaymentImport1', 'OtherBenefitPayment');
+                }
+            function CalculateSum(obj) {
+            var Entitlement_1 = parseInt($(obj).closest('tr').find("td.hdfEntitlementid_1 input[type='hidden']").val());
+            var Entitlement_2 = parseInt($(obj).closest('tr').find("td.hdfEntitlementid_2 input[type='hidden']").val());
+            var Paid_3 = parseInt($(obj).closest('tr').find("td.hdfPaidid_3 input[type='hidden']").val());
+            var Paid_4 = parseInt($(obj).closest('tr').find("td.hdfPaidid_4 input[type='hidden']").val());
+            var Balanceid_5 = parseInt($(obj).closest('tr').find("td.hdfBalanceid_5 input[type='hidden']").val());
+            var Balanceid_6 = parseInt($(obj).closest('tr').find("td.hdfBalanceid_6 input[type='hidden']").val());
+            //var Entitlement_1 = Number($(obj).closest("tr").find(".Entitlement_1").val());
+            //var Entitlement_2 = Number($(obj).closest("tr").find(".Entitlement_2").val());
+            //var Paid_3 = Number($(obj).closest("tr").find(".Paid_3").val());
+            //var Paid_4 = Number($(obj).closest("tr").find(".Paid_4").val());
+            var txtval0 = Number($(obj).closest("tr").find(".txtval0").val());
+            var txtval1 = Number($(obj).closest("tr").find(".txtval1").val());
+            //if (Entitlement_1 == Paid_3) { alert('All Amount Paid'); return false; }
+            //if (Entitlement_2 == Paid_4) { alert('All Amount Paid'); return false; }
+            //(Entitlement_1)-( Paid_3 + txtval0)
+            if (!txtval0) { txtval0 = 0; }
+            if (!txtval1) { txtval1 = 0; }
+            var Bal1 = 0;
+            Bal1 = (Entitlement_1) - (Paid_3 + txtval0);
+            var Bal2 = 0
+            Bal2 = (Entitlement_2) - (Paid_4 + txtval1);
+            $(obj).closest("tr").find(".hdfBalanceid_5").text(Bal1);
+            $(obj).closest("tr").find(".hdfBalanceid_6").text(Bal2);
+            if (Bal1 < 0 && Entitlement_1>0) {
+                alert('Balance Amount can not be greater than paid amount in Mobile Reimbursement')
+                $(obj).closest("tr").find(".txtval0").val(0);
+                $(obj).closest("tr").find(".hdfBalanceid_5").text(0);
+            }
+            if (Bal2 < 0 && Entitlement_2 > 0 ) {
+                alert('Balance Amount can not be greater than paid amount in Internet Reimbursement')
+                $(obj).closest("tr").find(".txtval1").val(0);
+                $(obj).closest("tr").find(".hdfBalanceid_6").text(0);
+            }
+
+        }
+
+
+        $('#btnSave').click(function () {
+            $(this).closest('form').data("validator").cancelSubmit = true;
+            return true;
+        });
+          function saveimport() {
+           var fileUpload = $("#FileAttachment").get(0);
+           var dt = $("#PaidDate").val();
+           var FYId=$('#FYID').val();
+           var empt=$("#EmpID").val();
+            var files = fileUpload.files;
+            // Create FormData object
+            if (files.length == 0) {
+                // showAndDismissAlert("danger","Please Choose File First.")
+                $("#FileAttachment").focus();
+                return
+            }
+                var fileData = new FormData();
+                if (files.length > 0) {
+                  fileData.append("FileAttachment", files[0]);
+                  fileData.append('FYId',   FYId);
+                  fileData.append('Date', dt);
+                  fileData.append('EMPID', empt);
+                  ShowLoadingDialog();
+                $.ajax({
+                    url: "/CommonAjax/OtherBenefitPayment",
+                    type: "POST",
+                    processData: false,
+                    contentType: false,
+                    data: fileData,
+                    success: function (response) {
+                            var count=0;
+		                    var data=response.otherBenefitPayment.OtherBenefitPaymentComponentList;
+                            $("#OtherBenefitPaymentImport TBODY TR").each(function (i) {
+                           // var EmpCode = Number($(this).find("td:eq(0) input[type='hidden']").val());
+                             var currentRow = $(this).closest("tr");
+                             var EmpCode=Number(currentRow.find(".hdfempid").val());
+                         for (let j = 0; j < data.length; j++) {
+                         var text=data[j].EmpID;
+                        if(EmpCode==text)
+                         {
+                              if(data[j].Component=="Mobile Reimbursement")
+                               {
+                                var col1 = currentRow.find("."+text+"_"+data[j].ComponentID+"").val(data[j].PaidAmount);
+                                }
+                              else
+                              {
+                                var col2 = currentRow.find("."+text+"_"+data[j].ComponentID+"").val(data[j].PaidAmount);
+                              }
+
+                           }
+                           count++;
+                           }
+
+
+                           });
+
+
+                        $("#FileAttachment").val(null);
+                        //  window.location.reload();
+                        //alert(response.SuccessMessage);
+                        CloseLoadingDialog();
+                       // swal('', response.SuccessMessage);
+                        swal('', response.SuccessMessage);
+       
+                        if (response.ID != "0") {
+                            $("#FileAttachment").val(null);
+
+                        }
+                    }
+                });
+            }
+		}
+
+
+      
+	</script>
+
+
+}

@@ -1,0 +1,213 @@
+﻿@model Employee.GeneralInfo
+<div class="tab-pane fade show active" id="gi" role="tabpanel" aria-labelledby="contact-tab">
+	<div class="table-responsive">
+		<table class="table td-border-none th-bg-none   m-0">
+
+			<tbody>
+				<tr>
+					<td colspan="3">
+						<h2 class="headingtwo">
+							<i class="fas fa-user-tie"></i>Travel Preference
+						</h2>
+					</td>
+					<td class="text-right">
+						<input class="cbx-select-group selectallTravel" id="selectallTravel" type="checkbox" value="g" />
+						<label class="m-0" for="selectallTravel" data-toggle="tooltip" title="Select All"></label>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="4">
+						<div class="table-responsive">
+							<table class="table table-striped m-0">
+								<thead>
+									<tr>
+										<th width="33">S.No.</th>
+										<th width="200">Airline Name	</th>
+										<th>Flyer Number</th>
+										<th width="10"></th>
+									</tr>
+								</thead>
+								<tbody>
+									@if (Model.AirlinePreferencesList != null)
+									{
+										if (Model.AirlinePreferencesList.Count > 0)
+										{
+											int QCount = 0;
+											for (int i = 0; i < Model.AirlinePreferencesList.Count; i++)
+											{
+												QCount++;
+												<tr>
+													<td>@QCount</td>
+													<td>@Model.AirlinePreferencesList[i].AirlineName</td>
+													<td>@Model.AirlinePreferencesList[i].FlyerNumber</td>
+													<td>
+														@if (Model.AirlinePreferencesList[i].HRVFlyer == 0)
+														{
+															<input class="cbx-group-g selectedAirline" id="s_@QCount" type="checkbox" value="Flyer_@Model.AirlinePreferencesList[i].AirlineName+@Model.AirlinePreferencesList[i].FlyerNumber+@Model.AirlinePreferencesList[i].EMPID+@Model.AirlinePreferencesList[i].AirID" />
+															<label class="m-0 ipbdr-none" for="s_@QCount"></label>
+
+														}
+														else
+														{
+															<input class="cbx-group-g" checked id="s_@QCount" type="checkbox" value="Flyer_@Model.AirlinePreferencesList[i].AirlineName+@Model.AirlinePreferencesList[i].FlyerNumber+@Model.AirlinePreferencesList[i].EMPID+@Model.AirlinePreferencesList[i].AirID" />
+															<label class="m-0 ipbdr-none" for="s_@QCount"></label>
+														}
+
+													</td>
+												</tr>
+											}
+										}
+									}
+
+
+
+								</tbody>
+							</table>
+						</div>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="3">
+						<h2 class="headingtwo">
+							<i class="fas fa-map-marker-alt"></i>Seat and Meal Preference
+						</h2>
+					</td>
+					@if (ViewBag.status == 0)
+					{
+						<td class="text-center">
+							<input class="cbx-select-group selectallSeatandMeal" id="selectallSeatandMeal" type="checkbox" value="d" />
+							<label class="m-0" for="selectallSeatandMeal" data-toggle="tooltip" title="Select All"></label>
+						</td>
+					}
+				</tr>
+				<tr>
+					<td>Seat Preferences</td>
+					@if (ViewBag.status == 0)
+					{
+						if (Model.SeatPreferencesID > 0)
+						{
+							var data = Model.SeatPreferencesList.Where(x => x.ID == Model.SeatPreferencesID).Select(x => x.Name).FirstOrDefault();
+							<td class="fn-bold">
+
+								@*@Html.DropDownListFor(n => n.SeatPreferencesID, new SelectList(Model.SeatPreferencesList, "ID", "Name", Model.SeatPreferencesID), "Select",
+									 new { @class = "form-control  applyselect" })*@
+								@data
+							</td>
+						}
+						else
+						{
+							<td class="fn-bold">-</td>
+						}
+
+					}
+					@if (Model.generalInfo != null)
+					{
+						if (Model.generalInfo.SeatPreferencesID > 0)
+						{
+							var data = Model.SeatPreferencesList.Where(x => x.ID == Model.generalInfo.SeatPreferencesID).Select(x => x.Name).FirstOrDefault();
+							<td class="fn-bold">
+								@*@Html.DropDownListFor(n => n.generalInfo.SeatPreferencesID, new SelectList(Model.SeatPreferencesList, "ID", "Name", Model.generalInfo.SeatPreferencesID), "Select",
+									 new { @class = "form-control  applyselect" })*@
+								@data
+							</td>
+						}
+						else
+						{
+							<td class="fn-bold">-</td>
+						}
+
+						if (Model.generalInfo.HRVSeatPreferencesID == 0)
+						{
+							<td class="text-center">
+								<input class="cbx-group-d selectedSeat" id="cbx-group-b-21" type="checkbox" disabled value="MealandSeatPreference_SeatPreferencesID_@Model.generalInfo.SeatPreferencesID+@Model.EMPID+@Model.id" />
+								<label class="m-0 ipbdr-none" for="cbx-group-b-21"></label>
+							</td>
+						}
+						else
+						{
+							<td class="text-center">
+								<input class="cbx-group-d" checked id="cbx-group-b-21" type="checkbox" disabled value="" />
+								<label class="m-0 ipbdr-none" for="cbx-group-b-21"></label>
+							</td>
+						}
+					}
+
+
+				</tr>
+				<tr>
+					<td>Meal Preference</td>
+					@if (ViewBag.status == 0)
+					{
+						if (Model.MealPreferenceID > 0)
+						{
+							var data = Model.MealPreferencesList.Where(x => x.ID == Model.generalInfo.MealPreferenceID).Select(x => x.Name).FirstOrDefault();
+							<td class="fn-bold">
+								@*@Html.DropDownListFor(n => n.MealPreferenceID, new SelectList(Model.MealPreferencesList, "ID", "Name", Model.MealPreferenceID), "Select",
+				new { @class = "form-control  applyselect" })*@
+								@data
+							</td>
+						}
+						else
+						{
+							<td class="fn-bold">-</td>
+						}
+
+					}
+					@if (Model.generalInfo != null)
+					{
+						if (Model.generalInfo.MealPreferenceID > 0)
+						{
+							var data = Model.MealPreferencesList.Where(x => x.ID == Model.generalInfo.MealPreferenceID).Select(x => x.Name).FirstOrDefault();
+							<td class="fn-bold">
+								@*@Html.DropDownListFor(n => n.generalInfo.MealPreferenceID, new SelectList(Model.MealPreferencesList, "ID", "Name", Model.generalInfo.MealPreferenceID), "Select",
+			new { @class = "form-control  applyselect" })*@
+								@data
+							</td>
+						}
+						else
+						{
+							<td class="fn-bold">-</td>
+						}
+
+						if (Model.generalInfo.HRVMealPreferenceID == 0)
+						{
+							<td class="text-center">
+								<input class="cbx-group-d selectedSeat" id="cbx-group-b-22" disabled type="checkbox" value="MealandSeatPreference_MealPreferenceID_@Model.generalInfo.MealPreferenceID+@Model.EMPID+@Model.id" />
+								<label class="m-0 ipbdr-none" for="cbx-group-b-22"></label>
+							</td>
+						}
+						else
+						{
+							<td class="text-center">
+								<input class="cbx-group-d " checked id="cbx-group-b-22" disabled type="checkbox" value="" />
+								<label class="m-0 ipbdr-none" for="cbx-group-b-22"></label>
+							</td>
+						}
+					}
+
+
+				</tr>
+
+
+			</tbody>
+		</table>
+	</div>
+
+</div>
+
+
+
+<script>
+	$('#selectallTravel').click(function () {
+		var someObj = {};
+		someObj.NochkId = [];
+		someObj.ChkId = [];
+		$('.selectedAirline').prop('checked', this.checked);
+	});
+	$('#selectallSeatandMeal').click(function () {
+		var someObj = {};
+		someObj.NochkId = [];
+		someObj.ChkId = [];
+		$('.selectedSeat').prop('checked', this.checked);
+	});
+</script>

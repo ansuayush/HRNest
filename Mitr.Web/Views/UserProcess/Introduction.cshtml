@@ -1,0 +1,222 @@
+﻿
+@{
+	ViewBag.Title = "Introduction";
+	Layout = null;// "~/Views/Shared/_UserProcess.cshtml";
+}
+
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link href="https://fonts.googleapis.com/css?family=Roboto:300,400,700&amp;display=swap" rel="stylesheet">
+	<link rel="shortcut icon" href="../images/favicon.png" type="image/x-icon">
+	<link rel="icon" href="@Url.Content("~/assets/design/images/favicon.png")" type="image/png" sizes="50x50">
+	<link href="~/Content/css/select2.min.css" rel="stylesheet" />
+	<link href="~/assets/design/css/animate.css" rel="stylesheet" />
+	<link href="~/assets/design/css/sidebar.css" rel="stylesheet" />
+	<link href="~/assets/design/css/custom.css" rel="stylesheet" />
+	
+	<link href="~/assets/design/css/style.css" rel="stylesheet" />
+	<link href="~/assets/design/css/responsive.css" rel="stylesheet" />
+	<link href="~/assets/design/css/bootstrap.min.css" rel="stylesheet" />
+	<link href="~/assets/design/css/icons.css" rel="stylesheet" />
+	<link href="~/assets/design/css/stellarnav.css" rel="stylesheet" />
+	<script src="~/Scripts/jquery-3.7.0.min.js"></script>
+	<script src="~/assets/design/js/wow.js"></script>
+	<script src="~/assets/design/js/wow.min.js"></script>
+	<script src="~/Areas/DigitalLibrary/DevScript/Common.js"></script>
+	<script src="~/Areas/DigitalLibrary/DevScript/ComboFill.js"></script>
+	<style>
+		.welcome-body {
+			background: #b7d41b url(../assets/images/welcom-bg.jpg) no-repeat;
+			position: relative;
+			-webkit-box-align: center;
+			-ms-flex-align: center;
+			align-items: center;
+			display: -webkit-box;
+			display: -ms-flexbox;
+			-webkit-box-pack: center;
+			-ms-flex-pack: center;
+			justify-content: center;
+			background-attachment: fixed;
+			background-size: cover;
+		}
+	</style>
+	<script>
+        var virtualPath = "@System.Configuration.ConfigurationManager.AppSettings["VirtualPath"]";
+        var baseURL= "@System.Configuration.ConfigurationManager.AppSettings["BaseURL"]";
+	</script>
+	<script>
+        var CandidateId = '@ViewBag.CandidateId';
+		var Id = '@ViewBag.Id';
+		var UserManID = '@ViewBag.UserManID';
+		var loggedinUserName = '@ViewBag.UserName';
+		var IPAddress = '@ViewBag.IPAddress';
+	</script>
+	
+</head>
+
+<body class="welcome-body">
+	<div class="wlc-dtl text-center ">
+	<img src="~/assets/design/images/c3.png" alt="" class="wlc-lgo">
+		<h2>Welcome to C3 INDIA</h2>
+		<small><strong class="lgt-text">Lets Know More about C3 <a href="" class="mtr-o-clr" target="_blank">Download PDF</a></strong></small>
+
+		<textarea id="textareaword" class="mb-3 mt-3 shdw-two form-control wlc-tarea input  word_limit_textarea"  placeholder="Introduce Yourself"></textarea>
+		<div id="word_count_info" class="text-right"></div>
+
+
+		@*<div class="limittext text-right mt-2" id="counter-text">Max. 500 words</div>*@
+
+
+		<div class="skip mt-5">
+			<a onclick="RedirectToJoinedC3();" href="#" name="Command" value="Add" class="btn mtr-o-grn btn-lg d-none" id="submit"><strong><i class="fas fa-handshake"></i>Hi, I have joined C3</strong></a>
+		</div>
+		<div id="toast">
+			<div id="toasticon"><i></i></div>
+			<div id="toastMsg"></div>
+		</div>
+	</div>
+	<script src="~/assets/design/js/jquery-3.4.1.min.js"></script>
+	<script src="~/assets/design/js/popper.min.js"></script>
+	<script src="~/assets/design/js/bootstrap.min.js"></script>
+	<script src="~/assets/design/js/wow.min.js"></script>
+	<script>
+		wow = new WOW();
+		wow.init();
+	</script>
+
+	<script>
+		(function ($) {
+			$.fn.textareaCounter = function (options) {
+				var defaults = { limit: 500 };
+				var options = $.extend(defaults, options);
+
+				// and the plugin begins
+				return this.each(function () {
+					var obj, text, wordcount, limited;
+
+					obj = $(this);
+					obj.after('<div class="limittext text-right mt-2" id="counter-text">Max. ' + options.limit + ' words</div>');
+
+					obj.keyup(function () {
+						text = obj.val();
+						if (text === "") {
+							wordcount = 0;
+						} else {
+							wordcount = $.trim(text).split(" ").length;
+						}
+						if (wordcount > options.limit) {
+							$("#counter-text").html('');
+							limited = $.trim(text).split(" ", options.limit);
+							limited = limited.join(" ");
+							$(this).val(limited);
+						} else {
+							$("#counter-text").html((options.limit - wordcount) + ' words left');
+						}
+					});
+				});
+			};
+		})(jQuery);
+
+		$(".textareawordcount").textareaCounter({ limit: 500 });
+	</script>
+	<script>
+		$(function () {
+			$('.input').keyup(function () {
+
+				var empty = false;
+				$('.input').each(function () {
+					if ($(this).val() == '') {
+						empty = true;
+					}
+				});
+
+				if (empty) {
+					$('#submit').removeAttr('disabled').addClass('d-none').removeClass('d-block');
+				} else {
+					$('#submit').removeAttr('disabled').addClass('d-block').removeClass('d-none');
+				}
+			})
+		})
+
+
+		function RedirectToJoinedC3() {
+			var intro = $('#textareaword').val();
+			CommonAjaxMethod(virtualPath + 'UserProcess/UpdateReviewComments', { CandidateId: CandidateId, VideoReviewed: intro }, 'POST', function (response) {
+				SuccessToaster(response.SuccessMessage);
+				window.location.href = virtualPath + 'UserProcess/Joined';
+			});
+		}
+
+		function SuccessToaster(Message) {
+			$("#toastMsg").html(Message);
+			$("#toasticon i").addClass("fas fa-check green-clr ");
+			var x = document.getElementById("toast")
+			x.className = "show";
+			setTimeout(function () { x.className = x.className.replace("show", ""); }, 4000);
+		}
+		function FailToaster(Message) {
+			$("#toastMsg").html(Message);
+			$("#toasticon i").addClass("fas fa-exclamation-triangle red-clr");
+			var x = document.getElementById("toast")
+			x.className = "show toaster-warning";
+			setTimeout(function () { x.className = x.className.replace("show toaster-warning", ""); }, 4000);
+		}
+	</script>
+	<script>
+        var virtualPath = "@System.Configuration.ConfigurationManager.AppSettings["VirtualPath"]";
+             var baseURL= "@System.Configuration.ConfigurationManager.AppSettings["BaseURL"]";
+	</script>
+
+	<script>
+        $(document).ready(function() {
+    var maxWords = 500;
+    var textarea = $('.word_limit_textarea');
+
+    function enforceWordLimit(text) {
+        var words = text.match(/\b[-?(\w+)?]+\b/gi);
+        if (words && words.length > maxWords) {
+            return words.slice(0, maxWords).join(' ') + ' '; // Add space at the end
+        }
+        return text;
+    }
+
+    textarea.on('input', function() {
+        var text = $(this).val();
+        $(this).val(enforceWordLimit(text));
+    });
+
+    textarea.on('keydown', function(e) {
+        var text = $(this).val();
+        var words = text.match(/\b[-?(\w+)?]+\b/gi) || [];
+        
+    });
+
+    textarea.on('paste', function(e) {
+        var pastedText = (e.originalEvent || e).clipboardData.getData('text/plain');
+        var text = $(this).val() + pastedText;
+        var newText = enforceWordLimit(text);
+        if (text !== newText) {
+            e.preventDefault();
+            $(this).val(newText);
+        }
+    });
+
+    // Update word count info initially and on input
+    textarea.on('input', function() {
+        var wordCount = ($(this).val().match(/\b[-?(\w+)?]+\b/gi) || []).length;
+        $('#word_count_info').text(wordCount + '/' + maxWords + ' Words');
+    }).trigger('input'); // Trigger input event on page load to update count
+});
+
+    </script>
+	<noscript>
+		<p class="NojavaScript">Javascripts is disabled</a></p>
+	</noscript>
+
+
+</body>
+</html>
+
+

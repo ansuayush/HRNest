@@ -1,0 +1,49 @@
+﻿@using System.Data
+@model DataSet
+
+<div class="x_content table-currency">
+    <div class="table-responsive">
+
+
+        <table id="tableApprove" class="table table-striped table-bordered dt-responsive nowrap tbltick new_width" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
+            <thead>
+                <tr>
+                    <th>S.no.</th>
+                    <th>Meeting Body</th>
+                    <th>Meeting No</th>
+                    <th>Meeting Date</th>
+                    <th>Meeting Place</th>
+                    <th>Status</th>
+                </tr>
+                <tr class="searchbar">
+                    <th class="searchhide"></th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @{ int Count = 0;}
+                @foreach (DataRow item in Model.Tables[0].Rows)
+                {
+                    Count++;
+                    <tr>
+                        <td>@Count</td>
+
+                        <td> @item["Meeting_body"]</td>
+                        <td> @item["Meeting_no"]</td>
+                        <td> @Convert.ToDateTime(item["Meeting_Date"]).ToString("dd-MMM-yyyy")</td>
+                        <td> @item["Meeting_Place"]</td>
+                        <td><strong><a href="@Url.Action("AddMainMinuteofMeetings", new { MenuID = ViewBag.MenuID,MeetingID=item["ID"] })">@item["Status"]</a> </strong></td>
+
+                    </tr>
+                }
+            </tbody>
+        </table>
+
+
+    </div>
+</div>
+

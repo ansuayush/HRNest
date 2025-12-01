@@ -1,0 +1,73 @@
+﻿
+@model PMS.GoalSheet.Add
+
+
+@using (Ajax.BeginForm("_AddGoalSheet", "PMS",
+		new { src = ViewBag.src },
+new AjaxOptions { HttpMethod = "POST", OnSuccess = "OnGoalAddSuccess", OnBegin = "ShowLoadingDialog()" },
+new { @id = "_AddGoalSheetFrom" })
+)
+{
+
+	@Html.AntiForgeryToken()
+	@Html.HiddenFor(x => Model.PMS_GSDID)
+
+	<div class="row">
+		<div class="col-sm-4 form-group">
+			<label>Key Performance Area <span class="required">*</span> </label>
+			<select id="@Html.IdFor(x=>x.KPAID)" name="@Html.NameFor(x=>x.KPAID)" class="form-control applyselect" data-val="true" data-val-required="Hey! You missed this field" onchange="FillUOM(this)">
+				<option uom="" uomtype="" value="">Select</option>
+				@if (ViewBag.KPAList != null)
+				{
+					foreach (var item in ViewBag.KPAList)
+					{
+						<option @(Model.KPAID == item.PMS_KPAID ? "selected" : "") uomid="@item.UOMID" uom="@item.UOMName" uomtype="@item.UOMType" value="@item.PMS_KPAID">@item.Area</option>
+					}
+				}
+			</select>
+			@Html.ValidationMessageFor(model => model.KPAID, "", new { @class = "text-danger" })
+		</div>
+		<div class="col-sm-4 form-group">
+			<label>UOM</label>
+			@*<p><span id="spnUOM">@Model.UOMName</span></p>*@
+			<select id="@Html.IdFor(x=>x.UOMID)" name="@Html.NameFor(x=>x.UOMID)" class="form-control applyselect" data-val="true" data-val-required="Hey! You missed this field" onchange="FillTarget(this)">
+				<option uomtype="" value="">Select</option>
+				@if (ViewBag.UOMList != null)
+				{
+					foreach (var item in ViewBag.UOMList)
+					{
+						<option @(Model.UOMID == item.PMSUOMID ? "selected" : "") uomtype="@item.Type" value="@item.PMSUOMID">@item.Name</option>
+					}
+				}
+			</select>
+			@Html.ValidationMessageFor(model => model.KPAID, "", new { @class = "text-danger" })
+		</div>
+
+		@*<div class="col-sm-4 form-group" >
+				<label>UOM Type </label>
+				<p><span id="spnUOMType">@Model.UOMType</span></p>
+			</div>*@
+		<div class="col-sm-10 form-group">
+			<label>Key Performance Indicator<span class="required">*</span>  </label>
+			@Html.TextAreaFor(model => model.PIndicator, new { @class = "form-control h-100", @placeholder = "Enter Key Performance Indicator", @maxlength = "1200", onkeypress = "return blockSpecialChar(event)" })
+			@Html.ValidationMessageFor(model => model.PIndicator, "", new { @class = "text-danger" })
+		</div>
+		<div class="col-sm-2 form-group">
+			<label>Target  </label>
+			@Html.TextBoxFor(model => model.Target, new { @class = "form-control", @placeholder = "Enter Target", onkeypress = "return blockSpecialChar(event)" })
+			@Html.ValidationMessageFor(model => model.Target, "", new { @class = "text-danger" })
+			@Html.HiddenFor(model => model.UOMType)
+		</div>
+		<div class="col-sm-12 form-group">
+			<label>Comment @*<span class="required"> *</span>*@  </label>
+			@Html.TextAreaFor(model => model.DetRemarks, new { @class = "form-control", @placeholder = "Enter ", onkeypress = "return blockSpecialChar(event)" })
+			@Html.ValidationMessageFor(model => model.DetRemarks, "", new { @class = "text-danger" })
+		</div>
+		<div class="col-sm-12 text-center mt-3">
+
+			<button type="button" data-dismiss="modal" class="btn cnl-btn btn-l ripplelink"><i class="fas fa-times"></i>Close</button>
+			<button type="submit" name="Command" value="Add" class="btn mtr-o-grn btn-l ripplelink "> <i class="fas fa-save"></i> Save </button>
+		</div>
+	</div>
+}
+

@@ -1,0 +1,48 @@
+﻿@using System.Data
+@model @System.Data.DataSet
+
+@using Syncfusion.EJ2
+
+@using Syncfusion.EJ2.PivotView
+
+<style>
+	:before, :after {
+		font-family: inherit;
+	}
+</style>
+<h1 class="heading-one ">State-Project Achievement View</h1>
+<div class="control-section" style="overflow:auto">
+	<div class="content-wrapper">
+		@Html.EJS().Button("excel").Content("Export To Excel").IsPrimary(true).Render()
+
+
+		@Html.EJS().PivotView("pivotview").Width("100%").Height("290").DataSourceSettings(dataSourceSettings => dataSourceSettings.DataSource((System.Data.DataTable)ViewBag.Data.Tables[0]).ExpandAll(false).EnableSorting(true)
+	   .FormatSettings(formatsettings => { formatsettings.Name("StateName").UseGrouping(true).Add(); formatsettings.Name("ProjectName").UseGrouping(true).Add(); })
+	   .Rows(rows => { rows.Name("SecName").Add(); rows.Name("SubSecName").Add(); rows.Name("IndicatorName").Add(); })
+	   .Columns(columns => { columns.Name("StateName").Add(); columns.Name("ProjectName").Add(); })
+	   .Values(values => {
+		   values.Name("ExecuterVal1").Caption("Male").Add();
+		   values.Name("ExecuterVal2").Caption("Female").Add();
+		   values.Name("ExecuterVal3").Caption("Total").Add();
+	   })).GridSettings(new PivotViewGridSettings { ColumnWidth = 140 }).AllowExcelExport(true).Render()
+	</div>
+</div>
+
+
+<script>
+	var pivotObj;
+	document.getElementById('excel').onclick = function () {
+		pivotObj = document.getElementById('pivotview').ej2_instances[0];
+		pivotObj.excelExport();
+	}
+</script>
+@section PreScripts {
+	<script>
+		ej.base.enableRipple(false);
+	</script>
+
+}
+
+@(Html.EJS().ScriptManager())
+
+

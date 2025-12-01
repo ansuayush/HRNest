@@ -1,0 +1,443 @@
+﻿
+@{
+	ViewBag.Title = "AssessmentRequestDetails";
+	Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<script src="~/assets/design/js/wow.js"></script>
+<script src="~/assets/design/js/wow.min.js"></script>
+@section scripts    {
+	@System.Web.Optimization.Scripts.Render("~/bundle/unobtrusivejs")
+	@System.Web.Optimization.Scripts.Render("~/bundle/dataTablesjs")
+	<script src="~/assets/design/Scripts/AddInit.js?v=@clsApplicationSetting.GetWebConfigValue("Version")"></script>
+
+	<script src="~/Areas/Capacity/DevScript/AssessmentRequestDetailsView.js"></script>
+	<script>
+        var IPAddress = '@ViewBag.IPAddress';
+		 var IsEDUser = '@ViewBag.IsED';
+       var loggedinUserid = '@ViewBag.UserId';
+		var loggedinUserName = '@ViewBag.UserName';
+		var UserGrade = '@ViewBag.Grade';
+		var IsPM = '@ViewBag.IsPM';
+		var EMPID = '@ViewBag.EMPID';
+        var TraingReqID =   '@ViewBag.Id';
+
+	</script>
+}
+<input type="hidden" id="hdnLoggedInUser" />
+
+<!-- Start -->
+<div class="inner-main mb-5 p-3 pb-0">
+	<h1 class="heading-one mb-3">Assessment Request</h1>
+	<div class="row">
+		<div class="col-sm-8 ">
+			<div class="row">
+				<div class="col-md-4 form-group">
+					<label>Training Name</label>
+					<p id="lblTrainingName"></p>
+				</div>
+				<div class="col-md-4 form-group">
+					<label>Training Type</label>
+					<p id="lblTrainingType"></p>
+				</div>
+				<div class="col-md-4 form-group">
+					<label>Mentor </label>
+                    <p class="d-flex justify-content-between">
+						<span id="lblMentorName" class="ellipsis"></span>
+                        <i id="lblToolTipMentorName" class="info-clr fas fa-info-circle info align-self-center" data-placement="right" data-toggle="tooltip" title="" data-original-title=""></i>
+                    </p>
+					
+				</div>
+				@*<div class="col-md-4 form-group">
+					<label>Mentor </label>
+					<p class="d-flex justify-content-between"><span class="ellipsis-dgn mb-0">Mr. Vijay, Aman Gupta, Krishnendu Sengupta</span>	<i class="info-clr fas fa-info-circle info align-self-center" data-placement="right" data-toggle="tooltip" title="" data-original-title="Mr. Vijay, Aman Gupta, Krishnendu Sengupta, , Sudesh Kumbhkar, Aman Gupta, Krishnendu Sengupta, , Sudesh Kumbhkar"></i></p>
+				</div>*@
+				<div class="col-sm-12">
+					<div class="table-responsive">
+						<table id="tblAssessmentRequest" class="table">
+							<thead>
+								<tr>
+									<th width="33">S.No </th>
+									<th width="100">Employee Code</th>
+									<th width="100">Employee Name</th>
+									<th width="150">Department</th>
+									<th width="150">Designation</th>
+									<th>Training Date</th>
+									<th>Action</th>
+									<th style="display:none">UserTrainingID</th>
+								</tr>
+							</thead>
+						</table>
+					</div>
+
+				</div>
+
+				<div class="col-md-12 form-group">
+					<label>Comment on Assessment<sup>*</sup></label>
+					<textarea disabled class="form-control maxSize[200] Mandatory" onchange="HideErrorMessage(this)" id="txtHRCommentOnAssessment" placeholder="Enter" ></textarea>
+					<span id="sptxtHRCommentOnAssessment" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+				</div>
+
+				<div class="text-center col-md-12 mt-2">
+					@*<button type="button" btn="btnSubmit" onclick="SaveAssessmentComment();" class="btn mtr-o-grn" fdprocessedid="ajx5gh"><i class="fa fa-paper-plane" aria-hidden="true"></i> Submit</button>*@
+					<button type="button" btn="btnClose" onclick="RedirectToList();" class="btn cnl-btn" data-dismiss="modal" fdprocessedid="r5icbmv"><i class="fas fa-times"></i> Close</button>
+				</div>
+
+			</div>
+
+		</div>
+	</div>
+
+</div>
+<div class="modal fade pop-dgn show" id="modalViewAssessment" aria-modal="true" style="display: none; padding-left: 8px;">
+	<div class="modal-dialog mdl-lg">
+		<div class="modal-content">
+
+			<!-- Modal Header -->
+			<div class="modal-header blk-gdn-btn">
+				<h4 class="modal-title">View Assessment  </h4>
+				<div class="close" data-dismiss="modal">×</div>
+			</div>
+
+			<!-- Modal body -->
+			<div class="modal-body p-2">
+				<div class="row">
+					<div class="col-md-4 form-group">
+						<label>Employee Code  </label>
+						<p id="lblEmployeeCode"></p>
+					</div>
+					<div class="col-md-4 form-group">
+						<label>Employee Name</label>
+						<p id="lblEmployeeName"></p>
+					</div>
+					<div class="col-md-4 form-group">
+						<label>Department </label>
+						<p id="lblDepartment"></p>
+					</div>
+					<div class="col-md-4 form-group">
+						<label>Designation </label>
+						<p id="lblDesignation"></p>
+					</div>
+					<div class="col-md-4 form-group">
+						<label>Training Name</label>
+						<p id="lblPTrainingName"></p>
+					</div>
+					<div class="col-md-4 form-group">
+						<label>Training Date</label>
+						<p id="lblTrainingDate"></p>
+					</div>
+					<div class="col-md-4 form-group">
+						<label>Mentor</label>
+						<p id="lblMentorsName"></p>
+					</div>
+
+					<div class="col-md-8 form-group">
+						<label>Feedback by Employee</label>
+						<p id="lblFeedbackByEmployee"></p>
+					</div>
+
+					<div class="col-sm-12"></div>
+
+					<div class="col-md-12 form-group">
+						<label>Comment by Supervisor</label>
+						<p id="lblComment"></p>
+					</div>
+
+					<div class="col-md-4 form-group">
+						<label>Skill Tagged</label>
+						<select id="ddlSkillsTagged" disabled multiple="" class="form-control applyselect">
+						</select>
+					</div>
+
+					<div class="col-md-4 form-group">
+						<label>Skill Gained</label>
+						<select id="ddlSkillsGained" disabled multiple="" class="form-control applyselect">
+						</select>
+					</div>
+					<div class="col-sm-12  text-center mt-2">
+						<button type="button" class="btn cnl-btn ripplelink  pull-right" data-dismiss="modal"><i class="fas fa-times"></i> Close</button>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+
+
+	<script>
+		$(function () {
+			$("#datepicker").datepicker({
+				autoclose: true,
+				todayHighlight: true
+			}).datepicker('update', new Date());
+		});
+
+	</script>
+	<script>
+		// JavaScript Document
+		$(function () {
+			$('#js-nav-toggle').click(function (e) {
+				e.preventDefault();
+				$("html").toggleClass("is-sideopen");
+				$("#js-nav-toggle").toggleClass("is-active");
+			});
+
+			var $content = $('.l-contents');
+			var $header = $('.l-header');
+
+
+			$content.click(function () {
+				$("html").removeClass("is-sideopen");
+			});
+
+
+			$header.click(function () {
+				$("html").removeClass("is-sideopen");
+			});
+
+
+		});
+
+
+		$(function () {
+
+			var $dropdown = $('.js-dropdown');
+			var $content = $('.l-contents');
+			var $toggle = $('#js-nav-toggle');
+
+
+			$('.js-dropdown-menu').hide();
+			$dropdown.click(function () {
+				$('i').removeClass('is-rotate');
+				$('.js-dropdown-menu').slideUp(200);
+				if ($('+.js-dropdown-menu', this).css('display') == 'none') {
+					$('i', this).addClass('is-rotate');
+					$('+.js-dropdown-menu', this).slideDown(200);
+				}
+			});
+
+
+			$content.click(function () {
+				$('i').removeClass('is-rotate');
+				$('.js-dropdown-menu').slideUp(200);
+				if ($('+.js-dropdown-menu', this).css('display') == 'none') {
+					$('i', this).addClass('is-rotate');
+					$('+.js-dropdown-menu', this).slideDown(200);
+				}
+			});
+
+
+			$toggle.click(function () {
+				$('i').removeClass('is-rotate');
+				$('.js-dropdown-menu').slideUp(200);
+				if ($('+.js-dropdown-menu', this).css('display') == 'none') {
+					$('i', this).addClass('is-rotate');
+					$('+.js-dropdown-menu', this).slideDown(200);
+				}
+			});
+
+		});
+
+		$(function () {
+			$('.is-ac-close').hide();
+			$(".is-ac-click").on("click", function () {
+				if ($(this).children('i').is('.fa-angle-right')) {
+					$(this).children('i')
+						.removeClass('fa-angle-right')
+						.addClass('fa-angle-down');
+				} else {
+					$(this).children('i')
+						.removeClass('fa-angle-down')
+						.addClass('fa-angle-right');
+				}
+				$(this).next().slideToggle(200);
+			});
+
+			$('.is-ac-close').hide();
+			$(".is-ac-bar").on("click", function () {
+
+				if ($(this).find('i').is('.fa-caret-down')) {
+
+					$(this).find('i')
+						.removeClass()
+						.addClass('fa fa-caret-up');
+				} else {
+					$(this).find('i')
+						.removeClass()
+						.addClass('fa fa-caret-down');
+				}
+				$(this).next().slideToggle(200);
+			});
+		});
+
+
+
+
+		//---------------------------------------------------
+		// ▼　tab
+		//---------------------------------------------------
+		$(function () {
+			var rwdTab = $('.c-tab'),
+				switchPoint = 768,
+				fadeSpeed = 300,
+				slideSpeed = 300;
+
+			var tabBtn = rwdTab.children('.c-tab-panel').children('.c-tab-heading'),
+				contentsArea = rwdTab.children('.c-tab-panel').children('.c-tab-body');
+
+			tabBtn.on('click', function () {
+				if (!$(this).hasClass('c-tab-active')) {
+					tabBtn.removeClass('c-tab-active');
+					$(this).addClass('c-tab-active');
+
+					if (window.innerWidth > switchPoint) {
+						contentsArea.fadeOut(fadeSpeed);
+						$(this).next().fadeIn(fadeSpeed);
+					} else {
+						contentsArea.slideUp(slideSpeed);
+						$(this).next().slideDown(slideSpeed);
+					}
+				}
+			});
+
+			tabBtn.first().click();
+		});
+
+
+
+	</script>
+	<!-- required -->
+
+	<script type="text/javascript" src="https://mitr2.c3india.org/assets/design/js/stellarnav.min.js"></script>
+	<script type="text/javascript">
+		jQuery(document).ready(function ($) {
+			jQuery('.stellarnav').stellarNav({
+				theme: 'dark',
+				breakpoint: 960,
+				position: 'right',
+
+			});
+		});
+	</script>
+	<!-- required -->
+	<script>
+		$("document").ready(function () {
+
+			$('.dropdown-menu').on('click', function (e) {
+				if ($(this).hasClass('dropdown-menu-form')) {
+					e.stopPropagation();
+				}
+			});
+		});
+
+
+	</script>
+	<script>
+
+		var links = document.querySelectorAll('.ripplelink');
+
+		for (var i = 0, len = links.length; i < len; i++) {
+			links[i].addEventListener('click', function (e) {
+				var targetEl = e.target;
+				var inkEl = targetEl.querySelector('.ink');
+
+				if (inkEl) {
+					inkEl.classList.remove('animate');
+				}
+				else {
+					inkEl = document.createElement('span');
+					inkEl.classList.add('ink');
+					inkEl.style.width = inkEl.style.height = Math.max(targetEl.offsetWidth, targetEl.offsetHeight) + 'px';
+					targetEl.appendChild(inkEl);
+				}
+
+				inkEl.style.left = (e.offsetX - inkEl.offsetWidth / 2) + 'px';
+				inkEl.style.top = (e.offsetY - inkEl.offsetHeight / 2) + 'px';
+				inkEl.classList.add('animate');
+			}, false);
+		}
+	</script>
+	<script type="text/javascript">
+		$(document).ready(function () {
+			$(".dpselect").select2();
+
+		});
+	</script>
+	<script type="text/javascript">
+		$(window).scroll(function () {
+			if ($(this).scrollTop() > 50) {
+				$('.scrolltop:hidden').stop(true, true).fadeIn();
+			} else {
+				$('.scrolltop').stop(true, true).fadeOut();
+			}
+		});
+		$(function () { $(".scroll-btm").click(function () { $("html,body").animate({ scrollTop: $(".thetop").offset().top }, ""); return false }) })
+	</script>
+	<script>
+		//$(document).ready(function () {
+		//	$('[data-toggle="tooltip"]').tooltip();
+		//});
+
+		$(function () {
+			$('#finselector').change(function () {
+				$('.finyear').hide();
+				$('#' + $(this).val()).show();
+			});
+		});
+
+	</script>
+	<script type="text/javascript">
+		function formChoice(x) {
+			if (x == 0) {
+				$('#field1').css('display', 'block');
+				$('#field2').css('display', 'none');
+			} else {
+				$('#field1').css('display', 'none');
+				$('#field2').css('display', 'block');
+			}
+		}
+
+	</script>
+	<script type="text/javascript">
+		/*$('[data-toggle="tooltip"]').tooltip();*/
+
+		//$("[data-toggle=popover]").popover({
+		//	html: true,
+		//	trigger: 'hover',
+		//	content: function () {
+		//		var content = $(this).attr("data-popover-content");
+		//		return $(content).children(".popover-body").html();
+		//	}
+		//});
+	</script>
+	<script type="text/javascript">
+		$('#membertype ').on('change', function () {
+			$('#internal').css('display', 'none');
+			if ($(this).val() === 'internal') {
+				$('#internal').css('display', 'block');
+			}
+
+			$('#external').css('display', 'none');
+			if ($(this).val() === 'external') {
+				$('#external').css('display', 'block');
+			}
+		});
+
+	</script>
+	<script type="text/javascript">
+		$('#at').on('change', function () {
+			$('#td').css('display', 'none');
+			if ($(this).val() === 'td') {
+				$('#td').css('display', 'block');
+			}
+		});
+
+	</script>
+
+</div>
+
+
+
+
+
+

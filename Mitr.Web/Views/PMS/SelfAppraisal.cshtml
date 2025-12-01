@@ -1,0 +1,645 @@
+﻿@model PMS
+@{
+	string Empid = Convert.ToString(clsApplicationSetting.GetSessionValue("EMPID"));
+	string Empcode = Convert.ToString(clsApplicationSetting.GetSessionValue("EMPCode"));
+}
+<div class="inner-main mb-5 pb-0">
+	<div class="page-ctn">
+		<div class="col-sm-5"><h1 class="heading-one ">Self Appraisal </h1></div>
+		@using (Ajax.BeginForm("_SelfAppraisal", "PMS",
+				new { src = clsApplicationSetting.EncryptQueryString(ViewBag.MenuID.ToString() + "*/PMS/_SelfAppraisal") },
+				  new AjaxOptions { HttpMethod = "POST", OnFailure = "CloseLoadingDialog()", OnSuccess = "BindTarget", OnBegin = "ShowLoadingDialog()" },
+			new { @id = "_SelfAppraisalFrom" })
+			)
+		{
+	<div class="row">
+
+		   <div class="col-lg-2 col-md-2 col-sm-2 slt-srh form-group align-self-end">
+			<label class="lbl-abs">Select Appraisal Period</label>
+			@Html.DropDownListFor(x => Model.FYID, new SelectList(ViewBag.FinYearList, "ID", "Year", Model.FYID), "Select Period",
+	        new { @class = "form-control  applyselect ddapplyaction" })
+			@Html.ValidationMessageFor(model => Model.FYID, "", new { @class = "text-danger" })
+		    </div>
+
+	     	<div class="col-lg-2 col-md-2 col-sm-2 form-group">
+				<label>Status</label>
+			<p id="ApprovedStatus"></p>
+			</div>
+
+
+			<div class="col-sm-7 text-right align-self-center">
+				<a class="btn mtr-g-grn bbtn mtr-g-grn btn-l ripplelink" id="btnFillAppraisal" data-toggle="modal" data-target="#achievement">
+					<i class="fas fa-plus"></i><span class="spnFillA"> Fill Your Appraisal</span>
+				</a>
+			</div>
+			<div class="col-sm-3 text-right align-self-center">
+				<button type="button" id="btnReport" onclick="GetPAReport(@Empid,'@Empcode')" class="btn mtr-g-grn" value="Download"><i class="fas fa-download"></i> Performance Appraisal Report</button>
+			</div>
+			<div style="display:none">
+				<button type="submit" class="btn mtr-g-grn btn-l ripplelink" id="btnSearch" name="Command" value="Search"><i class="fas fa-search"></i>Search</button>
+			</div>
+		</div>
+		}
+
+		<div id="TargetDiv">@Html.Partial("_Loading")</div>
+	</div>
+</div>
+@section scripts    {
+	@System.Web.Optimization.Scripts.Render("~/bundle/unobtrusivejs")
+	@Html.IncludeVersionedJs(Url.Content("~/assets/design/Scripts/ToolTip.js"))
+	@System.Web.Optimization.Scripts.Render("~/assets/design/Scripts/AddInit.js")
+
+	<script>
+
+		function blockSpecialChar(e){
+
+        var k;
+        document.all ? k = e.keyCode : k = e.which;
+		if(k==39){
+		event.preventDefault();
+		}
+
+        }
+		
+
+			$(document).ready(function () {
+				$("#btnSearch").click();
+				document.getElementById("btnReport").disabled = true;
+			});
+
+			$('.ddapplyaction').bind("change", function () {
+				$("#btnSearch").click();
+			});
+	          function GetPAReport(Empid, Empcode) {
+
+				ShowLoadingDialog();
+				var FYID = $("#FYID").val();
+
+               $.ajax({
+                   url: "/PMS/PerformanceAppraisalReport",
+					type: "Get",
+                   data: { src: EncryptQueryStringJSON(@ViewBag.MenuID+"*" + "/PMS/PerformanceAppraisalReport" + "*" + Empid + "*" + FYID) },
+				   success: function (data) {
+                        var format = ".pdf";
+                       downloadURI("Appraisal_Report_" + Empcode + format + "", "PA_Report_" + Empcode + format + "");
+					   CloseLoadingDialog();
+
+					},
+					error: function (er) {
+						alert(er);
+
+					}
+				});
+	}
+
+
+			function BindTarget(args) {
+				CloseLoadingDialog();
+		         debugger;
+				$("#TargetDiv").empty();
+		      
+				$("#TargetDiv").html(args);
+		       var Approved = parseInt($("#Approved").val());
+                 var PMS_AID = parseInt($("#PMS_AID").val());
+                 var isdeleted = parseInt($("#isdeleted").val());
+		  if(typeof(Approved)  === "undefined") {
+		 document.getElementById('ApprovedStatus').innerText = 'Pending';
+		 document.getElementById('ApprovedStatus').innerText = 'Pending';
+		}
+		else if (Approved == 0 && PMS_AID == 0) {
+		 document.getElementById('ApprovedStatus').innerText = 'Pending';
+		}
+		else if (Approved == 0 && isdeleted == 2) {
+		 document.getElementById('ApprovedStatus').innerText = 'Pending';
+		}
+		else if(Approved==0 && isdeleted == 0){
+		 document.getElementById('ApprovedStatus').innerText = 'Pending with Supervisor (first Level)';
+		}
+		else if(Approved==1){
+		 document.getElementById('ApprovedStatus').innerText = 'Pending  (Second Level)';
+		}
+		else if(Approved==2){
+		 document.getElementById('ApprovedStatus').innerText = 'Resubmitted by Supervisor';
+		}
+		else if(Approved==3){
+		 document.getElementById('ApprovedStatus').innerText = 'Pending with Supervisor (Second Level)';
+		}
+		else if(Approved==4){
+		 document.getElementById('ApprovedStatus').innerText = 'Pending at Confirmer';
+		}
+		else if(Approved==5){
+		 document.getElementById('ApprovedStatus').innerText = 'Pending at CMC';
+		}
+		else if(Approved==7){
+		 document.getElementById('ApprovedStatus').innerText = 'Completed';
+		}
+		else if(Approved==8){
+		 document.getElementById('ApprovedStatus').innerText = 'Resubmit by CMC';
+		}
+		else{
+			 document.getElementById('ApprovedStatus').innerText = '';
+		}
+		  
+		  
+		   
+				$('[data-toggle="tooltip"]').tooltip();
+				$("#ATrainingAdd").click(function (e) {
+					e.preventDefault();
+					AddTrainingRow();
+				});
+				$("#AAttachmentAdd").click(function (e) {
+					e.preventDefault();
+					AddAttachmentRow();
+				});
+
+
+
+				$(".Btnsubmit").on('click', function (e) {
+				 return	IsFillAllAchievement();
+				});
+
+				BinNextClick();
+
+				$(".txtAchievement").on('keyup keypress', function (e) {
+					DisplayAchievement(this);
+				});
+
+				if ($("#IsBtnVisible").val() == "False") {
+					$(".spnFillA").html('View Appraisal ');
+				} else {
+					$(".spnFillA").html('Fill Your Appraisal');
+				}
+
+				$(".applyselect").select2();
+				var form = $("form")
+					.removeData("validator")
+					.removeData("unobtrusiveValidation");
+				$.validator.unobtrusive.parse(form);
+			}
+
+			function SelfAppraisalSuccess(obj) {
+				if (obj.Status) {
+	              	debugger;
+					SuccessToaster(obj.SuccessMessage);
+					window.location =	obj.RedirectURL;
+				}
+				else {
+
+					CloseLoadingDialog();
+					FailToaster(obj.SuccessMessage);
+					if (obj.StatusCode == 2) {
+						$("#achievement").modal('show');
+					}
+
+				}
+
+			}
+
+			function IsFillAllAchievement() {
+				var ret = false;
+				var count = 0;
+				$('.txtAchievement').each(function (index) {
+					if (!$(this).val()) {
+						$("#achievement").modal('show');
+						FailToaster("Fill All Achievement");
+						count++;
+						return false;
+					}
+				});
+				if (count == 0) {
+					ret = true;
+				}
+				return ret
+			}
+
+			// add new Row
+			function AddTrainingRow() {
+				var LastTRCount = parseInt($('#tblTraining').find("tbody tr").length) - 1;
+				if (LastTRCount >=4) {
+					FailToaster("5 training allowed");
+				}
+				else {
+					$('.applyselect').select2("destroy");
+					var $tableBody = $('#tblTraining').find("tbody"),
+						$trLast = $tableBody.find("tr:last"),
+						$trNew = $trLast.clone();
+					   $trNew.find("td:last").html('<a onclick="DeleteTrainingRow(this)" class="remove" data-toggle="tooltip" data-original-title="Remove"><i class="fas fa-window-close red-clr" aria-hidden="true"></i></a>');
+
+
+					$trNew.find("div").each(function () {
+						$(this).attr({
+							'id': function (_, id) { var arr = id.split('_'); return id.replace(arr[1], LastTRCount + 1); }
+						});
+
+					});
+
+					$trNew.find("label").each(function () {
+						$(this).attr({
+							'id': function (_, id) { var arr = id.split('_'); return id.replace(arr[1], LastTRCount + 1); },
+						});
+						$(this).html(parseInt($('#tblTraining').find("tbody tr").length) + 1);
+					});
+
+					$trNew.find("input").each(function (i) {
+						$(this).attr({
+							'id': function (_, name) { return name.replace('_' + LastTRCount + '_', '_' + (parseInt(LastTRCount) + 1) + '_'); },
+							'name': function (_, name) { return name.replace('[' + LastTRCount + ']', '[' + (parseInt(LastTRCount) + 1) + ']'); },
+						});
+						$(this).val('0');
+					});
+					$trNew.find("textarea").each(function (i) {
+						$(this).attr({
+							'id': function (_, name) { return name.replace('_' + LastTRCount + '_', '_' + (parseInt(LastTRCount) + 1) + '_'); },
+							'name': function (_, name) { return name.replace('[' + LastTRCount + ']', '[' + (parseInt(LastTRCount) + 1) + ']'); },
+						});
+						$(this).val('');
+					});
+					$trNew.find("select").each(function (i) {
+						$(this).attr({
+							'id': function (_, name) { return name.replace('_' + LastTRCount + '_', '_' + (parseInt(LastTRCount) + 1) + '_'); },
+							'name': function (_, name) { return name.replace('[' + LastTRCount + ']', '[' + (parseInt(LastTRCount) + 1) + ']'); },
+						});
+						$(this).val('');
+					});
+
+					$trNew.find("span").each(function (i) {
+						if ($(this).attr("data-valmsg-for")) {
+							$(this).attr({
+								'data-valmsg-for': function (_, name) { return name.replace('[' + LastTRCount + ']', '[' + (parseInt(LastTRCount) + 1) + ']'); }
+							});
+						}
+						if ($(this).attr("for")) {
+							$(this).attr({
+								'for': function (_, name) { return name.replace('_' + LastTRCount + '_', '_' + (parseInt(LastTRCount) + 1) + '_'); }
+							});
+						}
+					});
+
+					$trLast.after($trNew);
+					var form = $("#_SetSelfAppraisalFrom").closest("form");
+					form.removeData('validator');
+					form.removeData('unobtrusiveValidation');
+					$.validator.unobtrusive.parse(form);
+					$('[data-toggle="tooltip"]').tooltip();
+					$(".applyselect").select2();
+				}
+			}
+
+
+			function DeleteTrainingRow(obj) {
+				var count = 0;
+				var TotalRowCount = $('#tblTraining').find("tbody tr").length;
+				ConfirmMsgBox("Are you sure you want to delete", '', function () {
+			
+					$(obj).closest('tr').remove();
+					$("#tblTraining TBODY TR").each(function (i) {
+						$(this).closest("tr").find("label").each(function () {
+							$(this).attr({
+								'id': function (_, id) { var arr = id.split('_'); return id.replace(arr[1], i); },
+							});
+							$(this).html(i + 1)
+						});
+			
+						$(this).closest("tr").find("div").each(function () {
+							$(this).attr({
+								'id': function (_, id) { var arr = id.split('_'); return id.replace(arr[1], i); },
+							});
+						});
+			
+			
+						$(this).closest("tr").find("input").each(function () {
+							$(this).attr({
+								'id': function (_, id) { return id.replace('_' + (parseInt(i) + 1) + '_', '_' + i + '_'); },
+								'name': function (_, name) { return name.replace('[' + (parseInt(i) + 1) + ']', '[' + i + ']'); },
+							});
+			
+						});
+			
+						$(this).closest("tr").find("select").each(function () {
+							$(this).attr({
+								'id': function (_, id) { return id.replace('_' + (parseInt(i) + 1) + '_', '_' + i + '_'); },
+								'name': function (_, name) { return name.replace('[' + (parseInt(i) + 1) + ']', '[' + i + ']'); },
+							});
+			
+						});
+			
+						$(this).closest("tr").find("textarea").each(function () {
+							$(this).attr({
+								'id': function (_, id) { return id.replace('_' + (parseInt(i) + 1) + '_', '_' + i + '_'); },
+								'name': function (_, name) { return name.replace('[' + (parseInt(i) + 1) + ']', '[' + i + ']'); },
+							});
+			
+						});
+			
+			
+						$(this).closest("tr").find("span").each(function () {
+							if ($(this).attr("data-valmsg-for")) {
+								$(this).attr({
+									'data-valmsg-for': function (_, name) { return name.replace('[' + (parseInt(i) + 1) + ']', '[' + i + ']'); },
+								});
+							}
+							if ($(this).attr("for")) {
+								$(this).attr({
+									'for': function (_, id) { return id.replace('_' + (parseInt(i) + 1) + '_', '_' + i + '_'); },
+								});
+							}
+						});
+					});
+					var form = $("#_SetSelfAppraisalFrom").closest("form");
+					form.removeData('validator');
+					form.removeData('unobtrusiveValidation');
+					$.validator.unobtrusive.parse(form);
+			
+				})
+			}
+
+		function DeleteNewAttachmentRowTest(obj){
+
+
+		   var count = 0;
+			var ID = parseInt($(obj).closest('tr').find("td.hfNewId input[type='hidden']").val());
+			var TotalRowCount = $('#tableAttachment').find("tbody tr").length;
+			var srno = TotalRowCount;
+			if (isNaN(ID)) {
+
+			ConfirmMsgBox("Are you sure you want to delete", '', function () {
+			
+					$(obj).closest('tr').remove();
+					$("#tableAttachment TBODY TR").each(function (i) {
+						$(this).closest("tr").find("label").each(function () {
+							$(this).attr({
+								'id': function (_, id) { var arr = id.split('_'); return id.replace(arr[1], i); },
+							});
+							$(this).html(i + 1)
+						});
+			
+						$(this).closest("tr").find("div").each(function () {
+							$(this).attr({
+								'id': function (_, id) { var arr = id.split('_'); return id.replace(arr[1], i); },
+							});
+						});
+			
+			
+						$(this).closest("tr").find("input").each(function () {
+							$(this).attr({
+								'id': function (_, id) { return id.replace('_' + (parseInt(i) + 1) + '_', '_' + i + '_'); },
+								'name': function (_, name) { return name.replace('[' + (parseInt(i) + 1) + ']', '[' + i + ']'); },
+							});
+			
+						});
+			
+						$(this).closest("tr").find("select").each(function () {
+							$(this).attr({
+								'id': function (_, id) { return id.replace('_' + (parseInt(i) + 1) + '_', '_' + i + '_'); },
+								'name': function (_, name) { return name.replace('[' + (parseInt(i) + 1) + ']', '[' + i + ']'); },
+							});
+			
+						});
+			
+						$(this).closest("tr").find("textarea").each(function () {
+							$(this).attr({
+								'id': function (_, id) { return id.replace('_' + (parseInt(i) + 1) + '_', '_' + i + '_'); },
+								'name': function (_, name) { return name.replace('[' + (parseInt(i) + 1) + ']', '[' + i + ']'); },
+							});
+			
+						});
+			
+			
+						$(this).closest("tr").find("span").each(function () {
+							if ($(this).attr("data-valmsg-for")) {
+								$(this).attr({
+									'data-valmsg-for': function (_, name) { return name.replace('[' + (parseInt(i) + 1) + ']', '[' + i + ']'); },
+								});
+							}
+							if ($(this).attr("for")) {
+								$(this).attr({
+									'for': function (_, id) { return id.replace('_' + (parseInt(i) + 1) + '_', '_' + i + '_'); },
+								});
+							}
+						});
+					});
+					var form = $("#_SetSelfAppraisalFrom").closest("form");
+					form.removeData('validator');
+					form.removeData('unobtrusiveValidation');
+					$.validator.unobtrusive.parse(form);
+			
+				})
+
+		}
+		else{
+
+			ConfirmMsgBox("Are you sure you want to delete", '', function () {
+			
+					$(obj).closest('tr').remove();
+					$("#tableAttachment TBODY TR").each(function (i) {
+						$(this).closest("tr").find("label").each(function () {
+							$(this).attr({
+								'id': function (_, id) { var arr = id.split('_'); return id.replace(arr[1], i); },
+							});
+							$(this).html(i + 1)
+						});
+			
+						$(this).closest("tr").find("div").each(function () {
+							$(this).attr({
+								'id': function (_, id) { var arr = id.split('_'); return id.replace(arr[1], i); },
+							});
+						});
+			
+			
+						$(this).closest("tr").find("input").each(function () {
+							$(this).attr({
+								'id': function (_, id) { return id.replace('_' + (parseInt(i) + 1) + '_', '_' + i + '_'); },
+								'name': function (_, name) { return name.replace('[' + (parseInt(i) + 1) + ']', '[' + i + ']'); },
+							});
+			
+						});
+			
+						$(this).closest("tr").find("select").each(function () {
+							$(this).attr({
+								'id': function (_, id) { return id.replace('_' + (parseInt(i) + 1) + '_', '_' + i + '_'); },
+								'name': function (_, name) { return name.replace('[' + (parseInt(i) + 1) + ']', '[' + i + ']'); },
+							});
+			
+						});
+			
+						$(this).closest("tr").find("textarea").each(function () {
+							$(this).attr({
+								'id': function (_, id) { return id.replace('_' + (parseInt(i) + 1) + '_', '_' + i + '_'); },
+								'name': function (_, name) { return name.replace('[' + (parseInt(i) + 1) + ']', '[' + i + ']'); },
+							});
+			
+						});
+			
+			
+						$(this).closest("tr").find("span").each(function () {
+							if ($(this).attr("data-valmsg-for")) {
+								$(this).attr({
+									'data-valmsg-for': function (_, name) { return name.replace('[' + (parseInt(i) + 1) + ']', '[' + i + ']'); },
+								});
+							}
+							if ($(this).attr("for")) {
+								$(this).attr({
+									'for': function (_, id) { return id.replace('_' + (parseInt(i) + 1) + '_', '_' + i + '_'); },
+								});
+							}
+						});
+					});
+
+			var dataObject = JSON.stringify({
+						'ID': ID,
+						'Doctype': 'Appraisal',
+					});
+					var data = $.parseJSON($.ajax({
+						url: '/CommonAjax/DelRecord_CommonJson',
+						type: "post",
+						data: dataObject,
+						contentType: 'application/json',
+						async: false
+					}).responseText);
+					return data;
+					var form = $("#_SetSelfAppraisalFrom").closest("form");
+					form.removeData('validator');
+					form.removeData('unobtrusiveValidation');
+					$.validator.unobtrusive.parse(form);
+			
+				})
+
+
+		}
+		
+
+		}
+
+		
+
+
+
+
+
+
+
+
+
+	
+
+			function AddAttachmentRow() {
+
+	
+				var LastTRCount = parseInt($('#tableAttachment').find("tbody tr").length) - 1;
+
+				$('.applyselect').select2("destroy");
+				var $tableBody = $('#tableAttachment').find("tbody"),
+					$trLast = $tableBody.find("tr:last"),
+					$trNew = $trLast.clone();
+				$trNew.find("td:last").html('<a onclick="DeleteNewAttachmentRowTest(this)" class="remove" data-toggle="tooltip" data-original-title="Remove"><i class="fas fa-window-close red-clr" aria-hidden="true"></i></a>');
+
+
+				$trNew.find("div").each(function () {
+					$(this).attr({
+						'id': function (_, id) { var arr = id.split('_'); return id.replace(arr[1], LastTRCount + 1); }
+					});
+					$(this).closest("tr").find("#divAttachmentUpload").show();
+					$(this).closest("tr").find("#divAttachmentShow").hide();
+
+				});
+
+				$trNew.find("label").each(function () {
+					$(this).attr({
+						'id': function (_, id) { var arr = id.split('_'); return id.replace(arr[1], LastTRCount + 1); },
+					});
+					$(this).html(parseInt($('#tableAttachment').find("tbody tr").length) + 1);
+				});
+
+				$trNew.find("input").each(function (i) {
+					$(this).attr({
+						'id': function (_, name) { return name.replace('_' + LastTRCount + '_', '_' + (parseInt(LastTRCount) + 1) + '_'); },
+						'name': function (_, name) { return name.replace('[' + LastTRCount + ']', '[' + (parseInt(LastTRCount) + 1) + ']'); },
+					});
+					if ($(this).attr('type') == "hidden") {
+						$(this).val('0')
+					}
+					else if (!$(this).hasClass('txtfix')) {
+						$(this).val('')
+					}
+					//($(this).attr('type') == "hidden" ? $(this).val('0') : $(this).val(''));
+				});
+				$trNew.find("textarea").each(function (i) {
+					$(this).attr({
+						'id': function (_, name) { return name.replace('_' + LastTRCount + '_', '_' + (parseInt(LastTRCount) + 1) + '_'); },
+						'name': function (_, name) { return name.replace('[' + LastTRCount + ']', '[' + (parseInt(LastTRCount) + 1) + ']'); },
+					});
+					$(this).val('');
+				});
+				$trNew.find("select").each(function (i) {
+					$(this).attr({
+						'id': function (_, name) { return name.replace('_' + LastTRCount + '_', '_' + (parseInt(LastTRCount) + 1) + '_'); },
+						'name': function (_, name) { return name.replace('[' + LastTRCount + ']', '[' + (parseInt(LastTRCount) + 1) + ']'); },
+					});
+					$(this).val('');
+				});
+
+				$trNew.find("span").each(function (i) {
+					if ($(this).attr("data-valmsg-for")) {
+						$(this).attr({
+							'data-valmsg-for': function (_, name) { return name.replace('[' + LastTRCount + ']', '[' + (parseInt(LastTRCount) + 1) + ']'); }
+						});
+					}
+					if ($(this).attr("for")) {
+						$(this).attr({
+							'for': function (_, name) { return name.replace('_' + LastTRCount + '_', '_' + (parseInt(LastTRCount) + 1) + '_'); }
+						});
+					}
+				});
+
+				$trLast.after($trNew);
+				var form = $("#_SetSelfAppraisalFrom").closest("form");
+				form.removeData('validator');
+				form.removeData('unobtrusiveValidation');
+				$.validator.unobtrusive.parse(form);
+				$('[data-toggle="tooltip"]').tooltip();
+				$(".applyselect").select2();
+			}
+
+
+		
+
+
+			function FillTrainingType(obj) {
+				$(obj).closest("tr").find(".hdnTrainingType").val($(obj).find("option:selected").text());
+			}
+
+			function BinNextClick() {
+				$('.btnNext').click(function () {
+
+					$('.nav-tabs .active').parent().next('li').find('a').trigger('click');
+					$('.nav-tabs .active').parent().prev('li').find('a').addClass("prvactive");
+
+				});
+
+				$('.btnPrevious').click(function () {
+
+					$('.nav-tabs .active').parent().prev('li').find('a').trigger('click');
+				});
+			}
+
+		        function DisplayAchievement(obj) {
+
+				var C = $(obj).closest("div").find("input:hidden[name=hdnC]").val();
+
+				$("#spnAch_" + C).html($(obj).val());
+                var TargetAchieved = $(obj).closest("div").find("input:hidden[name=hdnTargetAchieved]").val();
+            $("#spnTargetAch_"+ TargetAchieved).html($(obj).val());
+			}
+
+		$("#FYID").on('change',function(){if($(this).val()==3)
+		{
+		debugger;
+		//document.getElementById("btnReport").disabled=true;
+		document.getElementById("btnReport").disabled=false;
+		}
+        else{
+		document.getElementById("btnReport").disabled=false;
+		}});
+	</script>
+
+}

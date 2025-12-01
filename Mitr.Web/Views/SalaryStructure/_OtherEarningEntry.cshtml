@@ -1,0 +1,153 @@
+﻿@model Mitr.Models.SalaryStructure.OtherEarningEntry
+@{
+    var ComponentList = Model.Component.GroupBy(x => x.Id)
+         .Select(x => new
+         {
+             Id = x.Select(ex => ex.Id).FirstOrDefault(),
+             Component = x.Select(ex => ex.Component).FirstOrDefault()
+         })
+         .ToList();
+    var first = Guid.NewGuid(); var second = Guid.NewGuid();
+}
+
+@using (Ajax.BeginForm("_OtherEarningEntry", "SalaryStructure",
+  new { src = ViewBag.src },
+  new AjaxOptions { HttpMethod = "POST", OnSuccess = "OnSuccess", OnBegin = "ShowLoadingDialog()", OnFailure = "OnPostFailure()" },
+new { @id = "_OtherEarningEntryForm", @autocomplete = "Off" })
+)
+{
+    for (int i = 0; i < ComponentList.Count; i++)
+    {
+        <input type="hidden" name="Component[@i].Id" value="@ComponentList[i].Id" />
+    }
+    @Html.HiddenFor(x => Model.Month)
+    <input type="hidden" id="Emptype" name="Emptype" value="@ViewBag.Status" />
+
+    <div class="table-scrollable tab-height">
+        <table id="table_@ViewBag.Status" class="table mt-0 table-scroll act-table  table-bordered dt-responsive nowrap tbltick tdinthgh">
+            <thead>
+                <tr>
+                    <th class="w-33 text-center" data-toggle="tooltip" title="" data-original-title="Select All" data-placement="left">
+                        <input type="checkbox" class="newwidth selectall" id="selectall" checked name="ChkAll" value="All" />
+                        <label for="selectall" class="selectall m-0"></label>
+                    </th>
+                    <th> Employee Code</th>
+                    <th>Employee Name</th>
+                    <th>Designation</th>
+                    <th>Department</th>
+                    <th>Location</th>
+                    <th>Date of Joining</th>
+                    <th>Category</th>
+                    <th>Sub Category</th>
+                    <th>Structure</th>
+                    @foreach (var item in ComponentList)
+                    {
+                        <th>@item.Component</th>
+                    }
+                </tr>
+                @*<tr class="searchbar">
+                        <th class="searchhide"></th>
+                        <th></th>
+                        <th></th>
+                        <th></th>
+                        <th></th>
+                        <th></th>
+                        <th></th>
+                        <th></th>
+                        <th></th>
+                        <th></th>
+                        @foreach (var item in ComponentList)
+                        {
+                            <th class="searchhide">@item.Component</th>
+                        }
+
+                    </tr>*@
+            </thead>
+            <tbody>
+                @{ int Count = 0; string Err = ""; }
+                @*@try
+                {*@
+                    @for (int i = 0; i < Model.Emplist.Count; i++)
+                    {
+                        Count = Count + 1;
+                        <tr>
+                            <td class="text-center">
+                                <input type="checkbox" class="newwidth selectedId" id="Chksingle_@Count" checked name="@Html.NameFor(x => Model.Emplist[i].Checkbox)" />
+                                <label for="Chksingle_@Count" class="m-0 "></label>
+
+                                @*@Model.Emplist[i].RowNum*@
+                                @Html.HiddenFor(x => Model.Emplist[i].Empid)
+                            </td>
+                            <td>@Model.Emplist[i].emp_code</td>
+                            <td>@Model.Emplist[i].emp_name</td>
+                            <td>@Model.Emplist[i].Designation</td>
+                            <td>@Model.Emplist[i].Department</td>
+                            <td>@Model.Emplist[i].Location</td>
+                            <td>@Model.Emplist[i].DateOfJoining</td>
+                            <td>@Model.Emplist[i].EmploymentTerm</td>
+
+                            <td>@Model.Emplist[i].Subcategory</td>
+                            <td>@Model.Emplist[i].Structure</td>
+                            @foreach (var item in ComponentList)
+                            {
+                                Err = string.Format("Empid is {0}, Componentid : {1}", Model.Emplist[i].Empid, item.Id);
+                                var lst = Model.Component.Where(n => n.Empid == Model.Emplist[i].Empid && n.Id == item.Id).FirstOrDefault();
+						<td>
+							<label style="display:none">
+								@lst.Amt
+
+							</label>
+							<input type="number" name="@Model.Emplist[i].Empid-@lst.Id" value="@lst.Amt" placeholder="0" class="form-control text-right">
+						</td>
+                            }
+                        </tr>
+                    }
+                @*}*@
+                @*catch (Exception ex)
+                {
+                    ClsCommon.LogError(ex.Message, "Other Earning Entry For Loop", Err, "Other Earning", "", Err);
+
+                }*@
+
+
+            </tbody>
+        </table>
+    </div>
+    <div class=" text-center  mt-4">
+        <button type="submit" name="Command" value="Add" class="btn mtr-o-grn btn-l ripplelink "> <i class="fas fa-save"></i> Save</button>
+        <a class="btn cnl-btn btn-l ripplelink" href="/Dashboard"><i class="fas fa-times"></i>Close</a>
+    </div>
+}
+
+@section scripts    {
+    <script>
+        $(".chksingle").change(function () {
+            if ($(this).is(":checked")) {
+                $(this).closest('tr').find('input').attr('readonly', true);
+
+            }
+            else {
+                $(this).closest('tr').find('input').removeAttr('readonly');
+            }
+        });
+
+
+    </script>
+
+
+}
+
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('.selectall').click(function () {
+            $('.selectedId').prop('checked', this.checked);
+        });
+
+        $('.selectedId').change(function () {
+            var check = ($('.selectedId').filter(":checked").length == $('.selectedId').length);
+            $('.selectall').prop("checked", check);
+        });
+    });
+ 
+</script>

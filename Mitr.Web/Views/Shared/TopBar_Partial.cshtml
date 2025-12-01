@@ -1,0 +1,167 @@
+﻿@model Mitr.Models.AdminModule
+@using Mitr.CommonClass;
+@using Mitr.Models;
+
+@{
+
+    var random = new Random();
+    Singleton NotiObj = Singleton.Instance;
+    List<PushNotification> PushNotificationList = new List<PushNotification>();
+    PushNotificationList = NotiObj.GetPushNotificationList("Layout");
+    string MenuID = "0";
+    string Empid = clsApplicationSetting.GetSessionValue("EMPID").ToString();   
+    if (ViewBag.MenuID != null)
+    {
+        MenuID = ViewBag.MenuID;
+    }
+}
+
+<div class="l-header-inner u-cf">
+    <div class="l-header-item u-pull-left">
+        <span class="l-header-item-logo">
+
+            <a href="/Dashboard">
+                @Html.CreateImage("logo.jpg", "Logo", "l-header-logo-link-img snd-lgo")
+            </a>
+
+        </span>
+
+    </div>
+
+
+
+    <div class="l-header-item-contact u-pull-right">
+
+        <ul class="list-unstyled top-menu-list">
+
+            @if (Model != null && Model.ModuleID != 0)
+            {
+                foreach (AdminMenu itemMenu in Model.MainMenuList.Where(x => x.ParentMenuID == 0).OrderBy(x => x.MenuPriority).ThenBy(x => x.MenuName).ToList())
+                {
+
+                    <li>
+
+                        <a class="tp-arw ripplelink" data-toggle="@(@itemMenu.MenuURL!="javascripts:;"?"":"dropdown"))" aria-haspopup="true" aria-expanded="false" id="Menu_@itemMenu.MenuID" target="@itemMenu.Target" href="@(itemMenu.MenuURL.Contains("javascripts") ? "javascripts:;": itemMenu.MenuURL+ "?src="+clsApplicationSetting.EncryptQueryString(itemMenu.MenuID.ToString()+"*"+itemMenu.MenuURL))">@itemMenu.MenuName @Html.Raw(!string.IsNullOrEmpty(itemMenu.MenuImage) ? "<i class='" + itemMenu.MenuImage + "' aria-hidden='true'></i>" : "")</a>
+
+                        @if (itemMenu.IsChild == "Y")
+                        {
+                            if (!string.IsNullOrEmpty(itemMenu.MenuImage))
+                            {
+
+                                <div class="dropdown-menu drp-menu-icon">
+                                    <ul>
+                                        @foreach (AdminMenu itemMenu2 in itemMenu.ChildMenuList.OrderBy(x => x.MenuPriority).ThenBy(x => x.MenuName).ToList())
+                                        {
+
+                                            var color = String.Format("#{0:X6}", random.Next(0x1000000));
+                                            <li> <a style="color:@color;" id="Menu_@itemMenu2.MenuID" target="@itemMenu2.Target" href="@(itemMenu2.MenuURL.Contains("javascripts") ? "javascripts:;": itemMenu2.MenuURL+ "?src="+clsApplicationSetting.EncryptQueryString(itemMenu2.MenuID.ToString()+"*"+itemMenu2.MenuURL))">@itemMenu2.MenuName @Html.Raw(!string.IsNullOrEmpty(itemMenu2.MenuImage) ? "<i class='" + itemMenu2.MenuImage + "' aria-hidden='true'></i>" : "")</a></li>
+
+                                        }
+                                    </ul>
+                                </div>
+                            }
+
+                            else
+                            {
+
+                                <div class="dropdown-menu">
+                                    @foreach (AdminMenu itemMenu2 in itemMenu.ChildMenuList.OrderBy(x => x.MenuPriority).ThenBy(x => x.MenuName).ToList())
+
+                                    {
+
+                                        <a class="dropdown-item" id="Menu_@itemMenu2.MenuID" target="@itemMenu2.Target" onclick="@(!string.IsNullOrEmpty(itemMenu2.MenuURL) && itemMenu2.Target !="_blank" && itemMenu2.MenuURL!="javascripts:;"?"ShowLoadingDialog();":"")" href="@itemMenu2.MenuURL">@itemMenu2.MenuName</a>
+                                    }
+
+                                </div>
+                            }
+
+                        }
+
+                    </li>
+                }
+
+            }
+
+            <li>
+                @*<a href="/Tools/AllNotification" class="top-prf-pic tp-arw" aria-expanded="true">
+                        <i class="fas fa-bell"></i>
+                        <span id="spnMainTotalCount" class="count-nt wow swing">0</span>
+                    </a>*@
+                <a href="/Tools/AllNotification" style="display:none" class="top-prf-pic tp-arw" data-toggle="dropdown" aria-haspopup="false" aria-expanded="true">
+                    <i class="fas fa-bell"></i>
+                    <span id="spnMainTotalCount" class="count-nt wow swing">0</span>
+                </a>
+                <div class="dropdown-menu dropdown-menu-form ">
+                    <div class="NotificationDiv"></div>
+                </div>
+            </li>
+            <li>
+                <a class="top-prf-pic tp-arw" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    @Html.ShowAttachment(clsApplicationSetting.GetSessionValue("AttachmentID"), "")
+                </a>
+                <div class="dropdown-menu profile-list">
+                    <ul>
+                        <li>
+                            <div class="media emp-info">
+                                <div class="media-left">
+                                    <div class="prf-img" data-toggle="modal" data-target="#updateimage" >
+                                        <div class="profile-img">
+                                            @Html.ShowAttachment(clsApplicationSetting.GetSessionValue("AttachmentID"), "media-object")
+                                        </div>
+                                        <span class="emp-info-txt" >Change Image</span>
+                                    </div>
+                                </div>
+                                <div class="media-body align-self-center">
+                                    <h4 class="media-heading">
+                                        @Html.CreateAnchor("", "", clsApplicationSetting.GetSessionValue("UserName"))
+
+                                    </h4>
+                                    <p>@clsApplicationSetting.GetSessionValue("Designation")</p>
+                                </div>
+                            </div>
+                        </li>
+                        <li>
+                            @Html.CreateAnchor("", "", "ESS Payroll", "", "", "fa fa-users", "")
+                            @*<a href=""><i class="fa fa-users" aria-hidden="true"></i> ESS Payroll</a>*@
+                        </li>
+                        <li>
+                            <a   onclick="ListAdd();"><i class="fa fa-user" aria-hidden="true"></i> My Profile</a>
+                        </li>
+                        <li>
+                            @Html.CreateAnchor("", "", "My Setting", "", "", "fa fa-users", "")
+
+                        </li>
+                        <li>
+                            @Html.CreateAnchor("", "/ChangePassword", "Change Password", "", "", "fa fa-users", "")
+                        </li>
+                        <li>
+                            @Html.CreateAnchor("", "/Logout", "Logout", "", "", "fa fa-users", "")
+                            @*<a href="/Logout"><i class="fa fa-sign-out" aria-hidden="true"></i> Logout</a>*@
+                        </li>
+                </div>
+            </li>
+
+            <li>
+                <a href="http://www.c3india.org/" target="_blank" style="display:none">
+                    @Html.CreateImage("c3.png", "c3 India", "right-logo")
+                </a>
+            </li>
+        </ul>
+    </div>
+</div>
+
+
+
+
+
+<script>
+    function ListAdd() {
+        ShowLoadingDialog();
+				var ID = Number('@Empid');
+				var MenuID = Number('@MenuID');
+                ShowLoadingDialog();
+        var url = "/Account/RegistrationDetails?Empid=" + ID;
+        var url = "/Account/RegistrationDetails?src=" + EncryptQueryStringJSON(0 + "*" + "/Account/RegistrationDetails" + "*" + ID);
+                window.location.href = url;
+                }
+</script>

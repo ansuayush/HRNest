@@ -1,0 +1,47 @@
+﻿@using System.Data
+@model DataSet
+
+<div class="x_content table-currency mt-0">
+    <div class="table-responsive">
+        <table class="table table-striped table-bordered dt-responsive nowrap tbltick new_width" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
+            <thead>
+                <tr>
+                    <th>S.no.</th>
+                    <th>Month Name</th>
+                    <th>Amount</th>
+                </tr>
+             
+            </thead>
+            <tbody>
+                @{ int Count = 0;
+                    double TotalAmount = 0;
+                    }
+                @foreach (DataRow item in Model.Tables[0].Rows)
+                {
+                    Count++;
+                    TotalAmount += Convert.ToDouble(item["Amount"].ToString());
+                    
+                    <tr>
+                        <td>@Count</td>
+
+                        <td> @item["MonthName"]</td>
+                        <td class="text-right">
+                            @string.Format("{0:#,0}", item["Amount"])
+                        </td>
+                    </tr>
+                }
+            </tbody>
+            <tfoot>
+                <tr>
+                    <td></td>
+                    <td></td>
+                    <td class="text-right">
+                        @string.Format("{0:#,0}", TotalAmount)
+
+                    </td>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
+</div>
+

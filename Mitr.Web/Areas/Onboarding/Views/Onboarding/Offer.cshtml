@@ -1,0 +1,672 @@
+﻿@{
+	ViewBag.Title = "Offer";
+	Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<script src="~/assets/design/js/wow.js"></script>
+<script src="~/assets/design/js/wow.min.js"></script>
+<script src="~/ckeditor/ckeditor.js?v=@clsApplicationSetting.GetWebConfigValue("Version")"></script>
+<script>
+	function RedirectToOffer() {
+		window.location.href = virtualPath + 'Onboarding/PreRegistration';
+	}
+	function lnkLogout_Confirm(actionName)
+    {
+       // var bResponse = confirm('Are you sure you want to exit?');
+		var url = "";
+		if (actionName.id == "Joiningkit") {
+             url = '@Url.Action("Joiningkit")';
+		}
+		else if (actionName.id == "PreRegistration") {
+             url = '@Url.Action("PreRegistration")';
+		}
+		window.location.href = url;
+		// return bResponse;
+	}
+
+</script>
+
+<div class="container-fluid text-clr">
+	<!-- Start -->
+	<div class="inner-main defult-height pb-0">
+		<h1 class="heading-one ">HR Process</h1>
+		<ul class="tab-thrid" id="ulHeader">
+			<li class="active" id="liOffer" onclick="RedirectToClick('Offer');"><a>Offer</a></li>
+			<li class="dnactive" id="liJoiningkit" onclick="RedirectToClick('Joiningkit');"><a>Joining Kit</a></li>
+			<li class="dnactive" id="liPreRegistration" onclick="RedirectToClick('PreRegistration');"><a>Pre-Registration</a></li>
+			<li class="dnactive" id="liOrientationSchedule" onclick="RedirectToClick('OrientationSchedule');"><a>Orientation Schedule</a></li>
+			<li class="dnactive" id="liRegistration" onclick="RedirectToClick('Registration');"><a>Registration</a></li>
+			<li class="dnactive" id="liAttachment" onclick="RedirectToClick('Attachment');"><a>Attachment</a></li>
+			<li class="dnactive" id="liUserOnboarding" onclick="RedirectToClick('UserOnboarding');"><a>Onboarding</a></li>
+			<li class="dnactive" id="liDeclarationDetails" onclick="RedirectToClick('DeclarationDetails');"><a>Declaration</a> </li>
+			<li class="dnactive" id="liOrientation" onclick="RedirectToClick('Orientation');"><a>Orientation</a></li>
+		</ul>
+		<div class="row">
+			<div class="col-md-8 col-sm-12">
+				<div class="row">
+					<div class="col-sm-3 form-group">
+						<label>Employee Name</label>
+						<input type="text" id="txtEmployeeName" disabled class="form-control OfferIssued" placeholder="Employee Name" />
+					</div>
+					<div class="col-sm-3 form-group" id="divExpectedDateofJoining" style="display:none">
+						<label>Expected Date of Joining</label>
+						<input type="text" autocomplete="off" disabled class="form-control datepicker OfferIssued" placeholder="Enter" id="txtExpectedDateofJoining" onchange="HideErrorMessage(this)">
+						<span id="sptxtExpectedDateofJoining" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+					</div>
+					<div class="col-sm-3 form-group">
+						<label>Issue Date of Offer Letter</label>
+						<input type="text" autocomplete="off" disabled class="form-control datepicker OfferIssued" placeholder="Enter" id="txtIssuesDateofOffer" onchange="HideErrorMessage(this)">
+						<span id="sptxtIssuesDateofOffer" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+					</div>
+					<div class="col-sm-3 form-group">
+						<label>Personal e-Mail Id</label>
+						<input type="text" id="txtPersonalEmailID" disabled class="form-control OfferIssued" placeholder="Personal e-Mail Id" />
+					</div>
+					<div class="col-sm-3 form-group" id="divOfferLetterSent" style="display:none">
+						<label>Offer Letter Sent</label>
+						<p>Document 1 <a href="" class="float-right mtr-o-clr" data-toggle="modal" onclick="PreviewOfferLetterDocument();"><i class="fas fa-eye"></i>Preview</a></p>
+					</div>
+					<div id="divCtrlApprovedOn" class="col-sm-3 form-group" style="display:none">
+						<label>Approved On</label>
+						<input type="text" id="txtSApprovedOn" class="form-control OfferIssued" placeholder="Approved On" />
+					</div>
+					<div id="divCtrlApprovedOnBy" class="col-sm-3 form-group" style="display: none">
+						<label>Approved by</label>
+						<input type="text" id="txtSApprovedBy" class="form-control" placeholder="Approved By" disabled />
+					</div>
+					<div class="col-sm-3 form-group">
+						<label>Employee Category <sup>*</sup></label>
+						<select class="form-control dpselect select2-hidden-accessible" disabled="" onchange="EmployeeCategory();" id="ddlEmployeeCategory" tabindex="-1" aria-hidden="true">
+							<option value="0">Select</option>
+							<option value="1">Term Based</option>
+							<option value="2">Core Based</option>
+						</select>
+						<span id="spddlEmployeeCategory" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+					</div>
+					<div id="divEndDateofContract" class="col-sm-3 tb form-group" style="display:none">
+						<label>End date of employment contract<sup>*</sup></label>
+						<input type="text" autocomplete="off" class="form-control datepicker Mandatory" placeholder="Enter" id="txtEndDateofContract" onchange="HideErrorMessage(this)">
+						<span id="sptxtEndDateofContract" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+					</div>
+					<div class="col-sm-3 form-group" id="divTermoftheEmployee" style="display:none;">
+						<label>Term of the Employee<sup>*</sup></label>
+						<input type="text" class="form-control  Mandatory" id="txtTermoftheEmployee" placeholder="Enter" onchange="HideErrorMessage(this)">
+						<span id="sptxtTermoftheEmployee" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+					</div>
+					<div class="col-sm-3 form-group">
+						<label>Annual Salary &amp; Benefit<sup>*</sup></label>
+						<input type="number" id="txtAnnualSalaryBenefit" class="form-control Mandatory" placeholder="Annual Salary Benefit" onchange="HideErrorMessage(this)">
+						<span id="sptxtAnnualSalaryBenefit" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-md-12 col-sm-12">
+						<div class="row">
+							<div class="col-sm-3 m-0 form-group">
+								<label>Employment Status <sup>*</sup></label>
+								<select class="form-control applyselect Mandatorypld" id="ddlEmploymentStatus" onchange="HideErrorMessage(this); EmploymentStatus();">
+								</select>
+								<span id="spddlEmploymentStatus" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+							</div>
+							<div id="divExpectedLastDateofProbation" style="display:none" class="col-sm-3 m-0 form-group">
+								<label>Expected Last Date of Probation<sup>*</sup></label>
+								<input type="text" autocomplete="off" class="form-control datepicker Mandatory" id="txtExpectedLastDateofProbation" value="2020-05-04" placeholder="Enter" onchange="HideErrorMessage(this)">
+								<span id="sptxtExpectedLastDateofProbation" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-md-12 col-sm-12">
+						<div class="row">
+							<div class="col-sm-3 form-group JoiningKit" style="display:none;">
+								<label>Upload Attachment <sup>*</sup></label>
+								<input type="file" placeholder="Enter" class="form-control  " id="fileScopeofwork" onchange="HideErrorMessage(this); UploadFileScope();">
+								<span id="spUploadedFilename" style="display:block"><a id="aUploadedFilename" href="#" target="_blank">aa</a></span>
+								<span id="spfileScopeofwork" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+								<input type="hidden" id="hdnfileScopeActualName" />
+								<input type="hidden" id="hdnfileScopeNewName" />
+								<input type="hidden" id="hdnfileScopeFileUrl" />
+							</div>
+							<div class="col-sm-3 form-group JoiningKit" style="display:none;">
+								<label>Offer Accepted Date <sup>*</sup></label>
+								<input type="text" class="form-control datepicker OfferAcceptDate" autocomplete="off" id="txtOfferAcceptDate" placeholder="" onchange="HideErrorMessage(this)">
+								<span id="sptxtOfferAcceptDate" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+							</div>
+							<div class="col-sm-3 form-group JoiningKit" style="display:none;">
+								<label>Expected Date of Joining <sup>*</sup></label>
+								<input type="text" id="txtsExpectedDateofJoining" class="form-control datepicker OfferAcceptDate" autocomplete="off" placeholder="" onchange="HideErrorMessage(this)">
+								<span id="sptxtsExpectedDateofJoining" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+							</div>
+							<div class="col-sm-3 form-group JoiningKit" style="display:none;" id="divBasedOnEmpCategory">
+								<label>End date of employment Contract <sup>*</sup></label>
+								<input type="text" id="txtsEndDateofContract" class="form-control datepicker  " onchange="HideErrorMessage(this);" autocomplete="off" placeholder="">
+								<span id="sptxtsEndDateofContract" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-sm-12 mb-2" id="divDocumentVerified">
+						<ul class="list-unstyled inlin-list ">
+							<li>
+								<input type="checkbox" id="chkDocumentVerified" class="sltchk " name="DocumentVerified">
+								<label for="chkDocumentVerified"> Document Verified  </label>
+								<span id="spchkDocumentVerified" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+							</li>
+							<li>
+								<input type="checkbox" id="chkReferenceChecked" class="sltchk " name="ReferenceChecked">
+								<label for="chkReferenceChecked"> Reference Checked  </label>
+								<span id="spchkReferenceChecked" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+							</li>
+						</ul>
+					</div>
+
+				</div>
+			</div>
+
+			<div class="col-lg-8 text-left mt-2 JoiningKit" style="display:none;">
+				@*<a href="#"  class="btn mtr-g-grn btn-l ripplelink pull-right"><i class="fas fa-check"></i>Accept </a>*@
+				<button id="btnOfferLetterAcceptRespones" type="submit" class="btn mtr-g-grn btn-l ripplelink pull-right" name="Command" value="Add" onclick="OfferLetterAcceptRespones();"><i class="fas fa-ban"></i>Accept</button>
+				<button id="btnOfferLetterRejectRespones" type="submit" class="btn red-clr-bg btn-l ripplelink pull-right" name="Command" value="Add" onclick="OfferLetterRejectFromRespones();"><i class="fas fa-ban"></i>Reject</button>
+				<button onclick="RedirectToOnboard();" type="button" class="btn cnl-btn ripplelink  pull-right"><i class="fas fa-times"></i> Close</button>
+			</div>
+			<div class="col-lg-8 text-left mt-2 OfferAction">
+				<button id="btnPreviewOfferLetter" type="submit" class="btn blk-gdn-btn btn-l ripplelink pull-right" name="Command" value="Add" onclick="PreviewOfferLetter();"><i class="fas fa-file-alt"></i>Preview Offer Letter </button>
+				<button id="btnDownloadOfferLetter" type="submit" class="btn mtr-g-grn btn-l ripplelink pull-right" name="Command" value="Add" onclick="ShowDownloadOfferLetter();"><i class="fas fa-download"></i>Download Offer Letter </button>
+				<button id="btnOfferLetterReject" type="submit" class="btn red-clr-bg btn-l ripplelink pull-right" name="Command" value="Add" onclick="OfferLetterReject();"><i class="fas fa-ban"></i>Reject</button>
+				<button onclick="RedirectToOnboard();" type="button" class="btn cnl-btn ripplelink  pull-right"><i class="fas fa-times"></i> Close</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+<!----End start-->
+
+<input type="hidden" id="hdnJobId" />
+<input type="hidden" id="hdnPhoneNumber" />
+<!--Model downbload-->
+<div class="modal" id="modalTermBasedPreviewOfferLetter">
+	<div class="modal-dialog modal-lg">
+		<div class="modal-content ">
+			<!-- Modal Header -->
+			<div class="modal-header">
+				<h4 class="modal-title"><i class="fas fa-envelope"></i>Preview Offer Letter</h4>
+				<button type="button" class="close" data-dismiss="modal">×</button>
+			</div>
+			<!-- Modal body -->
+			<div class="modal-body">
+				<textarea name="txtTermBasedPreviewOfferLetter" id="txtTermBasedPreviewOfferLetter"></textarea>
+
+				<div class="row" id="TermBasedPrintDiv" style="width: 100%; display: none;">
+					<div id="tblTermBasedPreviewOfferLetter" style="width:100%;">
+
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-sm-12">
+						<button onclick="SaveTermBasedOfferLetter(1);" id="btnTermBasedSaveOfferLetter" type="button" class="btn mtr-g-grn btn-l "><i class="fas fa-paper-plane"></i>Save</button>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<div class="modal" id="modalCoreBasedPreviewOfferLetter">
+	<div class="modal-dialog modal-lg">
+		<div class="modal-content ">
+
+			<!-- Modal Header -->
+			<div class="modal-header">
+				<h4 class="modal-title"><i class="fas fa-envelope"></i>Preview Offer Letter</h4>
+				<button type="button" class="close" data-dismiss="modal">×</button>
+			</div>
+
+			<!-- Modal body -->
+			<div class="modal-body">
+				<textarea name="CoreBasedPreviewOfferLetter" id="CoreBasedPreviewOfferLetter"></textarea>
+				
+				<div class="row" id="CodeBasedPrintDiv" style="width: 100%; display: none;">
+					<div id="tblCoreBasedPreviewOfferLetter" style="width:100%;">
+
+					</div>
+					
+				</div>
+				<div class="row">
+					<div class="col-sm-12">
+						<button onclick="SaveTermBasedOfferLetter(2);" id="btnCodeBasedSaveOfferLetter" type="button" class="btn mtr-g-grn btn-l "><i class="fas fa-paper-plane"></i>Save</button>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<div class="modal" id="sol">
+	<div class="modal-dialog modal-md">
+		<div class="modal-content ">
+			<!-- Modal Header -->
+			<div class="modal-header">
+				<h4 class="modal-title"><i class="fas fa-envelope"></i>Send Offer Letter</h4>
+				<button type="button" class="close" data-dismiss="modal">×</button>
+			</div>
+			<!-- Modal body -->
+			<div class="modal-body">
+				<div class="row">
+					<div class="col-sm-6 form-group mt-2">
+						<label>Approved On <sup>*</sup></label>
+						<input type="text" autocomplete="off" class="form-control datepicker Mandatory" placeholder="Enter" id="txtApprovedOn" onchange="HideErrorMessage(this)">
+						<span id="sptxtApprovedOn" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+					</div>
+					<div class="col-sm-6 form-group mt-2">
+						<label>Approved By<sup>*</sup></label>
+						<select id="ddlApprovedBy" onchange="HideErrorMessage(this)" class="form-control dpselect select2-hidden-accessible Mandatorypld" tabindex="-1" aria-hidden="true">
+						</select>
+						<span id="spddlApprovedBy" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+					</div>
+				</div>
+				<!-- Modal footer -->
+				<div class="p-0 text-center mt-3 ">
+					<button type="button" class="btn cnl-btn ripplelink" data-dismiss="modal"><i class="fas fa-times"></i>Close</button>
+					<button onclick="DownloadOfferLetterDocumentDetails();" type="button" class="btn mtr-g-grn btn-l "><i class="fas fa-paper-plane"></i>Download</button>
+					<button onclick="SaveOfferDetails();" id="btnOfferLetterSubmitted" type="button" class="btn mtr-o-grn btn-l ripplelink pull-right"><i class="fas fa-paper-plane"></i>Submit</button>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<div class="modal" id="rfc">
+	<div class="modal-dialog modal-md">
+		<div class="modal-content ">
+
+			<!-- Modal Header -->
+			<div class="modal-header">
+				<h4 class="modal-title"><i class="fas fa-ban"></i>Reject</h4>
+				<button type="button" class="close" data-dismiss="modal">×</button>
+			</div>
+
+			<!-- Modal body -->
+			<div class="modal-body">
+				<div class="row">
+					<div class="col-sm-12">
+						<ul class="list-unstyled inlin-list p-0 ">
+							<li>
+								<input type="radio" id="chkRejectedbyC3" class="sltchk" checked="checked" name="DocumentVerified">
+								<label for="chkRejectedbyC3"> Rejected by C3</label>
+							</li>
+							<li>
+								<input type="radio" id="chkRejectedbyCandidates" class="sltchk" name="DocumentVerified">
+								<label for="chkRejectedbyCandidates"> Declined by Candidate</label>
+							</li>
+						</ul>
+					</div>
+					<div class="col-sm-12 form-group mt-2">
+
+						<label>Reason<sup>*</sup></label>
+						<textarea class="form-control h-100 maxSize[1200] MandatoryReason" onchange="HideErrorMessage(this)" placeholder="Enter Description" id="txtReason"></textarea>
+						<span id="sptxtReason" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+					</div>
+
+					<div class="col-sm-12">
+						<ul class="list-unstyled inlin-list ">
+							<li>
+								<input type="checkbox" id="chkDonotMovetoTalentPool" class="sltchk" name="DocumentVerified">
+								<label for="chkDonotMovetoTalentPool">Do not Move to Talent Pool</label>
+							</li>
+
+						</ul>
+					</div>
+				</div>
+				<!-- Modal footer -->
+				<div class="p-0 text-center mt-3 ">
+					<button type="button" class="btn cnl-btn ripplelink" data-dismiss="modal"><i class="fas fa-times"></i>Close</button>
+					<button type="button" onclick="AcceptOffer(2)" class="btn mtr-o-grn btn-l "><i class="fas fa-paper-plane"></i>Submit</button>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<!----End start-->
+
+<div class="modal fade confirmmsg" id="confirmmsg">
+	<div class="modal-dialog modal-md ">
+		<div class="modal-content">
+			<!-- Modal Header -->
+			<div class="swal-icon swal-icon--warning">
+				<span class="swal-icon--warning__body">
+					<span class="swal-icon--warning__dot"></span>
+				</span>
+			</div>
+
+			<div class="modal-body ">
+				<div class="swal-title text-center">Do you want to link with consultant database ?</div>
+			</div>
+			<div class="modal-footer">
+				<a href="offer.html" class="btn cnl-btn">No</a>
+				<button type="button" class="btn mtr-o-grn">Yes</button>
+
+			</div>
+
+		</div>
+
+
+
+	</div>
+
+	@section scripts    {
+		@System.Web.Optimization.Scripts.Render("~/bundle/unobtrusivejs")
+		@System.Web.Optimization.Scripts.Render("~/bundle/dataTablesjs")
+		<script src="~/assets/design/Scripts/AddInit.js?v=@clsApplicationSetting.GetWebConfigValue("Version")"></script>
+
+		<script src="~/Areas/Onboarding/DevScript/OnboardingOffer.js"></script>
+		<script>
+			var baseURL= "@System.Configuration.ConfigurationManager.AppSettings["BaseURL"]";
+        var CandidateId = '@ViewBag.RequestId';
+		var StatusCode = '@ViewBag.StatusCode';
+			function RedirectToOnboard() {
+				window.location.href = virtualPath + 'Onboarding/HRScreenOnboard';
+			}
+		</script>
+	}
+	<script type="text/javascript">
+		$(function () {
+			$(".fold-table tr.view").on("click", function () {
+				$(this).toggleClass("open").next(".fold").toggleClass("open");
+			});
+		});
+	</script>
+
+	<script>
+		var MenuID = Number(129);
+
+		wow = new WOW();
+		wow.init();
+
+		$(document).ready(function () {
+			$(".dpselect").select2();
+		});
+		function SuccessToaster(Message) {
+			$("#toastMsg").html(Message);
+			$("#toasticon i").addClass("fas fa-check green-clr ");
+			var x = document.getElementById("toast")
+			x.className = "show";
+			setTimeout(function () { x.className = x.className.replace("show", ""); }, 4000);
+		}
+
+		function FailToaster(Message) {
+			$("#toastMsg").html(Message);
+			$("#toasticon i").addClass("fas fa-exclamation-triangle red-clr");
+			var x = document.getElementById("toast")
+			x.className = "show toaster-warning";
+			setTimeout(function () { x.className = x.className.replace("show toaster-warning", ""); }, 4000);
+		}
+
+
+		function ValidateFile(FileName) {
+
+			var result = false;
+			if (document.getElementById(FileName).files[0].name.toUpperCase().match(/\.(PDF|DOCX|TXT|XLS|XLSX)$/)) {
+
+				var filesize = 3145728;
+				var sizeinbytes = document.getElementById(FileName).files[0].size;
+				if (filesize >= sizeinbytes) {
+					result = true;
+				}
+				else {
+					FailToaster("File size should be less than 3 MB");
+					document.getElementById(FileName).value = '';
+					result = false;
+
+				}
+				return result;
+			}
+			else {
+				FailToaster("Invalid file type , please select valid file again");
+				document.getElementById(FileName).value = '';
+				return result;
+			}
+
+		}
+
+		function ValidateImage(FileName) {
+
+			var result = false;
+			if (document.getElementById(FileName).files[0].name.toUpperCase().match(/\.(JPG|JPEG|PNG|PDF)$/)) {
+
+				var filesize = 2097152;
+				var sizeinbytes = document.getElementById(FileName).files[0].size;
+				if (filesize >= sizeinbytes) {
+					result = true;
+				}
+				else {
+					FailToaster("Image should be less than 2 MB");
+
+					document.getElementById(FileName).value = '';
+					result = false;
+
+				}
+				return result;
+			}
+			else {
+				FailToaster("Invalid Image type , please select valid Image");
+				document.getElementById(FileName).value = '';
+				return result;
+			}
+
+		}
+	</script>
+	<script>
+		// JavaScript Document
+		$(function () {
+			$('#js-nav-toggle').click(function (e) {
+				e.preventDefault();
+				$("html").toggleClass("is-sideopen");
+				$("#js-nav-toggle").toggleClass("is-active");
+			});
+
+			var $content = $('.l-contents');
+			var $header = $('.l-header');
+
+
+			$content.click(function () {
+				$("html").removeClass("is-sideopen");
+			});
+
+
+			$header.click(function () {
+				$("html").removeClass("is-sideopen");
+			});
+
+
+		});
+
+
+		$(function () {
+
+			var $dropdown = $('.js-dropdown');
+			var $content = $('.l-contents');
+			var $toggle = $('#js-nav-toggle');
+
+
+			$('.js-dropdown-menu').hide();
+			$dropdown.click(function () {
+				 
+				$('i').removeClass('is-rotate');
+				$('.js-dropdown-menu').slideUp(200);
+				if ($('+.js-dropdown-menu', this).css('display') == 'none') {
+					$('i', this).addClass('is-rotate');
+					$('+.js-dropdown-menu', this).slideDown(200);
+				}
+			});
+
+
+			$content.click(function () {
+				$('i').removeClass('is-rotate');
+				$('.js-dropdown-menu').slideUp(200);
+				if ($('+.js-dropdown-menu', this).css('display') == 'none') {
+					$('i', this).addClass('is-rotate');
+					$('+.js-dropdown-menu', this).slideDown(200);
+				}
+			});
+
+
+			$toggle.click(function () {
+				$('i').removeClass('is-rotate');
+				$('.js-dropdown-menu').slideUp(200);
+				if ($('+.js-dropdown-menu', this).css('display') == 'none') {
+					$('i', this).addClass('is-rotate');
+					$('+.js-dropdown-menu', this).slideDown(200);
+				}
+			});
+
+		});
+
+		$(function () {
+			$('.is-ac-close').hide();
+			$(".is-ac-click").on("click", function () {
+				if ($(this).children('i').is('.fa-angle-right')) {
+					$(this).children('i')
+						.removeClass('fa-angle-right')
+						.addClass('fa-angle-down');
+				} else {
+					$(this).children('i')
+						.removeClass('fa-angle-down')
+						.addClass('fa-angle-right');
+				}
+				$(this).next().slideToggle(200);
+			});
+
+			$('.is-ac-close').hide();
+			$(".is-ac-bar").on("click", function () {
+
+				if ($(this).find('i').is('.fa-caret-down')) {
+
+					$(this).find('i')
+						.removeClass()
+						.addClass('fa fa-caret-up');
+				} else {
+					$(this).find('i')
+						.removeClass()
+						.addClass('fa fa-caret-down');
+				}
+				$(this).next().slideToggle(200);
+			});
+		});
+
+
+
+
+		//---------------------------------------------------
+		// ▼　tab
+		//---------------------------------------------------
+		$(function () {
+			var rwdTab = $('.c-tab'),
+				switchPoint = 768,
+				fadeSpeed = 300,
+				slideSpeed = 300;
+
+			var tabBtn = rwdTab.children('.c-tab-panel').children('.c-tab-heading'),
+				contentsArea = rwdTab.children('.c-tab-panel').children('.c-tab-body');
+
+			tabBtn.on('click', function () {
+				if (!$(this).hasClass('c-tab-active')) {
+					tabBtn.removeClass('c-tab-active');
+					$(this).addClass('c-tab-active');
+
+					if (window.innerWidth > switchPoint) {
+						contentsArea.fadeOut(fadeSpeed);
+						$(this).next().fadeIn(fadeSpeed);
+					} else {
+						contentsArea.slideUp(slideSpeed);
+						$(this).next().slideDown(slideSpeed);
+					}
+				}
+			});
+
+			tabBtn.first().click();
+		});
+
+
+
+	</script>
+	<!-- required -->
+	<script type="text/javascript">
+		jQuery(document).ready(function ($) {
+			jQuery('.stellarnav').stellarNav({
+				theme: 'dark',
+				breakpoint: 960,
+				position: 'right',
+
+			});
+			$('.notifyjs-corner').empty();
+		});
+	</script>
+	<!-- required -->
+	<script>
+		$("document").ready(function () {
+
+			$('.dropdown-menu').on('click', function (e) {
+				if ($(this).hasClass('dropdown-menu-form')) {
+					e.stopPropagation();
+				}
+			});
+		});
+
+
+	</script>
+	<script>
+
+		var links = document.querySelectorAll('.ripplelink');
+
+		for (var i = 0, len = links.length; i < len; i++) {
+			links[i].addEventListener('click', function (e) {
+				var targetEl = e.target;
+				var inkEl = targetEl.querySelector('.ink');
+
+				if (inkEl) {
+					inkEl.classList.remove('animate');
+				}
+				else {
+					inkEl = document.createElement('span');
+					inkEl.classList.add('ink');
+					inkEl.style.width = inkEl.style.height = Math.max(targetEl.offsetWidth, targetEl.offsetHeight) + 'px';
+					targetEl.appendChild(inkEl);
+				}
+
+				inkEl.style.left = (e.offsetX - inkEl.offsetWidth / 2) + 'px';
+				inkEl.style.top = (e.offsetY - inkEl.offsetHeight / 2) + 'px';
+				inkEl.classList.add('animate');
+			}, false);
+		}
+	</script>
+	<script type="text/javascript">
+		$(window).scroll(function () {
+			if ($(this).scrollTop() > 250) {
+				$('.header').addClass("sticky");
+			}
+			else {
+				$('.header').removeClass("sticky");
+			}
+		});
+
+
+	</script>
+	<noscript>
+		<p class="NojavaScript">Javascripts is disabled</a></p>
+	</noscript>
+
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/html-docx-js/dist/html-docx.js"></script>
+<script src="~/Areas/Onboarding/DevScript/OnboardingOffer.js"></script>
+<script src="~/ckeditor/ckeditor.js?v=@clsApplicationSetting.GetWebConfigValue("Version")"></script>
+<script>
+	//CKEDITOR.replace("TermBasedPrintDiv");
+
+var IsEDUser = '@ViewBag.IsED';
+    var loggedinUserid = '@ViewBag.UserId';
+		var loggedinUserName = '@ViewBag.UserName';
+		var UserGrade = '@ViewBag.Grade';
+var IsPM = '@ViewBag.IsPM';
+</script>

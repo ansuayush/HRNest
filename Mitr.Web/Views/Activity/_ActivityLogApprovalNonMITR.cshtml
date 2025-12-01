@@ -1,0 +1,258 @@
+﻿@using System.Data
+@model List<Mitr.Models.MyTeamActiveLogListNonMitr>
+
+        @Html.AntiForgeryToken()
+       
+        <div class="x_content table-currency mt-0">
+            <div class="table-responsive">
+                <table id="tableActiveLogApprove" class="table mt-0" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
+                    <thead>
+                        <tr>
+                            <th class="w-30">S.no.</th>
+                            <th>Employee Code</th>
+                            <th>Employee Name</th>
+                            <th>Non-Mitr Team</th>
+                            <th>Unapproved CO/OT</th>
+                            <th>Action</th>
+                        </tr>
+                        <tr class="searchbar">
+                            <th class="searchhide"> </th>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                            <th></th>                                                 
+                            <th class="searchhide"> </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @{ int Count = 0;}
+                        @for (int i = 0; i < Model.Count; i++)
+                        {
+                            Count++;
+                        <tr>
+                            <td>
+                                @Count
+                                @Html.HiddenFor(x => Model[i].Year,new {@class="hfYear" })
+                                @Html.HiddenFor(x => Model[i].Month, new { @class = "hfMonth" })
+                                @Html.HiddenFor(x => Model[i].EMPID)
+                                @Html.HiddenFor(x => Model[i].EMPName)
+                                @Html.HiddenFor(x => Model[i].Teamids)                                
+                                <input type="hidden" name="N" value="@Model[i].EMPName" />
+                                <input type="hidden" name="E" value="@Model[i].Teamids" />
+                                <input type="hidden" name="D" value="@Model[i].MonthName" />
+                            </td>
+                            <td> @Model[i].EMPCode</td>
+                            <td> @Model[i].EMPName</td>
+                            <td class="text-center">
+                                @if ((Model[i].UnApprovedOT + Model[i].UnApprovedComOff) > 0)
+                                {
+                                    <a title="Please Approve CO/OT">@Model[i].TeamCount</a>
+                                }
+                                else
+                                {
+                                    <a  onclick="ShowLoadingDialog();window.location='@Url.Action("ActivityLogApprovalEMPNonMITR", "Activity", new { src = clsApplicationSetting.EncryptQueryString(@ViewBag.MenuID + "*/Activity/ActivityLogApprovalEMPNonMITR*"+ViewBag.SelectedDate +"*" + Model[i].Teamids+"*"+ ViewBag.Approve ) })';"> @Model[i].TeamCount</a>
+                                }
+                            </td>
+                          
+                            <td class="text-right">
+                                @if (((Model[i].UnApprovedOT + Model[i].UnApprovedComOff) > 0))
+                                {
+                                <a onclick="GetCompensatoryOffApprovalList(this)" >Approve</a>
+                                }
+                                @*else
+                                {
+                                    <p>No Pendings</p>
+                                }*@
+                            </td>
+                         
+                            <td>
+                                @if (((Model[i].UnApprovedOT + Model[i].UnApprovedComOff) == 0) && ViewBag.Approve == "0")
+                                {
+                                    <a   onclick="ApproveAll(this)" class="green-clr"><i class="fas fa-check"></i>Approve</a>
+                                }
+
+                            </td>
+
+
+
+                        </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <script type="text/javascript">
+            $(document).ready(function () {
+                $("#checkAll").change(function () {
+                    if ($(this).is(":checked")) {
+                        $(".chksingle").each(function () {
+                            $(this).prop('checked', true);
+                            $(this).parents("tr:eq(0)").find(".aaprovedhours").show();
+                            $(this).parents("tr:eq(0)").find(".aaprovedhours").val($(this).parents("tr:eq(0)").find(".appliedhours").val());
+                        });
+                    }
+                    else {
+                        $(".chksingle").each(function () {
+                            $(this).prop('checked', false);
+                            $(this).parents("tr:eq(0)").find(".aaprovedhours").hide()
+                        });
+                    }
+                });
+            });
+
+            function GetCompensatoryOffApprovalList(obj) {
+                var EMPID = $(obj).closest("tr").find("input:hidden[name=E]").val();
+                var EMPNAme = $(obj).closest("tr").find("input:hidden[name=N]").val();
+                var Date = $(obj).closest("tr").find("input:hidden[name=D]").val();
+                $("#spanOTCOEMPName").html("Compensatory Off " + EMPNAme);
+                $.ajax({
+                    url: "/Activity/_CompensatoryOffApprovalNonMitr",
+                    type: "Get",
+                    data: {
+                        src: EncryptQueryStringJSON(MenuID + "*" + "/Activity/_CompensatoryOffApprovalNonMitr"), EMPID: EMPID, Date: Date, Approve: "0"
+                    },
+                    success: function (data) {
+                        $("#DivOTCO").empty();
+                        $("#DivOTCO").html(data);
+                        $("#ModalOTCO").modal('show');
+                         ApplyCOOTScripts();
+                    },
+                    error: function (er) {
+                        alert(er);
+
+                    }
+                });
+            }
+            function ApproveAll(obj) {
+				ConfirmMsgBox('Do you really want to Approve All Team', '', function () {
+					var EMPID = $(obj).closest("tr").find("input:hidden[name=E]").val();
+					var EMPNAme = $(obj).closest("tr").find("input:hidden[name=N]").val();
+					var Date = $(obj).closest("tr").find("input:hidden[name=D]").val();
+                    
+					$.ajax({
+						url: "/Activity/ActivityLogApprovalEMPNonMITRJson",
+						type: "Post",
+						data: {
+							EMPIDs: EMPID, Date: Date, Status: "Approve"
+						},
+                        success: function (data) {
+                            //if (data.Status) {
+                            FailToaster('Approved Successfully');
+                            $("#a1").click();
+                               // window.location.reload();
+                           //}							
+						},
+						error: function (er) {
+							alert(er);
+
+						}
+					});
+				});
+				
+			}
+
+            function ApplyCOOTScripts() {
+                DatatableScriptsWithColumnSearch("tableApprove");
+                $(".btnCompensatory").click(function () {
+                    return Myvalidate();
+                });
+                $(".myResubmit").click(function (e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    ResubmitOption();
+                });
+
+
+                BindAllCheckBox();
+                var form = $("form")
+                    .removeData("validator")
+                    .removeData("unobtrusiveValidation");
+                $.validator.unobtrusive.parse(form);
+            }
+
+
+            // Supporting fucntion for OT CO
+
+            function ResubmitOption() {
+                var checked_checkboxes = $("#tableApprove input[type=checkbox]:checked");
+                if (checked_checkboxes.length === 0) {
+                    swal('please Select atleast one checkbox', '');
+                }
+                else {
+                    swal("Write Remarks", {
+                        text: "Enter Reason For Reject",
+                        content: "input",
+                    }).then(function (result) {
+                        if (result != "") {
+                            $("#tableApprove input[type=checkbox]:checked").closest("tr").find("td .txtReason").val(result);
+                            $("#btnResubmit").click();
+                        }
+                        else {
+                            swal("", "Can't be Blank");
+                        }
+                    });
+                }
+            }
+
+
+
+            function Myvalidate() {
+
+                var checked_checkboxes = $("#tableApprove input[type=checkbox]:checked");
+                if (checked_checkboxes.length === 0) {
+                    swal('please Select atleast one checkbox', '');
+                    return false;
+                }
+                return true;
+            }
+
+
+            function BindAllCheckBox() {
+                chkAll();
+                SinglecheckBind();
+            }
+            function SinglecheckBind() {
+                $(".aaprovedhours").hide();
+                $("#tableApprove input[type=checkbox]").change(function () {
+                    if ($(this).is(":checked")) {
+                        $(this).parents("tr:eq(0)").find(".aaprovedhours").show();
+                        $(this).parents("tr:eq(0)").find(".aaprovedhours").val($(this).parents("tr:eq(0)").find(".appliedhours").val());
+                    }
+                    else {
+                        $(this).parents("tr:eq(0)").find(".aaprovedhours").hide()
+                    }
+                });
+            }
+
+            function chkAll() {
+                $("#checkAll").change(function () {
+                    if ($(this).is(":checked")) {
+                        $(".chksingle").each(function () {
+                            $(this).prop('checked', true);
+                            $(this).parents("tr:eq(0)").find(".aaprovedhours").show();
+                            $(this).parents("tr:eq(0)").find(".aaprovedhours").val($(this).parents("tr:eq(0)").find(".appliedhours").val());
+                        });
+                    }
+                    else {
+                        $(".chksingle").each(function () {
+                            $(this).prop('checked', false);
+                            $(this).parents("tr:eq(0)").find(".aaprovedhours").hide()
+                        });
+                    }
+                });
+            }
+
+            function OnSuccessCOAction(objsss) {
+                if (objsss.Status) {
+                    $("#ModalOTCO").modal('hide');
+                    SuccessToaster(objsss.SuccessMessage);
+                    ShowLoadingDialog();
+                    window.location.reload(true);
+                }
+                else {
+                    FailToaster(objsss.SuccessMessage);
+                }
+
+            }
+        </script>

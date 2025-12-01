@@ -1,0 +1,61 @@
+﻿@model IList<Mitr.Models.TravelDocuments>
+
+@{
+	int isbooked = 0;
+	if (Model != null && Model.Any(x => x.isbooked == 1))
+	{
+		isbooked = 1;
+	}
+}
+<div class="table-scrollable trdsk-hgt mb-4">
+	<table class="table table-scroll act-table" id="tbltraveldoc">
+		<thead>
+			<tr>
+				<th>Document Type</th>
+				<th>Attachment</th>
+				<th width="110">Transaction Date</th>
+				<th width="110" class="text-right ">Amount</th>
+				<th >Book By</th>
+				@if (ViewBag.DeleteDisabled == null && isbooked == 0)
+				{
+					<th width="60"></th>
+				}
+			</tr>
+		</thead>
+		<tbody>
+			@if (Model != null)
+			{
+				int couint = 0;
+				foreach (Mitr.Models.TravelDocuments item in Model)
+				{
+					couint++;
+					<tr>
+						<td>
+							@item.DocumentType
+							<input type="hidden" name="TRID" value="@item.TravelRequestID" />
+							<input type="hidden" name="TDID" value="@item.TravelDocID" />
+						</td>
+						<td>
+							<a href="~/Attachments/@item.AttachmentID@item.content_type">
+								<strong class="green-clr"><i class="fas fa-paperclip"></i>@item.filename</strong>
+							</a>
+						</td>
+						<td>@item.TransactionDate</td>
+						<td class="text-right">@item.Amount</td>
+						<td>@item.BookedBy</td>
+						@if (ViewBag.DeleteDisabled == null && isbooked == 0)
+						{
+					<td class="text-center">
+						<a class="editdocument green-clr"><i class="fas fa-edit green-clr m-0"></i></a><span class="line-sp">|</span>
+						<a class="deletedoc"><i class="fas fa-trash-alt red-clr m-0"></i></a>
+						
+						
+					</td>
+						}
+					</tr>
+				}
+			}
+
+		</tbody>
+	</table>
+</div>

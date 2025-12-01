@@ -1,0 +1,887 @@
+﻿@model Mitr.Areas.Career.Models.JobApplication.Apply
+@{
+
+}
+<div class="row">
+    <div class="col-lg-8 mx-auto">
+        <div class="inner-main mt-3 ">
+
+
+            @using (Ajax.BeginForm("DirectApplication", "/Home", new { Code = ViewBag.Code, Command = ViewBag.Code },
+            new AjaxOptions { HttpMethod = "POST", OnSuccess = "ApplicationSuccess", OnBegin = "ShowLoadingDialog();", OnFailure = "CloseLoadingDialog();" },
+            new
+            {
+                @id = "ApplicationFrom",
+                enctype = "multipart/form-data"
+            })
+            )
+            {
+                <input type="hidden" name="@Html.NameFor(x=>x.Code)" value="@ViewBag.Code" />
+                <input type="hidden" name="REC_ReqID" value="@ViewBag.REC_ReqID" />
+
+                <h1 class="heading-one text-center">Application Form</h1>
+                <h2 class="header-two"><i class="fas fa-info-circle"></i>Personal Information</h2>
+                <div class="row">
+                    <div class="col-sm-12">
+                        <div class="row">
+                            <div class="col-lg-12 hw-575 col-md-4 col-sm-6  form-group">
+                                <label>Name<span style="color:red">*</span></label>
+                                @Html.TextBoxFor(x => Model.Name, new { @class = "form-control", @placeholder = "Enter" })
+                                @Html.ValidationMessageFor(x => Model.Name, "", new { @class = "text-danger" })
+                            </div>
+                            <div class="col-lg-3 hw-575 col-md-3 col-sm-6  form-group">
+                                <label>Date of Birth<span style="color:red">*</span></label>
+                                @Html.TextBoxFor(x => Model.DOB, new { @class = "form-control", @type = "date" })
+                                @Html.ValidationMessageFor(x => Model.DOB, "", new { @class = "text-danger" })
+                            </div>
+                            <div class="col-lg-3 hw-575 col-md-3 col-sm-6  form-group">
+                                <label>Gender<span style="color:red">*</span></label>
+                                @{
+                                    List<SelectListItem> D1 = new List<SelectListItem>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                    {
+                                                            new SelectListItem{Text="Male",Value="Male" },
+                                                            new SelectListItem{Text="Female",Value="Female" },
+                                                            new SelectListItem{Text="Others",Value="Others" }
+                                                        };
+                                }
+                                @Html.DropDownListFor(model => model.Gender, new SelectList(D1, "Value", "text", Model.Gender), "Select", new { @class = "form-control applyselect" })
+                                @Html.ValidationMessageFor(model => model.Gender, "", new { @class = "text-danger" })
+                            </div>
+                            <div class="col-lg-3 hw-575 col-md-3 col-sm-6  form-group">
+                                <label>Nationality <span style="color:red">*</span></label>
+
+                                @{
+                                    List<SelectListItem> D12 = new List<SelectListItem>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                    {
+                                                        new SelectListItem{Text="Indian",Value="Indian" },
+                                                        new SelectListItem{Text="Foreign",Value="Foreign" }
+                                                        };
+                                }
+                                @Html.DropDownListFor(model => model.Nationality, new SelectList(D12, "Value", "text", Model.Gender), "Select", new { @class = "form-control applyselect" })
+                                @Html.ValidationMessageFor(model => model.Nationality, "", new { @class = "text-danger" })
+                            </div>
+
+                            <div class="col-lg-3 hw-575 col-md-3 col-sm-6  form-group">
+                                <label>Contact Number <span style="color:red">*</span></label>
+                                @Html.TextBoxFor(x => Model.Mobile, new { @id = "txtContactNumber", @class = "form-control", @placeholder = "Enter" })
+                                @Html.ValidationMessageFor(x => Model.Mobile, "", new { @class = "text-danger" })
+                            </div>
+                            <div class="col-lg-3 hw-575 col-md-3 col-sm-6  form-group">
+                                <label>Email ID <span style="color:red">*</span></label>
+                                @Html.TextBoxFor(x => Model.EmailID, new { @class = "form-control", @placeholder = "Enter" })
+                                @Html.ValidationMessageFor(x => Model.EmailID, "", new { @class = "text-danger" })
+                            </div>
+                            <div class="col-lg-9 hw-575 col-md-9 col-sm-6  form-group">
+                                <label>Address<span style="color:red">*</span></label>
+                                @Html.TextAreaFor(x => Model.Address, new { @class = "form-control", @placeholder = "Enter" })
+                                @Html.ValidationMessageFor(x => Model.Address, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <h2 class="header-two"><i class="fas fa-users"></i>About the position</h2>
+                <div class="row">
+                    <div class="col-sm-12">
+                        <div class="row">
+                            <div class="col-lg-6 hw-575 col-md-3 col-sm-6  form-group ">
+                                <label>Annual Current Salary<span style="color:red">*</span></label>
+                                @Html.TextBoxFor(x => Model.CurrentSalary, new { @class = "form-control", @placeholder = "Amount", @type = "number" })
+                                @Html.ValidationMessageFor(x => Model.CurrentSalary, "", new { @class = "text-danger" })
+                            </div>
+                            <div class="col-lg-6 hw-575 col-md-3 col-sm-6  form-group ">
+                                <label>Annual Expected Salary<span style="color:red">*</span></label>
+                                @Html.TextBoxFor(x => Model.ExpectedSalary, new { @class = "form-control", @placeholder = "Amount", @type = "number" })
+                                @Html.ValidationMessageFor(x => Model.ExpectedSalary, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-sm-12">
+                        <div class="row">
+
+                            <div class="col-lg-12">
+                                <h2 class="header-two"><i class="fas fa-graduation-cap"></i>Education and Professional Qualifications <small>(Please fill latest qualification as preference)</small></h2>
+
+                                <table id="tblEdu" class="table table-stripted mt-0">
+                                    <thead>
+                                        <tr>
+                                            <th class="w-33">SNo.</th>
+                                            <th class="tw-150">Course <span style="color:red">*</span></th>
+                                            <th class="tw-400">Name of Collage/University <span style="color:red">*</span></th>
+                                            <th class="tw-200">Location <span style="color:red">*</span></th>
+                                            <th class="tw-90">Period<span style="color:red">*</span></th>
+                                            <th class="w-33"></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @if (Model.EducationList != null)
+                                        {
+                                            int Ecount = 0;
+                                            for (int i = 0; i < Model.EducationList.Count; i++)
+                                            {
+                                                Ecount++;
+                                                <tr>
+                                                    <td>
+                                                        <label id="span_@Ecount" name="span_@Ecount">@Ecount </label>
+                                                    </td>
+                                                    <td>
+                                                        @Html.TextBoxFor(x => Model.EducationList[i].Course, new { @class = "form-control", @placeholder = "Enter" })
+                                                        @Html.ValidationMessageFor(x => Model.EducationList[i].Course, "", new { @class = "text-danger" })
+                                                    </td>
+                                                    <td>
+                                                        @Html.TextBoxFor(x => Model.EducationList[i].University, new { @class = "form-control", @placeholder = "Enter" })
+                                                        @Html.ValidationMessageFor(x => Model.EducationList[i].University, "", new { @class = "text-danger" })
+                                                    </td>
+                                                    <td>
+                                                        @Html.TextBoxFor(x => Model.EducationList[i].Location, new { @class = "form-control", @placeholder = "Enter" })
+                                                        @Html.ValidationMessageFor(x => Model.EducationList[i].Location, "", new { @class = "text-danger" })
+                                                    </td>
+                                                    <td>
+                                                        @Html.TextBoxFor(x => Model.EducationList[i].year, new { @onkeypress = "KeyPressPeriod(event,this);", @onchage = "", @class = "form-control", @placeholder = "Enter" })
+                                                        @Html.ValidationMessageFor(x => Model.EducationList[i].year, "", new { @class = "text-danger" })
+                                                    </td>
+
+                                                    <td Class="text-center">
+                                                        @if (Ecount > 1)
+                                                        {
+                                                            <a onclick="DeleteEduRow(this)" class="remove " data-toggle="tooltip" data-original-title="Remove"><i class="fas fa-window-close red-clr m-0" aria-hidden="true"></i></a>
+                                                        }
+                                                        else
+                                                        {
+                                                            <a class="remove" data-toggle="tooltip" data-original-title="Remove"><i class="fas fa-window-close m-0" aria-hidden="true"></i></a>
+                                                        }
+                                                    </td>
+                                                </tr>
+                                            }
+                                        }
+                                    </tbody>
+                                </table>
+                                <div class="text-right">
+                                    <a class="btn mtr-g-grn m-0" onclick="AddEdu();"><i class="fas fa-plus"></i>Add</a>
+                                </div>
+                            </div>
+
+                            <div class="col-lg-12 mt-2">
+                                <h2 class="header-two"><i class="fas fa-user-tie"></i> Employment History @*<small>(Please fill latest qualification as preference)</small>*@</h2>
+
+                                <table id="tblExp" class="table table-stripted mt-0">
+                                    <thead>
+                                        <tr>
+                                            <th>SNo.</th>
+                                            <th class="tw-200">Employer</th>
+                                            <th>Job Title</th>
+                                            <th class="tw-100">Location</th>
+                                            <th class="tw-100">Period</th>
+                                            <th class="tw-150 text-right">Annual CTC (INR)</th>
+                                            <th class="w-33"></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @if (Model.ProQualList != null)
+                                        {
+                                            int count = 0;
+                                            for (int i = 0; i < Model.ProQualList.Count; i++)
+                                            {
+                                                count++;
+                                                <tr>
+                                                    <td>
+                                                        <label id="span_@count" name="span_@count">@count </label>
+                                                    </td>
+                                                    <td>
+                                                        @Html.TextBoxFor(x => Model.ProQualList[i].Employer, new { @class = "form-control", @placeholder = "Enter" })
+                                                    </td>
+                                                    <td>
+                                                        @Html.TextBoxFor(x => Model.ProQualList[i].Post, new { @class = "form-control", @placeholder = "Enter" })
+                                                    </td>
+                                                    <td>
+                                                        @Html.TextBoxFor(x => Model.ProQualList[i].Location, new { @class = "form-control", @placeholder = "Enter" })
+                                                    </td>
+                                                    <td>
+                                                        @Html.TextBoxFor(x => Model.ProQualList[i].Period, new { @onkeypress = "KeyPressPeriod(event,this);", @class = "form-control", @placeholder = "Enter" })
+                                                    </td>
+                                                    <td>
+                                                        @Html.TextBoxFor(x => Model.ProQualList[i].CTC, new { @class = "form-control", @placeholder = "", @type = "Number" })
+                                                    </td>
+                                                    <td Class="text-center">
+                                                        @if (count > 1)
+                                                        {
+                                                            <a onclick="DeleteExpRow(this)" class="remove " data-toggle="tooltip" data-original-title="Remove"><i class="fas fa-window-close red-clr m-0" aria-hidden="true"></i></a>
+                                                        }
+                                                        else
+                                                        {
+                                                            <a class="remove" data-toggle="tooltip" data-original-title="Remove"><i class="fas fa-window-close m-0" aria-hidden="true"></i></a>
+                                                        }
+                                                    </td>
+                                                </tr>
+
+                                            }
+                                        }
+                                    </tbody>
+                                </table>
+                                <div class="text-right">
+                                    <a class="btn mtr-g-grn m-0" onclick="AddExp();"><i class="fas fa-plus"></i>Add</a>
+                                </div>
+                            </div>
+                            <div class="col-sm-6 form-group">
+                                <label>Total Experience (Yrs) <sup>*</sup></label>
+                                @Html.TextBoxFor(x => Model.TotalExperience, new { @class = "form-control", @placeholder = "Enter" })
+                                @Html.ValidationMessageFor(up => Model.TotalExperience, "", new { @class = "text-danger" })
+
+                            </div>
+                            <div class="col-sm-6 form-group">
+                                <label>Thematic Area / Expertise <sup>*</sup></label>
+                                @Html.DropDownListFor(model => model.ThematicAreaID, new SelectList(Model.ThematicList, "ID", "Name", Model.ThematicAreaID), "Select", new { @class = "form-control applyselect", @multiple = "true" })
+                                @Html.ValidationMessageFor(model => model.ThematicAreaID, "", new { @class = "text-danger" })
+
+                            </div>
+                            <div class="col-sm-6 form-group">
+                                <label>Current Role & Resposibilities <sup>*</sup></label>
+                                @Html.TextAreaFor(x => Model.Resposibilities, new { @class = "form-control", @placeholder = "Enter" })
+                                @Html.ValidationMessageFor(up => Model.Resposibilities, "", new { @class = "text-danger" })
+                            </div>
+                            <div class="col-sm-6 form-group">
+                                <label>Reason for Job Change <sup>*</sup></label>
+                                @Html.TextAreaFor(x => Model.ChangeReason, new { @class = "form-control", @placeholder = "Enter" })
+                                @Html.ValidationMessageFor(up => Model.ChangeReason, "", new { @class = "text-danger" })
+                            </div>
+                            <div class="col-sm-6 form-group">
+                                <label>Is there any break in employment history</label>
+                                <select id="ddBreakReason" class="form-control applyselect">
+                                    <option value="No">No</option>
+                                    <option value="Yes">Yes</option>
+                                </select>
+                            </div>
+
+                            <div class="col-sm-6 form-group" id="divBreak" style="display:none">
+                                <label>Reason</label>
+                                @Html.TextAreaFor(x => Model.BreakReason, new { @class = "form-control" })
+
+                                @Html.ValidationMessageFor(x => Model.BreakReason, "", new { @class = "text-danger" })
+                            </div>
+                            <div class="col-sm-12 form-group">
+                                <label class="mb-2">
+                                    Special Skills<br>
+                                    <small class="lgt-text"> List any special skills or experience that you feel would help you in the position that you are applying for (leadership, organizations/teams, etc.)</small>
+                                </label>
+                                @Html.TextBoxFor(x => Model.SpecialSkills, new { @class = "form-control" })
+                                @*@Html.DropDownListFor(model => model.SkillsID, new SelectList(Model.SkillList, "ID", "Name", Model.SkillsID), "Select", new { @class = "form-control applyselect", @multiple = "true" })
+                                    @Html.ValidationMessageFor(model => model.SkillsID, "", new { @class = "text-danger" })*@
+
+                            </div>
+                            <div class="col-sm-12 form-group">
+                                <label class="mb-2">
+                                    References<br>
+                                    <small class="lgt-text">Please list three professional references not related to you, with full name, email address, phone number, and relationship. If you don’t have three professional references, then list personal, unrelated references. </small>
+                                </label>
+
+                                <table id="tblRef" class="table table-stripted mt-0 mb-2">
+                                    <thead>
+                                        <tr>
+                                            <th class="w-33">SNo.</th>
+                                            <th class="tw-200">Name <span style="color:red">*</span></th>
+                                            <th class="tw-100">Email ID	<span style="color:red">*</span></th>
+                                            <th class="tw-100">Relationship<span style="color:red">*</span></th>
+                                            <th class="tw-100">Phone Number	<span style="color:red">*</span></th>
+                                            <th class="w-33"></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @if (Model.ReferencesList != null)
+                                        {
+                                            int Rcount = 0;
+                                            for (int i = 0; i < Model.ReferencesList.Count; i++)
+                                            {
+                                                Rcount++;
+                                                <tr>
+                                                    <td class="text-center">
+                                                        <label id="span_@Rcount" name="span_@Rcount">@Rcount </label>
+                                                    </td>
+                                                    <td>
+                                                        @Html.TextBoxFor(x => Model.ReferencesList[i].Name, new { @class = "form-control", @placeholder = "Enter" })
+                                                        @Html.ValidationMessageFor(up => Model.ReferencesList[i].Name, "", new { @class = "text-danger" })
+                                                    </td>
+                                                    <td>
+                                                        @Html.TextBoxFor(x => Model.ReferencesList[i].Email, new { @class = "form-control", @placeholder = "Enter" })
+                                                        @Html.ValidationMessageFor(up => Model.ReferencesList[i].Email, "", new { @class = "text-danger" })
+                                                    </td>
+                                                    <td>
+                                                        @Html.TextBoxFor(x => Model.ReferencesList[i].Relationship, new { @class = "form-control", @placeholder = "Enter" })
+                                                        @Html.ValidationMessageFor(up => Model.ReferencesList[i].Relationship, "", new { @class = "text-danger" })
+                                                    </td>
+                                                    <td>
+                                                        @Html.TextBoxFor(x => Model.ReferencesList[i].Phone, new { @class = "form-control", @placeholder = "Enter" })
+                                                        @Html.ValidationMessageFor(up => Model.ReferencesList[i].Phone, "", new { @class = "text-danger" })
+                                                    </td>
+
+                                                    <td>
+                                                        @if (Rcount > 2)
+                                                        {
+                                                            <a onclick="DeleteRefRow(this)" class="remove" data-toggle="tooltip" data-original-title="Remove"><i class="fas fa-window-close red-clr m-0" aria-hidden="true"></i></a>
+                                                        }
+                                                        else
+                                                        {
+                                                            <a class="remove" data-toggle="tooltip" data-original-title="Remove"><i class="fas fa-window-close m-0" aria-hidden="true"></i></a>
+                                                        }
+                                                    </td>
+                                                </tr>
+                                            }
+                                        }
+                                    </tbody>
+                                </table>
+                                <div class="text-right" style="display:none">
+                                    <a class="btn mtr-g-grn m-0" onclick="AddRef();"><i class="fas fa-plus"></i>Add</a>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <h2 class="header-two"><i class="far fa-file-alt"></i>Other Informations</h2>
+                <div class="row">
+                    <!--<table class="table td-btm table-stripted mt-0">
+                    <tbody>
+                        <tr>
+                            <td><strong>Are you related to any of C3's current staff member</strong></td>
+                            <td class="tw-100">-->
+                    @*<select id="resultth" class="form-control dpselect " tabindex="-1" aria-hidden="true">
+                            <option value="0">Select</option>
+                            <option value="yesth">Yes</option>
+                            <option value="noth">No</option>
+                        </select>*@
+                    <!--@{
+                                        List<SelectListItem> StaffMember = new List<SelectListItem>
+                                                                                                                                                                                                                                                                                                                                                                {
+                                                    new SelectListItem{Text="Yes",Value="Yes" },
+                                                    new SelectListItem{Text="No",Value="No" }
+                                                    };
+                                    }
+                                    @Html.DropDownListFor(model => model.QuestionsList, new SelectList(StaffMember, "Value", "text", Model.WillingtoRelocate), "Select", new {id= "resultth", @onchange = "OnChangeStaffMember(this.value)", @class = "form-control applyselect" })
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="2" id="failth" style="display: none; background: rgb(241, 241, 241);">
+                                    <div class="row">
+                                        <div class="col-lg-6 form-group mb-0">
+                                            <label>Name</label>
+                                            @Html.TextBoxFor(x => Model.CurrentStaffMemberName, new { @class = "form-control", @placeholder = "Enter" })
+                                        </div>
+                                        <div class="col-lg-6 mb-0 form-group">
+                                            <label>Relation</label>
+                                            @Html.TextBoxFor(x => Model.CurrentStaffMemberRelation, new { @class = "form-control", @placeholder = "Enter" })
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><strong>If required, are you willing to relocate</strong></td>
+                                <td>
+                                    @{
+                                        List<SelectListItem> Relocate = new List<SelectListItem>
+                                                                                                                                                                                                                                                                                                                                        {
+                                                    new SelectListItem{Text="Yes",Value="Yes" },
+                                                    new SelectListItem{Text="No",Value="No" }
+                                                    };
+                                    }
+                                    @Html.DropDownListFor(model => model.WillingtoRelocate, new SelectList(Relocate, "Value", "text", Model.WillingtoRelocate), "Select", new { @class = "form-control applyselect" })
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><strong>Notice Period Required</strong></td>
+                                <td>
+                                    <select id="resultfr" class="form-control dpselect " tabindex="-1" aria-hidden="true">
+                                        <option>Select</option>
+                                        <option value="yesfr">Yes</option>
+                                        <option value="nofr">No</option>
+                                    </select>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="2" id="failfr" style="display:none; background: #f1f1f1">
+                                    <div class="row">
+                                        <div class="col-lg-3 mb-0  form-group">
+                                            <label>Notice Period</label>
+                                            <div class="input-group">
+                                                @Html.TextBoxFor(x => Model.NoticePeriodRequired, new { @class = "form-control", @placeholder = "Enter" })
+                                                <div class="input-group-prepend">
+                                                    <span class="input-group-text" id="basic-addon1">Days</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><strong>Have you applied with C3 before </strong></td>
+                                <td>
+                                    <select id="resultfv" class="form-control dpselect " tabindex="-1" aria-hidden="true">
+                                        <option>Select</option>
+                                        <option value="yesfv">Yes</option>
+                                        <option>No</option>
+                                    </select>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="2" id="failfv" style="display:none; background: #f1f1f1">
+
+                                    <div class="row">
+                                        <div class="col-lg-4 form-group mb-0">
+                                            <label>Name of the Position  </label>
+                                            @Html.TextBoxFor(x => Model.AppliedNameofthePosition, new { @class = "form-control", @placeholder = "Enter" })
+                                        </div>
+
+                                        <div class="col-lg-4 form-group mb-0">
+                                            <label>When Applied </label>
+                                            @Html.TextBoxFor(x => Model.AppliedWhenApplied, new { @class = "form-control", @placeholder = "Enter" })
+                                        </div>
+
+                                        <div class="col-lg-4 form-group mb-0">
+                                            <label>What was the outcome  </label>
+                                            @{
+                                                List<SelectListItem> outcome = new List<SelectListItem>
+                                                                                                                                                                                                                                                                                                                {
+                                                    new SelectListItem{Text="Not shortlisted",Value="Not shortlisted" },
+                                                    new SelectListItem{Text="Attended Interviewed",Value="Attended Interviewed" },
+                                                    new SelectListItem{Text="Not Selected",Value="Not Selected" },
+                                                    new SelectListItem{Text="Selected but did not join",Value="Selected but did not join" }
+                                                    };
+                                            }
+                                            @Html.DropDownListFor(model => model.AppliedOutcome, new SelectList(outcome, "Value", "text", Model.AppliedOutcome), "Select", new { @class = "form-control applyselect" })
+
+                                        </div>
+
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><strong>Were you ever associated with C3 in the past</strong></td>
+                                <td>
+                                    <select id="resultsx" class="form-control dpselect " tabindex="-1" aria-hidden="true">
+                                        <option>Select</option>
+                                        <option value="yessx">Yes</option>
+                                        <option>No</option>
+                                    </select>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="2" id="failsx" style="display:none; background: #f1f1f1">
+
+                                    <div class="row">
+                                        <div class="col-lg-4 form-group ">
+                                            <label>Position</label>
+                                            @Html.TextBoxFor(x => Model.AssociatedPosition, new { @class = "form-control", @placeholder = "Enter" })
+                                        </div>
+
+                                        <div class="col-lg-4 form-group ">
+                                            <label>Period</label>
+                                            @Html.TextBoxFor(x => Model.AssociatedPeriod, new { @class = "form-control", @placeholder = "Enter" })
+                                        </div>
+                                        <div class="col-lg-4 form-group ">
+                                            <label>Location</label>
+                                            @Html.TextBoxFor(x => Model.AssociatedLocation, new { @class = "form-control", @placeholder = "Enter" })
+                                        </div>
+                                        <div class="col-lg-4 form-group mb-0">
+                                            <label>Date of leaving</label>
+                                            @Html.TextBoxFor(x => Model.AssociatedDateOfLeaving, new { @class = "form-control", @placeholder = "Enter", @type="date"})
+                                        </div>
+                                        <div class="col-lg-8 form-group mb-0">
+                                            <label>Reason for Leaving </label>
+                                            @Html.TextAreaFor(x => Model.AssociatedReasonforLeaving, new { @class = "form-control", @placeholder = "Enter" })
+                                        </div>
+
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><strong>Have you ever been charged with an offence (except for minor traffic challans) </strong></td>
+                                <td>
+                                    <select id="resultsn" class="form-control dpselect " tabindex="-1" aria-hidden="true">
+                                        <option>Select</option>
+                                        <option value="yessn">Yes</option>
+                                        <option>No</option>
+                                    </select>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="2" id="failsn" style="display:none; background: #f1f1f1">
+                                    <div class="row">
+                                        <div class="col-lg-12 form-group mb-0">
+                                            <label>Specify</label>
+                                            @Html.TextAreaFor(x => Model.OffenceSpecify, new { @class = "form-control", @placeholder = "Enter" })
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+
+                        </tbody>
+                    </table>-->
+                    <div class="col-sm-12 form-group">
+                        <ul class="list-unstyled ot-list ">
+                            @if (Model.QuestionsList != null)
+                            {
+                                int QuesCount = 0;
+                                for (int i = 0; i < Model.QuestionsList.Count; i++)
+                                {
+                                    QuesCount++;
+                                    <li>
+                                        <div class="row">
+                                            <div class="col-lg-10 align-self-center">
+                                                <strong>
+                                                    @Model.QuestionsList[i].Question
+                                                    @Html.HiddenFor(x => Model.QuestionsList[i].Question)
+                                                </strong>
+                                            </div>
+                                            <div class="col-lg-2">
+                                                <select tag="@QuesCount" class="form-control applyselect ddQuestionNo" name="@Html.NameFor(x=>Model.QuestionsList[i].QuestionOption)">
+                                                    <option value="No">No</option>
+                                                    <option value="Yes">Yes</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="myContent" id="divQuest_1" style="display:none;">
+                                            <div class="row">
+                                                <div class="col-lg-4 form-group mb-0">
+                                                    <label>Name</label>
+                                                    @Html.TextBoxFor(x => Model.QuestionsList[i].Name, new { @class = "form-control myinput_1" })
+                                                    @*@Html.ValidationMessageFor(up => Model.QuestionsList[i].Name, "", new { @class = "text-danger" })*@
+                                                </div>
+                                                <div class="col-lg-4 mb-0 form-group">
+                                                    <label>Relation</label>
+                                                    @Html.TextBoxFor(x => Model.QuestionsList[i].Relationship, new { @class = "form-control myinput_1" })
+                                                    @*@Html.ValidationMessageFor(up => Model.QuestionsList[i].Relationship, "", new { @class = "text-danger" })*@
+                                                </div>
+                                                <div class="col-lg-4 mb-0 form-group">
+                                                    <label>Location</label>
+                                                    @Html.TextBoxFor(x => Model.QuestionsList[i].Location, new { @class = "form-control myinput_1" })
+                                                    @*@Html.ValidationMessageFor(up => Model.QuestionsList[i].Relationship, "", new { @class = "text-danger" })*@
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="myContent" id="divQuest_3" style="display:none;">
+                                            <div class="row">
+                                                <div class="col-lg-6 form-group mb-0">
+                                                    <label>Notice Period</label>
+                                                    <div class="input-group w-150">
+                                                        @Html.TextBoxFor(x => Model.QuestionsList[i].NoticePeriod, new { @class = "form-control myinput_3", @type = "Number" })
+
+                                                        <div class="input-group-prepend">
+                                                            <span class="input-group-text" id="basic-addon1">Days</span>
+                                                        </div>
+                                                        @*@Html.ValidationMessageFor(up => Model.QuestionsList[i].NoticePeriod, "", new { @class = "text-danger" })*@
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="myContent" id="divQuest_4" style="display:none;">
+                                            <div class="row">
+                                                <div class="col-lg-4 form-group mb-0">
+                                                    <label>Position</label>
+                                                    @Html.TextBoxFor(x => Model.QuestionsList[i].PositionC3Past, new { @class = "form-control myinput_5" })
+                                                    @*@Html.ValidationMessageFor(up => Model.QuestionsList[i].Position5, "", new { @class = "text-danger" })*@
+                                                </div>
+                                                <div class="col-lg-4 mb-0 form-group">
+                                                    <label>Period</label>
+                                                    @Html.TextBoxFor(x => Model.QuestionsList[i].Period, new { @onkeypress = "KeyPressPeriod(event,this);", @class = "form-control myinput_5" })
+                                                    @*@Html.ValidationMessageFor(up => Model.QuestionsList[i].Period, "", new { @class = "text-danger" })*@
+                                                </div>
+                                                <div class="col-lg-4 form-group mb-0">
+                                                    <label>Location</label>
+                                                    @Html.TextBoxFor(x => Model.QuestionsList[i].LocationC3Past, new { @class = "form-control myinput_5" })
+                                                    @*@Html.ValidationMessageFor(up => Model.QuestionsList[i].Location, "", new { @class = "text-danger" })*@
+                                                </div>
+                                                <div class="col-lg-4 mb-0 form-group">
+                                                    <label>When Applied</label>
+                                                    @Html.TextBoxFor(x => Model.QuestionsList[i].AppliedDate, new { @class = "form-control myinput_5", @type = "date" })
+                                                    @*@Html.ValidationMessageFor(x => Model.QuestionsList[i].AppliedDate, "", new { @class = "text-danger" })*@
+                                                </div>
+                                                <div class="col-lg-8 mb-0 form-group">
+                                                    <label>Reason for Leaving</label>
+                                                    @Html.TextAreaFor(x => Model.QuestionsList[i].ReasonL, new { @class = "form-control myinput_5" })
+                                                    @*@Html.ValidationMessageFor(x => Model.QuestionsList[i].ReasonL, "", new { @class = "text-danger" })*@
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="myContent" id="divQuest_5" style="display:none;">
+                                            <div class="row">
+                                                <div class="col-lg-6 form-group mb-0">
+                                                    <label>Name of the Position</label>
+                                                    @Html.TextBoxFor(x => Model.QuestionsList[i].Position, new { @class = "form-control myinput_4" })
+                                                    @*@Html.ValidationMessageFor(up => Model.QuestionsList[i].Position, "", new { @class = "text-danger" })*@
+                                                </div>
+                                                <div class="col-lg-6 mb-0 form-group">
+                                                    <label>When Applied</label>
+                                                    @Html.TextBoxFor(x => Model.QuestionsList[i].AppliedDateC3Past, new { @class = "form-control myinput_4", @type = "date" })
+                                                    @*@Html.ValidationMessageFor(up => Model.QuestionsList[i].AppliedDate, "", new { @class = "text-danger" })*@
+                                                </div>
+                                                <div class="col-lg-12 form-group mb-0">
+                                                    <label>What was the outcome</label>
+                                                    @*@ @Html.DropDownListFor(model => model.QuestionsList[i].outcome, new SelectList(outcomeList, "Value", "text", Model.Gender), "Select", new { @class = "form-control applyselect myinput_4" })
+                                                        @Html.ValidationMessageFor(model => model.QuestionsList[i].outcome, "", new { @class = "text-danger" })*@
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="myContent" id="divQuest_6" style="display:none;">
+                                            <div class="row">
+                                                <div class="col-lg-12 form-group mb-0">
+                                                    <label>Specify</label>
+                                                    <div class="input-group">
+                                                        @Html.TextAreaFor(x => Model.QuestionsList[i].Specify, new { @class = "form-control myinput_6" })
+                                                        @*@Html.ValidationMessageFor(up => Model.QuestionsList[i].Specify, "", new { @class = "text-danger" })*@
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </li>
+
+                                }
+                            }
+                        </ul>
+
+                        <div class="form-group">
+                            <label>Attach CV <sup>*</sup></label>
+                            @Html.TextBoxFor(x => Model.Upload, new { @class = "form-control", @type = "file" })
+                            @Html.ValidationMessageFor(x => Model.Upload, "", new { @class = "text-danger" })
+                        </div>
+
+                        <strong class="lgt-text">Signature Disclaimer</strong><br />
+                        <small>I certify that my answers are true and complete to the best of my knowledge. If this application leads to employment, I understand that false or misleading information in my application or interview may result in my employment being terminated.</small>
+
+                        <ul class="list-unstyled  mt-2 ">
+                            <li class="notecheck">
+                                @Html.CheckBoxFor(x => x.chkAgree, new { @class = "srcheck" })
+                                @Html.LabelFor(x => x.chkAgree)
+                                @Html.ValidationMessageFor(model => model.chkAgree, "", new { @class = "text-danger" })
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="col-sm-12 text-center mt-1">
+
+                        <button type="submit" name="Command" value="Add" class="btn mtr-o-grn btn-l ripplelink "> <i class="fa fa-paper-plane" aria-hidden="true"></i> Submit </button>
+                        <button type="button" class="btn cnl-btn btn-l ripplelink"><i class="fas fa-times"></i>Close</button>
+                    </div>
+                    <div class="col-lg-12 mt-4 mb-4">
+                        <div class="notemtr ">
+                            Only Short-listed candidates will be intimated. C3 aims to be an equal opportunity employer. All applicants will be considered for employment without attention to race, colour, religion, sex, sexual orientation, gender identity, national origin, or disability status.
+                            <br />Women candidates are encouraged to apply.
+
+                        </div>
+                    </div>
+                </div>
+            }
+
+        </div>
+    </div>
+</div>
+@section scripts    {
+
+    @System.Web.Optimization.Scripts.Render("~/bundle/unobtrusivejs")
+    @Html.IncludeVersionedJs(Url.Content("~/assets/design/Scripts/AddInit.js"))
+    @Html.IncludeVersionedJs(Url.Content("~/Areas/Career/assets/js/Application.js"))
+
+    <script>
+
+		// extend jquery range validator to work for required checkboxes
+		var defaultRangeValidator = $.validator.methods.range;
+		$.validator.methods.range = function (value, element, param) {
+			if (element.type === 'checkbox') {
+				// if it's a checkbox return true if it is checked
+				return element.checked;
+			} else {
+				// otherwise run the default validation function
+				return defaultRangeValidator.call(this, value, element, param);
+			}
+		}
+		function ApplicationSuccess(obj) {
+			if (obj.Status) {
+				SuccessToaster(obj.SuccessMessage);
+				window.location.href = obj.RedirectURL;
+			}
+			else {
+				CloseLoadingDialog();
+				FailToaster(obj.SuccessMessage);
+			}
+		}
+
+
+		$(document).ready(function () {
+			document.getElementById('chkAgree').style.display = 'block';
+		})
+    </script>
+    <script type="text/javascript">
+		var maxID = 0;
+		function getTemplateRowtwo() {
+			var x = document.getElementById("templateRowtwo").cloneNode(true);
+			x.id = "";
+			x.style.display = "";
+			x.innerHTML = x.innerHTML.replace(/{id}/, ++maxID);
+			return x;
+		}
+		function addRowtwo() {
+			var t = document.getElementById("theTabletwo");
+			var rows = t.getElementsByTagName("tr");
+			var r = rows[rows.length - 1];
+			r.parentNode.insertBefore(getTemplateRowtwo(), r);
+		}
+
+		function deleteRowtwo(el) {
+			// while there are parents, keep going until reach TR
+			while (el.parentNode && el.tagName.toLowerCase() != 'tr') {
+				el = el.parentNode;
+			}
+
+			// If el has a parentNode it must be a TR, so delete it
+			// Don't delte if only 3 rows left in table
+			if (el.parentNode && el.parentNode.rows.length > 3) {
+				el.parentNode.removeChild(el);
+			}
+		}
+    </script>
+    <script type="text/javascript">
+		$('#result').on('change', function () {
+			$('#fail').css('display', 'none');
+			if ($(this).val() === 'nind') {
+				$('#fail').css('display', 'table-cell');
+			}
+		});
+
+    </script>
+    <script type="text/javascript">
+		$('#resultone').on('change', function () {
+			$('#failone').css('display', 'none');
+			if ($(this).val() === 'yes') {
+				$('#failone').css('display', 'table-cell');
+			}
+		});
+
+    </script>
+    <script type="text/javascript">
+		$('#resulttwo').on('change', function () {
+			$('#failtwo').css('display', 'none');
+			if ($(this).val() === 'yesone') {
+				$('#failtwo').css('display', 'table-cell');
+			}
+		});
+
+    </script>
+    <script type="text/javascript">
+		$('#resultth').on('change', function () {
+			$('#failth').css('display', 'none');
+			if ($(this).val() === 'yesth') {
+				$('#failth').css('display', 'table-cell');
+			}
+		});
+		function OnChangeStaffMember(val) {
+			$('#failth').css('display', 'none');
+			if (val == 'Yes') {
+				$('#failth').css('display', 'table-cell');
+			}
+		}
+    </script>
+    <script type="text/javascript">
+		$('#resultfr').on('change', function () {
+			$('#failfr').css('display', 'none');
+			if ($(this).val() === 'yesfr') {
+				$('#failfr').css('display', 'table-cell');
+			}
+		});
+
+    </script>
+    <script type="text/javascript">
+		$('#resultfv').on('change', function () {
+			$('#failfv').css('display', 'none');
+			if ($(this).val() === 'yesfv') {
+				$('#failfv').css('display', 'table-cell');
+			}
+		});
+
+    </script>
+    <script type="text/javascript">
+		$('#resultsx').on('change', function () {
+			$('#failsx').css('display', 'none');
+			if ($(this).val() === 'yessx') {
+				$('#failsx').css('display', 'table-cell');
+			}
+		});
+
+    </script>
+    <script type="text/javascript">
+		$('#resultsn').on('change', function () {
+			$('#failsn').css('display', 'none');
+			if ($(this).val() === 'yessn') {
+				$('#failsn').css('display', 'table-cell');
+			}
+		});
+		$("#txtContactNumber").keydown(function (event) {
+			k = event.which;
+			if ((k >= 48 && k <= 57) || k == 8) {
+				if ($(this).val().length == 10) {
+					if (k == 8) {
+						return true;
+					} else {
+						event.preventDefault();
+						return false;
+					}
+				}
+			} else {
+				event.preventDefault();
+				return false;
+			}
+		});
+		function KeyPressPeriod(event, ctrl) {
+			k = event.which;
+			if ((k >= 32 && k <= 64) || k == 8 || k == 191 || k == 189 || k == 190 || k == 220) {
+				if ($('#' + ctrl.id).val().length == 10) {
+					if (k == 8) {
+						return true;
+					} else {
+						event.preventDefault();
+						return false;
+					}
+				}
+			} else {
+				event.preventDefault();
+				return false;
+			}
+		};
+
+
+		$("#ReferencesList_0__Phone").keydown(function (event) {
+			k = event.which;
+			if ((k >= 48 && k <= 57) || k == 8) {
+				if ($(this).val().length == 10) {
+					if (k == 8) {
+						return true;
+					} else {
+						event.preventDefault();
+						return false;
+					}
+				}
+			} else {
+				event.preventDefault();
+				return false;
+			}
+		});
+		$("#ReferencesList_1__Phone").keydown(function (event) {
+			k = event.which;
+			if ((k >= 48 && k <= 57) || k == 8) {
+				if ($(this).val().length == 10) {
+					if (k == 8) {
+						return true;
+					} else {
+						event.preventDefault();
+						return false;
+					}
+				}
+			} else {
+				event.preventDefault();
+				return false;
+			}
+		});
+
+
+
+    </script>
+
+}
+

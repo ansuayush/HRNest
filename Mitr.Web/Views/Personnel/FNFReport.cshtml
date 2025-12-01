@@ -1,0 +1,1435 @@
+﻿@model Mitr.Models.FNFReport
+@using System.Data;
+@{
+
+	string MenuID = ViewBag.MenuID.ToString();
+	
+
+
+
+
+}
+@{
+	Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+	<title>Mitr: ConsolidateActivityLog </title>
+	<meta name="title" content="Mitr: ConsolidateActivityLog" />
+	<meta name="keywords" content="Mitr: ConsolidateActivityLog" />
+	<meta name="description" content="Mitr: ConsolidateActivityLog" />
+
+	<link href="https://fonts.googleapis.com/css?family=Roboto:300,400,700&display=swap" rel="stylesheet">
+
+	<link rel="shortcut icon" href="/assets/design/images/favicon.png" type="image/x-icon">
+	<link rel="icon" href="~/assets/design/images/favicon.png" type="image/png" sizes="50x50">
+	<link href='~/assets/design/css/icons.css?v=1.6' rel='stylesheet' />
+	<link href='~/assets/design/css/bootstrap.min.css?v=1.6' rel='stylesheet' />
+	<link href='~/assets/design/css/style.css?v=1.6' rel='stylesheet' />
+	<link href='~/assets/design/css/custom.css?v=1.6' rel='stylesheet' />
+	<link href='~/assets/design/css/responsive.css?v=1.6' rel='stylesheet' />
+	<link href="~/assets/design/css/modelprint.css?v=1.6" rel="stylesheet" type="text/css" media="print">
+
+	<style type="text/css">
+		.tdbrd-none td {
+			border: 0px !important;
+			vertical-align: top !important;
+			padding: 3px 0px !important;
+		}
+	</style>
+</head>
+<body class=" header">
+	<div class="print-header" style="display:none">
+		<div class="container">
+			<div class="row">
+				<div class="col-md-12 col-sm-12 mx-auto text-right">
+
+
+					@*<a href="../finance-payment-to-travel-desk.html" class="btn cnl-btn ripplelink "> <i class="fas fa-times"></i>Close </a>*@
+
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="container-fluid print-none">
+		<div class="inner-main text-right">
+			<a onclick="window.print()" class="btn mtr-g-grn btn-l mb-0 ripplelink "> <i class="fa fa-print"></i>Print </a>
+			@*@Html.CreateAnchor(MenuID, "/Personnel/FNFDetail", "Back", "btn cnl-btn mb-0 btn-l ripplelink", "Close", "fas fa-arrow-left", "")*@
+			<button type="button" class="btn mtr-g-grn mb-0 btn-l ripplelink" onclick="exportReportToExcelAll()" value="Search"><i class="fas fa-file-excel"></i>Export</button>
+			@*@Html.CreateAnchor(MenuID, "/Personnel/FullFinalEntry*" + Model.Id + "", "Full & Final Entry", "btn cnl-btn mb-0 btn-l ripplelink", "Full & Final Entry", "fas fa-arrow-left", "")*@
+			<a href="@Url.Action("FullFinalEntry",new { src = clsApplicationSetting.EncryptFriendly(MenuID+"*"+"/Personnel/FullFinalEntry*"+Model.Id+"") })"><i class="fas fa-eye"></i> Pay</a>
+			<a href="@Url.Action("FullFinalReport",new { src = clsApplicationSetting.EncryptFriendly(MenuID+"*"+"/Personnel/FullFinalReport*") })"><i class="fas fa-eye"></i> Close</a>
+		</div>
+	</div>
+	<div class="container-fluid mt-2" id="exportable_table" name="exportable_table">
+		<div class="row">
+			<div class="col-sm-12 mx-auto">
+				<div class="inner-main">
+
+
+
+					<table style="background: #f2f2f2; padding: 10px; border-radius: 10px; margin-bottom: 10px;  text-align:center; width:100%;  padding:10px">
+						<tr>
+							<td width="120" style="padding:15px; vertical-align: middle;"><img src="http://mitr2.sahajapps.com//assets/design/images/c3.png" height="50" alt=""></td>
+							<td colspan="14" style="padding:10px; text-align:center; font-size:16px; vertical-align: middle;">
+								<strong style="font-size:16px">Centre for Catalyzing Change <small style="  display: block;text-align: center;font-weight: normal; font-size:14px">@Model.CompanyAddress</small></strong>
+
+							</td>
+						</tr>
+
+						<tr>
+							<td></td>
+							<td></td>
+							<td></td>
+							<td></td>
+							<td></td>
+							<td></td>
+							<td></td>
+							<td></td>
+							<td></td>
+							<td></td>
+							<td></td>
+							<td></td>
+							<td></td>
+							<td></td>
+							<td></td>
+						</tr>
+					</table>
+
+					<div class="text-center">
+						<h2 class="heading-one" style="font-size: 16px;font-weight: bold; text-align:center;color: #363636; ">Full and Final Settlement   </h2>
+					</div>
+					<div class="row">
+
+
+						<div class="col-sm-12 text-center">
+							<h2 class="heading-one" style="font-size: 16px;font-weight: bold;text-align:center; color: #363636;"><u>Employee Details</u></h2>
+						</div>
+						@if (Model != null)
+						{
+							<div class="col-sm-12">
+
+
+								<table class="table tdbrd-none">
+									<tr>
+										<td>Name</td>
+										<td colspan="4">@Model.emp_name</td>
+										<td colspan="2">Code</td>
+										<td colspan="2">@Model.emp_code</td>
+										<td colspan="2">Designation</td>
+										<td colspan="4">@Model.Designation</td>
+									</tr>
+									<tr>
+										<td>Category</td>
+										<td colspan="4">@Model.EmployeeCategory</td>
+										<td colspan="2">Sub Category</td>
+										<td colspan="2">@Model.EmployeeSubCategory</td>
+										<td colspan="2">Status</td>
+										<td colspan="4">@Model.Status</td>
+									</tr>
+
+									<tr>
+										<td>Date of Joining</td>
+										<td colspan="4" style="text-align:left">
+											@{
+												string jdate = Convert.ToDateTime(Model.DateOfJoining).ToString("dd/MM/yyyy");
+											}
+											@jdate
+										</td>
+										<td colspan="2">Date of Resignation</td>
+										<td colspan="2" style="text-align:left">@Model.DateofResignation</td>
+										<td colspan="2">Last Working Day</td>
+										<td colspan="4" style="text-align:left">
+											@{
+												string LastWorkingday = Convert.ToDateTime(Model.LastWorkingday).ToString("dd/MM/yyyy");
+											}
+											@LastWorkingday
+
+										</td>
+									</tr>
+
+									<tr>
+										<td>Hourly Rate</td>
+
+										@{
+											decimal valueH = Convert.ToDecimal(Model.HourlyRate);
+											<td colspan="4">
+												@valueH
+											</td>
+										}
+
+
+
+
+										<td colspan="2">Annual Leave Balance</td>
+										<td colspan="2"> @Model.AnnualLeaveBalance</td>
+										<td colspan="2">CL/SL Balance</td>
+										<td colspan="4">@Model.CLSLBalance</td>
+									</tr>
+
+									<tr>
+										<td>Notice Period Payable</td>
+										<td colspan="4"></td>
+										<td colspan="2">Notice Period Recovery</td>
+										<td colspan="2">@Model.NoticePeriodRecovery</td>
+										<td colspan="2"> Notice Period Waived</td>
+										<td colspan="4">@Model.NoticePeriodWaived</td>
+									</tr>
+
+								</table>
+
+							</div>
+							<div class="col-sm-12">
+								<h2 class="heading-one" style="font-size: 16px; font-weight: bold; color: #363636;">Package Details</h2>
+								<div class="table-responsive">
+									<table class="table mb-0">
+										<thead>
+
+											<tr style="background: #f2f2f2; font-weight:bold">
+												<th>Salary Option -</th>
+												<th width="100" class="text-center">Due</th>
+												@if (Model.PaidColspan > 0)
+												{
+													<th colspan="@Model.PaidColspan" class="text-center">PAID</th>
+												}
+												@if (Model.PaybleColspan > 0)
+												{
+													<th colspan="@Model.PaybleColspan" class="text-center">Payable</th>
+												}
+
+												<th colspan="1"></th>
+
+											</tr>
+
+										</thead>
+										<tbody>
+											<tr>
+												@{
+													DataSet ds = Common_SPU.fnGetEmployeesFAndFData(Model.Id, 0);
+													DataTable dt = ds.Tables[0];
+													for (int j = 2; j < dt.Columns.Count; j++)
+													{
+														var column = dt.Columns[j].ToString();
+														if (j == 4)
+														{
+															continue;
+														}
+														else
+														{
+															<td width="300" class="text-left"><strong>@column</strong></td>
+														}
+
+
+
+													}
+												}
+
+
+
+											</tr>
+											@for (int i = 0; i < dt.Rows.Count; i++)
+											{
+												int count = 1;
+												var test = Convert.ToString(dt.Rows[i].ItemArray[2]);
+												if (test == "Gross Salary")
+												{
+													<tr style="background-color: #fff0db">
+
+														@for (int j = 2; j < dt.Columns.Count; j++)
+														{
+															string columnName = dt.Columns[j].ToString();
+															var column = dt.Columns[j].ToString();
+
+
+															if (j == 4)
+															{
+																continue;
+															}
+															else
+															{
+																if (dt.Rows[i][columnName].ToString() == "Gross Salary")
+																{
+																	<td class="text-left">
+																		@dt.Rows[i][columnName].ToString()
+																	</td>
+																}
+																else
+																{
+																	decimal value = Convert.ToDecimal(dt.Rows[i][columnName]);
+																	if (value > 0)
+																	{
+																		<td class="text-right" width="300">
+																			@string.Format("{0:#,0}", @value)
+																		</td>
+																	}
+																	else
+																	{
+																		<td class="text-right" width="300">
+																			-
+																		</td>
+																	}
+																}
+															}
+
+
+
+
+
+
+															count++;
+
+														}
+
+													</tr>
+												}
+												else if (test == "Total CTC")
+												{
+													<tr style="background-color: #fff0db">
+
+														@for (int j = 2; j < dt.Columns.Count; j++)
+														{
+															string columnName = dt.Columns[j].ToString();
+															var column = dt.Columns[j].ToString();
+
+															if (j == 4)
+															{
+																continue;
+															}
+															else
+															{
+																if (dt.Rows[i][columnName].ToString() == "Total CTC")
+																{
+																	<td class="text-left">
+																		@dt.Rows[i][columnName].ToString()
+																	</td>
+																}
+																else
+																{
+																	decimal value = Convert.ToDecimal(dt.Rows[i][columnName]);
+																	if (value > 0)
+																	{
+																		<td class="text-right" width="300">
+																			@string.Format("{0:#,0}", @value)
+																		</td>
+																	}
+																	else
+																	{
+																		<td class="text-right" width="300">
+																			-
+																		</td>
+																	}
+																}
+															}
+
+
+															count++;
+
+														}
+
+													</tr>
+												}
+												else if (test == "Total Payable")
+												{
+													<tr style="background-color: #fff0db">
+
+														@for (int j = 2; j < dt.Columns.Count; j++)
+														{
+															string columnName = dt.Columns[j].ToString();
+															var column = dt.Columns[j].ToString();
+															if (j == 4)
+															{
+																continue;
+															}
+															else
+															{
+																if (dt.Rows[i][columnName].ToString() == "Total Payable")
+																{
+																	<td class="text-left">
+																		@dt.Rows[i][columnName].ToString()
+																	</td>
+																}
+																else
+																{
+																	decimal value = Convert.ToDecimal(dt.Rows[i][columnName]);
+																	if (value > 0)
+																	{
+																		<td class="text-right" width="300">
+																			@string.Format("{0:#,0}", @value)
+																		</td>
+																	}
+																	else
+																	{
+																		<td class="text-right" width="300">
+																			-
+																		</td>
+																	}
+																}
+															}
+
+
+
+
+															count++;
+
+														}
+
+													</tr>
+												}
+												else if (test == "Net Payable")
+												{
+													<tr style="background-color: #fff0db">
+
+														@for (int j = 2; j < dt.Columns.Count; j++)
+														{
+															string columnName = dt.Columns[j].ToString();
+															var column = dt.Columns[j].ToString();
+															if (j == 4)
+															{
+																continue;
+															}
+															else
+															{
+																if (dt.Rows[i][columnName].ToString() == "Net Payable")
+																{
+																	<td class="text-left">
+																		@dt.Rows[i][columnName].ToString()
+																	</td>
+																}
+																else
+																{
+
+																	decimal value = Convert.ToDecimal(dt.Rows[i][columnName]);
+																	if (value > 0 || value < 0)
+																	{
+																		<td class="text-right" width="300">
+																			@string.Format("{0:#,0}", @value)
+																		</td>
+																	}
+																	else
+																	{
+																		<td class="text-right" width="300">
+																			-
+																		</td>
+																	}
+																}
+															}
+
+
+
+
+															count++;
+
+														}
+
+													</tr>
+												}
+												else if (test == "Special Benefits")
+												{
+													<tr style="background-color: #fff0db">
+
+														@for (int j = 2; j < dt.Columns.Count; j++)
+														{
+															string columnName = dt.Columns[j].ToString();
+															var column = dt.Columns[j].ToString();
+															if (j == 4)
+															{
+																continue;
+															}
+															else
+															{
+																if (dt.Rows[i][columnName].ToString() == "Special Benefits")
+																{
+																	<td class="text-left">
+																		@dt.Rows[i][columnName].ToString()
+																	</td>
+																}
+																else
+																{
+
+																	decimal value = Convert.ToDecimal(dt.Rows[i][columnName]);
+																	if (value > 0 || value < 0)
+																	{
+																		<td class="text-right" width="300">
+																			@string.Format("{0:#,0}", @value)
+																		</td>
+																	}
+																	else
+																	{
+																		<td class="text-right" width="300">
+																			-
+																		</td>
+																	}
+																}
+															}
+
+
+
+
+															count++;
+
+														}
+
+													</tr>
+												}
+												else if (test == "Benefits")
+												{
+													<tr>
+
+														@for (int j = 2; j < dt.Columns.Count; j++)
+														{
+															string columnName = dt.Columns[j].ToString();
+															var column = dt.Columns[j].ToString();
+															if (j == 4)
+															{
+																continue;
+															}
+															else
+															{
+																if (dt.Rows[i][columnName].ToString() == "Benefits")
+																{
+																	<td class="text-left">
+																		@dt.Rows[i][columnName].ToString()
+																	</td>
+																}
+																else
+																{
+
+
+																	<td class="text-right" width="300">
+																	</td>
+																}
+															}
+
+
+
+
+															count++;
+
+														}
+
+													</tr>
+												}
+												else if (test == "Less: Deductions")
+												{
+													<tr>
+
+														@for (int j = 2; j < dt.Columns.Count; j++)
+														{
+															string columnName = dt.Columns[j].ToString();
+															var column = dt.Columns[j].ToString();
+															if (j == 4)
+															{
+																continue;
+															}
+															else
+															{
+																if (dt.Rows[i][columnName].ToString() == "Less: Deductions")
+																{
+																	<td class="text-left">
+																		@dt.Rows[i][columnName].ToString()
+																	</td>
+																}
+																else
+																{
+
+
+																	<td class="text-right" width="300">
+																	</td>
+																}
+															}
+
+
+
+
+															count++;
+
+														}
+
+													</tr>
+												}
+
+												else if (test == "Hourly Rate")
+												{
+													<tr>
+
+														@for (int j = 2; j < dt.Columns.Count; j++)
+														{
+															string columnName = dt.Columns[j].ToString();
+															var column = dt.Columns[j].ToString();
+															if (j == 4)
+															{
+																continue;
+															}
+															else
+															{
+																if (dt.Rows[i][columnName].ToString() == "Hourly Rate")
+																{
+																	<td class="text-left">
+																		@dt.Rows[i][columnName].ToString()
+																	</td>
+																}
+																else
+																{
+
+																	decimal value = Convert.ToDecimal(dt.Rows[i][columnName]);
+																	if (value > 0)
+																	{
+																		<td class="text-right" width="300">
+																			@value
+																		</td>
+																	}
+																	else
+																	{
+																		<td class="text-right" width="300">
+																			-
+																		</td>
+																	}
+																}
+															}
+
+
+
+
+															count++;
+
+														}
+
+													</tr>
+												}
+												else if (test == "Payable Hours")
+												{
+													<tr>
+
+														@for (int j = 2; j < dt.Columns.Count; j++)
+														{
+															string columnName = dt.Columns[j].ToString();
+															var column = dt.Columns[j].ToString();
+															if (j == 4)
+															{
+																continue;
+															}
+															else
+															{
+																if (dt.Rows[i][columnName].ToString() == "Payable Hours")
+																{
+																	<td class="text-left">
+																		@dt.Rows[i][columnName].ToString()
+																	</td>
+																}
+																else
+																{
+
+																	decimal value = Convert.ToDecimal(dt.Rows[i][columnName]);
+																	if (value > 0)
+																	{
+																		<td class="text-right" width="300">
+																			@value
+																		</td>
+																	}
+																	else
+																	{
+																		<td class="text-right" width="300">
+																			-
+																		</td>
+																	}
+																}
+															}
+
+
+
+
+															count++;
+
+														}
+
+													</tr>
+												}
+												else
+												{
+													<tr>
+
+														@for (int j = 2; j < dt.Columns.Count; j++)
+														{
+															string columnName = dt.Columns[j].ToString();
+															var column = dt.Columns[j].ToString();
+															int n;
+															bool isNumeric = int.TryParse(dt.Rows[i][columnName].ToString(), out n);
+															if (j == 4)
+															{
+																continue;
+															}
+															else
+															{
+																if (isNumeric == true)
+																{
+																	decimal value = Convert.ToDecimal(dt.Rows[i][columnName]);
+																	if (value > 0)
+																	{
+																		bool negative = value < 0;
+																		if (negative == true)
+																		{
+																			<td>
+																				@value
+																			</td>
+																		}
+																		else
+																		{
+																			<td class="text-right" width="300">
+																				@string.Format("{0:#,0}", @value)
+																			</td>
+																		}
+
+																	}
+																	else
+																	{
+																		bool negative = value < 0;
+																		if (negative == true)
+																		{
+																			<td class="text-right" width="300">
+																				@string.Format("{0:#,0}", @value)
+																			</td>
+																		}
+																		else
+																		{
+																			<td class="text-right" width="300">
+																				-
+																			</td>
+																		}
+
+																	}
+
+																}
+																else
+																{
+																	decimal m;
+																	bool isDecimal = decimal.TryParse(dt.Rows[i][columnName].ToString(), out m);
+																	if (isDecimal == true)
+																	{
+																		decimal value = Convert.ToDecimal(dt.Rows[i][columnName]);
+																		if (value > 0)
+																		{
+																			<td class="text-right" width="300">
+																				@string.Format("{0:#,0}", @value)
+																			</td>
+																		}
+																		else
+																		{
+																			<td class="text-right" width="300">
+																				-
+																			</td>
+																		}
+																	}
+																	else
+																	{
+																		<td class="text-left">@dt.Rows[i][columnName].ToString()</td>
+																	}
+
+																}
+
+															}
+
+
+
+															count++;
+
+														}
+
+													</tr>
+												}
+
+											}
+
+											@*<tr>
+			<td class="text-right">Hourly Rate</td>
+			<td class="text-right"></td>
+			<td class="text-right">714.03</td>
+			<td class="text-right">714.03</td>
+			<td class="text-right">745.77</td>
+			<td class="text-right">745.77</td>
+			<td class="text-right">745.77	</td>
+			<td class="text-right">745.77	</td>
+			<td class="text-right">745.77</td>
+			<td class="text-right">745.77	</td>
+			<td class="text-right">745.77	</td>
+			<td class="text-right">745.77</td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+		</tr>*@
+
+											@*<tr>
+			<td class="text-right">Payable Hours</td>
+			<td class="text-right">1569	</td>
+			<td class="text-right">168</td>
+			<td class="text-right">176</td>
+			<td class="text-right">176</td>
+			<td class="text-right">168</td>
+			<td class="text-right">184</td>
+			<td class="text-right">176</td>
+			<td class="text-right">168</td>
+			<td class="text-right">176</td>
+			<td class="text-right">176</td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+		</tr>
+
+
+		<tr>
+			<td>Basic Pay</td>
+			<td class="text-right"> 6,95,518 	 </td>
+			<td class="text-right">71,974</td>
+			<td class="text-right">75,401</td>
+			<td class="text-right">78,754 </td>
+			<td class="text-right">75,173</td>
+			<td class="text-right">82,333</td>
+			<td class="text-right">78,754</td>
+			<td class="text-right">75,173</td>
+			<td class="text-right">78,754</td>
+			<td class="text-right">78,754	</td>
+			<td class="text-right">448 </td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+			<td class="text-right">79,202</td>
+		</tr>
+
+		<tr>
+			<td>House Rent Allowance	 </td>
+			<td class="text-right"> 3,47,761</td>
+			<td class="text-right">35,987</td>
+			<td class="text-right">37,701</td>
+			<td class="text-right">39,377</td>
+			<td class="text-right">37,587 </td>
+			<td class="text-right">41,167</td>
+			<td class="text-right">39,377 </td>
+			<td class="text-right">37,587 </td>
+			<td class="text-right">39,377</td>
+			<td class="text-right">39,377</td>
+			<td class="text-right">224</td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+			<td class="text-right">39,601</td>
+		</tr>
+		<tr>
+			<td>Transport/ CEA / LTA etc</td>
+			<td class="text-right"> 1,15,917</td>
+			<td class="text-right">11,996</td>
+			<td class="text-right">12,567</td>
+			<td class="text-right">13,125</td>
+			<td class="text-right">12,529 </td>
+			<td class="text-right">13,722</td>
+			<td class="text-right">13,125</td>
+			<td class="text-right">12,529</td>
+			<td class="text-right">13,125</td>
+			<td class="text-right">13,125</td>
+			<td class="text-right">74</td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+			<td class="text-right">13,199</td>
+		</tr>
+		<tr>
+			<td>Other Addition</td>
+			<td class="text-right">13,161</td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+			<td class="text-right">13,161</td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+			<td class="text-right">39,601</td>
+		</tr>
+		<tr>
+			<td>Other Addition</td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+		</tr>
+
+		<tr class="lgt-mtr-o-bg fn-bold">
+			<td>Gross Salary</td>
+			<td class="text-right"> 11,72,357</td>
+			<td class="text-right">1,19,957</td>
+			<td class="text-right">1,25,669</td>
+			<td class="text-right">1,44,417</td>
+			<td class="text-right">1,25,289</td>
+			<td class="text-right">1,37,222 </td>
+			<td class="text-right">1,31,256 </td>
+			<td class="text-right">1,25,289</td>
+			<td class="text-right">1,31,256 </td>
+			<td class="text-right">1,31,256</td>
+			<td class="text-right">746 </td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+			<td class="text-right">11,72,357</td>
+		</tr>
+
+		<tr>
+			<td><Strong>Benefits</Strong></td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+		</tr>
+
+		<tr>
+			<td>EPF (C3 contribution)</td>
+			<td class="text-right">83,462</td>
+			<td class="text-right">8,637</td>
+			<td class="text-right">9,048</td>
+			<td class="text-right">9,450</td>
+			<td class="text-right">9,021</td>
+			<td class="text-right">9,880</td>
+			<td class="text-right">9,450</td>
+			<td class="text-right">9,021</td>
+			<td class="text-right">9,450 </td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+			<td class="text-right">73,957</td>
+		</tr>
+
+		<tr>
+			<td>EPF (C3 contribution) - Fixed</td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+		</tr>
+
+		<tr>
+			<td>Medical Reimbursement</td>
+			<td class="text-right"> 57,960</td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+		</tr>
+
+
+		<tr>
+			<td>Medical Reimbursement - Fixed</td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+		</tr>
+
+
+		<tr>
+			<td>Bonus</td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+		</tr>
+
+		<tr>
+			<td>Bonus - Fixed</td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+		</tr>
+
+		<tr>
+			<td>Special Allowance</td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+		</tr>
+
+		<tr>
+			<td>Mobile Reimbursement</td>
+			<td>Amount/12*month+Last month/monthday*LWD - round </td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+		</tr>
+
+		<tr>
+			<td>Data Reimbursement</td>
+			<td>Amount/12*month+Last month/monthday*LWD - round </td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+		</tr>
+
+		<tr>
+			<td>Life Insurance Premium</td>
+			<td class="text-right"> 10,000</td>
+			<td class="text-right"></td>
+			<td class="text-right">10,000</td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+			<td class="text-right">10,000</td>
+		</tr>
+
+		<tr class="lgt-mtr-o-bg fn-bold">
+			<td>TOTAL CTC</td>
+			<td class="text-right"> 14,21,436</td>
+			<td class="text-right">1,28,594</td>
+			<td class="text-right">1,44,717</td>
+			<td class="text-right">1,53,867</td>
+			<td class="text-right">1,34,310</td>
+			<td class="text-right">1,47,102</td>
+			<td class="text-right">1,40,706</td>
+			<td class="text-right">1,34,310</td>
+			<td class="text-right">1,40,706</td>
+			<td class="text-right">1,31,256</td>
+			<td class="text-right">746 </td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+			<td class="text-right">12,56,314</td>
+		</tr>
+		<tr>
+			<td ><Strong>Add : Other Payables</Strong></td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+		</tr>
+
+		<tr>
+			<td>AL Payable</td>
+			<td>ROUND((J8+O8)*D8,0) - Only if CL is negative</td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+		</tr>
+
+		<tr>
+			<td>Gratuity</td>
+			<td>ROUND((C18/12)*15/26,0) - validate 5 year</td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+		</tr>
+
+		<tr>
+			<td>NP Payable</td>
+			<td></td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+		</tr>
+
+		<tr class="lgt-mtr-o-bg fn-bold">
+			<td>TOTAL PAYABLE	 </td>
+			<td class="text-right">14,21,436</td>
+			<td class="text-right">1,28,594</td>
+			<td class="text-right">1,44,717</td>
+			<td class="text-right">1,53,867</td>
+			<td class="text-right">1,34,310</td>
+			<td class="text-right">1,47,102</td>
+			<td class="text-right">1,40,706</td>
+			<td class="text-right">1,34,310</td>
+			<td class="text-right">1,40,706</td>
+			<td class="text-right">1,31,256</td>
+			<td class="text-right">746</td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+			<td class="text-right">12,56,314</td>
+		</tr>
+
+
+		<tr>
+			<td><Strong>Less: Deductions</Strong>	 </td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+		</tr>
+
+		<tr>
+			<td>PF Contribtion (Employer)</td>
+			<td class="text-right"> 83,462</td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+			<td class="text-right"> 9,450</td>
+			<td class="text-right">9,021</td>
+			<td class="text-right">9,880</td>
+			<td class="text-right">9,450</td>
+			<td class="text-right">9,021</td>
+			<td class="text-right">9,450</td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+			<td class="text-right">56,272</td>
+		</tr>
+
+		<tr>
+			<td>PF (Employee)</td>
+			<td class="text-right">92,857</td>
+			<td class="text-right">8,637</td>
+			<td class="text-right">9,048</td>
+			<td class="text-right">9,450</td>
+			<td class="text-right">9,021</td>
+			<td class="text-right">9,880</td>
+			<td class="text-right">9,450</td>
+			<td class="text-right">9,021</td>
+			<td class="text-right">9,450</td>
+			<td class="text-right">9,450</td>
+			<td class="text-right">9,450</td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+			<td class="text-right">92,857</td>
+		</tr>
+
+		<tr>
+			<td>VPF</td>
+			<td class="text-right">45,000</td>
+			<td class="text-right"></td>
+			<td class="text-right">5,000</td>
+			<td class="text-right">5,000</td>
+			<td class="text-right">5,000</td>
+			<td class="text-right">5,000</td>
+			<td class="text-right">5,000</td>
+			<td class="text-right">5,000</td>
+			<td class="text-right">5,000</td>
+			<td class="text-right">5,000</td>
+			<td class="text-right">5,000</td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+			<td class="text-right">45,000</td>
+		</tr>
+
+		<tr>
+			<td>TDS</td>
+			<td class="text-right">2,50,000 </td>
+			<td class="text-right">25,000 </td>
+			<td class="text-right">25,000</td>
+			<td class="text-right">25,000</td>
+			<td class="text-right">25,000</td>
+			<td class="text-right">25,000</td>
+			<td class="text-right">25,000</td>
+			<td class="text-right">25,000</td>
+			<td class="text-right">25,000</td>
+			<td class="text-right">25,000</td>
+			<td class="text-right">25,000</td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+			<td class="text-right">2,50,000</td>
+		</tr>
+
+		<tr>
+			<td>Professional Tax</td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+		</tr>
+
+		<tr>
+			<td>NP Recovery</td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+		</tr>
+
+
+		<tr>
+			<td>AL Recovery</td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+		</tr>
+
+		<tr>
+			<td>Other deduction - Advances</td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+		</tr>
+
+		<tr>
+			<td>Other deduction - Advances</td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+		</tr>
+
+		<tr class="lgt-mtr-o-bg fn-bold">
+			<td>Net Payable</td>
+			<td class="text-right">9,50,117</td>
+			<td class="text-right">94,957</td>
+			<td class="text-right">1,05,669</td>
+			<td class="text-right">1,04,967</td>
+			<td class="text-right">86,268</td>
+			<td class="text-right">97,342</td>
+			<td class="text-right">91,806</td>
+			<td class="text-right">86,268</td>
+			<td class="text-right">91,806</td>
+			<td class="text-right">91,806</td>
+			<td class="text-right">-38,704</td>
+			<td class="text-right"></td>
+			<td class="text-right"></td>
+			<td class="text-right">8,12,185</td>
+		</tr>*@
+
+
+
+										</tbody>
+										<tfoot>
+										</tfoot>
+
+									</table>
+								</div>
+
+							</div>
+						}
+
+					</div>
+
+				</div>
+			</div>
+		</div>
+	</div>
+
+
+
+</body>
+</html>
+@section scripts    {
+	@System.Web.Optimization.Scripts.Render("~/bundle/dataTablesjs")
+	@System.Web.Optimization.Scripts.Render("~/bundle/unobtrusivejs")
+	@Html.IncludeVersionedJs(Url.Content("~/assets/design/Scripts/AddInit.js"))
+	@Html.IncludeVersionedJs(Url.Content("~/assets/design/Scripts/ToolTip.js"))
+	@Html.IncludeVersionedJs(Url.Content("~/assets/tableToExcel.js"))
+	<script>
+		    function exportReportToExcelAll() {
+		debugger;
+         exportToExcelSahaj('exportable_table', 'Full and Final Settlement.xlsx');
+        }
+
+
+	</script>
+}

@@ -1,0 +1,292 @@
+﻿
+@{
+    ViewBag.Title = "DigitalLib";
+}
+<link href="~/Areas/DigitalLibrary/assets/css/tagsinput.css" rel="stylesheet" />
+
+<script src="~/Areas/DigitalLibrary/assets/js/tagsinput.js"></script>
+
+<div class="inner-main mb-5 defult-height p-0">
+    <div class="serbox ">
+        <strong>Shared Content</strong>
+        <div class="row" style="display:none;">
+            <div class="col-sm-3 form-group align-self-end">
+                <input type="text" id="txtSearchBox" class="form-control" placeholder="Search Here..." name="">
+            </div>
+            <div class="col-sm-4 form-group">
+                <label>Category</label>
+                <select class="form-control applyselect " id="ddlCategory" onchange="FillSubCategory(this)">
+                </select>
+                <a href="" style="display:none;" class="adsrh" data-toggle="modal" data-target="#as"><i class="fas fa-plus-circle"></i>Advanced Search</a>
+            </div>
+            <div class="col-sm-4 form-group">
+                <label>Sub Category</label>
+                <select class="form-control applyselect " id="ddlSubCategory">
+                </select>
+            </div>
+
+            <div class="col-sm-1 form-group align-self-center"> <a onclick="SearchData()" id="AnchorAddButton" class="btn mtr-g-grn btn-l  ripplelink "><i class="fas fa-search"></i>Search</a> </div>
+        </div>
+    </div>
+    <div class="pl-6 pr-6 pt-2">
+        <div class="row">
+            <div class="col-sm-2" style="display:none;">
+                <h3 class="lgt-heading mb-0">Filter</h3>
+                <hr class="flthr" />
+                <div class="accordion flitdgn" id="accordionExample">
+
+                    <div class="card">
+                        <div class="card-head" id="headingTwo">
+                            <h2 class="mb-0 " data-toggle="collapse" data-target="#pc" aria-expanded="false" aria-controls="collapseTwo">Project Code</h2>
+                        </div>
+                        <div id="pc" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionExample">
+                            <ul class="list-unstyled fltlist scroll" id="ulProjectCode">
+                            </ul>
+                        </div>
+                    </div>
+                    <hr class="flthr" />
+                    <div class="card">
+                        <div class="card-head" id="headingThree">
+                            <h2 class="mb-0 " data-toggle="collapse" data-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">Thematic </h2>
+                        </div>
+                        <div id="collapseThree" class="collapse" aria-labelledby="headingThree" data-parent="#accordionExample">
+                            <ul class="list-unstyled fltlist scroll" id="ulThematic">
+                            </ul>
+                        </div>
+                    </div>
+
+                    <hr class="flthr" />
+                    <div class="card">
+                        <div class="card-head" id="headingdonor">
+                            <h2 class="mb-0 " data-toggle="collapse" data-target="#collapsedonor" aria-expanded="false" aria-controls="collapsedonor">Donor </h2>
+                        </div>
+                        <div id="collapsedonor" class="collapse" aria-labelledby="headingdonor" data-parent="#accordionExample">
+                            <ul class="list-unstyled fltlist scroll" id="ulDonar">
+                            </ul>
+                        </div>
+                    </div>
+                    <hr class="flthr" />
+                    <div class="card">
+                        <div class="card-head" id="headingfour">
+                            <h2 class="mb-0 " data-toggle="collapse" data-target="#place" aria-expanded="false" aria-controls="place">Place </h2>
+                        </div>
+                        <div id="place" class="collapse" aria-labelledby="headingfour" data-parent="#accordionExample">
+                            <ul class="list-unstyled fltlist scroll" id="ulPlace">
+                            </ul>
+                        </div>
+                    </div>
+                    <hr class="flthr" />
+                    <div class="card">
+                        <div class="card-head" id="headingfive">
+                            <h2 class="mb-0 " data-toggle="collapse" data-target="#reportno" aria-expanded="false" aria-controls="reportno">Tags </h2>
+                        </div>
+                        <div id="reportno" class="collapse" aria-labelledby="headingfive" data-parent="#accordionExample">
+                            <ul class="list-unstyled fltlist scroll" id="ulTagwithThematic">
+                            </ul>
+                        </div>
+                    </div>
+                    <hr class="flthr" />
+                    <div class="card">
+                        <div class="card-head" id="headingsix">
+                            <h2 class="mb-0 " data-toggle="collapse" data-target="#projectlead" aria-expanded="false" aria-controls="projectlead">Years</h2>
+                        </div>
+                        <div id="projectlead" class="collapse" aria-labelledby="headingsix" data-parent="#accordionExample">
+                            <ul class="list-unstyled fltlist scroll" id="ulYear">
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-12">
+                <div class="ftlshw" style="display:none;">
+                    <div class="row">
+                        <div class="col-sm-5 align-self-center mb-0" id="DivPageInfo"></div>
+                        <div class="col-sm-7 mb-0 text-right">
+                            <a href="~/DigitalLibrary/ContentDetail" class="btn mtr-g-grn btn-l ripplelink ">
+                                <i class="fa fa-plus"></i>Add Content
+                            </a>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- Start -->
+                <ul class=" list-unstyled" id="MainUL" >
+                </ul>
+                <ul class="pgndgn list-unstyled" id="ulPaging">
+                </ul>
+                <!-- End -->
+
+
+
+                <div class="pt-4 text-center pb-3">
+                    <a href="~/DigitalLibrary/DigitalLib" class="btn cnl-btn mb-0 ripplelink  pull-right"><i class="fas fa-times"></i> Close</a>
+                </div>
+
+            </div>
+
+
+        </div>
+    </div>
+</div>
+
+<div class="modal fade pop-dgn" id="dwn">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+
+            <div class="modal-header blk-gdn-btn">
+                <h4 class="modal-title"><i class="fas fa-plus-circle" id="hProjectName"></i></h4>
+                <div class="close" data-dismiss="modal">&times;</div>
+            </div>
+            <!-- Modal body -->
+            <div class="modal-body p-0">
+                <!------->
+                <div class="tab-main mb-2">
+                    <ul id="tabs" class="nav nav-tabs " role="tablist">
+                        <li class="nav-item"> <a id="tab-A" href="#active-log" class="nav-link ripplelink active" data-toggle="tab" role="tab" aria-selected="true"><i class="fas fa-file-alt"></i>Document </a> </li>
+                        <li class="nav-item"> <a id="tab-B" href="#leaves" class="nav-link ripplelink" data-toggle="tab" role="tab" aria-selected="false"><i class="fas fa-image"></i>Photo</a> </li>
+                        <li class="nav-item"> <a id="tab-C" href="#rr" class="nav-link ripplelink" data-toggle="tab" role="tab"><i class="fas fa-video"></i>Video</a> </li>
+                    </ul>
+                    <div id="content" class="tab-content shadow-box p-0" role="tablist">
+                        <div id="active-log" class="card tab-pane fade active show" role="tabpanel" aria-labelledby="tab-A">
+                            <div class="card-header" role="tab" id="heading-A">
+                                <h5 class="mb-0">
+                                    <!-- Note: `data-parent` removed from here -->
+                                    <a data-toggle="collapse" href="#collapse-A" aria-expanded="true" aria-controls="collapse-A">Tab 1</a>
+                                </h5>
+                            </div>
+
+                            <!-- Note: New place of `data-parent` -->
+                            <div id="collapse-A" class="collapse" data-parent="#content" role="tabpanel" aria-labelledby="heading-A">
+                                <div class="card-body">
+                                    <!-- Start -->
+                                    <table class="table table-striped tblwobdr" id="tblDocument">
+                                        <thead>
+                                            <tr>
+                                                <th>Name</th>
+                                                <th width="150">Document Uploaded By</th>
+                                                <th width="80">File Size</th>
+                                                <th width="160"></th>
+                                            </tr>
+                                        </thead>
+                                    </table>
+                                    <!-- End -->
+                                </div>
+                            </div>
+                        </div>
+                        <div id="leaves" class="card tab-pane fade" role="tabpanel" aria-labelledby="tab-B">
+                            <div class="card-header" role="tab" id="heading-B">
+                                <h5 class="mb-0"> <a class="collapsed" data-toggle="collapse" href="#collapse-B" aria-expanded="false" aria-controls="collapse-B">Tab 2</a> </h5>
+                            </div>
+                            <div id="collapse-B" class="collapse" data-parent="#content" role="tabpanel" aria-labelledby="heading-B">
+
+
+                                <!-- Start -->
+                                <table class="table table-striped tblwobdr" id="tblPhoto">
+                                    <thead>
+                                        <tr>
+                                            <th>Name</th>
+                                            <th width="150">Document Uploaded By</th>
+                                            <th width="80">File Size</th>
+                                            <th width="160"></th>
+                                        </tr>
+                                    </thead>
+
+                                </table>
+                                <!-- End -->
+                            </div>
+                        </div>
+                        <div id="rr" class="card tab-pane fade" role="tabpanel" aria-labelledby="tab-d">
+                            <div class="card-header" role="tab" id="heading-d">
+                                <h5 class="mb-0"> <a class="collapsed" data-toggle="collapse" href="#collapse-d" aria-expanded="false" aria-controls="collapse-d">Tab 4</a> </h5>
+                            </div>
+                            <div id="collapse-d" class="collapse" role="tabpanel" data-parent="#content" aria-labelledby="heading-d">
+                                <!-- Start -->
+                                <table class="table table-striped tblwobdr" id="tblVideo">
+                                    <thead>
+                                        <tr>
+                                            <th>Name</th>
+                                            <th width="150">Document Uploaded By</th>
+                                            <th width="80">File Size</th>
+                                            <th width="160"></th>
+                                        </tr>
+                                    </thead>
+                                </table>
+                                <!-- End -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!------>
+                <div class="text-center">
+                    <button type="button" class="btn cnl-btn ripplelink" data-dismiss="modal"><i class="fas fa-times"></i>Close<span class="ink animate" style="height: 78px; width: 78px; left: -13px; top: -21px;"></span></button>
+
+                    <a href="#" id="btnOpenPopup" style="display:none;" data-toggle="modal" data-target="#dwn">View</a>
+
+                    <a href="#" id="btnSharePopup" style="display:none;" data-toggle="modal" data-target="#shareContent">View</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="shareContent" role="dialog" aria-modal="flase">
+    <div class="modal-dialog modal-md">
+        <div class="modal-content">
+            <div class="modal-header blk-gdn-btn">
+                <h4 class="modal-title">Missing: Women from Work</h4>
+                <div class="close" data-dismiss="modal">&times;</div>
+                <input type="hidden" id="hdnContentId" />
+            </div>
+            <!-- Modal body -->
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-sm-12 form-group">
+                        <label>To <sup>*</sup></label>
+                        <select class="form-control applyselect" id="shareEmployee" multiple="">                         
+                        </select>
+                    </div>
+                    <div class="col-sm-12 text-center">
+                        <button type="submit" class="btn mtr-o-grn" name="Command" value="Add" onclick="SaveSharedContent()"   data-dismiss="modal"><i class="fas fa-envelope"></i>Send</button>
+                        <button type="button" class="btn cnl-btn ripplelink" data-dismiss="modal"><i class="fas fa-times"></i>Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@section scripts    {
+    <script type='text/javascript' src='~/assets/design/js/jquery-3.4.1.min.js?v=1.6'></script>
+    <script type='text/javascript' src='~/assets/design/js/popper.min.js?v=1.6'></script>
+    <script type='text/javascript' src='~/assets/design/js/bootstrap.min.js?v=1.6'></script>
+    <script type='text/javascript' src='~/assets/design/js/stellarnav.min.js?v=1.6'></script>
+    <script type='text/javascript' src='~/assets/design/js/notify.js?v=1.6'></script>
+    <script type='text/javascript' src='~/assets/design/js/sweetalert.js?v=1.6'></script>
+    <script type='text/javascript' src='~/assets/design/js/wow.min.js?v=1.6'></script>
+    <script type='text/javascript' src='~/assets/design/js/select2.min.js?v=1.6'></script>
+    <script type='text/javascript' src='~/assets/design/js/bootstrap-multiselect.js?v=1.6'></script>
+
+    <script type='text/javascript' src='~/assets/design/Scripts/ToolTip.js?v=1.6'></script>
+
+    <script type='text/javascript' src='~/assets/design/js/jquery.sidebar.js?v=1.6'></script>
+    @System.Web.Optimization.Scripts.Render("~/bundle/unobtrusivejs")
+    @System.Web.Optimization.Scripts.Render("~/bundle/dataTablesjs")
+    <script src="~/assets/design/Scripts/AddInit.js?v=@clsApplicationSetting.GetWebConfigValue("Version")"></script>
+    <script src="~/Areas/DigitalLibrary/DevScript/MySharedContent.js"></script>
+
+
+
+
+
+
+
+    <script>
+         var IsEDUser = '@ViewBag.IsED';
+       var loggedinUserid = '@ViewBag.UserId';
+        var loggedinUserName = '@ViewBag.UserName';
+        var UserGrade = '@ViewBag.Grade';
+        	var IsPM = '@ViewBag.IsPM';
+    </script>
+}

@@ -1,0 +1,148 @@
+﻿
+@model IList<Mitr.Models.Helpdesk.Ticket_Status>
+
+
+@section style{
+    @System.Web.Optimization.Styles.Render("~/bundle/dataTablecss")
+}
+<div class="inner-main mb-5 pb-0">
+    @Html.Partial("ListHeader_Partial", "Status List")
+
+
+
+    <div class="row">
+        <div class="col-md-12 col-sm-12 col-xs-12">
+            <div class="card p-0">
+                <div class="card-body p-0">
+                    <div class="x_content table-currency mt-0">
+                        <div class="table-responsive">
+                            <table id="datatable-buttons" class="table table-striped table-bordered dt-responsive nowrap tbltick new_width" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
+                                <thead>
+                                    <tr>
+                                        <th>S.no.</th>
+                                        <th>Action</th>
+                                        <th>Priority</th>
+                                        <th>Type</th>
+                                        <th>Status</th>
+                                        <th>Display Name</th>
+                                        <th>Inserted Date</th>
+                                        <th>Updated Date</th>
+                                        <th>IP Address</th>
+                                    </tr>
+                                    <tr class="searchbar">
+                                        <th class="searchhide"></th>
+                                        <th class="searchhide"></th>
+                                        <th class="searchhide"></th>
+                                        <th></th>
+                                        <th></th>
+                                        <th></th>
+                                        <th> </th>
+                                        <th> </th>
+                                        <th> </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @{ int Count = 0;}
+                                    @foreach (Mitr.Models.Helpdesk.Ticket_Status item in Model)
+                                    {
+                                        Count++;
+                                    <tr class="@(item.IsActive == true?"": "trrowred")">
+                                        <td>@Count</td>
+                                        <td>
+                                            <input type="hidden" id="hdn_@item.TicketStatusID" value="@item.StatusName" />
+                                            @if (clsApplicationSetting.GetSessionValue("Modify") == "True")
+                                            {
+                                                @Html.Raw(item.IsActive == true ? "<a id='AIsActive_" + @item.TicketStatusID + "' title='Click to  DeActivate' onclick='UpdateIsActiveJSON(\"TicketStatusList\"," + item.TicketStatusID + ",0);' data-toggle='tooltip'> <i class='fa fa-check-circle checkgreen' aria-hidden='true'></i></a>" +
+    "  " : "<a id='AIsActive_" + @item.TicketStatusID + "' title='Click to  Activate' onclick='UpdateIsActiveJSON(\"TicketStatusList\"," + item.TicketStatusID + ",1);' data-toggle='tooltip'><i class='fa fa-times-circle crossred' aria-hidden='true'></i></a>")
+                                                <a title="Edit" onclick="ListHeaderAdd(@item.TicketStatusID);" data-toggle='tooltip'><i class="fas fa-edit checkgreen" aria-hidden="true"></i> </a>
+                                            }
+                                        </td>
+                                        <td>
+
+                                            @Html.Raw(clsApplicationSetting.GetSessionValue("Modify") == "True" ? "<input type='number' id=\"txtPriority_" + @item.TicketStatusID + "\" onfocus=\"if(this.value == '0') { this.value=''}\" onblur=\"if(this.value==''){this.value='0'} else{UpdatePriority(this," + @item.TicketStatusID + ",'TicketStatusList');}\" value=\"" + @item.Priority + "\" />" : @item.Priority.ToString())
+                                        </td>
+
+                                        <td> @item.Type</td>
+                                        <td> @item.StatusName</td>
+                                        <td><a style="color:@item.StatusColor"> @item.DisplayName</a></td>
+
+                                        <td>@item.createdat</td>
+                                        <td>@item.modifiedat</td>
+                                        <td>@item.IPAddress</td>
+                                    </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+<div class="modal fade pop-dgn" id="ViewModal">
+    <div class="modal-dialog modal-md">
+        <div class="modal-content">
+
+            <div class="modal-header blk-gdn-btn">
+                <h4 class="modal-title"><i class="fas fa-print"></i>Add Status </h4>
+                <div class="close" data-dismiss="modal">&times;</div>
+            </div>
+            <!-- Modal body -->
+            <div class="modal-body">
+                <div id="TagetDiv"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@section scripts    {
+    @System.Web.Optimization.Scripts.Render("~/bundle/dataTablesjs")
+    <script src="~/assets/design/Scripts/AddInit.js?v=@clsApplicationSetting.GetWebConfigValue("Version")"></script>
+    @System.Web.Optimization.Scripts.Render("~/bundle/unobtrusivejs")
+    <script>
+
+
+
+    function ListHeaderAdd(CMSID) {
+        if (CMSID == undefined)
+        {
+            CMSID = 0;
+        }
+			$.ajax({
+                url: "/Ticket/_TicketStatusAdd",
+				type: "Get",
+				data: { src: EncryptQueryStringJSON(@ViewBag.MenuID+"*" + "/Ticket/_TicketStatusAdd" + "*" + CMSID) },
+                success: function (data)
+                {
+					$("#TagetDiv").empty();
+                    $("#TagetDiv").html(data);
+                    $("#ViewModal").modal("show");
+                     var form = $("form")
+                .removeData("validator")
+                .removeData("unobtrusiveValidation");
+                    $.validator.unobtrusive.parse(form);
+				},
+				error: function (er) {
+					alert(er);
+
+				}
+			});
+            }
+
+    function OnSuccess(obj)
+    {
+        if (obj.Status) {
+            window.location.reload();
+        }
+        else {
+            FailToaster("Can't Update There is some problem");
+        }
+
+    }
+    </script>
+}
+

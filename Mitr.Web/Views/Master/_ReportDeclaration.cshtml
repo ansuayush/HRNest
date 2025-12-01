@@ -1,0 +1,68 @@
+﻿@model DeclarationReport
+@using System.Data;
+<div class="table-responsive">
+	<table id="datatable-buttons" class="table mt-0">
+		<thead>
+			<tr>
+
+
+				@{
+					DataSet ds = Common_SPU.fnGetEmployeesDeclartionData(Model.FYId, Model.EmpType);
+					DataTable dt = ds.Tables[0];
+					for (int j = 1; j < dt.Columns.Count; j++)
+					{
+						var column = dt.Columns[j].ToString();
+						<th width="100">@column	</th>
+
+					}
+				}
+
+
+
+			</tr>
+			<tr class="searchbar">
+
+				@{
+					DataSet ds1 = Common_SPU.fnGetEmployeesDeclartionData(Model.FYId, Model.EmpType);
+					DataTable dt1 = ds.Tables[0];
+					for (int j = 1; j < dt1.Columns.Count; j++)
+					{
+						var column = dt.Columns[j].ToString();
+						<th class="searchbar"></th>
+
+					}
+				}
+
+
+
+			</tr>
+		</thead>
+		<tbody>
+
+
+			@for (int i = 0; i < dt.Rows.Count; i++)
+			{
+				int count = 1;
+				<tr>
+
+					@for (int j = 1; j < dt.Columns.Count; j++)
+					{
+						string columnName = dt.Columns[j].ToString();
+
+
+
+						<td>@dt.Rows[i][columnName].ToString()</td>
+
+						count++;
+
+					}
+
+				</tr>
+			}
+
+
+
+		</tbody>
+	</table>
+
+</div>

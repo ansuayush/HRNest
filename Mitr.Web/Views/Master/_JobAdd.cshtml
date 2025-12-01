@@ -1,0 +1,100 @@
+﻿
+@model Mitr.Models.Job
+@using System.Data
+
+
+@using (Ajax.BeginForm("_JobAdd", "Master",
+		new { src = ViewBag.src },
+		new AjaxOptions { HttpMethod = "POST", OnSuccess = "OnSuccess",OnBegin= "ShowLoadingDialog()" },
+	new { @id = "_JobAddFrom" })
+	)
+{
+
+	@Html.AntiForgeryToken()
+	@Html.HiddenFor(x => Model.JobID)
+	<div class="row">
+		<div class="col-lg-6 col-md-6 col-sm-6 form-group">
+			<label>Code<sup>*</sup></label>
+			@Html.TextBoxFor(model => model.JobCode, new { @class = "form-control" })
+			@Html.ValidationMessageFor(model => model.JobCode, "", new { @class = "text-danger" })
+		</div>
+		<div class="col-lg-6 col-md-6 col-sm-6 form-group">
+			<label>Job Title<sup>*</sup></label>
+			@Html.TextBoxFor(model => model.Title, new { @class = "form-control" })
+			@Html.ValidationMessageFor(model => model.Title, "", new { @class = "text-danger" })
+		</div>
+		<div class="col-lg-6 col-md-6 col-sm-6 form-group">
+			<label>Probation Period</label>
+			@Html.TextBoxFor(model => model.ProbationPeriod, new { @class = "form-control" })
+			@Html.ValidationMessageFor(model => model.ProbationPeriod, "", new { @class = "text-danger" })
+		</div>
+		<div class="col-lg-6 col-md-6 col-sm-6 form-group">
+			<label>Notice period (Days)</label>
+			@Html.TextBoxFor(model => model.NoticePeriod, new { @class = "form-control" })
+			@Html.ValidationMessageFor(model => model.NoticePeriod, "", new { @class = "text-danger" })
+		</div>
+		<div class="col-lg-6 col-md-6 col-sm-6 form-group">
+			<label>Skills <sup>*</sup></label>
+			@Html.HiddenFor(model => model.Skills)
+			<select id="@Html.IdFor(x=>x.SkillsIds)" name="@Html.NameFor(x=>x.SkillsIds)" class="form-control applyselect" multiple="multiple">
+				@if (ViewBag.Skills != null)
+				{
+					<option>Select</option>
+					foreach (var item in ViewBag.Skills)
+					{
+						if (string.IsNullOrEmpty(Model.Skills))
+						{
+							<option value="@item.ID"> @item.Name</option>
+						}
+						else
+						{
+							
+
+							<option @(("#" + Model.Skills.Replace(",", "#,#") + "#").Contains(("#" + item.ID + "#").ToString())?"selected":"") value="@item.ID"> @item.Name</option>
+						}
+					}
+				}
+			</select>
+		@*@Html.HiddenFor(model => model.Skills)
+	@Html.DropDownListFor(model => model.SkillsIds, new SelectList(ViewBag.Skills, "MasterAllID", "FieldName"), "Select", new { @class = "form-control applyselect" })*@
+					@Html.ValidationMessageFor(model => model.SkillsIds, "", new { @class = "text-danger" })
+		</div>
+		<div class="col-lg-6 col-md-6 col-sm-6 form-group">
+			<label>Experience </label>
+			@Html.TextBoxFor(model => model.Experience, new { @class = "form-control" })
+			@Html.ValidationMessageFor(model => model.Experience, "", new { @class = "text-danger" })
+		</div>
+		<div class="col-lg-6 col-md-6 col-sm-6 form-group">
+			<label>Job Description </label>
+			@Html.TextAreaFor(model => model.Description, new { @class = "form-control" })
+			@Html.ValidationMessageFor(model => model.Description, "", new { @class = "text-danger" })
+		</div>
+		<div class="col-lg-6 col-md-6 col-sm-6 form-group">
+			<label>Qualification </label>
+			@Html.TextAreaFor(model => model.QualificationDet, new { @class = "form-control" })
+			@Html.ValidationMessageFor(model => model.QualificationDet, "", new { @class = "text-danger" })
+		</div>
+		<div class="col-lg-6 col-md-6 col-sm-6 form-group">
+			<label>Priority </label>
+			@Html.TextBoxFor(model => model.Priority, new { @class = "form-control" })
+			@Html.ValidationMessageFor(model => model.Priority, "", new { @class = "text-danger" })
+		</div>
+
+
+	</div>
+
+	<div class="text-center">
+
+		@if (Model.JobID > 0)
+		{
+			<button type="submit" class="btn mtr-o-grn btn-l ripplelink pull-right" name="Command" value="Add"><i class="fa fa-paper-plane" aria-hidden="true"></i> Update</button>
+		}
+		else
+		{
+			<button type="submit" class="btn mtr-o-grn btn-l ripplelink pull-right" name="Command" value="Add"><i class="fa fa-paper-plane" aria-hidden="true"></i> Submit</button>
+		}
+
+		 <button type="button" class="btn cnl-btn ripplelink" data-dismiss="modal"><i class="fas fa-times"></i>Close</button>
+	</div>
+
+}

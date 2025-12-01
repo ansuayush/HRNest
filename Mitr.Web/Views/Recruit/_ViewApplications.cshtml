@@ -1,0 +1,406 @@
+﻿@using System.Data
+@model DataSet
+@{
+	string MenuID = "0";
+	if (ViewBag.MenuID != null)
+	{
+		MenuID = ViewBag.MenuID;
+	}
+}
+
+
+<h2 class="header-two"><i class="fas fa-info-circle"></i>Personal Information</h2>
+@if (Model.Tables[0] != null)
+{
+	foreach (DataRow item in Model.Tables[0].Rows)
+	{
+		<div class="row">
+
+			<div class="col-sm-12">
+				<div class="row">
+					<div class="col-lg-12 hw-575 col-md-4 col-sm-6  form-group">
+						<label>Name</label>
+						<p>@item["Name"]</p>
+					</div>
+					<div class="col-lg-3 hw-575 col-md-3 col-sm-6  form-group">
+						<label>Date of Birth</label>
+						<p>@item["DOB"]</p>
+					</div>
+					<div class="col-lg-3 hw-575 col-md-3 col-sm-6  form-group">
+						<label>Gender</label>
+						<p>@item["Gender"]</p>
+					</div>
+					<div class="col-lg-3 hw-575 col-md-3 col-sm-6  form-group">
+						<label>Nationality </label>
+						<p>@item["Nationality"]</p>
+					</div>
+
+					<div class="col-lg-3 hw-575 col-md-3 col-sm-6  form-group">
+						<label>Contact Number</label>
+						<p>@item["Mobile"]</p>
+					</div>
+					<div class="col-lg-3 hw-575 col-md-3 col-sm-6  form-group">
+						<label>Email ID</label>
+						<p>@item["EmailID"]</p>
+					</div>
+					<div class="col-lg-9 hw-575 col-md-9 col-sm-6  form-group">
+						<label>Address</label>
+						<p>@item["Address"]</p>
+					</div>
+				</div>
+			</div>
+
+
+			<div class="col-sm-12">
+				<h2 class="header-two"><i class="fas fa-users"></i>About the position</h2>
+			</div>
+
+
+			<div class="col-sm-12">
+				<div class="row">
+					<div class="col-lg-3 hw-575 col-md-3 col-sm-6  form-group">
+						<label>Position you are applying for </label>
+						<p>@item["Job_SubTitle"]</p>
+					</div>
+					<div class="col-lg-3 hw-575 col-md-3 col-sm-6  form-group">
+						<label>Position Term </label>
+						<p>@item["Staff_Cat"]</p>
+					</div>
+					<div class="col-lg-3 hw-575 col-md-3 col-sm-6  form-group">
+						<label>Location </label>
+						<p>@item["locationName"]</p>
+					</div>
+					<div class="col-lg-3 hw-575 col-md-3 col-sm-6  form-group">
+						<label>Last day to Apply </label>
+						<p>@item["EndDate"]</p>
+					</div>
+					<div class="col-lg-3 hw-575 col-md-3 col-sm-6  form-group">
+						<label>Current Salary </label>
+						<p>@item["CurrentSalary"]</p>
+					</div>
+					<div class="col-lg-3 hw-575 col-md-3 col-sm-6  form-group">
+						<label>Expected Salary </label>
+						<p>@item["ExpectedSalary"]</p>
+					</div>
+				</div>
+			</div>
+
+
+
+		</div>
+
+		<div class="row">
+
+
+			<div class="col-lg-12">
+				@if (Model.Tables[4] != null)
+				{
+					if (Model.Tables[4].Rows.Count > 0)
+					{
+						<h2 class="header-two"><i class="fas fa-graduation-cap"></i>Education </h2>
+						<table id="tblExp" class="table table-stripted mt-0">
+							<thead>
+								<tr>
+									<th class="w-50">SNo.</th>
+									<th>Course</th>
+									<th>University</th>
+									<th class="tw-100">Location</th>
+									<th class="w-50">Year</th>
+
+
+								</tr>
+							</thead>
+							<tbody>
+								@foreach (DataRow A in Model.Tables[4].Rows)
+								{
+									<tr>
+										<td>@A["RowNum"]</td>
+										<td>@A["Course"]</td>
+										<td>@A["University"]</td>
+										<td>@A["Location"]</td>
+										<td>@A["Year"]</td>
+									</tr>
+								}
+							</tbody>
+						</table>
+					}
+				}
+			</div>
+
+			<div class="col-lg-12">
+				@if (Model.Tables[1] != null)
+				{
+					if (Model.Tables[1].Rows.Count > 0)
+					{
+						<h2 class="header-two"><i class="fas fa-chalkboard-teacher"></i>Professional </h2>
+						<table id="tblExp" class="table table-stripted mt-0">
+							<thead>
+								<tr>
+									<th class="w-50">SNo.</th>
+									<th>Employer</th>
+									<th>Job Title</th>
+									<th class="tw-100">Location</th>
+									<th class="tw-100">Period</th>
+									<th class="tw-100 text-right">Annual CTC (INR)</th>
+								</tr>
+							</thead>
+							<tbody>
+								@foreach (DataRow A in Model.Tables[1].Rows)
+								{
+									<tr>
+										<td>@A["RowNum"]</td>
+										<td>@A["Employer"]</td>
+										<td>@A["Post"]</td>
+										<td>@A["Location"]</td>
+										<td>@A["Period"]</td>
+										<td class="text-right">@A["CTC"]</td>
+									</tr>
+								}
+							</tbody>
+						</table>
+					}
+				}
+			</div>
+			<div class="col-sm-4 form-group">
+				<label>Total Experience (Yrs)</label>
+				<p>@item["TotalExperience"]</p>
+			</div>
+			<div class="col-sm-4 form-group">
+				<label>Thematic Area / Expertise</label>
+				<p>@item["ThematicAreaNames"].ToString().Trim().TrimEnd(',')</p>
+
+			</div>
+			<div class="col-sm-4 form-group">
+				<label>Current Role & Resposibilities</label>
+				<p>@item["Resposibilities"]</p>
+			</div>
+			<div class="col-sm-6 form-group">
+				<label>Reason for Job Change</label>
+				<p>@item["ChangeReason"]</p>
+			</div>
+
+			<div class="col-sm-6 form-group">
+
+				@if (@item["BreakReason"].ToString() != "")
+				{
+					<label>Reason</label>
+					<p>@item["BreakReason"]</p>
+				}
+				else
+				{
+
+				}
+			</div>
+			<div class="col-sm-6 form-group" style="display:none">
+				<label class="mb-2">
+					Special Skills
+				</label>
+				<p>@item["SkillsName"].ToString().Trim().TrimEnd(',')</p>
+			</div>
+			<div class="col-sm-6 form-group">
+				<label class="mb-2">
+					Special Skills
+				</label>
+				<p>@item["AdditionalSkills"].ToString().Trim()</p>
+			</div>
+			<div class="col-sm-12 form-group">
+				<label class="mb-2">References</label>
+				@if (Model.Tables[2] != null)
+				{
+					if (Model.Tables[2].Rows.Count > 0)
+					{
+						<table id="tblRef" class="table table-stripted mt-0 mb-2">
+							<thead>
+								<tr>
+									<th class="w-50">SNo.</th>
+									<th>Name</th>
+									<th>Email ID	</th>
+									<th class="tw-100">Relationship</th>
+									<th class="tw-100">Phone Number	</th>
+								</tr>
+							</thead>
+							<tbody>
+								@foreach (DataRow A in Model.Tables[2].Rows)
+								{
+									<tr>
+										<td>@A["RowNum"]</td>
+										<td>@A["Name"]</td>
+										<td>@A["EmailID"]</td>
+										<td>@A["Relationship"]</td>
+										<td>@A["Phone"]</td>
+									</tr>
+								}
+							</tbody>
+						</table>
+					}
+				}
+			</div>
+
+		</div>
+
+		<h2 class="header-two"><i class="far fa-file-alt"></i>Other Informations</h2>
+		<div class="row">
+			<div class="col-sm-12 form-group">
+				<ul class="list-unstyled ot-list qlist ">
+					@if (Model.Tables[3] != null)
+					{
+						if (Model.Tables[3].Rows.Count > 0)
+						{
+							foreach (DataRow A in Model.Tables[3].Rows)
+							{
+								<li>
+									<span class="qcnt">@(A["RowNum"] + " .")</span>
+									<div class="row">
+										<div class="col-lg-10 align-self-center">
+											<strong>@A["Questions"]</strong>
+										</div>
+										<div class="col-lg-2 text-right">
+											<strong class="badge badge-secondary @A["Answer"]">@A["Answer"]</strong>
+										</div>
+									</div>
+
+									@if (A["Answer"].ToString() == "Yes")
+									{
+
+										<div class="myContent" id="divQuest_1" style="@(A["RowNum"].ToString() == "1" ? "" : "display:none")">
+											<div class="row mt-2">
+												@if (!string.IsNullOrEmpty(A["Name"].ToString()))
+												{
+													<div class="col-lg-4 form-group ">
+														<label>Name</label>
+														<p>@A["Name"]</p>
+
+													</div>
+												}
+												@if (!string.IsNullOrEmpty(A["Relationship"].ToString()))
+												{
+													<div class="col-lg-4 mb-0 form-group">
+														<label>Relation</label>
+														<p>@A["Relationship"]</p>
+													</div>
+												}
+												@if (!string.IsNullOrEmpty(A["Location"].ToString()))
+												{
+													<div class="col-lg-4 mb-0 form-group">
+														<label>Location</label>
+														<p>@A["Location"]</p>
+													</div>
+												}
+											</div>
+										</div>
+
+										if (!string.IsNullOrEmpty(A["NoticePeriod"].ToString()))
+										{
+											<div class="myContent" id="divQuest_3" style="@(A["RowNum"].ToString() == "3" ? "" : "display:none")">
+												<div class="row">
+													<div class="col-lg-6 form-group mb-0">
+														<label>Notice Period</label>
+														<div class="input-group w-150">
+                                                            <p>@A["NoticePeriod"]</p>
+															<div class="input-group-prepend">
+																<span class="input-group-text" id="basic-addon1">Days</span>
+															</div>
+
+														</div>
+													</div>
+												</div>
+											</div>
+										}
+										<div class="myContent" id="divQuest_4" style="@(A["RowNum"].ToString() == "4" ? "" : "display:none")">
+											<div class="row mt-2">
+												@if (!string.IsNullOrEmpty(A["Position"].ToString()))
+												{
+													<div class="col-lg-4 form-group ">
+														<label>Position</label>
+														<p>@A["Position"]</p>
+													</div>
+												}
+												@if (!string.IsNullOrEmpty(A["Period"].ToString()))
+												{
+													<div class="col-lg-4  form-group">
+														<label>Period</label>
+														<p>@A["Period"]</p>
+													</div>
+												}
+												@if (!string.IsNullOrEmpty(A["Location"].ToString()))
+												{
+													<div class="col-lg-4 form-group mb-0">
+														<label>Location</label>
+														<p>@A["Location"]</p>
+													</div>
+												}
+												@if (!string.IsNullOrEmpty(A["AppliedDate"].ToString()))
+												{
+													<div class="col-lg-4 mb-0 form-group">
+														<label>When Applied</label>
+														<p>@A["AppliedDate"]</p>
+													</div>
+												}
+												@if (!string.IsNullOrEmpty(A["ReasonL"].ToString()))
+												{
+													<div class="col-lg-8 form-group">
+														<label>Reason for Leaving</label>
+														<p>@A["ReasonL"]</p>
+													</div>
+												}
+											</div>
+										</div>
+
+										<div class="myContent" id="divQuest_5" style="@(A["RowNum"].ToString() == "5" ? "" : "display:none")">
+											<div class="row mt-2">
+												
+
+												@if (!string.IsNullOrEmpty(A["Position"].ToString()))
+												{
+													<div class="col-lg-6 form-group">
+														<label>Name of the Position</label>
+														<p>@A["Position"]</p>
+													</div>
+												}
+												@if (!string.IsNullOrEmpty(A["AppliedDate"].ToString()))
+												{
+													<div class="col-lg-6 mb-0 form-group">
+														<label>When Applied</label>
+														<p>@A["AppliedDate"]</p>
+													</div>
+												}
+												@if (!string.IsNullOrEmpty(A["outcome"].ToString()))
+												{
+													<div class="col-lg-12 form-group">
+														<label>What was the outcome</label>
+														<p>@A["outcome"]</p>
+													</div>
+												}
+											</div>
+										</div>
+
+										if (!string.IsNullOrEmpty(A["Specify"].ToString()))
+										{
+											<div class="myContent" id="divQuest_6" style="@(A["RowNum"].ToString() == "6" ? "" : "display:none")">
+												<div class="row mt-2">
+													<div class="col-lg-12 form-group ">
+														<label>Specify</label>
+														<p>@A["Specify"]</p>
+													</div>
+												</div>
+											</div>
+										}
+									}
+								</li>
+							}
+						}
+					}
+				</ul>
+
+				<div class="form-group">
+					<label>Attach CV </label>
+					<p><a target="_blank" href="@item["AttachmentPath"]">Download CV</a></p>
+				</div>
+
+
+			</div>
+
+		</div>
+	}
+}
+

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generator: Adobe Illustrator 16.0.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+	 width="100px" height="100px" viewBox="0 0 100 100" enable-background="new 0 0 100 100" xml:space="preserve">
+<g>
+	<path fill="#1E1D1D" d="M78.878,3.271h-33.06L14.024,26.99v57.157c0,6.499,3.227,11.771,7.207,11.771h57.646
+		c3.979,0,7.205-5.271,7.205-11.771V15.043C86.083,8.542,82.857,3.271,78.878,3.271z"/>
+	<text transform="matrix(1 0 0 1 20.7212 76.5605)" fill="#FFFAFC" font-family="'MyriadPro-Regular'" font-size="33.212">₹</text>
+	<path fill="#BFBFBF" d="M14.024,26.47c0,0,25.527,4.98,33.359,4.868c7.833-0.112,10.63-1.53,11.525-9.287
+		c0.895-7.757-13.091-18.779-13.091-18.779L14.024,26.47z"/>
+	<g>
+		<g>
+			<rect x="43.3" y="54.721" fill="#FFFFFF" width="5.147" height="5.147"/>
+			<rect x="53.371" y="54.721" fill="#FFFFFF" width="27.302" height="5.147"/>
+		</g>
+		<g>
+			<rect x="43.3" y="64.119" fill="#FFFFFF" width="5.147" height="5.148"/>
+			<rect x="53.371" y="64.119" fill="#FFFFFF" width="27.302" height="5.148"/>
+		</g>
+		<g>
+			<rect x="43.3" y="73.758" fill="#FFFFFF" width="5.147" height="5.147"/>
+			<rect x="53.371" y="73.758" fill="#FFFFFF" width="27.302" height="5.147"/>
+		</g>
+	</g>
+</g>
+</svg>

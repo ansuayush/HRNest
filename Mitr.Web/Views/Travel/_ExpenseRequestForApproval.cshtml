@@ -1,0 +1,121 @@
+﻿@model IList<Mitr.Models.MyTravelRequest>
+
+<div class="shadow-box">
+    <h2 class="heading-grd heading-btn  blk-gdn-btn m-0">Expense Approval Request</h2>
+
+    <!-- tab--->
+    <div class="tab-main">
+        <ul id="tabs" class="nav nav-tabs " role="tablist">
+            <li class="nav-item"> <a id="tab-c1" href="#opEAR" class="nav-link active ripplelink" data-toggle="tab" role="tab"><i class="fas fa-envelope-open"></i>Open Requests</a> </li>
+            <li class="nav-item"> <a id="tab-d1" href="#ldEAR" class="nav-link ripplelink" data-toggle="tab" role="tab"><i class="fas fa-database"></i>Legacy Data</a> </li>
+        </ul>
+        <div id="content" class="tab-content p-0" role="tablist">
+            <!-- --->
+            <div id="opEAR" class="card tab-pane fade show active" role="tabpanel" aria-labelledby="tab-c1">
+                <div class="card-header" role="tab" id="heading-c">
+                    <h5 class="mb-0"> <a data-toggle="collapse" href="#collapse-c" aria-expanded="true" aria-controls="collapse-c">Open Request <i class="fas fa-envelope-open"></i></a> </h5>
+                </div>
+                <div id="collapse-c" class="collapse show" data-parent="#content" role="tabpanel" aria-labelledby="heading-c">
+
+
+                    <ul class="list-unstyled rqt-list fvclmls scroll tvtrhgt">
+                        @{ int copunt = 0;}
+                        @if (Model != null)
+						{
+							foreach (var item in Model.Where(x => x.Approved == 0 && x.TerApproved==0 && x.Status!= "Fill TER").OrderByDescending(x=>x.ReqNo).ToList())
+							{
+								copunt++;
+                            <li>
+                                <div class="row d-flex">
+                                    <div class="col-sm-4 align-self-center">
+                                        <div class="left-dtl-r">
+											<input type="hidden" name="TRI" value="@item.ID" />
+											@*<small class="lgt-text">C3-070</small><br />*@
+											<strong>@item.TravellerName</strong><br />
+											<small class="lgt-text">Req#@item.ReqNo<span>|</span>@item.RequestDate</small>
+										</div>
+									</div>
+									<div class="col-sm-5 align-self-end">
+										<div class="cntr-dtl-r">
+											<!---- <strong>@item.PurposeOfVisit</strong> <br>---->
+											<strong>@Html.Raw(@item.TravelDetails)</strong>
+											<!----<strong class="dis-tbl">@item.TravelType </strong>---->
+
+										</div>
+										<div class="cntr-dtl-pst">
+											
+												<strong class="green-clr">@item.Status </strong>
+											
+										</div>
+									</div>
+                                    <div class="col-sm-3 align-self-center mb-flwdt">
+                                        <div class="right-dtl-r pt-0"> <!-- <a class="btn-g viewTravelDocument"><i class="fas fa-book"></i></a>-->
+                                    <a class="btn-g @( ViewBag.Type==0?"viewRequest":"viewRequestExpense")" data-toggle="tooltip" data-original-title="View"><i class="fas fa-ellipsis-h"></i></a></div>
+                                    </div>
+                                </div>
+                            </li>
+                        }
+                        }
+                    </ul>
+
+                </div>
+            </div>
+
+            <!-- --->
+            <!-- --->
+            <div id="ldEAR" class="card tab-pane fade" role="tabpanel" aria-labelledby="tab-d">
+                <div class="card-header" role="tab" id="heading-d">
+                    <h5 class="mb-0"> <a class="collapsed" data-toggle="collapse" href="#collapse-d" aria-expanded="false" aria-controls="collapse-d">Legacy Data <i class="fas fa-database"></i></a> </h5>
+                </div>
+                <div id="collapse-d" class="collapse" data-parent="#content" role="tabpanel" aria-labelledby="heading-d">
+
+                    <ul class="list-unstyled rqt-list fvclmls scroll tvtrhgt">
+                        @{ int copunst = 0;}
+                        @if (Model != null)
+                        {
+                            foreach (var item in Model.Where(x => x.Approved >0 && x.ExpectApproved>0).OrderByDescending(x=>x.ReqNo).ToList())
+                            {
+                                copunst++;
+                                <li >
+                                    <div class="row d-flex">
+                                        <div class="col-sm-4 align-self-center">                                            
+                                            <div class="left-dtl-r"> 
+												<input type="hidden" name="TRI" value="@item.ID" />
+												@*<small class="lgt-text">C3-070</small><br />*@
+												<strong>@item.TravellerName</strong><br />
+												<small class="lgt-text">Req#@item.ReqNo<span>|</span>@item.RequestDate</small>
+											</div>
+										</div>
+                                        <div class="col-sm-5 align-self-end">
+                                            <div class="cntr-dtl-r w-177">
+                                                <!----<strong>@item.PurposeOfVisit</strong> <br>---->
+                                                <strong>@Html.Raw(@item.TravelDetails)</strong>
+												<!----<strong class="dis-tbl">@item.TravelType</strong>---->
+                                                
+                                            </div>
+											
+											@*<div class="cntr-dtl-pst">
+
+													<strong class="green-clr">@item.Status </strong>
+											</div>*@
+                                        </div>
+                                        <div class="col-sm-3 align-self-center mb-flwdt">
+                                            <div class="right-dtl-r pt-0"><!--<a class="btn-g viewTravelDocument"><i class="fas fa-book"></i></a>-->
+											<a class="btn-g @( ViewBag.Type==0?"viewRequest":"viewRequestExpense")"><i class="fas fa-ellipsis-h"></i></a></div>
+                                        </div>
+                                    </div>
+                                </li>
+                            }
+                        }
+                        </ul>
+
+
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+</div>

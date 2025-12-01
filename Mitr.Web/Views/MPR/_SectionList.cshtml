@@ -1,0 +1,167 @@
+﻿
+@model IList<MPR.Section.SecList>
+@{
+    var Modify = clsApplicationSetting.GetSessionValue("Modify");
+}
+<div class="control-section">
+    @Html.EJS().Grid("Grid").DataSource((List<MPR.Section.SecList>)Model).GridLines(Syncfusion.EJ2.Grids.GridLine.Both).Columns(col =>
+{
+    col.Field("MPRSID").Visible(false).Add();
+    col.Field("IsActive").Visible(false).Add();
+    col.Field("Priority").Visible(false).Add();
+    col.Field("RowNum").HeaderText("SNo.").Width("30").Add();
+    col.HeaderText("Action").TextAlign(Syncfusion.EJ2.Grids.TextAlign.Center).Template("#tmpAction").Width("40").Add();
+    col.HeaderText("Priority").TextAlign(Syncfusion.EJ2.Grids.TextAlign.Center).Template("#tmpPriority").Width("40").Add();
+
+    col.Field("SecName").HeaderText("Name").Width("80").Add();
+    col.Field("SecDesc").HeaderText("Desc").Width("80").Add();
+
+}).AllowPaging().PageSettings(page => page.PageSize(10)).Created("created").AllowSorting(true).Toolbar(new List<string>() { "Search" }).Render()
+
+</div>
+
+
+<script id="tmpPriority" type="text/x-template">
+    ${if('@Modify' === 'True')}
+    @*<input type="number" onfocus="if(this.value == '0'){ this.value=''}" onblur="if(this.value==''){this.value='0'} else{BindPriority(this);}"  list="mprsec" value="${Priority}" />*@
+    <input type="number" onblur="BindPriority(this)" list="mprsec" value="${Priority}" />
+    ${else}
+    ${Priority}
+    ${/if}
+</script>
+
+
+<script id="tmpAction" type="text/x-template">
+    ${if('@Modify' === 'True')}
+    <input type="hidden" name="I" value="${MPRSID}" />
+    <input type="hidden" name="N" value="${SecName}" />
+
+    <a onclick="BindEdit(this)"><i class="fas fa-edit checkgreen" aria-hidden="true"></i> </a>
+
+    ${if(IsActive)}
+    <a title='Click to DeActivate' onclick="BindIsActive(this)" list='mprsec' OP='0' class='AIsActive'> <i class='fa fa-check-circle checkgreen' aria-hidden='true'></i></a>
+    ${else}
+    <a title='Click to Activate' onclick="BindIsActive(this)" list='mprsec' OP='1' class='AIsActive'> <i class='fa fa-times-circle crossred' aria-hidden='true'></i></a>
+    ${/if}
+    ${/if}
+</script>
+<script>
+    function created() {
+        var grid = document.getElementById("Grid").ej2_instances[0];
+        document.getElementById(grid.element.id + "_searchbar").addEventListener('keyup', () => {
+            grid.search(event.target.value)
+        });
+    }
+ 
+</script>
+
+@*<script>
+
+
+        function BindEdit(obj) {
+            var I = $(obj).closest("tr").find("input:hidden[name=I]").val();
+            ListAdd(I);
+        }
+
+        function BindIsActive(obj) {
+            var I = $(obj).closest("tr").find("input:hidden[name=I]").val();
+            var N = $(obj).closest("tr").find("input:hidden[name=N]").val();
+            var Val = $(obj).attr('OP');
+            var list = $(obj).attr('list');
+            var Msg = '';
+            if (Val == 1) {
+                var Msg = 'Are you sure want to Activate ' + N;
+            }
+            if (Val == 0) {
+                var Msg = 'Are you sure want to Deactivate ' + N;
+            }
+            ConfirmMsgBox(Msg, '', function () {
+                $.ajax({
+                    url: "/CommonAjax/ActiveDeactiveJson",
+                    type: "Get",
+                    async: true,
+                    data: { Type: list, ID: I, Value: Val, ColomanName: "IsActive" },
+                    success: function (args) {
+                        var arr = args.split('::');
+                        if (arr[0] != '-1') {
+                            if (parseInt(arr[1]) == 0) {
+                                $(obj).find('i').attr("class", "fa fa-times-circle crossred");
+                                $(obj).attr("OP", "1");
+                                $(obj).attr("data-original-title", "Click to Activate");
+                                $(obj).addClass("trrowred");
+                            }
+                            else {
+                                $(obj).find('i').attr("class", "fa fa-check-circle checkgreen");
+                                $(obj).attr("OP", "0");
+                                $(obj).attr("data-original-title", "Click to DeActivate");
+                                $(obj).removeClass("trrowred");
+                            }
+                        }
+                    },
+                    error: function (er) {
+                        console.log(er);
+                    }
+                });
+            })
+
+        }
+
+
+        function BindPriority(obj) {
+            var I = $(obj).closest("tr").find("input:hidden[name=I]").val();
+            var list = $(obj).attr('list');
+            var Val = Number($(obj).val());
+            $.ajax({
+                url: "/CommonAjax/UpdateColomnJSon",
+                type: "Post",
+                async: true,
+                data: { ID: I, Value: Val, Type: list },
+                success: function (data) {
+                    if (data.Status) {
+                        $(obj).css('border', '2px solid Green');
+                        SuccessToaster(data.SuccessMessage);
+                    }
+                    else {
+
+                        $(obj).css('border', '2px solid red');
+                        FailToaster(data.SuccessMessage);
+                    }
+
+                },
+                error: function (er) {
+                    console.log(er);
+                }
+            });
+        }
+
+        //$(function () {
+        //    $(".AEdit").click(function (e) {
+        //        alert("d")
+        //    });
+        //});
+
+
+        //var grid = document.getElementById("Grid");
+        //grid.addEventListener("click", getInfo);
+
+        //function getInfo(args) {
+        //    if (args.target.classList.contains("e-rowcell")) {
+        //        let rowInfo = this.ej2_instances[0].getRowInfo(args.target);
+        //        var I = rowInfo.rowData["MPRSID"];
+        //        var N = rowInfo.rowData["SecName"];
+        //        // console.log(this.ej2_instances[0].getRowInfo(args.target));
+        //        $(".AEdit").on('click', function (e) {
+        //            e.preventDefault();
+        //            e.stopPropagation();
+        //            ListAdd(I)
+        //        });
+        //    }
+        //}
+
+
+
+    </script>*@
+
+
+@(Html.EJS().ScriptManager())
+

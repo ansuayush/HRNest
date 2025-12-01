@@ -1,0 +1,63 @@
+﻿@model IList<Mitr.Model.ModuleInfo.HelpCardModel>
+@{
+    ViewBag.Title = "HelpCart";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="inner-main p-3 defult-height">
+    <div class="row mb-3">
+        <div class="col-sm-3 align-self-center">
+            <h1 class="heading-one mb-0">Help Dashboard</h1>
+        </div>
+        <div class="col-sm-6">
+            <div class="d-flex ">
+                <div class="input-group search-box">
+                    <input type="text" id="searchInput" class="form-control" placeholder="Search">
+                    <div class="input-group-append">
+                        <button class="searchicon" type="button">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-2 align-self-center text-right">
+        </div>
+    </div>
+    
+    <div class="row" id="cardsContainer">
+        @foreach (var item in Model)
+        {
+            <div class="col-md-6 col-lg-3 card-container">
+                <div class="card learndgnone">
+                    <p class="title ellipsis-td">@item.ModuleName</p>
+                    <div class="d-flex">
+                        <span class="tpdgn align-self-center">@item.TopicCount Topics</span>
+                        <span class="cardlink text-right">
+                            <a href="@Url.Action(item.ModuleName, "HelpCartTopic", new { ModuleId = item.ID })" class="btn rmlink">Read More</a>
+                        </span>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const searchInput = document.getElementById('searchInput');
+        const cards = document.querySelectorAll('.card-container');
+        searchInput.addEventListener('input', function() {
+            const searchTerm = searchInput.value.toLowerCase();
+            cards.forEach(card => {
+                const title = card.querySelector('.title').textContent.toLowerCase();
+
+                if (title.includes(searchTerm)) {
+                    card.style.display = ''; 
+                } else {
+                    card.style.display = 'none'; 
+                }
+            });
+        });
+    });
+</script>
+

@@ -1,0 +1,195 @@
+﻿@using Mitr.CommonClass
+@model Mitr.Models.Login
+@using Mitr.Models.Captcha
+@using CaptchaMvc.HtmlHelpers  
+
+@using CaptchaMvc;  
+  
+@{
+    Layout = null;
+    string PageName = ClsCommon.GetPageName();
+}
+
+<html>
+
+<head>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	@*<title>@PageName </title>*@
+<title>HRNest </title>
+	<meta name="title" content="@PageName" />
+	<meta name="keywords" content="@PageName" />
+	<meta name="description" content="@PageName" />
+
+	<link rel="icon" href="@Url.Content("~/assets/design/images/favicon.png")" type="image/png" sizes="50x50">
+	@Html.IncludeVersionedCss(Url.Content("~/assets/design/css/icons.css"))
+	@Html.IncludeVersionedCss(Url.Content("~/assets/design/css/bootstrap.min.css"))
+	@Html.IncludeVersionedCss(Url.Content("~/assets/design/css/animate.min.css"))
+	@Html.IncludeVersionedCss(Url.Content("~/assets/design/css/login.min.css"))
+	@Html.IncludeVersionedCss(Url.Content("~/assets/design/css/responsive.min.css"))
+</head>
+<body class="login-bg">
+
+
+    <div class="login-page alert-mgs wow zoomIn" data-wow-delay="0.1s" style="visibility: hidden; -webkit-animation-delay: 0.1s; -moz-animation-delay: 0.1s; animation-delay: 0.1s;">
+
+        <div class="login-logo">
+            @* @Html.CreateImage("mitr-logo-2.jpg", "Logo", "Noimage")*@
+              @Html.CreateImage("HRNestLogo.png", "Logo", "Noimage")
+                </div>
+
+                <div class="login-header ">
+                    <h2 class="mtr-o-clr">Welcome</h2>
+                    <small>Please login to access your account</small>
+                </div>
+                @using (Html.BeginForm("Login", "Account",
+        new { ReturnURL = ViewBag.ReturnURL }, FormMethod.Post,
+        new
+        {
+            name = "LoginForm",
+            id = "LoginForm",
+            @class = "login-form",
+            enctype = "multipart/form-data"
+        }))
+                {
+                    @Html.AntiForgeryToken()
+
+                    <div class="form-group">
+
+                        @Html.TextBoxFor(model => model.Username, new { @class = "form-control", @autofocus = "true", @placeholder = "Username" })
+                        @Html.ValidationMessageFor(model => model.Username, "", new { @class = "text-danger" })
+
+                    </div>
+
+                    <div class="form-group z-index-100">
+                        <div class="showimg">
+                            @Html.TextBoxFor(model => model.Password, new { @class = "form-control txtPassword", @autofocus = "true", @placeholder = "Password", @type = "password" })
+                            <a onmouseup="ShowPasswordAndHide(this);" onmousedown="ShowPasswordAndHide(this);" onmouseout="ShowPasswordAndHide(this,'hide');">
+                                <i class="fas fa-eye-slash showiocn"></i>
+                            </a>
+                        </div>
+                        @Html.ValidationMessageFor(model => model.Password, "", new { @class = "text-danger" })
+
+                    </div>
+                    <div class="dvcaptchdtl">
+                        <div class="form-label-group dvcaptchadgn" id="dvcaptcha">
+                            @*@Html.MathCaptcha()*@
+                            @Html.Captcha(4)
+                            <a herf="#" onclick="GetRefresh()" class="pull-left refbtn"><i class="fas fa-redo"></i></a>
+                            @*@Html.GoogleCaptcha()
+                        @Html.InvalidGoogleCaptchaLabel("Captcha is not valid !")*@
+                        </div>
+            </div>
+            <div class="form-label-group">
+                @if (TempData["LoginErrorMsg"] != null)
+                {
+                    if (TempData["LoginErrorMsg"].ToString() != "")
+                    {
+                        <div class="lgn-err">
+                            @TempData["LoginErrorMsg"]
+                        </div>
+                    }
+                }
+            </div>
+            <div class="login-footer">
+                
+                <a onclick="GetForgotPassword()" class="pull-left">Forgot Password?</a>
+                <button name="Command" value="Login" class="btn mtr-o-grn float-right" style="background: cornflowerblue;" type="submit">Sign in</button>
+
+            </div>
+
+
+        }
+    </div>
+
+
+    <div class="modal fade pop-fpdgn pop-dgn" id="ViewModal">
+        <div class="modal-dialog modal-md modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header blk-gdn-btn">
+                    <h4 class="modal-title"><i class="fas fa-key"></i> Forgot Password </h4>
+                    <div class="close" data-dismiss="modal">&times;</div>
+                </div>
+                <div class="modal-body">
+                    <div id="TagetDiv"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    @Html.IncludeVersionedJs(Url.Content("~/assets/design/js/jquery-3.4.1.min.js"))
+    @Html.IncludeVersionedJs(Url.Content("~/assets/design/js/popper.min.js"))
+    @Html.IncludeVersionedJs(Url.Content("~/assets/design/js/bootstrap.min.js"))
+    @Html.IncludeVersionedJs(Url.Content("/assets/design/js/wow.min.js"))
+    @System.Web.Optimization.Scripts.Render("~/bundle/unobtrusivejs")
+    @Html.IncludeVersionedJs(Url.Content("~/assets/design/Scripts/CustomValidate.min.js"))
+
+    @*<script src="~/assets/design/js/jquery-3.4.1.min.js?v=@clsApplicationSetting.GetWebConfigValue("Version")"></script>
+        <script src="~/assets/design/js/wow.min.js?v=@clsApplicationSetting.GetWebConfigValue("Version")"></script>
+        @System.Web.Optimization.Scripts.Render("~/bundle/unobtrusivejs")
+        <script src="~/assets/design/Scripts/CustomValidate.js?v=@clsApplicationSetting.GetWebConfigValue("Version")"></script>*@
+
+
+    <script>
+        wow = new WOW();
+        wow.init();
+
+        function preventBack() { window.history.forward(); }
+        setTimeout("preventBack()", 0);
+        window.onunload = function () { null };
+        function GetRefresh() {
+            $("#dvcaptcha").load(location.href + " #dvcaptcha");
+        }
+
+
+        function GetForgotPassword() {
+            $.ajax({
+                url: "/Account/_ForgotPassword",
+                type: "Post",
+                success: function (data) {
+                    $("#TagetDiv").empty();
+                    $("#TagetDiv").html(data);
+                    $("#ViewModal").modal("show");
+                    var form = $("form")
+                        .removeData("validator")
+                        .removeData("unobtrusiveValidation");
+                    $.validator.unobtrusive.parse(form);
+
+                },
+                error: function (er) {
+                    alert(er);
+
+                }
+            });
+        }
+
+        function OnSuccess(obj) {
+            $("#ForgotError").show();
+            $("#ForgotError").html(obj.SuccessMessage);
+
+            $("#_ForgotPasswordFrom").trigger('reset');
+        }
+
+
+        function ShowPasswordAndHide(obj, res) {
+            var x = $(obj).closest("div").find(".txtPassword");
+            if (res == undefined) {
+                if (x.prop('type') === "password") {
+                    $(x).prop("type", "text");
+                    $(obj).html("<i class='fas fa-eye showiocn'></i>");
+                } else {
+                    $(x).prop("type", "password");
+                    $(obj).html("<i class='fas fa-eye-slash showiocn'></i>");
+                }
+            } else {
+                $(x).prop("type", "password");
+                $(obj).html("<i class='fas fa-eye-slash showiocn'></i>");
+            }
+        }
+    </script>
+
+</body>
+
+
+</html>

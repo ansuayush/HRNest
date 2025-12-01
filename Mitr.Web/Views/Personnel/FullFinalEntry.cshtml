@@ -1,0 +1,605 @@
+﻿@model Mitr.Models.FNFReport
+@using System.Data;
+@{
+
+	string MenuID = ViewBag.MenuID.ToString();
+	string empname = string.Empty;
+	string Component = string.Empty;
+	long spamt = 0;
+	long LockId = 0;
+
+
+}
+@{
+	Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+
+<div class="inner-main defult-height pb-0">
+	<div class="row">
+		<div class="col-sm-5 align-self-center"><h1 class="heading-one mb-0">Full and Final Payment Entry</h1></div>
+		<div class="col-sm-7 text-right"></div>
+		@{
+			DataSet ds = Common_SPU.fnGetEmployeesFAndFData(Model.Id, 0);
+			//DataTable dt = ds.Tables[1];
+			var Employee = from myRow in ds.Tables[1].AsEnumerable()
+						   select myRow;
+			var EmployeeComponent = from myRow in ds.Tables[2].AsEnumerable()
+									select myRow;
+			var EmployeeSpecial = from myRow in ds.Tables[2].AsEnumerable()
+								  select myRow;
+			var Lock = from myRow in ds.Tables[3].AsEnumerable()
+					   select myRow;
+		}
+		@foreach (var item in Lock)
+		{
+			LockId = Convert.ToInt64(item["Processes"].ToString());
+		}
+		@foreach (var item in Employee)
+		{
+			empname = item["emp_name"].ToString();
+			<div class="col-sm-2 form-group">
+				<label>Emp Code</label>
+				<p>@item["emp_code"]</p>
+			</div>
+
+			<div class="col-sm-2 form-group">
+				<label>Employee Name</label>
+				<p>@item["emp_name"]	</p>
+				<input type="hidden" id="hdflwd" value="@item["lastworking_day"]" />
+				<input type="hidden" id="hdfEmpId" value="@item["Id"]" />
+			</div>
+		}
+		<div class="col-sm-12"></div>
+		<div class="col-sm-6">
+			<div class="table-responsive">
+				<table id="" class="table table-striped table-bordered dt-responsive nowrap tbltick new_width" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
+					<thead>
+						<tr>
+							<th width="33">S.No</th>
+							<th>Component	</th>
+							<th width="100">Amount</th>
+							<th width="120" class="text-center">Action</th>
+						</tr>
+
+					</thead>
+					<tbody>
+						@{ int count = 0;}
+						@foreach (var item in EmployeeComponent)
+						{
+							count++;
+
+							Component = item["Details"].ToString();
+
+
+
+							//Component= Component.Substring(1, Component.Length - 2);
+							<tr>
+								<td class="hdfComponentid_@count">
+									@count
+									<input type="hidden" value="@item["componentid"]" />
+									@if (Component == "Medical Reimbursement")
+									{
+										<input type="hidden" id="hdfmedcom" value="@item["amount"]" />
+										spamt = Convert.ToInt64(item["amount"]);
+									}
+
+								</td>
+								<td>@item["Details"]</td>
+								<td class="text-right hdfBalanceid_@count">
+									@if (Component == "Special Benefits")
+
+									{
+										spamt = Convert.ToInt64(item["amount"]);
+										@spamt
+										<input type="hidden" value="@spamt" />
+									}
+									else
+									{
+										@item["amount"]
+										<input type="hidden" value="@item["amount"]" />
+									}
+
+								</td>
+								<td class="text-center">
+									@if (Component == "Bonus" || Component == "Gratuity" || Component == "NP Recovery" || Component == "CL Recovery" || Component == "NP Payable")
+									{
+										if (LockId == 0)
+										{
+											<a onclick="Add(this,@Model.Id,'@empname','@item["Details"]',@count);" data-toggle="modal" data-target="#paid"><i class="fas fa-rupee-sign"></i>Enter</a>
+										}
+										else
+										{
+											<a class="btn-c isDisabled "><i class="fas fa-rupee-sign"></i>Enter</a>
+										}
+
+									}
+									else if (Component == "Special Benefits")
+									{
+										if (LockId == 0)
+										{
+											<a onclick="AddMobileOther(this,@Model.Id,'@empname','@item["Details"]',@count);" data-toggle="modal" data-target="#paid"><i class="fas fa-rupee-sign"></i>Enter</a>
+										}
+										else
+										{
+											<a class="btn-c isDisabled "><i class="fas fa-rupee-sign"></i>Enter</a>
+										}
+
+									}
+									else if (Component == "Medical Reimbursement")
+									{
+										@*<a onclick="AddMobileOther(this,@Model.Id,'@empname','@item["Details"]',@count);" data-toggle="modal" data-target="#paid"><i class="fas fa-rupee-sign"></i>Enter</a>*@
+									}
+									else
+									{
+										if (LockId == 0)
+										{
+											<a onclick="AddOther(this,@Model.Id,'@empname','@item["Details"]',@count);" data-toggle="modal" data-target="#paid"><i class="fas fa-rupee-sign"></i>Enter</a>
+										}
+										else
+										{
+											<a class="btn-c isDisabled "><i class="fas fa-rupee-sign"></i>Enter</a>
+										}
+
+									}
+
+								</td>
+							</tr>
+						}
+
+						@*<tr>
+						<td>2</td>
+						<td>Gratuity</td>
+						<td class="text-right">15000</td>
+						<td class="text-center"><a href="" class="btn mtr-g-grn m-0"><i class="fas fa-rupee-sign"></i> Payment</a></td>
+					</tr>
+					<tr>
+						<td>3</td>
+						<td>Special Allowance</td>
+						<td class="text-right">25000</td>
+						<td class="text-center"><a href="" data-toggle="modal" data-target="#paid" class="btn mtr-g-grn m-0"><i class="fas fa-rupee-sign"></i> Payment</a></td>
+					</tr>
+					<tr>
+						<td>4</td>
+						<td>AL Payable</td>
+						<td class="text-right">5000</td>
+						<td class="text-center"><a href="" data-toggle="modal" data-target="#add" class="btn mtr-g-grn m-0"><i class="fas fa-rupee-sign"></i> Payment</a></td>
+					</tr>
+					<tr>
+						<td>5</td>
+						<td>NP Payable</td>
+						<td class="text-right">5000</td>
+						<td class="text-center"><a href="" data-toggle="modal" data-target="#add" class="btn mtr-g-grn m-0"><i class="fas fa-rupee-sign"></i> Payment</a></td>
+					</tr>
+					<tr>
+						<td>6</td>
+						<td>AL Recovery</td>
+						<td class="text-right">10000</td>
+						<td class="text-center"><a href="" data-toggle="modal" data-target="#add" class="btn mtr-g-grn m-0"><i class="fas fa-rupee-sign"></i> Payment</a></td>
+					</tr>
+					<tr>
+						<td>7</td>
+						<td>CL Recovery</td>
+						<td class="text-right">12000</td>
+						<td class="text-center"><a href="" data-toggle="modal" data-target="#add" class="btn mtr-g-grn m-0"><i class="fas fa-rupee-sign"></i> Payment</a></td>
+					</tr>
+					<tr>
+						<td>8</td>
+						<td>NP Recovery</td>
+						<td class="text-right">13000</td>
+						<td class="text-center"><a href="" data-toggle="modal" data-target="#add" class="btn mtr-g-grn m-0"><i class="fas fa-rupee-sign"></i> Payment</a></td>
+					</tr>*@
+
+					</tbody>
+				</table>
+			</div>
+			@if (LockId == 0)
+			{
+				<input type="checkbox" id="tbp" value="1"><label for="tbp" class="selectall"> Locked</label>
+			}
+			else
+			{
+				<input type="checkbox" disabled id="tbp" checked value="1"><label for="tbp" class="selectall"> Locked</label>
+			}
+			<div class="mt-4 text-center">
+				<a href="@Url.Action("FullFinalReport", new { src = clsApplicationSetting.EncryptQueryString(ViewBag.MenuID+"*"+"/Personnel/FullFinalReport*") })"  onclick="ShowLoadingDialog();" class="btn cnl-btn ripplelink btnNext"><i class="fas fa-times"></i>Close</a>
+			</div>
+
+		</div>
+	</div>
+
+</div>
+
+
+
+
+<div class="LoginUserList">
+	<ul></ul>
+</div>
+<div class="modal fade pop-dgn" id="paid">
+	<div class="modal-dialog modal-md">
+		<div class="modal-content">
+
+			<div id="TagetDivView">
+
+			</div>
+		</div>
+	</div>
+</div>
+<!--<div class="modal fade pop-dgn" id="add">
+	<div class="modal-dialog modal-md">
+		<div class="modal-content">
+
+			<div class="modal-header blk-gdn-btn">
+				<h4 class="modal-title"><i class="fa fa-plus"></i>Head Name </h4>
+				<div class="close" data-dismiss="modal">&times;</div>
+			</div>-->
+<!-- Modal body -->
+<!--<div class="modal-body">
+				<div class="row">
+					<div class="col-sm-6 form-group">
+						<label>Month</label>
+						<input type="month" placeholder="0" value="" class="form-control">
+
+					</div>
+					<div class="col-sm-6 form-group">
+						<label>Amount</label>
+						<input type="number" placeholder="0" value="" class="form-control text-right">
+					</div>
+
+
+					<div class="col-sm-12 text-center">
+
+						<button type="submit" class="btn mtr-o-grn btn-l ripplelink pull-right" data-toggle="modal" data-target="#ss" data-dismiss="modal" name="Command" value="Add"><i class="fas fa-save"></i>Save</button>
+						<button type="button" class="btn cnl-btn ripplelink" data-dismiss="modal"><i class="fas fa-times"></i>Close</button>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>-->
+@section scripts    {
+	@System.Web.Optimization.Scripts.Render("~/bundle/dataTablesjs")
+	@System.Web.Optimization.Scripts.Render("~/bundle/unobtrusivejs")
+	@Html.IncludeVersionedJs(Url.Content("~/assets/design/Scripts/AddInit.js"))
+	@Html.IncludeVersionedJs(Url.Content("~/assets/design/Scripts/ToolTip.js"))
+	@Html.IncludeVersionedJs(Url.Content("~/assets/design/scripts/CustomValidate.js"))
+
+
+	<script>
+		   $(function () {
+        $("#tbp").click(function () {
+	
+            if ($(this).is(":checked")) {
+		         var EMPId=$("#hdfEmpId").val();
+            	ConfirmMsgBox("Are you sure to Locked this Request.", '', function () {
+						LockedRequest(EMPId, 1);
+
+					});
+
+
+
+            } else {
+
+            }
+        });
+    });
+
+			function LockedRequest(EMPId, Lock) {
+
+			$.ajax({
+				url: "/CommonAjax/LockedRequestJson",
+				type: "Get",
+				async: true,
+				data: { EMPId: EMPId, Lock: Lock},
+				success: function (data) {
+					if (data == 1) {
+						SuccessToaster('Employee Locked successfully');
+						window.location.reload();
+					}
+					else {
+						FailToaster('Can not Locked.')
+					}
+				},
+				error: function (er) {
+					alert(er);
+				}
+			});
+		}
+		  function CalculateSum(obj) {
+        
+          var Balance = $("#hdfDueAmount").val();
+            txtval1 = $("#ProjectPaaymentAmountList_0__PaidAmount").val();
+            var sum = 0;
+            $(".txtval0").each(function () {
+                if (!isNaN(this.value) && this.value.length != 0) {
+                    sum += parseFloat(this.value);
+                }
+            });
+
+            //alert(sum.toFixed(2));
+            if (parseFloat(sum.toFixed(2)) > parseFloat(Balance)) {
+                alert('Paid Amount can not be greater than Due amount.')
+                $(obj).closest("tr").find(".txtval0").val(0);
+            }
+        }
+
+
+		function Add(obj, ID, Name, Component, Count) {
+			debugger;
+
+	ShowLoadingDialog();
+	if (ID == undefined) {
+	ID = 0;
+	}
+	var PaidDate = $("#PaidDate").val();
+	var Balance = parseInt($(obj).closest('tr').find("td.hdfBalanceid_" + Count + " input[type='hidden']").val());
+	var ComponentId = parseInt($(obj).closest('tr').find("td.hdfComponentid_" + Count + " input[type='hidden']").val());
+	$.ajax({
+	url: "/Personnel/_BonusPaymentDetails",
+	type: "Get",
+	data: { src: EncryptQueryStringJSON(@ViewBag.MenuID+"*" + "/Personnel/_BonusPaymentDetails" + "*" + ID + "*" + Name + "*" + Component + "*" + PaidDate+"*"+ComponentId)},
+	success: function (data)
+	{
+
+	$("#TagetDivView").empty();
+	$("#TagetDivView").html(data);
+	$("#hdfDueAmount").val(Balance);
+	$("#ProjectPaaymentAmountList_0__PaidAmount").val(Balance);
+	$("#paid").modal("show");
+	var form = $("form")
+	.removeData("validator")
+	.removeData("unobtrusiveValidation");
+	$.validator.unobtrusive.parse(form);
+	$("#ProjectID").select2();
+	  CloseLoadingDialog();
+
+
+	},
+	error: function (er) {
+
+	alert(er);
+	 CloseLoadingDialog();
+
+	}
+	});
+
+
+
+	}
+
+		function AddNewRow() {
+
+            var LastTRCount = parseInt($('#tblBonusPaymentEntry').find("tbody tr").length) - 1;
+            var $tableBody = $('#tblBonusPaymentEntry').find("tbody"),
+                $trLast = $tableBody.find("tr:last"),
+                $trNew = $trLast.clone();
+            $trNew.find("td:last").html('<a onclick="DeleteRow(this)" class="remove"><i class="fas fa-window-close red-clr" aria-hidden="true"></i></a>')
+            $trNew.find("label").each(function () {
+                $(this).attr({
+                    'id': function (_, id) { var arr = id.split('_'); return id.replace(arr[1], LastTRCount + 1); },
+                });
+                $(this).html(parseInt($('#tblBonusPaymentEntry').find("tbody tr").length) + 1)
+            });
+
+            $trNew.find("select").each(function (i) {
+                $(this).attr({
+                    'id': function (_, name) { return name.replace('_' + LastTRCount + '_', '_' + (parseInt(LastTRCount) + 1) + '_'); },
+                    'name': function (_, name) { return name.replace('[' + LastTRCount + ']', '[' + (parseInt(LastTRCount) + 1) + ']'); },
+                });
+
+            });
+            $trNew.find("input").each(function (i) {
+                $(this).attr({
+                    'id': function (_, name) { return name.replace('_' + LastTRCount + '_', '_' + (parseInt(LastTRCount) + 1) + '_'); },
+                    'name': function (_, name) { return name.replace('[' + LastTRCount + ']', '[' + (parseInt(LastTRCount) + 1) + ']'); },
+                });
+                $(this).val('')
+            });
+            $trNew.find("textarea").each(function (i) {
+                $(this).attr({
+                    'id': function (_, name) { return name.replace('_' + LastTRCount + '_', '_' + (parseInt(LastTRCount) + 1) + '_'); },
+                    'name': function (_, name) { return name.replace('[' + LastTRCount + ']', '[' + (parseInt(LastTRCount) + 1) + ']'); },
+                });
+                $(this).val('')
+            });
+
+            $trNew.find("span").each(function (i) {
+                if ($(this).attr("data-valmsg-for")) {
+                    $(this).attr({
+                        'data-valmsg-for': function (_, name) { return name.replace('[' + LastTRCount + ']', '[' + (parseInt(LastTRCount) + 1) + ']'); }
+                    });
+                }
+                if ($(this).attr("for")) {
+                    $(this).attr({
+                        'for': function (_, name) { return name.replace('_' + LastTRCount + '_', '_' + (parseInt(LastTRCount) + 1) + '_'); }
+                    });
+                }
+            });
+            $trLast.after($trNew);
+            clearlist(parseInt(LastTRCount) + 1);
+            var form = $("form");
+            form.removeData('validator');
+            form.removeData('unobtrusiveValidation');
+            $.validator.unobtrusive.parse(form);
+            $('[data-toggle="tooltip"]').tooltip();
+
+
+        }
+
+
+			function AddOther(obj, ID, Name, Component, Count) {
+
+	ShowLoadingDialog();
+	if (ID == undefined) {
+	ID = 0;
+	}
+
+	var Balance = parseInt($(obj).closest('tr').find("td.hdfBalanceid_" + Count + " input[type='hidden']").val());
+	var ComponentId = parseInt($(obj).closest('tr').find("td.hdfComponentid_" + Count + " input[type='hidden']").val());
+	$.ajax({
+	url: "/Personnel/_BonusPaymentDetailsOther",
+	type: "Get",
+	data: { src: EncryptQueryStringJSON(@ViewBag.MenuID+"*" + "/Personnel/_BonusPaymentDetailsOther" + "*" + ID + "*" + Name + "*" + Component + "*" + Balance+"*"+ComponentId)},
+	success: function (data)
+	{
+
+	$("#TagetDivView").empty();
+	$("#TagetDivView").html(data);
+	$("#hdfDueAmount").val(Balance);
+	$("#ProjectPaaymentAmountList_0__PaidAmount").val(Balance);
+	$("#paid").modal("show");
+	var form = $("form")
+	.removeData("validator")
+	.removeData("unobtrusiveValidation");
+	$.validator.unobtrusive.parse(form);
+	 CloseLoadingDialog();
+
+
+	},
+	error: function (er) {
+
+	alert(er);
+	 CloseLoadingDialog();
+
+	}
+	});
+
+
+
+	}
+
+		  function OnSuccess(obj) {
+
+            if (obj.Status) {
+                SuccessToaster(obj.SuccessMessage);
+                //$("#PaidModal").modal("hide");
+               window.location.reload();
+
+            }
+            else {
+                CloseLoadingDialog();
+                FailToaster(obj.SuccessMessage);
+            }
+        }
+
+
+		function DeleteRow(obj) {
+        var count = 0;
+        var ID = parseInt($(obj).closest('tr').find("td.hdftableid input[type='hidden']").val());
+        var TotalRowCount = $('#tblBonusPaymentEntry').find("tbody tr").length;
+        var srno = TotalRowCount;
+        if (isNaN(ID)) {
+            ConfirmMsgBox("Are you sure want to delete this row", '', function () {
+                $(obj).closest('tr').remove();
+                $("#tblBonusPaymentEntry TBODY TR").each(function (i) {
+                    srno = srno - 1;
+                    $(this).closest("tr").find("label").each(function () {
+                        $(this).attr({
+                            'id': function (_, id) { var arr = id.split('_'); return id.replace(arr[1], i); },
+                        });
+                        $(this).html(i + 1)
+                    });
+
+                    $(this).closest("tr").find("input").each(function () {
+                        $(this).attr({
+                            'id': function (_, id) { return id.replace('_' + (parseInt(i) + 1) + '_', '_' + i + '_'); },
+                            'name': function (_, name) { return name.replace('[' + (parseInt(i) + 1) + ']', '[' + i + ']'); },
+                        });
+                    });
+                    $(this).closest("tr").find("select").each(function () {
+                        $(this).attr({
+                            'id': function (_, id) { return id.replace('_' + (parseInt(i) + 1) + '_', '_' + i + '_'); },
+                            'name': function (_, name) { return name.replace('[' + (parseInt(i) + 1) + ']', '[' + i + ']'); },
+                        });
+                    });
+                    $(this).closest("tr").find("label").each(function () {
+                        if ($(this).attr("data-valmsg-for")) {
+                            $(this).attr({
+                                'data-valmsg-for': function (_, name) { return name.replace('[' + (parseInt(i) + 1) + ']', '[' + i + ']'); },
+                            });
+                        }
+                        if ($(this).attr("for")) {
+                            $(this).attr({
+                                'for': function (_, id) { return id.replace('_' + (parseInt(i) + 1) + '_', '_' + i + '_'); },
+                            });
+                        }
+                    });
+                });
+
+            })
+
+        }
+
+
+    }
+
+			function AddMobileOther(obj, ID, Name, Component, Count) {
+
+	ShowLoadingDialog();
+	if (ID == undefined) {
+	ID = 0;
+	}
+
+        var Balance = parseInt($(obj).closest('tr').find("td.hdfBalanceid_" + Count + " input[type='hidden']").val());
+		//var Balance=$("#hdfmedcom").val();
+	var ComponentId = parseInt($(obj).closest('tr').find("td.hdfComponentid_" + Count + " input[type='hidden']").val());
+	$.ajax({
+	url: "/Personnel/_BonusPaymentMedicalDetails",
+	type: "Get",
+	data: { src: EncryptQueryStringJSON(@ViewBag.MenuID+"*" + "/Personnel/_BonusPaymentMedicalDetails" + "*" + ID + "*" + Name + "*" + Component + "*" + Balance+"*"+ComponentId)},
+	success: function (data)
+	{
+
+	$("#TagetDivView").empty();
+	$("#TagetDivView").html(data);
+	$("#hdfDueAmount").val(Balance);
+	$("#ProjectPaaymentAmountList_0__PaidAmount").val(Balance);
+	$("#paid").modal("show");
+	var form = $("form")
+	.removeData("validator")
+	.removeData("unobtrusiveValidation");
+	$.validator.unobtrusive.parse(form);
+	 CloseLoadingDialog();
+
+	},
+	error: function (er) {
+
+	alert(er);
+	 CloseLoadingDialog();
+
+	}
+	});
+
+
+
+	}
+
+
+	function checkdeptDate() {
+	debugger;
+
+		var selectedText = document.getElementById('PaidDate').value;
+		var selectedDate = new Date(selectedText);
+	    let Month=selectedDate.getMonth()
+	   let ldw=$('input#hdflwd').val();
+		var now = new Date(ldw);
+			if (selectedDate <= now) {
+	        document.getElementById('PaidDate').value = "";
+			//var currentdate = now.getDate();
+			//var selectchkdate = selectedDate.getDate();
+			//if (selectchkdate < currentdate) {
+				//	document.getElementById('PaidDate').value = "";
+		//}
+
+			}
+		}
+
+
+	</script>
+
+
+
+
+}

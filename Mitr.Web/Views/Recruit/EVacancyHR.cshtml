@@ -1,0 +1,265 @@
+﻿@model EXRecruit.Vacancy.HR
+@{
+	string MenuID = ViewBag.MenuID.ToString();
+}
+<div class="inner-main mb-5 pb-0">
+	<h1 class="heading-one ">
+		Vacancy Announcement
+	</h1>
+
+	@{ Html.RenderAction("_EViewRequests", "Recruit", new { src = clsApplicationSetting.EncryptQueryString(MenuID + " */Recruit/_EViewRequests*" + ViewBag.REC_ReqID + "*Y") }); }
+
+
+
+	<h2 class="header-two"><i class="fas fa-bullhorn"></i>Vacancy Announcement</h2>
+
+	@using (Ajax.BeginForm("EVacancyHR", "Recruit",
+new { src = ViewBag.src },
+new AjaxOptions { HttpMethod = "POST", OnSuccess = "EVacancyHRSuccess", OnBegin = "ShowLoadingDialog();", OnFailure = "CloseLoadingDialog();" },
+new
+{
+	@id = "EVacancyHRFrom",
+	enctype = "multipart/form-data"
+})
+)
+	{
+		@Html.HiddenFor(x => Model.REC_EVacancyID)
+		@Html.HiddenFor(x => Model.REC_ReqID)
+		<div class="row">
+			<div class="col-lg-3 col-md-4 col-sm-6  form-group">
+				<label></label>
+				<p>
+					Announcement Attachment
+					@*<a href="~/Attachments/Templates/ExternalVacancy.docx" target="_blank" class="green-clr float-right"><i class="fas fa-download"></i>Download</a>*@
+					<a class="green-clr float-right" data-toggle="modal" onclick="Export2Word();">
+						<i class="fas fa-download" style="cursor:pointer;"></i>Download
+					</a>
+				</p>
+			</div>
+
+			<div class="col-lg-3 col-md-4 col-sm-6  form-group">
+				<label>Attach Announcement</label>
+				@Html.HiddenFor(x => Model.AttachmentID)
+
+				@if (Model.btnVisible)
+				{
+					@Html.TextBoxFor(x => Model.Upload, new { @class = "form-control", @type = "file" })
+					@Html.ValidationMessageFor(up => Model.Upload, "", new { @class = "text-danger" })
+
+					if (Model.AttachmentID > 0)
+					{
+						@Html.ShowAttachment(Model.AttachmentID.ToString(), "")
+					}
+				}
+				else
+				{
+					<p>@Html.ShowAttachment(Model.AttachmentID.ToString(), "")</p>
+
+				}
+
+			</div>
+			<div class="col-lg-12  form-group">
+				<label>Vacancy Description for Website Announcement</label>
+				@Html.TextAreaFor(x => Model.HRVacancyDes, new { @class = "form-control", @placeholder = "Enter" })
+				@Html.ValidationMessageFor(up => Model.HRVacancyDes, "", new { @class = "text-danger" })
+			</div>
+		</div>
+		<div class="row">
+
+			<div class="col-lg-12 text-center mt-2">
+				@if (Model.btnVisible)
+				{
+					<button type="submit" id="btnSave" class="btn mtr-o-grn btn-l ripplelink pull-right cancel" name="Command" value="Save"><i class="fas fa-save"></i>Save</button>
+					<button type="submit" class="btn mtr-o-grn btn-l ripplelink pull-right" name="Command" value="Submit"><i class="fas fa-share"></i>Forward to Comm Team</button>
+				}
+				@Html.CreateAnchor(MenuID, "/Recruit/ERequests", "Back", "btn cnl-btn btn-l ripplelink", "Click to go back", "fas fa-arrow-left", "")
+
+			</div>
+		</div>
+	}
+
+</div>
+<div class="modal" id="modalJobDescription">
+	<div class="modal-dialog modal-lg">
+		<div class="modal-content ">
+			<!-- Modal Header -->
+			<div class="modal-header">
+				<h4 class="modal-title"><i class="fas fa-envelope"></i>Preview Offer Letter</h4>
+				<button type="button" class="close" data-dismiss="modal">×</button>
+			</div>
+			<!-- Modal body -->
+			<div class="modal-body">
+				<div class="row" id="DivJobDescription">
+					<div class="container mt-3">
+						<!-- Start -->
+						<div class="row">
+							<div class="col-sm-12 mb-0 mx-auto">
+								<div class="inner-main defult-height p-0 ">
+									<div class="lgt-mtr-o-bg prdodrheader mb-3">
+										<table style="width:100%" border="0" cellpadding="0" cellspacing="0">
+											<tr style="background-color:antiquewhite;">
+												<td style="width: 40%; height: 146px;" align="left">
+													<img id="btnImg" height="100" width="200" src="" />
+												</td>
+												<td align="center">
+													<h2 style="color: #ef8813 !important;">Job Description</h2>
+												</td>
+											</tr>
+										</table>
+									</div>
+									<div class="prdord-info pl-4 pr-4">
+										<strong>Job Details</strong>
+										<table class="jdtbldgn" border="1" style="width:100%">
+											<tbody>
+												<tr>
+													<td style="width:20%"><strong>Role Title</strong></td>
+													<td><span id="spJobTitle"></span></td>
+													<td style="width:20%"><strong>Location</strong></td>
+													<td style="width:20%"><span id="spLocationName"></span></td>
+												</tr>
+												<tr>
+													<td><strong>Reporting To</strong></td>
+													<td></td>
+													<td><strong>Core / Field</strong></td>
+													<td></td>
+												</tr>
+											</tbody>
+										</table>
+									</div>
+
+									<div class="pl-4 pr-4">
+										<strong>ORGANIZATION BACKGROUND</strong>
+										<p>Centre for Catalyzing Change (C3), is a not for profit organization that improves the lives of women and girls in India. Through local partnerships and programs, C3’s proven approach to development gives women, young girls and boys the tools they need to improve their lives, as well as that of their families and communities. Our programs focus on increasing educational and livelihood opportunities for adolescent girls, ensuring  access to lifesaving reproductive health information and services, and strengthening  ability to become leaders in their communities and in governance.</p>
+
+									</div>
+
+									<div class="prdord-info pl-4 pr-4">
+										<strong>KEY ROLES &amp; RESPONSIBILITIES</strong>
+
+										<div class="jdtbldgn">
+											<div id="divResponsibilites">
+
+											</div>
+										</div>
+										<p><strong>Note:</strong> The roles and responsibilities mentioned above are not exhaustive. Role holder will be guided to perform different tasks as necessitated by changing role within the organization and the overall objectives.</p>
+									</div>
+									<div class="prdord-info pl-4 pr-4">
+										<strong>Required Qualifications &amp; Skills</strong>
+										<div class="jdtbldgn">
+											<div id="divQualifications">
+
+											</div>
+											<div id="divSkills">
+
+											</div>
+										</div>
+									</div>
+									<div class="prdord-info pl-4 pr-4">
+										<strong>OTHER DETAILS</strong>
+										<div class="jdtbldgn">
+											<ul>
+												<li>The offer made to the selected candidate shall be commensurate with qualifications, experience and salary history.</li>
+												<li>Last date for submission of application: <strong id="spDueDate"></strong></li>
+												<li>Please send your latest CV, with a covering letter at jobs@c3india.org</li>
+												<li>Please mention the position you are applying for in the subject line of your email. The application must contain information about your current salary &amp; benefits drawn (CTC).</li>
+												<li>Only Short-listed candidates will be intimated.</li>
+											</ul>
+										</div>
+									</div>
+									<div class="lgt-mtr-o-bg prdordftr">
+										<p>C3 aims to be an equal opportunity employer. All applicants will be considered for employment without attention to race, colour, religion, sex, sexual orientation, gender identity, national origin, or disability status. Women candidates are encouraged to apply. </p>
+									</div>
+								</div>
+							</div>
+						</div>
+						<!----End start-->
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+@section scripts    {
+
+	@System.Web.Optimization.Scripts.Render("~/bundle/unobtrusivejs")
+	@Html.IncludeVersionedJs(Url.Content("~/assets/design/Scripts/AddInit.js"))
+
+	<script>
+
+		$('#btnSave').click(function () {
+			$(this).closest('form').data("validator").cancelSubmit = true;
+			return true;
+		});
+
+
+		function EVacancyHRSuccess(obj) {
+
+			if (obj.Status) {
+				SuccessToaster(obj.SuccessMessage);
+				window.location.href = obj.RedirectURL;
+			}
+			else {
+				CloseLoadingDialog();
+				FailToaster(obj.SuccessMessage);
+			}
+		}
+
+		function ProjectTaggingSuccess(obj) {
+
+			if (obj.Status) {
+				SuccessToaster(obj.SuccessMessage);
+				window.location.reload();
+			}
+			else {
+				CloseLoadingDialog();
+				FailToaster(obj.SuccessMessage);
+			}
+		}
+	</script>
+	<script>	
+		function Export2Word(filename = 'Job Description') {
+			document.getElementById('btnImg').src = window.location.origin + "/assets/images/c3-logo.png";
+			document.getElementById('divResponsibilites').innerHTML = $('#hddJobDescription').val();
+			document.getElementById('divQualifications').innerHTML = $('#hddJobQulification').val();
+			if ($('#hddJobSkills').val()!='') {
+				document.getElementById('divSkills').innerHTML = '<ul><li>' + $('#hddJobSkills').val() + '</li></ul>';
+			}
+			document.getElementById('spLocationName').innerText = $('#loc').val();
+			document.getElementById('spJobTitle').innerText = $('#jb').val();
+			document.getElementById('spDueDate').innerText = $('#due').val();
+			var preHtml = "<html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'><head><meta charset='utf-8'><title>Export HTML To Doc</title></head><body>";
+			var postHtml = "</body></html>";
+			var html = preHtml + document.getElementById('DivJobDescription').innerHTML + postHtml;
+
+			var blob = new Blob(['\ufeff', html], {
+				type: 'application/msword'
+			});
+
+			// Specify link url
+			var url = 'data:application/vnd.ms-word;charset=utf-8,' + encodeURIComponent(html);
+
+			// Specify file name
+			filename = filename ? filename + '.doc' : 'document.doc';
+
+			// Create download link element
+			var downloadLink = document.createElement("a");
+
+			document.body.appendChild(downloadLink);
+
+			if (navigator.msSaveOrOpenBlob) {
+				navigator.msSaveOrOpenBlob(blob, filename);
+			} else {
+				// Create a link to the file
+				downloadLink.href = url;
+
+				// Setting the file name
+				downloadLink.download = filename;
+
+				//triggering the function
+				downloadLink.click();
+			}
+
+			document.body.removeChild(downloadLink);
+		}
+	</script>
+}

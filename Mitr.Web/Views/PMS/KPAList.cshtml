@@ -1,0 +1,315 @@
+﻿@model PMS
+
+<div class="inner-main mb-5 pb-0">
+
+	<div class="row">
+		<div class="col-sm-5"><h1 class="heading-one ">Key Performance Area Master</h1></div>
+		<div class="col-sm-7 text-right">
+			@*<a class="btn mtr-g-grn btn-l ripplelink " href="">
+				<i class="fas fa-file-excel"></i> Export to Excel
+		</a>*@
+			@Html.EJS().Button("excel").Content("Export To Excel").IsPrimary(true).Render()
+			@if (clsApplicationSetting.GetSessionValue("Write") == "True")
+			{
+				<a class="btn mtr-g-grn btn-l ripplelink AAListAdd " onclick="ListHeaderAdd();">
+					<i class="fa fa-plus"></i> Add
+				</a>
+			}
+		</div>
+	</div>
+	@using (Ajax.BeginForm("_KPAList", "PMS",
+			new { src = clsApplicationSetting.EncryptQueryString(ViewBag.MenuID.ToString() + "*/PMS/_KPAList") },
+			  new AjaxOptions { HttpMethod = "POST", OnSuccess = "BindTarget", OnBegin = "ShowLoadingDialog()" },
+		new { @id = "_KPAListFrom" })
+		)
+	{
+		<div class="row">
+
+			<div class="col-lg-2 col-md-2 col-sm-2 slt-srh align-self-end  form-group">
+				<label class="lbl-abs">Select Appraisal Period</label>
+				@Html.DropDownListFor(x => Model.FYID, new SelectList(ViewBag.FinYearList, "ID", "Year", Model.FYID), "Select Appraisal Period",
+		new { @class = "form-control  applyselect ddapplyaction" })
+				@Html.ValidationMessageFor(model => Model.FYID, "", new { @class = "text-danger" })
+			</div>
+			<div class="col-sm-2 form-group" id="divStatus">
+				<label>Status</label>
+				<p><strong id="spnStatus"></strong></p>
+
+			</div>
+			<div class="col-sm-4 form-group" id="divReason">
+				<label>Reason</label>
+				<p><span id="spnRemarks"></span></p>
+			</div>
+			<div style="display:none">
+				<button type="submit" class="btn mtr-g-grn btn-l ripplelink" id="btnSearch" name="Command" value="Search"><i class="fas fa-search"></i>Search</button>
+			</div>
+		</div>
+	}
+
+	<div id="TargetDiv">@Html.Partial("_Loading")</div>
+
+	<div class="col-lg-12 text-center mt-3">
+		<button type="button" id="btnsubmit" class="btn mtr-o-grn btn-l ripplelink pull-right"><i class="fa fa-paper-plane" aria-hidden="true"></i> Submit</button>
+	</div>
+
+</div>
+
+<div class="modal fade pop-dgn" id="ViewModal">
+	<div class="modal-dialog modal-lg">
+		<div class="modal-content">
+
+			<div class="modal-header blk-gdn-btn">
+				<h4 class="modal-title">
+					<i class="fa fa-plus"></i>Add Key Performance Area
+
+				</h4>
+				<div class="close" data-dismiss="modal">&times;</div>
+			</div>
+			<!-- Modal body -->
+			<div class="modal-body">
+				<div id="TagetDivAdd"></div>
+			</div>
+		</div>
+	</div>
+</div>
+
+
+@section scripts    {
+	@System.Web.Optimization.Scripts.Render("~/bundle/unobtrusivejs")
+	@Html.IncludeVersionedJs(Url.Content("~/assets/design/Scripts/ToolTip.js"))
+	@System.Web.Optimization.Scripts.Render("~/assets/design/Scripts/AddInit.js")
+
+<script>
+		$(document).ready(function () {
+			$("#btnSearch").click();
+
+		});
+
+		$('.ddapplyaction').bind("change", function () {
+			$("#btnSearch").click();
+
+		});
+
+
+		function BindTarget(args) {
+			CloseLoadingDialog();
+			$("#TargetDiv").empty();
+			$("#TargetDiv").html(args);
+			$('[data-toggle="tooltip"]').tooltip();
+			$(".applyselect").select2();
+			SHowHideSubmit();
+
+			if ($("#hdnApproved").val() == 1) {
+				$(".AAListAdd").hide();
+			}
+			else if ($("#hdnApproved").val() == 2) {
+				$(".AAListAdd").show();
+			}
+			else if ($("#hdnRowCount").val() > 0 && $("#hdnisdeleted").val() == 0) {
+				$(".AAListAdd").hide();
+			}
+			else {
+				$(".AAListAdd").show();
+			}
+
+		}
+
+		function ListAdd(ID) {
+			ListHeaderAdd(ID)
+		}
+		function Duplicate(obj)
+		{
+			var I = $(obj).closest("tr").find("input:hidden[name=I]").val();
+			var N = $(obj).closest("tr").find("input:hidden[name=N]").val();
+			ListHeaderAdd(I, 1);
+
+		}
+		function ListHeaderAdd(CMSID,IsCopy=0) {
+			var hdnApproved = $("#hdnApproved").val();
+	        hdnApproved=0;
+			if (hdnApproved == 1) {
+				SuccessToaster("KPA is already Approved");
+			}
+			else {
+				if (CMSID == undefined) {
+					CMSID = 0;
+				}
+				var FYID = Number($("#FYID option:selected").val());
+
+				$.ajax({
+					url: "/PMS/_KPAAdd",
+					type: "Get",
+					data: { src: EncryptQueryStringJSON(@ViewBag.MenuID+"*" + "/PMS/_KPAAdd" + "*" + CMSID + "*" + FYID + "*" + IsCopy) },
+					success: function (data) {
+						$("#TagetDivAdd").empty();
+						$("#TagetDivAdd").html(data);
+						$("#ViewModal").modal("show");
+						ChangeUOM();
+						$(".applyselect").select2();
+						var form = $("form")
+							.removeData("validator")
+							.removeData("unobtrusiveValidation");
+						$.validator.unobtrusive.parse(form);
+
+					},
+					error: function (er) {
+						alert(er);
+
+					}
+				});
+			}
+            }
+
+		function OnKPAAddSuccess(obj)
+    {
+			if (obj.Status) {
+				CloseLoadingDialog();
+				SuccessToaster(obj.SuccessMessage);
+				$("#btnSearch").click();
+				$("#ViewModal").modal("hide");
+        }
+		else {
+			CloseLoadingDialog()
+			FailToaster(obj.SuccessMessage);
+        }
+
+    }
+
+		// Changed 11-Jan-2020 12:39
+		//function ChangeUOM() {
+
+		//	var a = $("#UOMID").find("option:selected").attr("t");
+		//	var AutoRating = $("#UOMID").find("option:selected").attr("ch");
+
+		//	if (a === "Text") {
+		//		$(".UOMisText").hide();
+		//	}
+		//	else {
+		//		$(".UOMisText").show();
+		//	}
+		//	if (a != "") {
+		//		if (AutoRating != undefined) {
+		//			if (AutoRating == "Yes") {
+		//				$("#chk1").prop('checked', true);
+
+		//			}
+		//		}
+		//	} else {
+		//		$("#chk1").prop('checked', false);
+
+
+		//	}
+		//}
+
+		function ChangeUOM() {
+		
+			var aType = $("#UOMID").find("option:selected").attr("t");
+			var a = $("#UOMID").find("option:selected").val();
+			var AutoRating = $("#UOMID").find("option:selected").attr("ch");
+
+			if (aType === "Text") {
+				$(".UOMisText").hide();
+			}
+			else {
+				$(".UOMisText").show();
+		     $('#IncType').val("Postive");
+
+			}
+
+			if (a != 0) {
+				if (AutoRating != undefined) {
+					if (AutoRating == "Yes") {
+						$("#chk1").prop('checked', true);
+					} else {
+						$("#chk1").prop('checked', false);
+					}
+				}
+			} else {
+				$("#chk1").prop('checked', false);
+			}
+			ChkAutoCal();
+		}
+
+		function ChkAutoCal() {
+			var a = $("#chk1").is(":checked");
+			if (a) {
+				$("#DivType").show();
+			}
+			else {
+				$("#DivType").hide();
+			}
+		}
+
+		$("#btnsubmit").click(function (e) {
+			ConfirmMsgBox('Are you sure want to submit ?', '', function () {
+				SubmitKPA();
+			});
+		});
+
+		function SubmitKPA() {
+			ShowLoadingDialog()
+			var FYID = Number($("#FYID option:selected").val());
+			$.ajax({
+				url: "/CommonAjax/SubmitKPA",
+				type: "Get",
+				data: { FYID: FYID },
+				success: function (obj)
+				{
+					if (obj.Status) {
+						SuccessToaster(obj.SuccessMessage);
+						$("#btnSearch").click();
+					} else {
+						CloseLoadingDialog()
+						FailToaster(obj.SuccessMessage);
+					}
+				},
+				error: function (er) {
+					alert(er);
+					CloseLoadingDialog()
+				}
+			});
+		}
+
+
+	function SHowHideSubmit() {
+		var isdeleted = $("#hdnisdeleted").val();
+		var hdnApproved = $("#hdnApproved").val();
+
+		if (isdeleted == 0)
+		{
+		$("#btnsubmit").hide();
+	}
+	else
+	{ $("#btnsubmit").show();
+	}
+		if (hdnApproved == 2) {
+			$("#btnsubmit").show();
+		}
+
+		if ($("#hdnApprovedStatus").val() == "")
+		{
+			$("#divStatus").hide();
+		} else
+		{
+			$("#spnStatus").html($("#hdnApprovedStatus").val());
+			$("#divStatus").show();
+		}
+		if (hdnApproved == 0 || hdnApproved == 2 ) {
+			$("#spnStatus").addClass('red-clr');
+		}
+		else {
+			$("#spnStatus").addClass('green-clr');
+		}
+		$("#spnRemarks").html($("#hdnRemarks").val());
+
+		if ($("#hdnRemarks").val()=="") {
+			$("#divReason").hide();
+		}
+		else {
+			$("#divReason").show();
+		}
+	}
+	
+</script>
+
+}

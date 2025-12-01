@@ -1,0 +1,69 @@
+﻿@using System.Data
+@model Mitr.Models.TempBoardShow
+
+@section style{
+    @System.Web.Optimization.Styles.Render("~/bundle/dataTablecss")
+}
+
+
+    <div class="right_col" role="main">
+        @Html.Partial("HeaderMsg_Partial")
+        <h1 class="heading-one">
+            Membership Register
+        </h1>
+
+        @using (Ajax.BeginForm("_MemberInfoRpt", "Board",
+                new { src = clsApplicationSetting.EncryptQueryString(ViewBag.MenuID.ToString() + "*/Board/_MemberInfoRpt") },
+                new AjaxOptions { HttpMethod = "POST",  OnSuccess = "BindTarget",OnFailure="BindTarget"},
+            new { @id = "_MemberInfoRptFrom" })
+            )
+        {
+
+            <div class="right_col" role="main">
+                <div class="row">
+
+                    <div class="col-sm-3 form-group">
+                        <label>	Member Name</label>
+                        @Html.DropDownListFor(n => n.memship_no, new SelectList(Model.membersList, "memship_no", "member_name"), "select Member Name",
+                         new { @class = "form-control  applyselect" })
+                        @Html.ValidationMessageFor(model => model.memship_no, "", new { @class = "text-danger" })
+
+                    </div>
+                    <div class="col-sm-3 form-group">
+                        <button type="submit" class="btn mtr-g-grn btn-l ripplelink" id="btnSearch" name="Command" value="Search"><i class="fas fa-search"></i>Search</button>
+                    </div>
+                </div>
+
+            </div>
+            <div id="TargetDiv"></div>
+        }
+
+
+    </div>
+
+
+@section scripts    {
+    @System.Web.Optimization.Scripts.Render("~/bundle/dataTablesjs")
+    @System.Web.Optimization.Scripts.Render("~/bundle/unobtrusivejs")
+    <script>
+
+         
+
+          $('#memship_no').on("change", function () {
+    ShowLoadingDialog();
+    $("#btnSearch").click();
+
+          });
+
+
+        function BindTarget(args) {
+    CloseLoadingDialog();
+    $("#TargetDiv").empty();
+    $("#TargetDiv").html(args);
+    DatatableScriptsWithColumnSearch("tableApprove");
+
+
+}
+    </script>
+
+}

@@ -1,0 +1,352 @@
+﻿@model Exit.Request_View
+
+@{
+	string MenuID = ViewBag.MenuID.ToString();
+}
+<div class="inner-main mb-5 p-3 pb-0">
+	<h1 class="heading-one mb-3">Resignation Request </h1>
+
+	@{Html.RenderPartial("_RequestView", Model); }
+
+	<div class="col-sm-12 text-left">
+		@if (Model.Approved == 0 && !Model.IsRetained)
+		{
+			<button type="button" value="resolution" class="btn mtr-y-bg btn-l ripplelink btnSubmit"> <i class="fas fa-user-shield"></i> Record Resolution</button>
+			<button type="button" value="forward" class="btn blk-gdn-btn btn-l ripplelink btnSubmit"><i class="fas fa-share"></i> Forward</button>
+			<button type="button" value="approve" class="btn mtr-o-grn btn-l ripplelink btnSubmit"><i class="fas fa-user-check"></i>Approve &amp; Proceed</button>
+		}
+		@Html.CreateAnchor(MenuID, "/Exit/RequestReceived", "Back", "btn cnl-btn btn-l ripplelink", "Click to go back", "fa fa-share", "")
+	</div>
+</div>
+
+
+<div class="modal" id="ViewModal" aria-modal="true">
+	<div class="modal-dialog modal-md">
+		<div class="modal-content ">
+			<div class="modal-header">
+				<h4 class="modal-title"><span id="spnhead"></span></h4>
+				<button type="button" class="close" data-dismiss="modal">×</button>
+			</div>
+			<div class="modal-body">
+				<div id="ModalTagetDiv"></div>
+			</div>
+		</div>
+	</div>
+</div>
+
+
+
+
+
+@section scripts    {
+
+	@System.Web.Optimization.Scripts.Render("~/bundle/unobtrusivejs")
+	<script>
+	$('.btnSubmit').on('click', function (e) {
+		GetPopData($(this).val());
+    });
+        
+		function GetPopData(Type)
+		{
+			if (Type == "forward") {
+				$("#spnhead").html("Process Flow");
+				var T = $('#ViewModal').find(".modal-dialog.modal-md");
+				$(T).removeClass("modal-lg");
+			}
+			else if (Type=="approve") {
+				$("#spnhead").html("Instructions");
+				var T = $('#ViewModal').find(".modal-dialog.modal-md");
+				$(T).addClass("modal-lg");
+			}
+			else {
+				$("#spnhead").html("Reason for Continuing");
+				var T = $('#ViewModal').find(".modal-dialog.modal-md");
+				$(T).removeClass("modal-lg");
+			}
+
+			var Exit_ID = $("#Exit_ID").val();
+			ShowLoadingDialog();
+		   $.ajax({
+			   url: "/Exit/_RequestProcessing",
+				type: "Get",
+			   data: { src: EncryptQueryStringJSON(@ViewBag.MenuID+"*" + "/Exit/_RequestProcessing" + "*" + Exit_ID + "*" + Type+"*HR") },
+                success: function (data)
+                {
+					$("#ModalTagetDiv").empty();
+					$("#ModalTagetDiv").html(data);
+					$('#ViewModal').modal({
+						backdrop: 'static',
+						keyboard: false
+					});
+
+
+                     var form = $("form")
+                .removeData("validator")
+                .removeData("unobtrusiveValidation");
+                    $.validator.unobtrusive.parse(form);
+					$(".applyselect").select2();
+                    CloseLoadingDialog();
+				},
+				error: function (er) {
+                    console.log(er);
+                    CloseLoadingDialog();
+
+				}
+			});
+	}
+
+
+	function OnProcessSuccess(obj) {
+		if (obj.Status) {
+			SuccessToaster(obj.SuccessMessage);
+			window.location.href = obj.RedirectURL;
+		}
+		else {
+			CloseLoadingDialog();
+			FailToaster(obj.SuccessMessage);
+
+		}
+	}
+
+
+		function LoadEMP(obj) {
+			var LID = $(obj).find("option:selected").val();
+            var myDrop = $(obj).closest("tr").find(".HodList");
+			if (LID != "") {
+				$.ajax({
+					url: "/CommonAjax/GetEMPList_ByLocationJson",
+					type: "Get",
+					async: true,
+					data: { LocationID: LID },
+					success: function (data) {
+
+						myDrop.empty();
+						myDrop.append($("<option     />").val("").text("Select HOD"));
+						$(data).each(function () {
+							myDrop.append($("<option />").val(this.EMP_ID).text(this.EMP_Name));
+							myDrop.select2();
+						});
+						CloseLoadingDialog();
+					},
+					error: function (er) {
+						CloseLoadingDialog();
+					}
+				});
+			}
+			else {
+                myDrop.empty();
+                myDrop.append($("<option     />").val("").text("Select HOD"));
+            }
+		}
+
+
+        function NewAttachment() {
+            var LastTRCount = parseInt($('#tblAttachment').find("tbody tr").length) - 1;
+            var $tableBody = $('#tblAttachment').find("tbody"),
+                $trLast = $tableBody.find("tr:last"),
+                $trNew = $trLast.clone();
+            $trNew.find("td:last").html('<a onclick="DeleteAttachRow(this)" class="remove"><i class="fas fa-window-close red-clr" aria-hidden="true"></i></a>')
+            $trNew.find("label").each(function () {
+                $(this).attr({
+                    'id': function (_, id) { var arr = id.split('_'); return id.replace(arr[1], LastTRCount + 1); },
+                });
+                $(this).html(parseInt($('#tblAttachment').find("tbody tr").length) + 1)
+            });
+
+            $trNew.find("input").each(function (i) {
+                $(this).attr({
+                    'id': function (_, name) { return name.replace('_' + LastTRCount + '_', '_' + (parseInt(LastTRCount) + 1) + '_'); },
+                    'name': function (_, name) { return name.replace('[' + LastTRCount + ']', '[' + (parseInt(LastTRCount) + 1) + ']'); },
+                });
+
+			});
+
+            $trNew.find("textarea").each(function (i) {
+                $(this).attr({
+                    'id': function (_, name) { return name.replace('_' + LastTRCount + '_', '_' + (parseInt(LastTRCount) + 1) + '_'); },
+                    'name': function (_, name) { return name.replace('[' + LastTRCount + ']', '[' + (parseInt(LastTRCount) + 1) + ']'); },
+                });
+
+            });
+
+            $trNew.find("span").each(function (i) {
+                if ($(this).attr("data-valmsg-for")) {
+                    $(this).attr({
+                        'data-valmsg-for': function (_, name) { return name.replace('[' + LastTRCount + ']', '[' + (parseInt(LastTRCount) + 1) + ']'); }
+                    });
+                }
+                if ($(this).attr("for")) {
+                    $(this).attr({
+                        'for': function (_, name) { return name.replace('_' + LastTRCount + '_', '_' + (parseInt(LastTRCount) + 1) + '_'); }
+                    });
+                }
+            });
+
+            $trLast.after($trNew);
+            var form = $("#_RequestProcessingFrom").closest("form");
+            form.removeData('validator');
+            form.removeData('unobtrusiveValidation');
+            $.validator.unobtrusive.parse(form);
+        }
+
+
+        function DeleteAttachRow(obj) {
+            var count = 0;
+            var TotalRowCount = $('#tblAttachment').find("tbody tr").length;
+            ConfirmMsgBox("Are you sure want to delete", '', function () {
+
+                $(obj).closest('tr').remove();
+                $("#tblAttachment TBODY TR").each(function (i) {
+                    $(this).closest("tr").find("label").each(function () {
+                        $(this).attr({
+                            'id': function (_, id) { var arr = id.split('_'); return id.replace(arr[1], i); },
+                        });
+                        $(this).html(i + 1)
+                    });
+
+
+                    $(this).closest("tr").find("input").each(function () {
+                        $(this).attr({
+                            'id': function (_, id) { return id.replace('_' + (parseInt(i) + 1) + '_', '_' + i + '_'); },
+                            'name': function (_, name) { return name.replace('[' + (parseInt(i) + 1) + ']', '[' + i + ']'); },
+                        });
+                    });
+
+                    $(this).closest("tr").find("textarea").each(function () {
+                        $(this).attr({
+                            'id': function (_, id) { return id.replace('_' + (parseInt(i) + 1) + '_', '_' + i + '_'); },
+                            'name': function (_, name) { return name.replace('[' + (parseInt(i) + 1) + ']', '[' + i + ']'); },
+                        });
+                    });
+                    $(this).closest("tr").find("span").each(function () {
+                        if ($(this).attr("data-valmsg-for")) {
+                            $(this).attr({
+                                'data-valmsg-for': function (_, name) { return name.replace('[' + (parseInt(i) + 1) + ']', '[' + i + ']'); },
+                            });
+                        }
+                        if ($(this).attr("for")) {
+                            $(this).attr({
+                                'for': function (_, id) { return id.replace('_' + (parseInt(i) + 1) + '_', '_' + i + '_'); },
+                            });
+                        }
+                    });
+                });
+                var form = $("#_RequestProcessingFrom").closest("form");
+                form.removeData('validator');
+                form.removeData('unobtrusiveValidation');
+                $.validator.unobtrusive.parse(form);
+
+            })
+        }
+
+
+
+
+
+        function NewTask() {debugger
+            var LastTRCount = parseInt($('#tblTask').find("tbody tr").length) - 1;
+            $('.applyselect').select2("destroy");
+            var $tableBody = $('#tblTask').find("tbody"),
+                $trLast = $tableBody.find("tr:last"),
+                $trNew = $trLast.clone();
+            $trNew.find("td:last").html('<a onclick="DeleteTaskRow(this)" class="remove"><i class="fas fa-window-close red-clr" aria-hidden="true"></i></a>')
+            $trNew.find("label").each(function () {
+                $(this).attr({
+                    'id': function (_, id) { var arr = id.split('_'); return id.replace(arr[1], LastTRCount + 1); },
+                });
+                $(this).html(parseInt($('#tblTask').find("tbody tr").length) + 1)
+            });
+
+
+            $trNew.find("select").each(function (i) {
+                $(this).attr({
+                    'id': function (_, name) { return name.replace('_' + LastTRCount + '_', '_' + (parseInt(LastTRCount) + 1) + '_'); },
+                    'name': function (_, name) { return name.replace('[' + LastTRCount + ']', '[' + (parseInt(LastTRCount) + 1) + ']'); },
+                });
+                $(this).val('');
+            });
+
+            $trNew.find("textarea").each(function (i) {
+                $(this).attr({
+                    'id': function (_, name) { return name.replace('_' + LastTRCount + '_', '_' + (parseInt(LastTRCount) + 1) + '_'); },
+                    'name': function (_, name) { return name.replace('[' + LastTRCount + ']', '[' + (parseInt(LastTRCount) + 1) + ']'); },
+                });
+				$(this).val('');
+            });
+
+            $trNew.find("span").each(function (i) {
+                if ($(this).attr("data-valmsg-for")) {
+                    $(this).attr({
+                        'data-valmsg-for': function (_, name) { return name.replace('[' + LastTRCount + ']', '[' + (parseInt(LastTRCount) + 1) + ']'); }
+                    });
+                }
+                if ($(this).attr("for")) {
+                    $(this).attr({
+                        'for': function (_, name) { return name.replace('_' + LastTRCount + '_', '_' + (parseInt(LastTRCount) + 1) + '_'); }
+                    });
+                }
+            });
+
+            $trLast.after($trNew);
+            var form = $("#_RequestProcessingFrom").closest("form");
+            form.removeData('validator');
+            form.removeData('unobtrusiveValidation');
+            $.validator.unobtrusive.parse(form);
+            $(".applyselect").select2();
+        }
+
+
+        function DeleteTaskRow(obj) {
+            var count = 0;
+            var TotalRowCount = $('#tblTask').find("tbody tr").length;
+
+            ConfirmMsgBox("Are you sure want to delete", '', function () {
+                $('.applyselect').select2("destroy");
+                $(obj).closest('tr').remove();
+                $("#tblTask TBODY TR").each(function (i) {
+                    $(this).closest("tr").find("label").each(function () {
+                        $(this).attr({
+                            'id': function (_, id) { var arr = id.split('_'); return id.replace(arr[1], i); },
+                        });
+                        $(this).html(i + 1)
+                    });
+
+
+                    $(this).closest("tr").find("select").each(function () {
+                        $(this).attr({
+                            'id': function (_, id) { return id.replace('_' + (parseInt(i) + 1) + '_', '_' + i + '_'); },
+                            'name': function (_, name) { return name.replace('[' + (parseInt(i) + 1) + ']', '[' + i + ']'); },
+                        });
+                    });
+
+                    $(this).closest("tr").find("textarea").each(function () {
+                        $(this).attr({
+                            'id': function (_, id) { return id.replace('_' + (parseInt(i) + 1) + '_', '_' + i + '_'); },
+                            'name': function (_, name) { return name.replace('[' + (parseInt(i) + 1) + ']', '[' + i + ']'); },
+                        });
+                    });
+
+                    $(this).closest("tr").find("span").each(function () {
+                        if ($(this).attr("data-valmsg-for")) {
+                            $(this).attr({
+                                'data-valmsg-for': function (_, name) { return name.replace('[' + (parseInt(i) + 1) + ']', '[' + i + ']'); },
+                            });
+                        }
+                        if ($(this).attr("for")) {
+                            $(this).attr({
+                                'for': function (_, id) { return id.replace('_' + (parseInt(i) + 1) + '_', '_' + i + '_'); },
+                            });
+                        }
+                    });
+                });
+                var form = $("#_RequestProcessingFrom").closest("form");
+                form.removeData('validator');
+                form.removeData('unobtrusiveValidation');
+                $.validator.unobtrusive.parse(form);
+                $(".applyselect").select2();
+
+            })
+        }
+
+	</script>
+}

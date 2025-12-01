@@ -1,0 +1,84 @@
+﻿
+@model Mitr.Model.EmployeeSalary.SpecialAllowanceEntry
+
+@using (Ajax.BeginForm("SpecialAllowanceEntry", "EmployeeSalary",
+            new { src = clsApplicationSetting.EncryptQueryString(ViewBag.MenuID + "*" + "/EmployeeSalary/SpecialAllowanceEntry*" + ViewBag.EmpID) },
+             new AjaxOptions { HttpMethod = "POST", OnSuccess = "OnSuccess", OnBegin = "ShowLoadingDialog()" },
+                new { @id = "form" }))
+{
+
+    <div class="modal-content">
+        @Html.HiddenFor(x => Model.Component)
+        <div class="modal-header blk-gdn-btn">
+            <h4 class="modal-title"><i class="fa fa-plus"></i>@ViewBag.EmpName </h4>
+            <div class="close" data-dismiss="modal">&times;</div>
+        </div>
+        <!-- Modal body -->
+        <div class="modal-body">
+            <div class="row">
+                <div class="col-sm-6 form-group">
+                    <label>Doc No</label>
+                    @Html.TextBoxFor(model => model.DocNo, new { @class = "form-control", @type = "text", @readonly = "true" })
+                    <input type="hidden" id="hdfDueAmount" value="" />
+                </div>
+                <div class="col-sm-6 form-group">
+                    <label>Paid Date</label>
+                    
+                    @Html.TextBoxFor(model => model.PaidDate, new { @class = "form-control", @type = "date", @placeholder = "Enter" })
+                    @Html.ValidationMessageFor(model => model.PaidDate, "", new { @class = "text-danger" })
+
+                </div>
+
+                <div class="col-sm-12 form-group">
+                    <table id="tblSpecialAllowanceEntry" class="table table-striped m-0">
+                        <thead>
+                            <tr>
+                                <th width="33">S.No.</th>
+                                <th>Project Code & Name</th>
+                                <th width="100">Paid Amount</th>
+                                <th width="10"></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @{ int count = 0;}
+                            @for (int i = 0; i < Model.ProjectPaymentAmountList.Count; i++)
+                            {
+                                count++;
+                                <tr>
+                                    <td>
+                                        <label id="span_@count" name="span_@count">@count<input type="hidden" value="@count" /> </label>
+                                    </td>
+                                    <td>
+                                        @Html.DropDownListFor(model => Model.ProjectPaymentAmountList[i].ProjectID, new SelectList(ViewBag.ProjectMappedList, "ID", "Name", Model.ProjectID), "Select Project", new { @class = "form-control applyselect" })
+                                        @Html.ValidationMessageFor(model => Model.ProjectID, "", new { @class = "text-danger" })
+                                    </td>
+									<td>
+										@*@Html.TextBoxFor(model => Model.ProjectPaymentAmountList[i].PaidAmount, new { @class = "form-control txtval0", @placeholder = "0", @maxlength = "20", onkeypress = "if(isNaN(this.value + String.fromCharCode(event.keyCode) )) return false;", @onkeyup = "CalculateSum(this)" })*@
+										@Html.TextBoxFor(model => Model.ProjectPaymentAmountList[i].PaidAmount, new { @class = "form-control txtval0", @placeholder = "0", @maxlength = "20" })
+										@Html.ValidationMessageFor(model => Model.PaidAmount, "", new { @class = "text-danger" })
+									</td>
+                                    <td class="text-center"><a class="disabled"><i class="fas fa-window-close m-0" aria-hidden="true"></i></a></td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                    <div class="text-right mt-2">
+                        <a class="green-clr addrow" onclick="AddNewRow(this)"><strong><i class="fas fa-plus"></i>Add</strong></a>
+                    </div>
+                </div>
+
+                <div class="col-sm-12 form-group">
+                    <label>Remark</label>
+                    @Html.TextAreaFor(model => model.Remark, new { @class = "form-control  h-100", @type = "text", @placeholder = "Enter" })
+                    @Html.ValidationMessageFor(model => model.Remark, "", new { @class = "text-danger" })
+                </div>
+
+                <div class="col-sm-12 text-center">
+
+                    <button type="submit" class="btn mtr-o-grn" id="btnsubmit" name="Command" onclick="return Validate()" value="Add"><i class="fas fa-paper-plane"></i>Submit</button>
+                    <button type="button" class="btn cnl-btn ripplelink" data-dismiss="modal"><i class="fas fa-times"></i>Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+}

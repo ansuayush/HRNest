@@ -1,0 +1,47 @@
+﻿
+@model Mitr.Models.ProcurementCommittee
+
+@using (Ajax.BeginForm("_ProcurementCommitteeAdd", "Master",
+        new { src = ViewBag.src },
+        new AjaxOptions { HttpMethod = "POST", OnSuccess = "OnSuccess" },
+    new { @id = "_ProcurementCommitteeAddFrom" })
+    )
+{
+
+    @Html.AntiForgeryToken()
+    @Html.HiddenFor(x => Model.ID)
+    <div class="row">
+        <div class="col-lg-6 col-md-6 col-sm-6 form-group">
+            <label>Employee Name <sup>*</sup></label>
+            @Html.DropDownListFor(model => model.EMP_ID, new SelectList(ViewBag.EmpList, "EMPID", "empname", Model.EMP_ID), "select", new { @class = "form-control " })
+            @Html.ValidationMessageFor(model => model.EMP_ID, "", new { @class = "text-danger" })
+        </div>
+
+        <div class="col-lg-6 col-md-6 col-sm-6 form-group">
+            <label>Name<sup>*</sup></label>
+            @Html.TextBoxFor(model => model.Effective_Date, new { @class = "form-control",@Type="date" })
+            @Html.ValidationMessageFor(model => model.Effective_Date, "", new { @class = "text-danger" })
+        </div>
+        
+        <div class="col-lg-6 col-md-6 col-sm-6 form-group">
+            <label>Priority<sup>*</sup></label>
+            @Html.TextBoxFor(model => model.Priority, new { @class = "form-control" })
+            @Html.ValidationMessageFor(model => model.Priority, "", new { @class = "text-danger" })
+        </div>
+       
+
+    </div>
+
+    <div class="row">
+
+        @if (Model.ID > 0)
+        {
+            <button type="submit" class="btn mtr-o-grn btn-l ripplelink pull-right" name="Command" value="Add"><i class="fa fa-paper-plane" aria-hidden="true"></i> Update</button>
+        }
+        else
+        {
+            <button type="submit" class="btn mtr-o-grn btn-l ripplelink pull-right" name="Command" value="Add"><i class="fa fa-paper-plane" aria-hidden="true"></i> Submit</button>
+        }
+    </div>
+
+}

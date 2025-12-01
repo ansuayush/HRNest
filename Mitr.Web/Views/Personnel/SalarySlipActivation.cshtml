@@ -1,0 +1,114 @@
+﻿@model Mitr.Models.SalarySlipActivation  
+@using System.Data;
+@{
+	ViewBag.Title = "Salary Slip Activation";
+}
+@Html.Partial("HeaderMsg_Partial")
+<div class="inner-main">
+	<h1 class="heading-one">Salary Slip Activation</h1>
+		 
+	@using (Ajax.BeginForm("_SalarySlipActivation", "Personnel",
+new { src = clsApplicationSetting.EncryptQueryString(ViewBag.MenuID.ToString() + "*/Personnel/_SalarySlipActivation*" + Model.MitrUser + "*" + Model.Date) },
+new AjaxOptions { HttpMethod = "POST", OnSuccess = "OnSuccess", OnBegin = "ShowLoadingDialog();", OnFailure = "CloseLoadingDialog();" },
+new
+{
+	name = "_SalarySlipActivationForm",
+	id = "_SalarySlipActivationForm",
+	@class = "form-horizontal form-label-left input_mask",
+	enctype = "multipart/form-data"
+}))
+	{
+
+<div class="row">
+	<div class="col-sm-3 hf-575 form-group">
+		<label class="lbl-abs">Month</label>
+		@Html.TextBoxFor(model => model.Date, new { @class = "form-control actdate h-30", @type = "month" })
+		@Html.ValidationMessageFor(model => model.Date, "", new { @class = "text-danger" })
+	</div>
+	<div class="col-sm-3 hf-575 form-group">
+		<label class="lbl-abs"> Mitr/Non Mitr </label>
+		@Html.EnumDropDownListFor(model => model.MitrUser, "All", htmlAttributes: new { @class = "form-control applyselect" })
+
+	</div>
+	<div class="col-sm-3 hf-575 form-group">
+		<label class="lbl-abs">Status </label>
+		<select class="form-control applyselect" id="ddlStatus" name="ddlStatus"   aria-hidden="true">
+			<option   selected="selected" value="">All</option>
+			<option value="Activated" >Activated</option>
+			<option value="De-Activated">De-Activated</option>
+		</select>
+
+	</div>
+	<div class="col-sm-3 hf-575 form-group">
+		<button type="button" onclick="GetList()" class="btn mtr-g-grn btn-l ripplelink pull-right" name="Command" value="Add"><i class="fas fa-search" aria-hidden="true"></i> Show</button>
+	</div>
+
+	<div class="col-sm-12 form-group">
+		<div id="TagetDiv">
+		</div>
+	</div>
+</div>
+
+
+
+	}
+
+</div>
+
+
+@section scripts    {
+	@System.Web.Optimization.Scripts.Render("~/bundle/dataTablesjs")
+	<script src="~/assets/design/Scripts/AddInit.js?v=@clsApplicationSetting.GetWebConfigValue("Version")"></script>
+	@System.Web.Optimization.Scripts.Render("~/bundle/unobtrusivejs");
+	<script src="~/assets/tableToExcel.js"></script>
+	<script>
+		//$(document).ready(function () {
+		//	$("#btnVerifyAndSave").click(function () {
+		//		if (ValidateAmt()) {
+		//			$("#btnsave").click();
+
+		//		}
+
+		//	});
+  //      });
+
+        function GetList() {
+			var dt = $("#Date").val();
+			var ddlStatus = $("#ddlStatus").val();
+            var MitrUser = $("#MitrUser option:selected").text();
+            ShowLoadingDialog();
+			var Src = EncryptQueryStringJSON(@ViewBag.MenuID+"*" + "/Personnel/_SalarySlipActivation" + "*" + '0')
+                 var menuid =@ViewBag.MenuID;
+                    $.ajax({
+						url: "/Personnel/_SalarySlipActivation",
+                        type: "Get",
+                        async: true,
+						data: { src: Src, Emptype: MitrUser, Dt: dt, Status: ddlStatus},
+                        success: function (data) {
+                            $("#TagetDiv").empty();
+							$("#TagetDiv").html(data);
+							//DatatableWithoutPaging("datatable-buttons");
+                            CloseLoadingDialog();
+                        },
+                        error: function (er) {
+                            CloseLoadingDialog();
+                            alert(er);
+
+                        }
+                    });
+        }
+    
+        function OnSuccess(obj) {
+            if (obj.Status) {
+                SuccessToaster(obj.SuccessMessage);
+                //  window.location.href = obj.RedirectURL;
+                GetList();
+            }
+            else {
+                CloseLoadingDialog();
+                FailToaster(obj.SuccessMessage);
+
+            }
+        }	
+	</script>
+}

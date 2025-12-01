@@ -1,0 +1,225 @@
+﻿@using System.Data
+@model List<Mitr.Models.MyTeamActiveLog>
+
+@if (ViewBag.Approve == "0")
+{
+    using (Html.BeginForm("_SubmitActiveLogApproval", "Activity",
+ new { src = clsApplicationSetting.EncryptQueryString(ViewBag.MenuID.ToString() + "*/Activity/_SubmitActiveLogApproval*" + ViewBag.SelectedDate) },
+ FormMethod.Post,
+new
+{
+    name = "_ActionOnRegistrationFrom",
+    id = "_ActionOnRegistrationFrom",
+    enctype = "multipart/form-data"
+}))
+    {
+        @Html.AntiForgeryToken()
+        <div class="row">
+            <div class="col-sm-12 text-right">
+                <button type="submit" class="btn mtr-g-grn btn-l pull-right btnActivity" name="Command" value="Approved"><i class="fas fa-check"></i> Approve</button>
+                <button type="submit" class="btn blk-gdn-btn btn-l pull-right btnActivity" name="Command" value="Resubmit"><i class="fas fa-redo-alt"></i>Resubmit</button>
+            </div>
+        </div>
+        <div class="x_content table-currency mt-0">
+            <div class="table-responsive">
+                <table id="tableActiveLogApprove" class="table table-striped table-bordered dt-responsive nowrap tbltick new_width" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
+                    <thead>
+                        <tr>
+                            <th class="w-30">S.no.</th>
+                            <th>Employee Code</th>
+                            <th>Employee Name</th>
+                            <th>Month</th>
+                            <th>Hours Worked</th>
+                            <th>Unapproved CO/OT</th>
+                            <th>Unapproved leave Hours</th>
+                            <th>Action on Approved CO/OT/Leave</th>
+                            <th>Status</th>
+                            <th>Action</th>
+                        </tr>
+                        <tr class="searchbar">
+                            <th class="searchhide"> </th>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                            <th class="searchhide"> </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @{ int Count = 0;}
+                        @for (int i = 0; i < Model.Count; i++)
+                        {
+                            Count++;
+                            <tr>
+                                <td>
+                                    @Count
+                                    @Html.HiddenFor(x => Model[i].ApprovedRemarks, new { @class = "ApprovedRemarks" })
+                                    @Html.HiddenFor(x => Model[i].Year)
+                                    @Html.HiddenFor(x => Model[i].Month)
+                                    @Html.HiddenFor(x => Model[i].EMPID)
+                                    @Html.HiddenFor(x => Model[i].EMPName)
+                                    <input type="hidden" name="N" value="@Model[i].EMPName" />
+                                    <input type="hidden" name="E" value="@Model[i].EMPID" />
+                                    <input type="hidden" name="D" value="@Model[i].MonthName" />
+                                </td>
+                                <td> @Model[i].EMPCode</td>
+                                <td> @Model[i].EMPName</td>
+                                <td> @Model[i].MonthName</td>
+
+
+                                <td class="text-right"> @Model[i].TotalActivityHours Hrs</td>
+                                <td class="text-right">
+                                    @if (Model[i].CO_OT == "Overtime")
+                                    {
+                                        <a class="bindUnApprovedOT"> @Model[i].UnApprovedOT Hrs</a>
+
+                                    }
+                                    else
+                                    {
+                                        <a class="bindUnApprovedCO"> @Model[i].UnApprovedComOff Hrs</a>
+                                    }
+                                </td>
+                                <td class="text-right">
+                                    <a class="bindUnApprovedLeave "> @Model[i].PendingLeaveHours Hrs</a>
+                                </td>
+
+                                <td>
+                                    @if (Model[i].UnApprovedOT != 0 || Model[i].UnApprovedComOff != 0 || Model[i].PendingLeaveHours != 0)
+                                    {
+                                        using (Ajax.BeginForm("_ApprovalAllOTCOLeave", "Activity",
+                                                      new { src = clsApplicationSetting.EncryptQueryString(ViewBag.MenuID.ToString() + "*/Activity/_ApprovalAllOTCOLeave"), EMPID = Model[i].EMPID, Date = Model[i].MonthName },
+                                                      new AjaxOptions { HttpMethod = "POST", OnSuccess = "ApprovalAllOTCOLeaveResponse", OnFailure = "ApprovalAllOTCOLeaveResponse" })
+                                                  )
+                                        {
+                                            <button type="submit" name="Command" value="Approved" class="btn mtr-g-grn btn-l ripplelink p-2 mb-0 btnAllOTCOLeaveApprove"><i class="fas fa-check"></i>Approve All</button>
+                                        }
+                                    }
+                                </td>
+
+
+                                <td><strong> <a class="@(ViewBag.Approve == "2" ? "" : "bindViewActive")" N="@Model[i].EMPName" E="@Model[i].EMPID">@Model[i].Status</a></strong></td>
+
+
+                                <td class="text-center">
+                                    @if (Model[i].UnApprovedOT == 0 && Model[i].UnApprovedComOff == 0 && Model[i].PendingLeaveHours == 0)
+                                    {
+
+                                        <input type="checkbox" class="newwidth chksingle" id="Chksingle_@Count" name="@Html.NameFor(x=>Model[i].CheckSelected)" />
+                                        <label for="Chksingle_@Count"></label>
+                                        @*<button type="button" name="Command" value="Approved" class="btn mtr-g-grn btn-l ripplelink p-1 submitApproved"><i class="fas fa-check"></i>Approve Timesheet</button>
+                                            <button type="button" name="Command" value="Resubmit" class="btn mtr-r-grn btn-l ripplelink p-1 SubmitResubmit"><i class="fas fa-ban"></i>Resubmit</button>*@
+                                    }
+                                </td>
+
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    }
+}
+else
+{
+    using (Html.BeginForm("_SubmitActiveLogApproval", "Activity",
+    new { src = clsApplicationSetting.EncryptQueryString(ViewBag.MenuID.ToString() + "*/Activity/_SubmitActiveLogApproval*" + ViewBag.SelectedDate) },
+    FormMethod.Post,
+    new
+    {
+        name = "_ActionOnRegistrationFrom",
+        id = "_ActionOnRegistrationFrom",
+        enctype = "multipart/form-data"
+    }))
+    {
+        @Html.AntiForgeryToken()
+
+        if (ViewBag.Approve == "1")
+        {
+            <div class="row">
+                <div class="col-sm-12 text-right">
+                    <button type="submit" class="btn blk-gdn-btn btn-l pull-right btnActivity" name="Command" value="Resubmit"><i class="fas fa-redo-alt"></i>Resubmit</button>
+                </div>
+            </div>
+        }
+
+        <div class="x_content table-currency mt-0">
+            <div class="table-responsive">
+                <table id="tableActiveLogApprove" class="table table-striped table-bordered dt-responsive nowrap tbltick new_width" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
+                    <thead>
+                        <tr>
+                            <th>S.no.</th>
+                            <th>Employee Code</th>
+                            <th>Employee Name</th>
+                            <th>Month</th>
+
+                            <th>Status</th>
+                            @if (ViewBag.Approve == "1")
+                            {
+                                <th>Action</th>
+                            }
+
+
+                        </tr>
+                        <tr class="searchbar">
+                            <th class="searchhide"> </th>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+
+                            <th></th>
+                            @if (ViewBag.Approve == "1")
+                            {
+                                <th class="searchhide"> </th>
+                            }
+
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @{ int Count = 0;}
+                        @for (int i = 0; i < Model.Count; i++)
+                        {
+                            Count++;
+                            <tr>
+                                <td>
+                                    @Html.HiddenFor(x => Model[i].ApprovedRemarks, new { @class = "ApprovedRemarks" })
+                                    @Html.HiddenFor(x => Model[i].Year)
+                                    @Html.HiddenFor(x => Model[i].Month)
+                                    @Html.HiddenFor(x => Model[i].EMPID)
+                                    @Html.HiddenFor(x => Model[i].EMPName)
+                                    @Count
+                                    <input type="hidden" name="N" value="@Model[i].EMPName" />
+                                    <input type="hidden" name="E" value="@Model[i].EMPID" />
+                                    <input type="hidden" name="D" value="@Model[i].MonthName" />
+
+                                </td>
+
+                                <td> @Model[i].EMPCode</td>
+                                <td> @Model[i].EMPName</td>
+                                <td> @Model[i].MonthName</td>
+
+
+
+                                <td><strong> <a class="@(ViewBag.Approve == "2" ? "" : "bindViewActive")" N="@Model[i].EMPName" E="@Model[i].EMPID">@Model[i].Status</a></strong></td>
+                                @if (ViewBag.Approve == "1")
+                                {
+                                    <td class="text-center">
+                                        <input type="checkbox" class="newwidth chksingle" style="display:@(Model[i].IsLock==0?"":"none")" id="Chksingle_@Count" name="@Html.NameFor(x=>Model[i].CheckSelected)" />
+                                        <label for="Chksingle_@Count"></label>
+
+                                    </td>
+                                }
+
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    }
+}
+
+

@@ -1,0 +1,1261 @@
+﻿
+@{
+	ViewBag.Title = "CompleteProfileDetails";
+	Layout = "~/Views/Shared/_UserProcess.cshtml";
+}
+<script src="~/assets/design/js/wow.js"></script>
+<script src="~/assets/design/js/wow.min.js"></script>
+@section scripts    {
+	@System.Web.Optimization.Scripts.Render("~/bundle/unobtrusivejs")
+	@System.Web.Optimization.Scripts.Render("~/bundle/dataTablesjs")
+	<script src="~/assets/design/Scripts/AddInit.js?v=@clsApplicationSetting.GetWebConfigValue("Version")"></script>
+
+	<script src="~/Scripts/CompleteProfileDetails.js"></script>
+	<script>
+
+        var CandidateId = '@ViewBag.RequestId';
+		var IsEDUser = '@ViewBag.IsED';
+        var loggedinUserid = '@ViewBag.UserId';
+		var loggedinUserName = '@ViewBag.UserName';
+		var UserGrade = '@ViewBag.Grade';
+		var IsPM = '@ViewBag.IsPM';
+		var IPAddress = '@ViewBag.IPAddress';
+		var ScreenLock = '@ViewBag.ScreenLock';
+	</script>
+}
+<script>
+	function RedirectToOnboard() {
+		window.location.href = virtualPath + 'UserProcess/Joined';
+	}
+</script>
+<h1 class="heading-one ">Complete Your Profile</h1>
+<div class="inner-main">
+
+	<div class="row">
+		<div class="col-md-3 mb-3"> <strong><i class="fas fa-info"></i>Personal Information</strong> </div>
+		<div class="col-md-8">
+			<div class="row">
+				<div class="col-md-3 col-sm-6 form-group">
+					<label>Father's Name <sup>*</sup></label>
+					<input type="text" id="txtFatherName" placeholder="Enter Name" name="" class="form-control Mandatory" onchange="HideErrorMessage(this)">
+					<span id="sptxtFatherName" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+				</div>
+				<div class="col-md-3 col-sm-6 form-group">
+					<label>Mother's Name </label>
+					<input type="text" id="txtMotherName" placeholder="Enter Name" name="" class="form-control">
+				</div>
+				<div class="col-md-3 col-sm-6 form-group">
+					<label>Gender Name  <sup>*</sup></label>
+					<select class="form-control dpselect select2-hidden-accessible Mandatorypld" id="ddlGenderName" onchange="HideErrorMessage(this)" tabindex="-1" aria-hidden="true">
+						<option>Select</option>
+						<option value="1">Male</option>
+						<option value="2">Female</option>
+						<option value="3">Others</option>
+					</select>
+					<span id="spddlGenderName" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+				</div>
+
+				<div class="col-md-3 col-sm-6 form-group">
+					<label>Date of Birth  <sup>*</sup></label>
+					<input type="text" autocomplete="off" class="form-control datepicker Mandatory" onchange="HideErrorMessage(this)" placeholder="Enter" id="txtDateofBirth">
+					<span id="sptxtDateofBirth" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+				</div>
+
+				<div class="col-md-3 col-sm-6 form-group">
+					<label>Marital Status  <sup>*</sup></label>
+					<select id="ddlMaritalStatus" class="form-control dpselect Mandatorypld" onchange="HideErrorMessage(this); ChangeMaritalStatus();" tabindex="-1" aria-hidden="true">
+						<option>Select</option>
+						<option value="1">Single</option>
+						<option value="2">Married</option>
+						<option value="3">Divorced</option>
+						<option value="4">Partner </option>
+						<option value="5">Widow  </option>
+						<option value="6">Widower  </option>
+					</select>
+					<span id="spddlMaritalStatus" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+				</div>
+				<div id="divMarried" style="display:none" class="col-sm-12 form-group">
+					<div class="hglt-bg">
+						<div class="row">
+							<div class="col-sm-3 form-group hw-575">
+								<label>Spouse/Partner</label>
+								<select id="ddlSpousePartner" class="form-control dpselect select2-hidden-accessible" tabindex="-1" aria-hidden="true">
+									<option value="0">Select</option>
+									<option value="1">Spouse</option>
+									<option value="2">Partner</option>
+								</select>
+							</div>
+							<div id="fail" style="display:none" class="col-md-3 col-sm-9 form-group">
+								<label>Spouse's Name </label>
+								<input type="text" id="txtSpousesName" placeholder="Enter Name" name="" class="form-control">
+							</div>
+							<div id="failpn" style="display:none" class="col-md-3 col-sm-9 form-group">
+								<label>Partner's Name </label>
+								<input type="text" id="txtPartnersName" placeholder="Enter Name" name="" class="form-control">
+							</div>
+							<div class="col-sm-3 form-group">
+								<label>Anniversary Date </label>
+								<input type="text" id="txtAnniversaryDate" name="" class="form-control datepicker OfferIssued">
+							</div>
+							<div class="col-sm-3 form-group">
+								<label>No. of Children </label>
+								<div class="input-group ">
+									<input type="Number" id="txtMarriedNoOfChildren2" class="form-control" value="" placeholder="Enter" aria-label="Username" aria-describedby="basic-addon1">
+									<div class="input-group-prepend">
+										<span class="input-group-text" id="basic-addon1">Children</span>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div id="divDivorced" style="display:none" class="col-sm-3 form-group">
+					<label>No. of Children </label>
+					<div class="input-group ">
+						<input type="Number" id="txtDivorcedNoOfChildren" class="form-control" value="" placeholder="Enter" aria-label="Username" aria-describedby="basic-addon1">
+						<div class="input-group-prepend">
+							<span class="input-group-text" id="basic-addon1">Children</span>
+						</div>
+					</div>
+				</div>
+				<div class="col-md-3 col-sm-6 form-group hw-575">
+					<label>Nationality <sup>*</sup> </label>
+					<select id="ddlNationality" class="form-control dpselect select2-hidden-accessible Mandatorypld" onchange="HideErrorMessage(this); ChangesNationality();" tabindex="-1" aria-hidden="true">
+						<option value="0">Select</option>
+						<option value="1">Indian</option>
+						<option value="2">Foreign</option>
+					</select>
+					<span id="spddlNationality" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+				</div>
+				<div id="failfn" style="display:none" class="col-sm-12 ">
+					<div class="hglt-bg mb-2">
+						<div class="row">
+							<div class="col-md-3 col-sm-6 form-group hw-575">
+								<label>Country <sup id="spnddlCountry">*</sup></label>
+								<select id="ddlCountry" onchange="HideErrorMessage(this)" class="form-control dpselect select2-hidden-accessible" tabindex="-1" aria-hidden="true">
+								</select>
+								<span id="spddlCountry" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+							</div>
+							<div class="col-md-3 col-sm-6 form-group hw-575">
+								<label>Details of Work Permit/Visa <sup id="spnDetailOfWorPermitVisa">*</sup></label>
+								<input type="text" id="txtDetailOfWorPermitVisa" onchange="HideErrorMessage(this)" placeholder="Enter" class="form-control ">
+								<span id="sptxtDetailOfWorPermitVisa" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+							</div>
+							<div class="col-md-3 col-sm-6 form-group hw-575">
+								<label>Validity Date <sup id="spnValidityDate">*</sup></label>
+								<input type="text" id="txtValidityDate" onchange="HideErrorMessage(this)" autocomplete="off" value="" class="form-control datepicker OfferIssued" placeholder="">
+								<span id="sptxtValidityDate" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+							</div>
+							<div class="col-md-3 col-sm-6 form-group hw-575" style="margin-top:-17px">
+								<label>Social Security Number/ TIN of country of origin <sup id="spnDetailOfWorSSN">*</sup></label>
+								<input type="text" id="txtDetailOfWorSSN" onchange="HideErrorMessage(this)" placeholder="Enter" class="form-control">
+								<span id="sptxtDetailOfWorSSN" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+							</div>
+							<div class="col-md-6 col-sm-12 form-group">
+								<label>Any Other Details</label>
+								<textarea id="txtAnyOtherDetails" class="form-control maxSize[200]" placeholder="Enter"></textarea>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="col-sm-12 form-group">
+					<hr>
+					<span class="hr-aps lgt-text font-sm">Local Address</span>
+				</div>
+				<div class="col-sm-6 form-group">
+					<label>Address Line 1  <sup>*</sup></label>
+					<textarea id="txtLAAddressLine1" class="form-control maxSize[200] Mandatory" onchange="HideErrorMessage(this)" placeholder="Enter Address"></textarea>
+					<span id="sptxtLAAddressLine1" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+				</div>
+				<div class="col-sm-6 form-group">
+					<label>Address Line 2</label>
+					<textarea id="txtLAAddressLine2" class="form-control maxSize[200]" placeholder="Enter Address"></textarea>
+				</div>
+
+				<div class="col-sm-2 form-group hw-575">
+					<label>Pin <sup>*</sup></label>
+					<input type="number" id="txtLAPinCode" onchange="HideErrorMessage(this)" value="" class="form-control Mandatory" placeholder="Enter">
+					<span id="sptxtLAPinCode" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+				</div>
+				<div class="col-sm-2 form-group hw-575">
+					<label>Country <sup>*</sup></label>
+					<select id="ddlLACountry" class="form-control dpselect select2-hidden-accessible Mandatorypld" onchange="HideErrorMessage(this); ChangeLACountry();" tabindex="-1" aria-hidden="true">
+					</select>
+					<span id="spddlLACountry" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+				</div>
+				<div class="col-sm-2 form-group hw-575">
+					<label>State <sup>*</sup></label>
+					<select id="ddlLAState" class="form-control dpselect select2-hidden-accessible Mandatorypld" onchange="HideErrorMessage(this);ChangeLACity();" tabindex="-1" aria-hidden="true">
+					</select>
+					<span id="spddlLAState" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+				</div>
+				<div class="col-sm-2 form-group hw-575">
+					<label>City <sup>*</sup></label>
+					@*<input type="text" id="txtLACity" value="" class="form-control" placeholder="Enter">*@
+					<select id="ddlLACity" onchange="HideErrorMessage(this)" class="form-control dpselect select2-hidden-accessible Mandatorypld" tabindex="-1" aria-hidden="true">
+					</select>
+					<span id="spddlLACity" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+				</div>
+				<div class="col-sm-3 form-group hw-575">
+					<label>Mobile <sup>*</sup></label>
+					<input type="Number" id="txtLAMobile" onchange="HideErrorMessage(this)" value="" class="form-control Mandatory" placeholder="Enter">
+					<span id="sptxtLAMobile" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+				</div>
+				<div class="col-md-12 form-group">
+					<input type="checkbox" id="chkSameAsPermanentAddress" onclick="CkeckSameAsPermanentAddress();" name="1">
+					<label for="chkSameAsPermanentAddress">Same as Local Address</label>
+
+				</div>
+				<div class="col-sm-12 form-group">
+					<hr>
+					<span class="hr-aps lgt-text font-sm">Permanent Address</span>
+				</div>
+				<div class="col-sm-6 form-group">
+					<label>Address Line 1 <sup>*</sup></label>
+					<textarea id="txtPAAddressLine1" onchange="HideErrorMessage(this);" class="form-control maxSize[200] Mandatory" placeholder="Enter Address"></textarea>
+					<span id="sptxtPAAddressLine1" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+				</div>
+				<div class="col-sm-6 form-group">
+					<label>Address Line 2</label>
+					<textarea id="txtPAAddressLine2" class="form-control maxSize[200]" placeholder="Enter Address"></textarea>
+				</div>
+				<div class="col-sm-2 form-group hw-575">
+					<label>Pin <sup>*</sup></label>
+					<input type="number" id="txtPAPinCode" onchange="HideErrorMessage(this)" value="" class="form-control Mandatory" placeholder="Enter">
+					<span id="sptxtPAPinCode" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+				</div>
+				<div class="col-sm-3 form-group hw-575">
+					<label>Country <sup>*</sup></label>
+					<select id="ddlPACountry" class="form-control dpselect select2-hidden-accessible Mandatorypld" onchange="HideErrorMessage(this);ChangePACountry();" tabindex="-1" aria-hidden="true">
+					</select>
+					<span id="spddlPACountry" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+				</div>
+				<div class="col-sm-2 form-group hw-575">
+					<label>State <sup>*</sup></label>
+					<select id="ddlPAState" class="form-control dpselect select2-hidden-accessible Mandatorypld" onchange="HideErrorMessage(this);ChangePACity();" tabindex="-1" aria-hidden="true">
+					</select>
+					<span id="spddlPAState" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+				</div>
+				<div class="col-sm-2 form-group hw-575">
+					<label>City <sup>*</sup></label>
+					@*<input type="text" id="txtPACity" value="" class="form-control" placeholder="Enter">*@
+					<select id="ddlPACity" onchange="HideErrorMessage(this);" class="form-control dpselect select2-hidden-accessible Mandatorypld" tabindex="-1" aria-hidden="true">
+					</select>
+					<span id="spddlPACity" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+				</div>
+				<div class="col-sm-12"></div>
+				<div class="col-sm-2 form-group hw-575">
+					<label>Phone Number <sup>*</sup></label>
+					<input type="Number" id="txtPAPhoneNumber" onchange="HideErrorMessage(this);" placeholder="Enter Number" name="" class="form-control Mandatory ">
+					<span id="sptxtPAPhoneNumber" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+				</div>
+				<div class="col-sm-3 form-group hw-575">
+					<label>Alernative Phone Number <sup>*</sup></label>
+					<input type="Number" id="txtPAAlternativePhoneNumber" onchange="HideErrorMessage(this);" placeholder="Enter Number" name="" class="form-control Mandatory">
+					<span id="sptxtPAAlternativePhoneNumber" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+				</div>
+				<div class="col-sm-2 form-group hw-575">
+					<label>Landline No., if any </label>
+					<input type="Number" id="txtPALandlineNo"  placeholder="Enter Number" name="" class="form-control ">
+				</div>
+				<div class="col-sm-2 form-group hw-575">
+					<label>Personal Email ID <sup>*</sup></label>
+					<input type="email" id="txtPAPersonalEmailID" onchange="HideErrorMessage(this);" placeholder="Enter Email" name="" class="form-control Mandatory">
+					<span id="sptxtPAPersonalEmailID" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+				</div>
+
+			</div>
+		</div>
+		<!---->
+		<div class="col-sm-12 mb-3">
+			<hr class="v-line">
+		</div>
+		<!---->
+		<div class="col-md-3  mb-3"> <strong><i class="fas fa-briefcase-medical"></i>Medical Details</strong> </div>
+		<div class="col-md-8">
+			<div class="row">
+				<div class="col-sm-3 form-group hw-575">
+					<label>Special Ability <sup>*</sup> </label>
+					<select id="ddlSpecialAbility" class="form-control dpselect select2-hidden-accessible Mandatorypld" onchange="HideErrorMessage(this)" tabindex="-1" aria-hidden="true">
+						<option>Select</option>
+						<option value="1">Yes</option>
+						<option value="2">No</option>
+					</select>
+					<span id="spddlSpecialAbility" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+				</div>
+
+				<div id="failys" style="display:none" class="col-sm-9 form-group">
+					<label>What you need form C3 </label>
+					<textarea id="txtMDformC3" class="form-control maxSize[200]" placeholder="Enter"></textarea>
+				</div>
+				<div class="col-sm-9 form-group">
+					<label>Any special medical condition that C3 must be aware of </label>
+					<textarea id="txtMDconditionC3" class="form-control maxSize[200]" placeholder="Enter"></textarea>
+				</div>
+				<div class="col-md-6 col-sm-12 form-group ">
+					<label>Hospital /Physician Name</label>
+					<input type="text" id="txtMDHospitalPhysicianName" placeholder="Enter name" name="" class="form-control">
+				</div>
+				<div class="col-md-3 col-sm-4 form-group hw-575">
+					<label>Phone Number</label>
+					<input type="Number" id="txtMDPhoneNumber" placeholder="Enter Number" name="" class="form-control">
+				</div>
+				<div class="col-md-3 col-sm-4 form-group hw-575">
+					<label>Alternative Number</label>
+					<input type="Number" id="txtMDAlternativeNumber" placeholder="Enter Number" name="" class="form-control">
+				</div>
+
+				<div class="col-md-3 col-sm-4 form-group hw-575">
+					<label>Blood Group <sup>*</sup></label>
+					<select id="ddlBloodGroup" onchange="HideErrorMessage(this)"
+							class="form-control dpselect select2-hidden-accessible Mandatorypld" tabindex="-1" aria-hidden="true">
+						@*<option>Select</option>
+						<option value="1">A</option>
+						<option value="2">A +</option>
+						<option value="3">B</option>
+						<option value="4">B +</option>
+						<option value="5">AB</option>
+						<option value="6">AB +</option>
+						<option value="7">O</option>
+						<option value="8">O +</option>*@
+					</select>
+					<span id="spddlBloodGroup" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+				</div>
+				<div class="col-md-3 col-sm-4 form-group hw-575">
+					<label>Emergency Contact Name <sup>*</sup></label>
+					<input type="text" id="txtMDEmergencyContactName" onchange="HideErrorMessage(this)" placeholder="Enter Name" name="" class="form-control Mandatory">
+					<span id="sptxtMDEmergencyContactName" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+				</div>
+				<div class="col-md-3 col-sm-4 form-group hw-575">
+					<label>Emergency Contact Relationship  <sup>*</sup></label>
+					<input type="text" id="txtMDEmergencyContactRelationship" onchange="HideErrorMessage(this)" placeholder="Enter Number" name="" class="form-control Mandatory">
+					<span id="sptxtMDEmergencyContactName" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+				</div>
+			</div>
+		</div>
+		<!---->
+		<div class="col-sm-12 mb-3">
+			<hr class="v-line">
+		</div>
+		<!---->
+		<div class="col-md-3  mb-3"> <strong><i class="fas fa-balance-scale"></i>Legal Information</strong> </div>
+		<div class="col-md-8">
+			<div class="row">
+				<div class="col-sm-12">
+					<div class="table-responsive mb-lst mt-0">
+						<table class="table mt-0 mb-0 tble-lr-non">
+							<tbody>
+								<tr>
+									<td class="btm-m"><strong class="hd-wm">PAN <sup class="red-clr">*</sup></strong></td>
+									<td class="w-50 mp-0">
+										<div class="toggle-btn tgl-hdrm" style="display:none">
+											<input type="checkbox" onclick="CheckClickLIFlagPan();" class="toggle" id="chkLIFlagPan" value="0" checked="checked">
+											<label for="chkLIFlagPan"> <span class="off">No</span> <span class="on">Yes</span> </label>
+										</div>
+									</td>
+									<td class="w-200 ">
+										<div class="form-group mb-0">
+											<label class="lbl-ab">PAN</label>
+											<input type="text" id="txtLIPan" class="form-control Mandatorypld" placeholder="Enter Number" onchange="HideErrorMessage(this);">
+											<span id="sptxtLIPan" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+										</div>
+									</td>
+									<td class="w-200">
+										<div class="form-group mb-0">
+											<label class="lbl-ab">Name on PAN</label>
+											<input type="text" onchange="HideErrorMessage(this);" id="txtLINameOnPAN" placeholder="Enter" class="form-control Mandatory">
+											<span id="sptxtLINameOnPAN" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+										</div>
+									</td>
+									<td class="w-300" colspan="2">
+										<div class="form-group mb-0">
+											<label class="lbl-ab">Remark</label>
+											<textarea id="txtLIRemark" placeholder="Enter Remark" class="form-control maxSize[200]"></textarea>
+										</div>
+									</td>
+								</tr>
+								<tr>
+									<td class="btm-m"><strong class="hd-wm">Aadhar  <sup class="red-clr">*</sup></strong></td>
+									<td class="w-50 mp-0">
+										<div class="toggle-btn tgl-hdrm" style="display:none">
+											<input type="checkbox" id="chkLIFlagAadhar" onclick="CheckClickLIFlagAadhar();" class="toggle" value="0" checked="">
+											<label for="chkLIFlagAadhar"> <span class="off">No</span> <span class="on">Yes</span> </label>
+										</div>
+									</td>
+									<td>
+										<div class="form-group mb-0">
+											<label class="lbl-ab">Aadhar No</label> @*onchange="LIAadharNoChange(this)"*@
+											<input type="number" id="txtLIAadharNo" onchange="HideErrorMessage(this)" class="form-control Mandatorypld " placeholder="Enter Number">
+											<span id="sptxtLIAadharNo" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+										</div>
+									</td>
+									<td>
+										<div class="form-group mb-0">
+											<label class="lbl-ab">Name on Aadhar Card</label>
+											<input type="text" id="txtLINameOnAadharCard" onchange="HideErrorMessage(this)" placeholder="Enter" class="form-control Mandatory">
+											<span id="sptxtLINameOnAadharCard" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+										</div>
+									</td>
+									<td colspan="2" class="td-mn"></td>
+								</tr>
+								<tr>
+									<td class="btm-m"><strong class="hd-wm">Voter ID</strong></td>
+									<td class="w-50 mp-0">
+										<div class="toggle-btn tgl-hdrm">
+											<input type="checkbox" onclick="CheckLIFlagVoterID();" class="toggle" id="chkLIFlagVoterID" value="0" checked="">
+											<label for="chkLIFlagVoterID"> <span class="off">No</span> <span class="on">Yes</span> </label>
+										</div>
+									</td>
+									<td>
+										<div class="form-group mb-0">
+											<label class="lbl-ab">Voter ID No</label>
+											<input type="text" id="txtLIVoterIDNo" onchange="LIVoterIDNoChange();" class="form-control" placeholder="Enter Number">
+										</div>
+									</td>
+								</tr>
+								<tr>
+									<td class="btm-m"><strong class="hd-wm">Passport</strong></td>
+									<td class="w-50 mp-0">
+										<div class="toggle-btn tgl-hdrm">
+											<input type="checkbox" onclick="CheckLIFlagPassport();" class="toggle" id="chkLIFlagPassport" value="0" checked="">
+											<label for="chkLIFlagPassport"> <span class="off">No</span> <span class="on">Yes</span> </label>
+										</div>
+									</td>
+									<td>
+										<div class="form-group mb-0">
+											<label class="lbl-ab">Passport No</label>
+											<input type="text" id="txtLIPassportNo" onchange="LIPassportNoChange();" class="form-control" placeholder="Enter Number">
+										</div>
+									</td>
+									<td>
+										<div class="form-group mb-0">
+											<label class="lbl-ab">Name on Passport</label>
+											<input type="text" class="form-control" id="txtLINameOnPassport" placeholder="Enter ">
+										</div>
+									</td>
+									<td>
+										<div class="form-group mb-0">
+											<label class="lbl-ab">Place of Issue</label>
+											<input type="text" class="form-control" id="txtLIPlaceOfIssue" placeholder="Enter ">
+										</div>
+									</td>
+									<td>
+										<div class="form-group mb-0">
+											<label class="lbl-ab">Passport Expiry Date</label>
+											<input type="text" id="txtLIPassportExpiryDate" class="form-control datepicker OfferIssued" placeholder="Enter ">
+										</div>
+									</td>
+								</tr>
+								<tr>
+									<td class="btm-m"><strong class="hd-wm">Director Identification Number</strong></td>
+									<td class="w-50 mp-0">
+										<div class="toggle-btn tgl-hdrm">
+											<input type="checkbox" class="toggle" onclick="CheckLIFlagDIN();" id="chkLIFlagDIN" value="0" checked="">
+											<label for="chkLIFlagDIN"> <span class="off">No</span> <span class="on">Yes</span> </label>
+										</div>
+									</td>
+									<td>
+										<div class="form-group mb-0">
+											<label class="lbl-ab">DIN</label>
+											<input type="text" id="txtLIDIN" onchange="LIDINChange();" class="form-control" placeholder="Enter Number">
+										</div>
+									</td>
+									<td>
+										<div class="form-group mb-0">
+											<label class="lbl-ab">Name on DIN</label>
+											<input type="text" id="txtLINameOnDIN" class="form-control" placeholder="Enter ">
+										</div>
+									</td>
+									<td class="td-mn"></td>
+									<td class="td-mn"></td>
+								</tr>
+								<tr>
+									<td class="btm-m"><strong class="hd-wm">UAN</strong></td>
+									<td class="w-50 mp-0">
+										<div class="toggle-btn tgl-hdrm">
+											<input type="checkbox" onclick="CheckLIFlagUAN();" class="toggle" id="chkLIFlagUAN" value="0" checked="">
+											<label for="chkLIFlagUAN"> <span class="off">No</span> <span class="on">Yes</span> </label>
+										</div>
+									</td>
+									<td>
+										<div class="form-group mb-0">
+											<label class="lbl-ab">UAN</label>
+											<input type="text" id="txtLIUAN" onchange="LIUANChange();" class="form-control" placeholder="Enter Number">
+										</div>
+									</td>
+									<td>
+										<div class="form-group mb-0">
+											<label class="lbl-ab">Name on UAN</label>
+											<input type="text" id="txtLINameOnUAN" class="form-control" placeholder="Enter ">
+										</div>
+									</td>
+									<td class="td-mn"></td>
+									<td class="td-mn"></td>
+								</tr>
+								<tr>
+									<td class="btm-m"><strong class="hd-wm">PIO/OCI</strong></td>
+									<td class="w-50 mp-0">
+										<div class="toggle-btn tgl-hdrm">
+											<input type="checkbox" onclick="CheckLIFlagPIOOCI();" class="toggle" id="chkLIFlagPIOOCI" value="0" checked="">
+											<label for="chkLIFlagPIOOCI"> <span class="off">No</span> <span class="on">Yes</span> </label>
+										</div>
+									</td>
+									<td>
+										<div class="form-group mb-0">
+											<label class="lbl-ab">PIO/OCI</label>
+											<input type="text" id="txtLIPIOOCI" onchange="LIPIOOCIChange();" class="form-control" placeholder="Enter Number">
+										</div>
+									</td>
+									<td>
+										<div class="form-group mb-0">
+											<label class="lbl-ab">Name on PIO/OCI</label>
+											<input type="text" id="txtLINameOnPIOOCI" class="form-control" placeholder="Enter ">
+										</div>
+									</td>
+									<td class="td-mn"></td>
+									<td class="td-mn"></td>
+								</tr>
+								<tr>
+									<td class="btm-m"><strong class="hd-wm">Driving License</strong></td>
+									<td class="w-50 mp-0">
+										<div class="toggle-btn tgl-hdrm">
+											<input type="checkbox" class="toggle" onclick="CheckLIFlagDrivingLicense();" id="chkLIFlagDrivingLicense" value="0" checked="">
+											<label for="chkLIFlagDrivingLicense"> <span class="off">No</span> <span class="on">Yes</span> </label>
+										</div>
+									</td>
+									<td>
+										<div class="form-group mb-0">
+											<label class="lbl-ab">Driving License No</label>
+											<input type="text" id="txtLIDrivingLicenseNo" onchange="LIDrivingLicenseNoChange();" class="form-control" placeholder="Enter Number">
+										</div>
+									</td>
+									<td class="td-mn"></td>
+									<td class="td-mn"></td>
+									<td class="td-mn"></td>
+								</tr>
+								<tr>
+									<td class="btm-m"><strong class="hd-wm">Professional Tax already deposited</strong></td>
+									<td class="w-50 mp-0">
+										<div class="toggle-btn tgl-hdrm">
+											<input type="checkbox" onclick="CheckLIFlagPTAD();" class="toggle" id="chkLIFlagPTAD" value="0" checked="">
+											<label for="chkLIFlagPTAD"> <span class="off">No</span> <span class="on">Yes</span> </label>
+										</div>
+									</td>
+									<td>
+										<div class="form-group mb-0">
+											<label class="lbl-ab">Amount</label>
+											<input type="number" id="txtLIAmount" class="form-control" placeholder="Enter Amount">
+										</div>
+									</td>
+								</tr>
+								<tr>
+									<td class="btm-m"><strong class="hd-wm">Residential Status </strong></td>
+									<td class="w-50 mp-0"></td>
+									<td>
+										<select id="ddlResidentialStatus" class="form-control dpselect select2-hidden-accessible" tabindex="-1" aria-hidden="true">
+											<option value="0">Select</option>
+											<option value="1">Resident</option>
+											<option value="2">Non-Resident</option>
+										</select>
+									</td>
+									<td class="td-mn"></td>
+									<td class="td-mn"></td>
+									<td class="td-mn"></td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
+				</div>
+			</div>
+		</div>
+		<!---->
+
+		<div class="col-sm-12 mb-3">
+			<hr class="v-line">
+		</div>
+		<!---->
+		<div class="col-md-3  mb-3"> <strong><i class="fas fa-university"></i>Bank Account Details for Salary and Benefits</strong> </div>
+		<div class="col-md-8">
+			<div class="row">
+				<div class="col-md-3 col-sm-6 form-group">
+					<label>Name of the Bank<sup>*</sup></label>
+					<select id="ddlBenefitsNameOfTheBank" onchange="HideErrorMessage(this)" class="form-control dpselect select2-hidden-accessible Mandatorypld" tabindex="-1" aria-hidden="true">
+						@*<option>Select</option>
+							<option value="1">YES Bank</option>
+							<option value="2">Punjab Nation Bank</option>*@
+					</select>
+					<span id="spddlBenefitsNameOfTheBank" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+				</div>
+				<div class="col-md-3 col-sm-6 form-group">
+					<label>Type of Bank Account<sup>*</sup></label>
+					<select id="ddlBenefitsTypeOfBankAccount" class="form-control dpselect select2-hidden-accessible Mandatorypld" onchange="HideErrorMessage(this)" tabindex="-1" aria-hidden="true">
+						<option>Select</option>
+						<option value="1">Current</option>
+						<option value="2">Saving</option>
+					</select>
+					<span id="spddlBenefitsTypeOfBankAccount" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+				</div>
+				<div class="col-md-3 col-sm-6 form-group">
+					<label>Name on Account <sup>*</sup></label>
+					<input type="text" id="txtBenefitsNameOnAccount" placeholder="Enter Account" onchange="HideErrorMessage(this)" name="" class="form-control Mandatory">
+					<span id="sptxtBenefitsNameOnAccount" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+				</div>
+				<div class="col-md-3 col-sm-6 form-group">
+					<label>Bank Account No.<sup>*</sup></label>
+					<input type="number" id="txtBenefitsBankAccountNo" placeholder="Enter Code" name="" onchange="HideErrorMessage(this)" class="form-control Mandatory">
+					<span id="sptxtBenefitsBankAccountNo" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+				</div>
+				<div class="col-sm-12 form-group">
+					<label>Branch Address</label>
+					<textarea id="txtBenefitsBranchAddress" placeholder="Enter Address" class="form-control maxSize[200]"></textarea>
+				</div>
+				<div class="col-md-3 col-sm-4 form-group">
+					<label>IFS Code</label>
+					<input type="text" id="txtBenefitsIFSCode" placeholder="Enter Code" name="" class="form-control">
+				</div>
+				<div class="col-md-3 col-sm-4 form-group">
+					<label>SWIFT Code</label>
+					<input type="text" id="txtBenefitsSWIFTCode" placeholder="Enter Code" name="" class="form-control">
+				</div>
+				<div class="col-md-6 col-sm-4 form-group">
+					<label>Other Details</label>
+					<textarea id="txtBenefitsOtherDetails" placeholder="Enter Address" class="form-control maxSize[200]"></textarea>
+				</div>
+				<div class="col-md-12 form-group">
+					<input type="checkbox" id="chkReimbursement" onclick="CkeckReimbursement();" name="1">
+					<label for="chkReimbursement">  Reimbursement bank same as Salary bank</label>
+
+				</div>
+			</div>
+		</div>
+		<!---->
+
+		<div class="col-sm-12 mb-3">
+			<hr class="v-line">
+		</div>
+		<!---->
+
+		<div class="col-md-3  mb-3"> <strong><i class="fas fa-university"></i>Bank Account Details for Other Reimbursement</strong> </div>
+		<div class="col-md-8">
+			<div class="row">
+				<div class="col-md-3 col-sm-6 form-group">
+					<label>Name of the Bank<sup>*</sup></label>
+					<select id="ddlReimbursementNameOfTheBank" onchange="HideErrorMessage(this)" class="dpselect form-control select2-hidden-accessible Mandatorypld" tabindex="-1" aria-hidden="true">
+						@*<option>Select</option>
+							<option value="1">YES Bank</option>
+							<option value="2">Punjab Nation Bank</option>*@
+					</select>
+					<span id="spddlReimbursementNameOfTheBank" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+				</div>
+				<div class="col-md-3 col-sm-6 form-group">
+					<label>Type of Bank Account<sup>*</sup></label>
+					<select id="ddlReimbursementTypeOfBankAccount" onchange="HideErrorMessage(this)" class="form-control dpselect select2-hidden-accessible Mandatorypld" tabindex="-1" aria-hidden="true">
+						<option>Select</option>
+						<option value="1">Current</option>
+						<option value="2">Saving</option>
+					</select>
+					<span id="spddlReimbursementTypeOfBankAccount" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+				</div>
+				<div class="col-md-3 col-sm-6 form-group">
+					<label>Name on Account <sup>*</sup></label>
+					<input id="txtReimbursementNameOnAccount" type="text" onchange="HideErrorMessage(this)" placeholder="Enter Account" name="" class="form-control Mandatory">
+					<span id="sptxtReimbursementNameOnAccount" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+				</div>
+				<div class="col-md-3 col-sm-6 form-group">
+					<label>Bank Account No.<sup>*</sup></label>
+					<input id="txtReimbursementBankAccountNo" onchange="HideErrorMessage(this)" type="number" placeholder="Enter Code" name="" class="form-control Mandatory">
+					<span id="sptxtReimbursementBankAccountNo" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+				</div>
+				<div class="col-sm-12 form-group">
+					<label>Branch Address</label>
+					<textarea id="txtReimbursementBranchAddress" placeholder="Enter Address" class="form-control maxSize[200]"></textarea>
+				</div>
+				<div class="col-md-3 col-sm-4 form-group">
+					<label>IFS Code</label>
+					<input type="text" id="txtReimbursementIFSCode" placeholder="Enter Code" name="" class="form-control">
+				</div>
+				<div class="col-md-3 col-sm-4 form-group">
+					<label>SWIFT Code</label>
+					<input type="text" id="txtReimbursementSWIFTCode" placeholder="Enter Code" name="" class="form-control">
+				</div>
+				<div class="col-md-6 col-sm-4 form-group">
+					<label>Other Details</label>
+					<textarea id="txtReimbursementOtherDetails" placeholder="Enter Address" class="form-control maxSize[200]"></textarea>
+				</div>
+			</div>
+		</div>
+		<!---->
+
+		<div class="col-sm-12 mb-3">
+			<hr class="v-line">
+		</div>
+		<!---->
+
+		<div class="col-md-3  mb-3"> <strong><i class="fas fa-user-tie"></i>Last Employment Details</strong> </div>
+		<div class="col-md-8">
+			<div class="row">
+				<div class="col-md-3 col-sm-6 form-group">
+					<label>Employer Name</label>
+					<input type="text" id="txtLEDEmployerName" placeholder="Enter name" name="" class="form-control">
+				</div>
+				<div class="col-md-3 col-sm-6 form-group">
+					<label>Date of Joining</label>
+					<input type="text" id="txtLEDDateOfJoining" autocomplete="off" placeholder="Enter Code" name="" class="form-control datepicker OfferIssued">
+				</div>
+
+				<div class="col-md-3 col-sm-6 form-group">
+					<label>Date of Leaving</label>
+					<input type="text" id="txtLEDDateOfLeaving" autocomplete="off" placeholder="Enter Code" name="" class="form-control datepicker OfferIssued">
+				</div>
+				<div class="col-md-3 col-sm-6 form-group">
+					<label>Total Work Experience (In Years)</label>
+					<input type="number" id="txtLEDTotalWorkExperience" placeholder="Enter Designation" name="" class="form-control">
+				</div>
+				<div class="col-md-3 col-sm-6 form-group align-self-end">
+					<label>Last Annual CTC <br><small class="lgt-text">(Gross CTC and benefits details in any)</small></label>
+					<input type="number" id="txtLEDLastAnnualCTC" placeholder="Enter" name="" class="form-control">
+				</div>
+				<div class="col-md-3 col-sm-6 form-group  align-self-end">
+					<label>Designation</label>
+					<input type="text" id="txtLEDDesignation" placeholder="Enter Designation" name="" class="form-control">
+				</div>
+				<div class="col-md-3 col-sm-6 form-group  align-self-end">
+					<label>Location</label>
+					<input type="text" id="txtLEDLocation" placeholder="Enter Location" name="" class="form-control">
+				</div>
+				<div class="col-md-3 col-sm-6 form-group align-self-end">
+					<label>Term of Employment (In Years)</label>
+					<input type="number" id="txtLEDTermofEmployment" placeholder="Enter " name="" class="form-control">
+				</div>
+
+				<div class="col-md-6 col-sm-12 form-group align-self-end">
+					<label>In case of Gap in service, please provide reasons for the same</label>
+					<textarea id="txtLEDInCaseOfGap" placeholder="Enter Reason" class="form-control maxSize[200]"></textarea>
+				</div>
+
+				<div class="col-sm-12 form-group">
+					<ul class="list-unstyled inline-li m-0">
+						<li>
+							<label class="m-0">Do you want C3 to consider income of current financial year ?</label>
+						</li>
+						<li>
+							<div class="radio-button">
+								<input id="radCurrentfinancialyearYes" name="radio" type="radio" onclick="show1();">
+								<label for="radCurrentfinancialyearYes" class="radio-label mb-0">Yes</label>
+							</div>
+						</li>
+						<li>
+							<div class="radio-button">
+								<input id="radCurrentfinancialyearNo" name="radio" type="radio" onclick="show2();">
+								<label for="radCurrentfinancialyearNo" class="radio-label mb-0">No</label>
+							</div>
+						</li>
+					</ul>
+				</div>
+				<div class="col-md-3 col-sm-3 form-group">
+					<label>Amount of Income</label>
+					<input type="number" id="txtLEDAmountOfIncome" placeholder="Enter Income" class="form-control" name="">
+				</div>
+				<div class="col-md-9 col-sm-9 form-group">
+					<label>Amount of TDS deducted and deposited by previous employee</label>
+					<input type="number" id="txtLEDAmountOfTDSDeducted" placeholder="ENter " class="form-control" name="">
+				</div>
+			</div>
+		</div>
+		<!---->
+
+		<div class="col-sm-12 mb-3">
+			<hr class="v-line">
+		</div>
+		<!---->
+		<div class="col-md-3  mb-3"> <strong><i class="fas fa-suitcase"></i>Travel Preference</strong> </div>
+		<div class="col-md-8 col-sm-12">
+			<div class="row">
+				<div class="col-md-3 col-sm-4 form-group hw-575">
+					<label>Airline Name</label>
+					<input id="txtAirlineName" onchange="HideErrorMessage(this)" type="text" placeholder="Enter Airline Name" name="" class="form-control AddRowMandatory">
+					<span id="sptxtAirlineName" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+				</div>
+				<div class="col-md-2 col-sm-4 form-group hw-600">
+					<label>Frequent Flyer Number</label>
+					<input id="txtFrequentFlyerNumber" onchange="HideErrorMessage(this)" type="text" placeholder="Enter Flyer Number" name="" class="form-control AddRowMandatory">
+					<span id="sptxtFrequentFlyerNumber" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+				</div>
+				<div class="col-md-3 col-sm-3 form-group align-self-end text-left">
+					<button id="btnAddAirlineDetails" type="submit" class="green-clr" name="Command" onclick="AddAirlineDetails();" value="Add"><i class="fas fa-plus"></i>Add Row</button>
+				</div>
+				<div class="col-md-9 col-sm-12" >
+					<div id="tblAirlineDetails" style="width:400px;">
+
+					</div>
+				</div>
+				<div class="col-sm-12"></div>
+				<div class="col-md-3  col-sm-6 form-group hw-575">
+					<label>Seat Preference</label>
+					<select id="ddlSeatPreference" class="form-control dpselect select2-hidden-accessible" tabindex="-1" aria-hidden="true">
+						@*<option value="0">Select</option>
+						<option value="1">Aisle</option>
+						<option value="2">Lower</option>
+						<option value="3">Window</option>*@
+
+					</select>
+				</div>
+				<div class="col-md-3  col-sm-6 form-group hw-575">
+					<label>Meal Preference</label>
+					<select id="ddlMealPreference" class="form-control dpselect select2-hidden-accessible" tabindex="-1" aria-hidden="true">
+						@*<option value="0">Select</option>
+						<option value="1">Veg</option>
+						<option value="2">Non-Veg</option>
+						<option value="3">Vegan</option>
+						<option value="4">Jain</option>*@
+
+					</select>
+				</div>
+			</div>
+		</div>
+		<!---->
+		<div class="col-sm-12 text-center mt-2">
+			<button id="btnSave" type="submit" class="btn mtr-o-grn btn-l ripplelink pull-right" name="Command" onclick="SaveRegistrationDetails();" value="Add"><i class="fas fa-save"></i>Save</button>
+			<button id="btnNext" type="submit" class="btn blk-gdn-btn btn-l ripplelink pull-right" name="Command" onclick="RedirectToAttachment();" value="Add"><i class="fas fa-angle-double-right m-0"></i>Next</button>
+			<button type="button" onclick="RedirectToOnboard();" class="btn cnl-btn ripplelink  pull-right"><i class="fas fa-times"></i> Close</button>
+		</div>
+	</div>
+</div>
+
+<script>
+	$(document).ready(function () {
+		$(".dpselect").select2();
+	});
+</script>
+<script type="text/javascript">
+	$(function () {
+		$(".fold-table tr.view").on("click", function () {
+			$(this).toggleClass("open").next(".fold").toggleClass("open");
+		});
+	});
+</script>
+<script>
+	$("#txtMDPhoneNumber").keydown(function (event) {
+		k = event.which;
+		if ((k >= 48 && k <= 57) || k == 8) {
+			if ($(this).val().length == 10) {
+				if (k == 8) {
+					return true;
+				} else {
+					event.preventDefault();
+					return false;
+				}
+			}
+		} else {
+			event.preventDefault();
+			return false;
+		}
+	});
+	$("#txtMDAlternativeNumber").keydown(function (event) {
+		k = event.which;
+		if ((k >= 48 && k <= 57) || k == 8) {
+			if ($(this).val().length == 10) {
+				if (k == 8) {
+					return true;
+				} else {
+					event.preventDefault();
+					return false;
+				}
+			}
+		} else {
+			event.preventDefault();
+			return false;
+		}
+	});
+	$("#txtPAPhoneNumber").keydown(function (event) {
+		k = event.which;
+		if ((k >= 48 && k <= 57) || k == 8) {
+			if ($(this).val().length == 10) {
+				if (k == 8) {
+					return true;
+				} else {
+					event.preventDefault();
+					return false;
+				}
+			}
+		} else {
+			event.preventDefault();
+			return false;
+		}
+	});
+	$("#txtPAAlternativePhoneNumber").keydown(function (event) {
+		k = event.which;
+		if ((k >= 48 && k <= 57) || k == 8) {
+			if ($(this).val().length == 10) {
+				if (k == 8) {
+					return true;
+				} else {
+					event.preventDefault();
+					return false;
+				}
+			}
+		} else {
+			event.preventDefault();
+			return false;
+		}
+	});
+	$("#txtLAMobile").keydown(function (event) {
+		k = event.which;
+		if ((k >= 48 && k <= 57) || k == 8) {
+			if ($(this).val().length == 10) {
+				if (k == 8) {
+					return true;
+				} else {
+					event.preventDefault();
+					return false;
+				}
+			}
+		} else {
+			event.preventDefault();
+			return false;
+		}
+	});
+	$("#txtPALandlineNo").keydown(function (event) {
+		k = event.which;
+		if ((k >= 48 && k <= 57) || k == 8) {
+			if ($(this).val().length == 10) {
+				if (k == 8) {
+					return true;
+				} else {
+					event.preventDefault();
+					return false;
+				}
+			}
+		} else {
+			event.preventDefault();
+			return false;
+		}
+	});
+
+
+	function SuccessToaster(Message) {
+		$("#toastMsg").html(Message);
+		$("#toasticon i").addClass("fas fa-check green-clr ");
+		var x = document.getElementById("toast")
+		x.className = "show";
+		setTimeout(function () { x.className = x.className.replace("show", ""); }, 4000);
+	}
+
+	function FailToaster(Message) {
+		$("#toastMsg").html(Message);
+		$("#toasticon i").addClass("fas fa-exclamation-triangle red-clr");
+		var x = document.getElementById("toast")
+		x.className = "show toaster-warning";
+		setTimeout(function () { x.className = x.className.replace("show toaster-warning", ""); }, 4000);
+	}
+
+
+	function ValidateFile(FileName) {
+
+		var result = false;
+		if (document.getElementById(FileName).files[0].name.toUpperCase().match(/\.(PDF|DOCX|TXT|XLS|XLSX)$/)) {
+
+			var filesize = 3145728;
+			var sizeinbytes = document.getElementById(FileName).files[0].size;
+			if (filesize >= sizeinbytes) {
+				result = true;
+			}
+			else {
+				FailToaster("File size should be less than 3 MB");
+				document.getElementById(FileName).value = '';
+				result = false;
+
+			}
+			return result;
+		}
+		else {
+			FailToaster("Invalid file type , please select valid file again");
+			document.getElementById(FileName).value = '';
+			return result;
+		}
+
+	}
+
+	function ValidateImage(FileName) {
+
+		var result = false;
+		if (document.getElementById(FileName).files[0].name.toUpperCase().match(/\.(JPG|JPEG|PNG|PDF)$/)) {
+
+			var filesize = 2097152;
+			var sizeinbytes = document.getElementById(FileName).files[0].size;
+			if (filesize >= sizeinbytes) {
+				result = true;
+			}
+			else {
+				FailToaster("Image should be less than 2 MB");
+
+				document.getElementById(FileName).value = '';
+				result = false;
+
+			}
+			return result;
+		}
+		else {
+			FailToaster("Invalid Image type , please select valid Image");
+			document.getElementById(FileName).value = '';
+			return result;
+		}
+
+	}
+</script>
+<script>
+	// JavaScript Document
+	$(function () {
+		$('#js-nav-toggle').click(function (e) {
+			e.preventDefault();
+			$("html").toggleClass("is-sideopen");
+			$("#js-nav-toggle").toggleClass("is-active");
+		});
+
+		var $content = $('.l-contents');
+		var $header = $('.l-header');
+
+
+		$content.click(function () {
+			$("html").removeClass("is-sideopen");
+		});
+
+
+		$header.click(function () {
+			$("html").removeClass("is-sideopen");
+		});
+
+
+	});
+
+
+	$(function () {
+
+		var $dropdown = $('.js-dropdown');
+		var $content = $('.l-contents');
+		var $toggle = $('#js-nav-toggle');
+
+
+		$('.js-dropdown-menu').hide();
+		$dropdown.click(function () {
+			$('i').removeClass('is-rotate');
+			$('.js-dropdown-menu').slideUp(200);
+			if ($('+.js-dropdown-menu', this).css('display') == 'none') {
+				$('i', this).addClass('is-rotate');
+				$('+.js-dropdown-menu', this).slideDown(200);
+			}
+		});
+
+
+		$content.click(function () {
+			$('i').removeClass('is-rotate');
+			$('.js-dropdown-menu').slideUp(200);
+			if ($('+.js-dropdown-menu', this).css('display') == 'none') {
+				$('i', this).addClass('is-rotate');
+				$('+.js-dropdown-menu', this).slideDown(200);
+			}
+		});
+
+
+		$toggle.click(function () {
+			$('i').removeClass('is-rotate');
+			$('.js-dropdown-menu').slideUp(200);
+			if ($('+.js-dropdown-menu', this).css('display') == 'none') {
+				$('i', this).addClass('is-rotate');
+				$('+.js-dropdown-menu', this).slideDown(200);
+			}
+		});
+
+	});
+
+	$(function () {
+		$('.is-ac-close').hide();
+		$(".is-ac-click").on("click", function () {
+			if ($(this).children('i').is('.fa-angle-right')) {
+				$(this).children('i')
+					.removeClass('fa-angle-right')
+					.addClass('fa-angle-down');
+			} else {
+				$(this).children('i')
+					.removeClass('fa-angle-down')
+					.addClass('fa-angle-right');
+			}
+			$(this).next().slideToggle(200);
+		});
+
+		$('.is-ac-close').hide();
+		$(".is-ac-bar").on("click", function () {
+
+			if ($(this).find('i').is('.fa-caret-down')) {
+
+				$(this).find('i')
+					.removeClass()
+					.addClass('fa fa-caret-up');
+			} else {
+				$(this).find('i')
+					.removeClass()
+					.addClass('fa fa-caret-down');
+			}
+			$(this).next().slideToggle(200);
+		});
+	});
+
+
+
+
+	//---------------------------------------------------
+	// ▼　tab
+	//---------------------------------------------------
+	$(function () {
+		var rwdTab = $('.c-tab'),
+			switchPoint = 768,
+			fadeSpeed = 300,
+			slideSpeed = 300;
+
+		var tabBtn = rwdTab.children('.c-tab-panel').children('.c-tab-heading'),
+			contentsArea = rwdTab.children('.c-tab-panel').children('.c-tab-body');
+
+		tabBtn.on('click', function () {
+			if (!$(this).hasClass('c-tab-active')) {
+				tabBtn.removeClass('c-tab-active');
+				$(this).addClass('c-tab-active');
+
+				if (window.innerWidth > switchPoint) {
+					contentsArea.fadeOut(fadeSpeed);
+					$(this).next().fadeIn(fadeSpeed);
+				} else {
+					contentsArea.slideUp(slideSpeed);
+					$(this).next().slideDown(slideSpeed);
+				}
+			}
+		});
+
+		tabBtn.first().click();
+	});
+
+
+
+</script>
+<!-- required -->
+<script type="text/javascript">
+	jQuery(document).ready(function ($) {
+		jQuery('.stellarnav').stellarNav({
+			theme: 'dark',
+			breakpoint: 960,
+			position: 'right',
+
+		});
+		$('.notifyjs-corner').empty();
+	});
+</script>
+<!-- required -->
+<script>
+	$("document").ready(function () {
+
+		$('.dropdown-menu').on('click', function (e) {
+			if ($(this).hasClass('dropdown-menu-form')) {
+				e.stopPropagation();
+			}
+		});
+
+		$('#ddlMaritalStatus').on('change', function () {
+			$('#failcld').css('display', 'none');
+			if ($(this).val() === '2') {
+				$('#failcld').css('display', 'block');
+			}
+
+			$('#failclddvd').css('display', 'none');
+			if ($(this).val() === '3') {
+				$('#failclddvd').css('display', 'block');
+			}
+		});
+
+		$('#ddlSpousePartner').on('change', function () {
+			$('#fail').css('display', 'none');
+			$('#failpn').css('display', 'none');
+
+			if ($(this).val() === '1') {
+				$('#fail').css('display', 'block');
+			}
+			if ($(this).val() === '2') {
+				$('#failpn').css('display', 'block');
+			}
+		});
+
+		$('#ddlNationality').on('change', function () {
+			$('#failfn').css('display', 'none');
+			if ($(this).val() === '2') {
+				$('#failfn').css('display', 'block');
+			}
+		});
+
+		$('#ddlSpecialAbility').on('change', function () {
+			$('#failys').css('display', 'none');
+			if ($(this).val() === '1') {
+				$('#failys').css('display', 'block');
+			}
+		});
+
+	});
+
+
+</script>
+
+<script>
+
+	var links = document.querySelectorAll('.ripplelink');
+
+	for (var i = 0, len = links.length; i < len; i++) {
+		links[i].addEventListener('click', function (e) {
+			var targetEl = e.target;
+			var inkEl = targetEl.querySelector('.ink');
+
+			if (inkEl) {
+				inkEl.classList.remove('animate');
+			}
+			else {
+				inkEl = document.createElement('span');
+				inkEl.classList.add('ink');
+				inkEl.style.width = inkEl.style.height = Math.max(targetEl.offsetWidth, targetEl.offsetHeight) + 'px';
+				targetEl.appendChild(inkEl);
+			}
+
+			inkEl.style.left = (e.offsetX - inkEl.offsetWidth / 2) + 'px';
+			inkEl.style.top = (e.offsetY - inkEl.offsetHeight / 2) + 'px';
+			inkEl.classList.add('animate');
+		}, false);
+	}
+</script>
+<script type="text/javascript">
+	$(window).scroll(function () {
+		if ($(this).scrollTop() > 250) {
+			$('.header').addClass("sticky");
+		}
+		else {
+			$('.header').removeClass("sticky");
+		}
+	});
+
+
+</script>
+<script>
+	$(document).ready(function () {
+		$('[data-toggle="tooltip"]').tooltip();
+	});
+</script>
+<script type="text/javascript">
+	$(function () {
+		$("#mtruser").click(function () {
+			if ($(this).is(":checked")) {
+				$(".mtrlgnid").show();
+				$(".toggle-btn").addClass("yestoggle");
+
+
+
+			} else {
+				$(".mtrlgnid").hide();
+				$(".toggle-btn").removeClass("yestoggle");
+			}
+		});
+	});
+</script>

@@ -1,0 +1,60 @@
+﻿
+@using System.Data
+@model Mitr.Models.DailyLogMonth
+
+@{
+    ViewBag.Title = "DailyLogMonth";
+}
+
+@Html.Partial("HeaderMsg_Partial")
+
+
+<div class="inner-main pt-3 defult-height">
+  
+    @using (Ajax.BeginForm("_DailyLog", "Activity",
+      new { src = clsApplicationSetting.EncryptQueryString(ViewBag.MenuID.ToString() + "*/Activity/_DailyLog") },
+      new AjaxOptions { HttpMethod = "POST", OnSuccess = "BindTarget", OnFailure = "CloseLoadingDialog()", OnBegin = "ShowLoadingDialog();" },
+  new { @id = "_DailyLogFrom" })
+  )
+    {       
+    <div class="row d-flex">
+        <div class="col-sm-2 form-group">
+
+            <label class="lbl-abs">Select Month</label>
+            @Html.TextBoxFor(model => model.Month, new { @class = "form-control actdate h-82", @type = "month" })
+            @Html.ValidationMessageFor(model => model.Month, "", new { @class = "text-danger" })
+            <button style="display:none" type="submit" class="btn mtr-g-grn btn-l ripplelink" id="btnSearch" name="Command" value="Search"><i class="fas fa-search"></i>Search</button>
+        </div>
+        <div class="col-sm-8 form-group hideaftersub">
+		
+			<div class="HoursSummaryTarget">@Html.Partial("_Loading")</div>
+        </div>
+        <div class="col-sm-2 form-group align-self-center hideaftersub">
+            @if (clsApplicationSetting.GetSessionValue("IsHOD") == "Y")
+            {
+                <a class="mtr-o-grn btn-tm float-right" onclick="ShowLoadingDialog();window.location='@Url.Action("ActivityLogApproval", "Activity", new { src = clsApplicationSetting.EncryptQueryString(ViewBag.MenuID.ToString() + "*/Activity/ActivityLogApproval") })';"><i class="fas fa-users"></i><small>My Team's</small><span>Activity log</span></a>
+            }
+        </div>
+
+    </div>
+    }
+
+    <div id="TargetDiv"></div>
+</div>
+
+@section scripts    {
+    @System.Web.Optimization.Scripts.Render("~/bundle/dataTablesjs")
+
+    @Html.IncludeVersionedJs(Url.Content("~/assets/design/Scripts/AddInit.js"))
+
+
+    @System.Web.Optimization.Scripts.Render("~/bundle/unobtrusivejs")
+
+    @Html.IncludeVersionedJs(Url.Content("~/assets/design/js/jquery.autocomplete.min.js"))
+    @Html.IncludeVersionedJs(Url.Content("~/assets/design/Scripts/SyncDialogUtility.js"))
+    @Html.IncludeVersionedJs(Url.Content("~/assets/design/Scripts/PagesJS/DailyLog.js"))
+    @Html.IncludeVersionedJs(Url.Content("~/assets/design/Scripts/PagesJS/Dailylog_ComOffRequest.js"))
+
+}
+
+

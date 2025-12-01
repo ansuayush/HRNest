@@ -1,0 +1,394 @@
+﻿@model  SMPR.LevelApprover
+@{
+    string MenuID = "0";
+    if (ViewBag.MenuID != null)
+    {
+        MenuID = ViewBag.MenuID;
+    }
+
+}
+<h1 class="heading-one">Level 1 Approver</h1>
+<div class="row text-clr">
+
+    <div class="col-md-12">
+        <ul class="list-unstyled cmtlist">
+            @foreach (var Citem in Model.SMPRCommentsList.Where(x => x.Doctype == "Level2"))
+            {
+                <li>
+                    <strong>@Citem.CreatedByName</strong>, <span class="lgt-clr">@Citem.createddat</span>
+                    <div class="cmt-box">
+                        @Citem.Comment
+                    </div>
+                </li>
+            }
+        </ul>
+    </div>
+    <div class="col-lg-12">
+        <div class="row wtwo-575">
+            <div class="col-lg-2 col-md-4 col-sm-4 form-group">
+                <label>Project</label>
+                <p>@Model.ProjectName</p>
+            </div>
+            <div class="col-lg-2 col-md-4 col-sm-4 form-group">
+                <label>State</label>
+                <p>@Model.StateName</p>
+            </div>
+            <div class="col-lg-2 col-md-4 col-sm-4 form-group">
+                <label>Month</label>
+                <p>@Model.MonthName</p>
+            </div>
+
+            <div class="col-lg-2 col-md-4 col-sm-4 form-group">
+                <label>Version</label>
+                <p>@Model.Version</p>
+            </div>
+        </div>
+    </div>
+</div>
+@*<div class="inner-main mb-5 pb-0">*@
+
+
+    @using (Html.BeginForm("Level1Approver", "MPR",
+    new { src = ViewBag.src },
+    FormMethod.Post,
+    new
+    {
+        name = "Level1ApproverFrom",
+        id = "Level1ApproverFrom",
+        enctype = "multipart/form-data"
+    }))
+    {
+
+        @Html.AntiForgeryToken()
+        @Html.HiddenFor(model => Model.ProjectName)
+        @Html.HiddenFor(model => Model.StateName)
+        @Html.HiddenFor(model => Model.MonthName)
+        @Html.HiddenFor(model => Model.Version)
+
+        <div class="row wtwo-575 text-clr">
+
+
+            <div class="col-sm-12 form-group">
+                @if (Model.SMPRSection.Count > 0)
+                {
+                    for (int s = 0; s < Model.SMPRSection.Count; s++)
+                    {
+                        <div class="header-two">@Model.SMPRSection[s].SecName </div>
+
+                        @Html.HiddenFor(model => Model.SMPRSection[s].SecID)
+                        @Html.HiddenFor(model => Model.SMPRSection[s].SecName)
+
+                        for (int SS = 0; SS < Model.SMPRSubSectionList.Count; SS++)
+                        {
+                            @Html.HiddenFor(model => Model.SMPRSubSectionList[SS].SecID)
+                            @Html.HiddenFor(model => Model.SMPRSubSectionList[SS].SecName)
+                            @Html.HiddenFor(model => Model.SMPRSubSectionList[SS].SubSecID)
+                            @Html.HiddenFor(model => Model.SMPRSubSectionList[SS].SubSecName)
+
+                            if (Model.SMPRSubSectionList[SS].SecID == Model.SMPRSection[s].SecID)
+                            {
+
+
+
+
+                                <div class="modal fade pop-dgn" id="Modal_@Model.SMPRSubSectionList[SS].SubSecID" tabindex="-1" role="dialog">
+                                    <div class="modal-dialog">
+                                        <div class="modal-content">
+                                            <div class="modal-header blk-gdn-btn">
+                                                <h4 class="modal-title">Comments/ Remarks - @Model.SMPRSubSectionList[SS].SubSecName</h4>
+                                                <div class="close" data-dismiss="modal">×</div>
+                                            </div>
+                                            <div class="modal-body p-0">
+                                                <ul class="list-unstyled cmtlist scroll p-3 mb-2">
+                                                    @foreach (var Citem in Model.SMPRCommentsList.Where(x => x.SectionID == Model.SMPRSubSectionList[SS].SubSecID))
+                                                    {
+                                                        <li>
+                                                            <strong>@Citem.CreatedByName</strong>, <span class="lgt-text">@Citem.createddat</span>
+                                                            <div class="cmt-box">
+                                                                @Citem.Comment
+                                                            </div>
+                                                        </li>
+                                                    }
+                                                </ul>
+                                                <div class="text-center">
+                                                    <button type="button" class="btn cnl-btn ripplelink  " data-dismiss="modal"><i class="fas fa-times"></i>Close</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-sm-8">
+                                        <table class="table mt-0 table-scroll mb-1">
+                                            @{ int Count = 0;}
+                                            @for (int i = 0; i < Model.SMPRDetList.Count; i++)
+                                            {
+                                                if (Model.SMPRDetList[i].MPRSID == Model.SMPRSubSectionList[SS].SecID && Model.SMPRDetList[i].MPRSubSecID == Model.SMPRSubSectionList[SS].SubSecID)
+                                                {
+                                                    Count++;
+                                                    if (Count == 1)
+                                                    {
+                                                        <thead>
+                                                            <tr>
+                                                                <th class="w-50">S No.</th>
+                                                                <th class="w-300 pl-3">
+                                                                    @Model.SMPRSubSectionList[SS].SubSecName
+                                                                    <a class="aComment" data-toggle="modal" data-target="#Modal_@Model.SMPRSubSectionList[SS].SubSecID">
+                                                                        <i class="fas fa-comments" data-toggle='tooltip' data-original-title="View Exexcutor's Comment"></i>
+                                                                    </a>
+                                                                </th>
+                                                                @if (Model.SMPRDetList[i].NoOfCol == 1)
+                                                                {
+                                                                    <th class="w-100 text-right">@Model.SMPRDetList[i].ColText1 </th>
+                                                                }
+                                                                else if (Model.SMPRDetList[i].NoOfCol == 2)
+                                                                {
+                                                                    <th class="w-100 text-right">@Model.SMPRDetList[i].ColText1 </th>
+                                                                    <th class="w-100 text-right">@Model.SMPRDetList[i].ColText2 </th>
+                                                                }
+                                                                else if (Model.SMPRDetList[i].NoOfCol == 3)
+                                                                {
+                                                                    <th class="w-100 text-right">@Model.SMPRDetList[i].ColText1 </th>
+                                                                    <th class="w-100 text-right">@Model.SMPRDetList[i].ColText2 </th>
+                                                                    <th class="w-100 text-right">@Model.SMPRDetList[i].ColText3 </th>
+                                                                }
+                                                            </tr>
+                                                        </thead>
+                                                    }
+                                                    <tr>
+                                                        <td>@Count</td>
+                                                        <td class="pl-3 w-300">
+                                                            @Model.SMPRDetList[i].IndicatorName
+                                                            @Html.HiddenFor(x => Model.SMPRDetList[i].SMPRDetID)
+                                                            @Html.HiddenFor(x => Model.SMPRDetList[i].MPRIndicatorID)
+                                                            @Html.HiddenFor(x => Model.SMPRDetList[i].IndicatorName)
+                                                            @Html.HiddenFor(x => Model.SMPRDetList[i].MPRSubSecID)
+                                                            @Html.HiddenFor(x => Model.SMPRDetList[i].MPRSID)
+                                                            @Html.HiddenFor(x => Model.SMPRDetList[i].ColText1)
+                                                            @Html.HiddenFor(x => Model.SMPRDetList[i].NoOfCol)
+                                                            @Html.HiddenFor(x => Model.SMPRDetList[i].ColText2)
+                                                            @Html.HiddenFor(x => Model.SMPRDetList[i].ColText3)
+
+
+                                                            @Html.HiddenFor(x => Model.SMPRDetList[i].ColDataType1)
+                                                            @Html.HiddenFor(x => Model.SMPRDetList[i].ColDataType2)
+                                                            @Html.HiddenFor(x => Model.SMPRDetList[i].ColDataType3)
+
+                                                        </td>
+                                                        @if (Model.SMPRDetList[i].NoOfCol == 1)
+                                                        {
+                                                            <td>
+
+                                                                @Html.DisplayFor(model => Model.SMPRDetList[i].ExecuterVal1, new { @class = "form-control" })
+                                                            </td>
+                                                        }
+                                                        else if (Model.SMPRDetList[i].NoOfCol == 2)
+                                                        {
+                                                            <td>
+                                                                @Html.DisplayFor(model => Model.SMPRDetList[i].ExecuterVal1, new { @class = "form-control" })
+                                                            </td>
+                                                            <td>
+                                                                @Html.DisplayFor(model => Model.SMPRDetList[i].ExecuterVal2, new { @class = "form-control" })
+                                                            </td>
+                                                        }
+                                                        else if (Model.SMPRDetList[i].NoOfCol == 3)
+                                                        {
+                                                            <td>
+                                                                @Html.DisplayFor(model => Model.SMPRDetList[i].ExecuterVal1, new { @class = "form-control" })
+                                                            </td>
+                                                            <td>
+                                                                @Html.DisplayFor(model => Model.SMPRDetList[i].ExecuterVal2, new { @class = "form-control" })
+                                                            </td>
+                                                            <td>
+                                                                @Html.DisplayFor(model => Model.SMPRDetList[i].ExecuterVal3, new { @class = "form-control" })
+                                                            </td>
+                                                        }
+                                                    </tr>
+                                                }
+
+                                            }
+                                        </table>
+                                    </div>
+                                </div>
+
+                            }
+                        }
+                    }
+                }
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <ul class="list-unstyled cmtlist">
+                    @foreach (var Citem in Model.SMPRCommentsList.Where(x => x.Doctype == "Level2"))
+                    {
+                        <li>
+                            <strong>@Citem.CreatedByName</strong>, <span class="lgt-clr">@Citem.createddat</span>
+                            <div class="cmt-box">
+                                @Citem.Comment
+                            </div>
+                        </li>
+                    }
+                </ul>
+            </div>
+            <div class="col-md-12">
+                @if (Model.Lock == 1)
+                {
+                    @Html.Partial("_MessageLockedSMPR")
+                }
+                <button type="button" class="btn blk-gdn-btn btn-l ripplelink pull-right" data-target="#ModalAComments" data-toggle="modal"><i class="fas fa-comments"></i>View Approver Comments</button>
+
+                @if (Model.IsButtonShow)
+                {
+
+                    <button type="button" class="btn mtr-g-grn btn-l ripplelink pull-right" data-toggle="modal" data-target="#ModalApproval"><i class="fas fa-check"></i> Approve</button>
+
+
+                    <button type="button" class="btn mtr-o-grn btn-l ripplelink pull-right" data-toggle="modal" data-target="#ModalResubmit"><i class="fas fa-share"></i> Resubmit</button>
+
+                }
+
+
+            </div>
+        </div>
+
+
+
+
+        <div class="modal fade pop-dgn" id="ModalResubmit" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <!-- Modal Header -->
+                    <div class="modal-header blk-gdn-btn">
+                        <h4 class="modal-title">Enable Resubmit for </h4>
+                        <div class="close" data-dismiss="modal">×</div>
+                    </div>
+                    <!-- Modal body -->
+                    <div class="modal-body p-3">
+                        <div class="row">
+                            <div class="col-sm-12">
+                                <table class="table  table-scroll mt-0">
+                                    <tr>
+                                        <th class="w-33 text-center" data-toggle="tooltip" title="Select All">
+                                            <input type="checkbox" id="selectall" name="AdvanceRequired">
+                                            <label for="selectall" class="selectall"></label>
+                                        </th>
+                                        <th>Executor Name </th>
+                                        <th>Email Id</th>
+                                        <th>Comments</th>
+                                    </tr>
+                                    @if (Model.ExecuterDetailsList.Count > 0)
+                                    {
+                                        for (int i = 0; i < Model.ExecuterDetailsList.Count; i++)
+                                        {
+                                            <tr>
+                                                <td class=" text-center">
+                                                    @if (Model.ExecuterDetailsList[i].Submitted == 1)
+                                                    {
+                                                        <input type="checkbox" id="ch_@i" class="selectedId" name="@Html.NameFor(x => Model.ExecuterDetailsList[i].Chk)">
+                                                        <label for="ch_@i"></label>
+
+                                                    }
+                                                    else
+                                                    {
+                                                        @Html.HiddenFor(x => Model.ExecuterDetailsList[i].Chk)
+
+                                                    }
+                                                    @Html.HiddenFor(x => Model.ExecuterDetailsList[i].ExecutorID)
+                                                </td>
+                                                <td>@Model.ExecuterDetailsList[i].ExecutorName</td>
+                                                <td>@Model.ExecuterDetailsList[i].ExecutorEmail</td>
+                                                <td>
+                                                    @Html.TextAreaFor(model => Model.ExecuterDetailsList[i].Comment, new { @class = "form-control" })
+                                                    @Html.ValidationMessageFor(model => Model.ExecuterDetailsList[i].Comment, "", new { @class = "text-danger" })
+                                                </td>
+                                            </tr>
+                                        }
+                                    }
+
+                                </table>
+                            </div>
+                        </div>
+                        <div class="text-center mt-3">
+                            <button type="submit" class="btn mtr-o-grn btn-l ripplelink" name="Command" value="Resubmit"><i class="fa fa-paper-plane" aria-hidden="true"></i>Submit</button>
+                            <button type="button" class="btn cnl-btn ripplelink" data-dismiss="modal"><i class="fas fa-times"></i>Close</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal fade pop-dgn" id="ModalApproval" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header blk-gdn-btn">
+                        <h4 class="modal-title">Comments/Remarks</h4>
+                        <div class="close" data-dismiss="modal">×</div>
+                    </div>
+                    <div class="modal-body p-3">
+                        @Html.TextAreaFor(model => Model.Level1Remarks, new { @class = "form-control h-100", @placeholder = "Enter Comment" })
+                        @Html.ValidationMessageFor(model => Model.Level1Remarks, "", new { @class = "text-danger" })
+                        <div class="text-center mt-3">
+                            <button type="submit" class="btn mtr-g-grn btn-l ripplelink " name="Command" value="Approved"><i class="fas fa-share"></i>Approved</button>
+                            <button type="button" class="btn cnl-btn ripplelink" data-dismiss="modal"><i class="fas fa-times"></i>Close</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+
+
+
+    <div class="modal fade pop-dgn" id="ModalAComments" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header blk-gdn-btn">
+                    <h4 class="modal-title">
+                        Section Approver: Overall Comment
+                    </h4>
+                    <div class="close" data-dismiss="modal">×</div>
+                </div>
+                <div class="modal-body p-0">
+                    <ul class="list-unstyled cmtlist scroll p-3 mb-2">
+                        @foreach (var Citem in Model.SMPRCommentsList.Where(x => x.Doctype == "SectionApprover"))
+                        {
+                            <li>
+                                <strong>@Citem.CreatedByName</strong>, <span class="lgt-clr">@Citem.createddat</span>
+                                <div class="cmt-box">
+                                    @Citem.Comment
+                                </div>
+                            </li>
+                        }
+                    </ul>
+
+                    <div class="text-center">
+                        <button type="button" class="btn cnl-btn ripplelink  " data-dismiss="modal"><i class="fas fa-times"></i>Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @section scripts    {
+        @System.Web.Optimization.Scripts.Render("~/bundle/unobtrusivejs")
+        @Html.IncludeVersionedJs(Url.Content("~/assets/design/Scripts/ToolTip.js"))
+        @Html.IncludeVersionedJs(Url.Content("~/assets/design/scripts/AddInit.js"))
+        <script>
+            $('#selectall').click(function () {
+                $('.selectedId').prop('checked', this.checked);
+            });
+
+            $('.selectedId').change(function () {
+                var check = ($('.selectedId').filter(":checked").length == $('.selectedId').length);
+                $('#selectall').prop("checked", check);
+            });
+
+
+
+
+
+
+        </script>
+    }

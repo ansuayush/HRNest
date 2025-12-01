@@ -1,0 +1,90 @@
+﻿@model IList<Employee.List>
+@{
+    var Modify = clsApplicationSetting.GetSessionValue("Modify");
+}
+<div class="row">
+
+    <div class="col-sm-12">
+
+        @if (ViewBag.Approve == 3)
+        {
+            <div class="control-section">
+                @Html.EJS().Grid("Grid").DataSource((List<Employee.List>)Model).GridLines(Syncfusion.EJ2.Grids.GridLine.Both).Columns(col =>
+           {
+               col.Field("ID").Visible(false).Add();
+               col.Field("RowNum").HeaderText("SNo.").Width("30").Add();
+
+               col.Field("emp_name").HeaderText("Name").Width("160").Add();
+               col.Field("emp_code").HeaderText("Code").Width("60").Add();
+               col.Field("emp_type").HeaderText("Category").Width("80").Add();
+               col.Field("Designation").HeaderText("Designation").Width("80").Add();
+               col.Field("Department").HeaderText("Department").Width("80").Add();
+               col.Field("Location").HeaderText("Location").Width("80").Add();
+               //col.Field("Salary").HeaderText("Hourly Rate").Width("100").Add();
+               col.Field("DateOfJoining").HeaderText("Date Of Joining").Width("100").Add();
+               col.Field("DateOfResignation").HeaderText("Date Of Resignation").Width("100").Add();
+               col.Field("lastworking_day").HeaderText("Last Working Date").Width("100").Add();
+               col.HeaderText("Action").TextAlign(Syncfusion.EJ2.Grids.TextAlign.Center).Template("#tmpAction").Width("60").Add();
+
+           }).AllowPaging().PageSettings(page => page.PageSize(10)).Created("created").Toolbar(new List<string>() { "Search" }).AllowExcelExport(true).Render()
+
+            </div>
+        }
+        else
+        {
+            <div class="control-section">
+                @Html.EJS().Grid("Grid").DataSource((List<Employee.List>)Model).GridLines(Syncfusion.EJ2.Grids.GridLine.Both).Columns(col =>
+           {
+               col.Field("ID").Visible(false).Add();
+               col.Field("RowNum").HeaderText("SNo.").Width("30").Add();
+
+               col.Field("emp_name").HeaderText("Name").Width("160").Add();
+               col.Field("emp_code").HeaderText("Code").Width("60").Add();
+               col.Field("EmploymentTerm").HeaderText("Category").Width("80").Add();
+               col.Field("Designation").HeaderText("Designation").Width("80").Add();
+               col.Field("Department").HeaderText("Department").Width("150").Add();
+               col.Field("Location").HeaderText("Location").Width("80").Add();
+               //col.Field("Salary").HeaderText("Hourly Rate").Width("100").Add();
+               col.Field("DateOfJoining").HeaderText("Date Of Joining").Width("100").Add();
+               col.HeaderText("Action").TextAlign(Syncfusion.EJ2.Grids.TextAlign.Center).Template("#tmpAction").Width("60").Add();
+
+
+
+           }).AllowPaging().PageSettings(page => page.PageSize(10)).Created("created").Toolbar(new List<string>() { "Search" }).AllowExcelExport(true).Render()
+
+            </div>
+        }
+
+
+
+    </div>
+</div>
+
+
+<script id="tmpAction" type="text/x-template">
+    ${if('@Modify' === 'True')}
+    <input type="hidden" name="I" value="${ID}" />
+    <a onclick="BindEdit(this)"><i class="fas fa-eye"></i>View </a>
+    ${/if}
+</script>
+<script>
+    function created() {
+        var grid = document.getElementById("Grid").ej2_instances[0];
+        document.getElementById(grid.element.id + "_searchbar").addEventListener('keyup', () => {
+            grid.search(event.target.value)
+        });
+    }
+
+
+</script>
+<script>
+    var pivotObj;
+    document.getElementById('excel').onclick = function () {
+
+        pivotObj = document.getElementById('Grid').ej2_instances[0];
+        pivotObj.excelExport();
+    }
+</script>
+@Html.IncludeVersionedJs(Url.Content("~/assets/design/Scripts/SyncScripts.js"))
+
+@(Html.EJS().ScriptManager())

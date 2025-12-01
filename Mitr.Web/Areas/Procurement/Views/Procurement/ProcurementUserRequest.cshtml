@@ -1,0 +1,2228 @@
+﻿
+@{
+    ViewBag.Title = "ProcurementUserRequest";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<!-- Start -->
+<input type="hidden" id="InvoiceId" value="0" />
+<input type="hidden" id="Invoicefrom" value="0" />
+
+<input type="hidden" id="IsVendorRatingClick" value="0" />
+<button type="button" id="btnShowVendorRating" style="display:none;" class="btn mtr-o-grn btn-l" name="Command" value="Add" data-toggle="modal" data-target="#ratingmdl"><i class="fa fa-paper-plane"></i> Submit</button>
+<button type="button" id="btnadt" style="display:none;" class="btn mtr-o-grn btn-l" name="Command" value="Add" data-toggle="modal" data-target="#adt"><i class="fa fa-paper-plane"></i> Submit</button>
+
+<input type="hidden" id="hdnProcureRequestId" value="0" />
+<input type="hidden" id="hdnProcureLineId" value="0" />
+<input type="hidden" id="hdnProcureIdForWithdraw" value="0" />
+<input type="hidden" id="hdnProcureId" value="0" />
+<input type="hidden" id="hdMoreInfoId" value="0" />
+<input type="hidden" id="hdnIsModuleAdminMessage" value="0" />
+<input type="hidden" id="hdnProcureIdForWithdrawFromInprogress" value="0" />
+
+<div class="defult-height	 p-3 pb-0">
+
+    <div class="row">
+        <div class="col-lg-6 col-md-6">
+            <div class="shadow-box m-mnh-767 boxheight">
+                <h2 class="heading-grd heading-btn  blk-gdn-btn m-0">
+                    Procurement Request
+                    <div class="rgt-pst">
+                        <ul class="list-unstyled header-mnu">
+                            <li>
+                                <a href="#" data-toggle="modal" data-target="#er" onclick="ResetProjectList()" class=""><i class="fa fa-plus" aria-hidden="true"></i>Assets/Equipment</a>
+
+                            </li>
+                            <li>
+
+                                <a href="#" data-toggle="modal" data-target="#avpr" onclick="AddService()" class=" "><i class="fa fa-plus" aria-hidden="true"></i>Services</a>
+                            </li>
+                        </ul>
+                    </div>
+                </h2>
+                <ul class="list-unstyled h-130 text-center trvl-lst row center">
+                    <li class="col-sm-4 align-self-center"> <a href="#"> <img src='~/assets/images/project-manager-icon.png' alt="Pending at Project Manager" class="mb-2" /> <u class="d-block">Pending with <br />Project Manager</u> </a> </li>
+                    <li class="col-sm-4 align-self-center"> <a href="">  <img src='~/assets/images/procurement-committee-icon.png' alt="Pending at Procurement Committee" class="mb-2" /> <u class="d-block">Pending with <br />Procurement Committee</u></a> </li>
+                    <li class="col-sm-4 align-self-center"> <a href="#">  <img src='~/assets/images/live-icon.png' alt="Live" class="mb-2" /> <u class="d-block">Live <br />PO/Contract</u> </a> </li>
+                </ul>
+
+
+            </div>
+        </div>
+
+        <div class="col-lg-6 col-md-6">
+            <div class="shadow-box h-380">
+                <h2 class="heading-grd heading-btn  blk-gdn-btn m-0">
+                    My Request
+
+                    <div class="rgt-pst">
+                        <ul class="list-unstyled header-mnu">
+                            <li> <a href="#" id="ShowTab1" onclick="ShowTab(1)" class="nav-link ripplelink active "><i class="fa fa-check" aria-hidden="true"></i>PM Approval</a> </li>
+                            <li> <a href="#" id="ShowTab2" onclick="ShowTab(2)" class="nav-link ripplelink"><i class="fa fa-check" aria-hidden="true"></i>PC Approval</a> </li>
+
+                        </ul>
+                    </div>
+                </h2>
+
+                <!-- tab--->
+                <div class="tab-main " id="pmTab">
+                    <ul id="tabs" class="nav nav-tabs " role="tablist">
+                        <li class="nav-item"> <a id="tab-A" href="#active-log" class="nav-link active ripplelink" data-toggle="tab" role="tab"><i class="fas fa-envelope-open"></i>Pending</a> </li>
+                        <li class="nav-item"> <a id="tab-B" href="#leaves" class="nav-link ripplelink" data-toggle="tab" role="tab"><i class="fas fa-check"></i>Approved</a> </li>
+                        <li class="nav-item"> <a id="tab-B" href="#Legacy" class="nav-link ripplelink" data-toggle="tab" role="tab"><i class="fas fa-ban"></i>Rejected</a> </li>
+                    </ul>
+                    <div id="content" class="tab-content p-0" role="tablist">
+                        <!-- --->
+                        <div id="active-log" class="card tab-pane fade show active" role="tabpanel" aria-labelledby="tab-A">
+                            <div class="card-header" role="tab" id="heading-A">
+                                <h5 class="mb-0"> <a data-toggle="collapse" href="#collapse-A" aria-expanded="true" aria-controls="collapse-A">Pending  <i class="fas fa-envelope-open"></i></a> </h5>
+                            </div>
+                            <div id="collapse-A" class="collapse show" data-parent="#content" role="tabpanel" aria-labelledby="heading-A">
+                                <!-- -->
+
+
+                                <ul id="ulPMTabPending" class="list-unstyled rqt-list fvclmls scroll tvtrhgt">
+                                </ul>
+                                <!--  -->
+
+                            </div>
+                        </div>
+
+                        <!-- --->
+                        <!-- --->
+                        <div id="leaves" class="card tab-pane fade" role="tabpanel" aria-labelledby="tab-B">
+                            <div class="card-header" role="tab" id="heading-B">
+                                <h5 class="mb-0"> <a class="collapsed" data-toggle="collapse" href="#collapse-B" aria-expanded="false" aria-controls="collapse-B">Approved <i class="fas fa-check"></i></a> </h5>
+                            </div>
+                            <div id="collapse-B" class="collapse" data-parent="#content" role="tabpanel" aria-labelledby="heading-B">
+                                <ul id="ulPMTabApproved" class="list-unstyled rqt-list fvclmls scroll tvtrhgt">
+                                </ul>
+                            </div>
+                        </div>
+                        <div id="Legacy" class="card tab-pane fade" role="tabpanel" aria-labelledby="tab-c">
+                            <div class="card-header" role="tab" id="heading-c">
+                                <h5 class="mb-0"> <a class="collapsed" data-toggle="collapse" href="#collapse-c" aria-expanded="false" aria-controls="collapse-c">Rejected <i class="fas fa-ban"></i></a> </h5>
+                            </div>
+                            <div id="collapse-c" class="collapse" data-parent="#content" role="tabpanel" aria-labelledby="heading-c">
+                                <!--  -->
+                                <ul id="ulPMTabRejected" class="list-unstyled rqt-list fvclmls scroll tvtrhgt">
+                                </ul>
+                                <!--  -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="tab-main " id="pcTab" style="display:none;">
+                    <ul id="tabs" class="nav nav-tabs " role="tablist">
+                        <li class="nav-item"> <a id="tab-A1" href="#active-log1" class="nav-link active ripplelink" data-toggle="tab" role="tab"><i class="fas fa-envelope-open"></i>Open Request</a> </li>
+                        <li class="nav-item"> <a id="tab-B1" href="#leaves1" class="nav-link ripplelink" data-toggle="tab" role="tab"><i class="fas fa-check"></i>Live</a> </li>
+                        <li class="nav-item"> <a id="tab-B1" href="#Legacy1" class="nav-link ripplelink" data-toggle="tab" role="tab"><i class="fas fa-ban"></i>Closed</a> </li>
+                    </ul>
+                    <div id="content" class="tab-content p-0" role="tablist">
+                        <!-- --->
+                        <div id="active-log1" class="card tab-pane fade show active" role="tabpanel" aria-labelledby="tab-A1">
+                            <div class="card-header" role="tab" id="heading-A1">
+                                <h5 class="mb-0"> <a data-toggle="collapse" href="#collapse-A1" aria-expanded="true" aria-controls="collapse-A1">Open Request  <i class="fas fa-envelope-open"></i></a> </h5>
+                            </div>
+                            <div id="collapse-A1" class="collapse show" data-parent="#content" role="tabpanel" aria-labelledby="heading-A1">
+                                <!-- -->
+                                <ul id="ulPCOpenRequest" class="list-unstyled rqt-list fvclmls scroll tvtrhgt">
+                                </ul>
+                                <!--  -->
+                            </div>
+                        </div>
+
+                        <!-- --->
+                        <!-- --->
+                        <div id="leaves1" class="card tab-pane fade" role="tabpanel" aria-labelledby="tab-B1">
+                            <div class="card-header" role="tab" id="heading-B1">
+                                <h5 class="mb-0"> <a class="collapsed" data-toggle="collapse" href="#collapse-B1" aria-expanded="false" aria-controls="collapse-B1">Live <i class="fas fa-check"></i></a> </h5>
+                            </div>
+                            <div id="collapse-B1" class="collapse" data-parent="#content" role="tabpanel" aria-labelledby="heading-B1">
+                                <ul id="ulPCLive" class="list-unstyled rqt-list fvclmls scroll tvtrhgt">
+                                </ul>
+                            </div>
+                        </div>
+                        <div id="Legacy1" class="card tab-pane fade" role="tabpanel" aria-labelledby="tab-c1">
+                            <div class="card-header" role="tab" id="heading-c1">
+                                <h5 class="mb-0"> <a class="collapsed" data-toggle="collapse" href="#collapse-c1" aria-expanded="false" aria-controls="collapse-c1">Closed <i class="fas fa-ban"></i></a> </h5>
+                            </div>
+                            <div id="collapse-c1" class="collapse" data-parent="#content" role="tabpanel" aria-labelledby="heading-c1">
+                                <!--  -->
+                                <ul id="ulPCClosed" class="list-unstyled rqt-list fvclmls scroll tvtrhgt">
+                                </ul>
+                                <!--  -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        <!-- ENd -->
+
+    </div>
+    <div class="modal fade" id="cnl">
+        <div class="modal-dialog modal-xl ">
+            <div class="modal-content">
+                <!-- Modal Header -->
+                <div class="modal-header">
+                    <h4 class="modal-title">Cancellation</h4>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+
+                <div class="modal-body ">
+                    <div class="row">
+                        <div class="col-sm-12 form-contorl">
+                            <div class="table-responsive">
+                                <table class="table m-0">
+                                    <thead>
+                                        <tr>
+                                            <th>Payment Terms</th>
+                                            <th width="150">Amount(Included tax and Others)</th>
+                                            <th width="100">Due On	</th>
+                                            <th width="80">Invoice No</th>
+                                            <th width="100">Invoice Date</th>
+                                            <th width="100">Amount</th>
+                                            <th width="250">Invoice Attachment</th>
+
+
+
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>Payment after Delivery on submission of Invoice.</td>
+                                            <td class="text-right">5000</td>
+                                            <td>22/03/2023</td>
+                                            <td><input type="number" placeholder="Enter" class="form-control"></td>
+                                            <td><input type="date" placeholder="Enter" class="form-control"></td>
+                                            <td><input type="number" placeholder="0" class="form-control"></td>
+                                            <td><input type="file" placeholder="Enter" class="form-control"></td>
+
+                                        </tr>
+                                    </tbody>
+
+                                </table>
+
+                            </div>
+                        </div>
+                        <div class="col-sm-12 from-group">
+                            <label>Reason for Cancellation <sup class="red-clr">*</sup> </label>
+                            <textarea placeholder="Enter" class="form-control h-80"></textarea>
+                        </div>
+                        <div class="col-sm-4 from-group">
+                            <label>Financial Implication <sup class="red-clr">*</sup> </label>
+                            <select class="form-control applyselect selectshowdiv">
+                                <option>Select</option>
+                                <option value="partpaymentdue">Part Payment Due</option>
+                                <option value="fullpaymentdue">Full Payment Due</option>
+                                <option value="">No Payment</option>
+                            </select>
+                        </div>
+                        <div class="col-sm-12 from-group " id="partpaymentdue" style="display: none;">
+                            <label>Please write the amount for the pay <sup class="red-clr">*</sup> </label>
+                            <textarea placeholder="Enter" class="form-control h-80"></textarea>
+                        </div>
+
+                        <div class="col-sm-12 from-group " id="fullpaymentdue" style="display: none;">
+                            <label>Please share reason for recommending this payment <sup class="red-clr">*</sup> </label>
+                            <textarea placeholder="Enter" class="form-control h-80"></textarea>
+                        </div>
+
+                        <div class="col-sm-12 from-group text-center mt-3 ">
+                            <button type="sumbit" class="btn mtr-o-grn btn-l" name="Command" value="Add"><i class="fa fa-paper-plane"></i> Submit</button>
+                            <button type="button" data-dismiss="modal" class="btn cnl-btn ripplelink  pull-right"><i class="fas fa-times"></i>Close</button>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="modal fade confirmmsg" id="confirmmsgnp">
+        <div class="modal-dialog modal-md ">
+            <div class="modal-content">
+                <!-- Modal Header -->
+                <div class="swal-icon swal-icon--warning">
+                    <span class="swal-icon--warning__body">
+                        <span class="swal-icon--warning__dot"></span>
+                    </span>
+                </div>
+
+                <div class="modal-body ">
+                    <div class="swal-title text-center">Do you recommend some payment to be released ?</div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" data-dismiss="modal" data-toggle="modal" class="btn cnl-btn">No</button>
+                    <button type="button" class="btn mtr-o-grn" data-dismiss="modal" data-toggle="modal" data-target="#npamountcancellation ">Yes</button>
+
+                </div>
+
+            </div>
+
+
+
+        </div>
+
+    </div>
+    <div class="modal fade confirmmsg" id="confirmmsgfp">
+        <div class="modal-dialog modal-md ">
+            <div class="modal-content">
+                <!-- Modal Header -->
+                <div class="swal-icon swal-icon--warning">
+                    <span class="swal-icon--warning__body">
+                        <span class="swal-icon--warning__dot"></span>
+                    </span>
+                </div>
+
+                <div class="modal-body ">
+                    <div class="swal-title text-center">Do you recommend some payment to be released ?</div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" data-dismiss="modal" data-toggle="modal" class="btn cnl-btn">No</button>
+                    <button type="button" class="btn mtr-o-grn" data-dismiss="modal" data-toggle="modal" data-target="#hpamountcancellation ">Yes</button>
+
+                </div>
+
+            </div>
+
+
+
+        </div>
+
+    </div>
+
+    <div class="modal fade" id="adt">
+        <div class="modal-dialog modal-xl ">
+            <div class="modal-content">
+                <!-- Modal Header -->
+                <div class="modal-header">
+                    <h4 class="modal-title">Amendment</h4>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+
+                <div class="modal-body ">
+                    <div class="row">
+
+                        <div class="col-sm-4 form-group">
+                            <label for="">Request No</label>
+                            <p>100.1</p>
+                        </div>
+
+                        <div class="col-sm-12 form-group">
+                            <label>Nature of Amendment<sup>*</sup> </label>
+                            <select name="event_type[]" class="form-control applyselect " multiple>
+
+                                <option value="all">All</option>
+                                <option value="valueofcontract">Value of Contract</option>
+                                <option value="contractenddate">Contract End Date</option>
+                                <option value="scopeofwork">Scope of work</option>
+                                <option value="paymentterms">Payment Terms</option>
+                            </select>
+                        </div>
+                        <div class="col-sm-12 form-group valueofcontract all">
+                            <hr>
+                            <span class="hr-aps"><i class="fas fa-user-tie"></i> In Principal Approval </span>
+                        </div>
+                        <div class="col-sm-12 form-group valueofcontract all">
+                            <div class="table-responsive">
+                                <table id="Amendmentdatatable" class="table mt-0 mb-0 ">
+                                    <thead>
+                                        <tr>
+                                            <th width="10">S.NO</th>
+                                            <th width="90">Project Code</th>
+                                            <th width="120">Project Sub line Item</th>
+                                            <th>Project Line Desc</th>
+                                            <th width="100">Project Manager</th>
+                                            <th width="50">Qty</th>
+                                            <th width="90">Budget Amount</th>
+                                            <th width="80">Req. Amount</th>
+                                            <th width="200">Remarks</th>
+                                            <th width="98">Status</th>
+                                            <th>Approval Remarks</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>1</td>
+                                            <td>P076</td>
+                                            <td>P076.05.001</td>
+                                            <td>Asus i3 Laptops</td>
+                                            <td>Rajeev</td>
+                                            <td class="text-right">1</td>
+                                            <td class="text-right">10,000</td>
+                                            <td class="text-right"><input text="number" value="10000" placeholder="Enter" class="form-control" /> </td>
+                                            <td><textarea class="form-control">for new joinee	</textarea></td>
+                                            <td>Approved</td>
+                                            <td></td>
+                                        </tr>
+
+                                        <tr class="green-clr lgt-mtr-o-bg text-right fn-bold">
+                                            <td colspan="6">Total</td>
+                                            <td class="text-right">30,000</td>
+                                            <td class="text-right">10,000</td>
+                                            <td colspan="3"></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <div class="col-sm-12 form-group valueofcontract all">
+                            <hr>
+                            <span class="hr-aps"><i class="fas fa-user-tie"></i>Quotation Entry</span>
+                        </div>
+
+                        <div class="col-sm-12 form-group valueofcontract all">
+                            <div class="table-responsive" data-select2-id="38">
+                                <table id="AmendmentdatatableQoutationEntry" class="table mt-0 " data-select2-id="datatableQoutationEntry">
+                                    <thead>
+                                        <tr>
+                                            <th width="10">S.NO</th>
+                                            <th width="100">Vendor Name	</th>
+                                            <th width="50">Rating	</th>
+                                            <th width="70">Empanelled	</th>
+                                            <th width="100">Unit Type		</th>
+                                            <th width="50">Units	</th>
+                                            <th width="60">Unit Rate	</th>
+                                            <th width="80">Amount</th>
+                                            <th width="100">Tax %	</th>
+                                            <th width="100">GST Etc	</th>
+                                            <th width="80">Freight /TPT	</th>
+                                            <th width="80">Total Value	</th>
+                                            <th width="150">Attach Quotation	</th>
+                                            <th width="250">Remarks</th>
+                                            <th width="80">Recommend</th>
+
+                                        </tr>
+
+                                    </thead>
+                                    <tbody id="tableToModify" data-select2-id="tableToModify">
+                                        <tr data-select2-id="37">
+                                            <td>
+                                                <label style="display:none" class="tlblSRNo" id="tlblSRNo_0">1</label>
+                                                <label class="lblSRNo" id="lblSRNo_0">1</label>
+
+                                            </td>
+
+                                            <td>Edge PVT LTD(Req#3)</td>
+                                            <td></td>
+                                            <td>Yes</td>
+                                            <td>Unit(Single)</td>
+                                            <td class="text-right">
+                                                <input class="form-contoral   text-right txtUnit " value="12" placeholder="Enter">
+                                            </td>
+                                            <td class="text-right">
+                                                <input class="form-contoral   text-right txtUnit " value="2000" placeholder="Enter">
+                                            </td>
+                                            <td class="text-right">
+                                                24000
+                                            </td>
+                                            <td class="text-right">
+                                                <input class="form-contoral   text-right txtUnit " value="12" placeholder="Enter">
+                                            </td>
+                                            <td class="text-right">
+                                                2880
+                                            </td>
+                                            <td class="text-right">
+                                                <input class="form-contoral   text-right txtUnit " value="500" placeholder="Enter">
+                                            </td>
+                                            <td class="text-right">
+                                                27380
+                                            </td>
+                                            <td class="text-right">
+                                                <input type="file" class="form-contoral  text-right Attach" placeholder="0" id="Attach_0" onchange="UploadocumentProof(this)">
+                                                <label class="Fileurl" style="display:none;" id="hdnUploadFileUrl_0"></label>
+                                                <label class="FileActualName" onclick="DownloadFileQuotation(this)" style="display:none;" id="hdnUploadActualFileName_0"></label>
+                                                <label class="FileNewName" style="display:none;" id="hdnUploadNewFileName_0"></label>
+
+                                            </td>
+                                            <td class="text-right">
+                                                <textarea placeholder="Enter" class="form-contoral txtRemarks" id="txtRemarks_0"></textarea>
+                                            </td>
+                                            <td class="text-center">
+
+                                                <div class="radio-button">
+                                                    <input id="recomandation_0" name="radionewGrid" type="radio" class="recomandation" checked disabled value="">
+                                                    <label for="recomandation_0" class="radio-label lblrecomandation"></label>
+                                                </div>
+
+                                            </td>
+
+
+                                        </tr>
+
+
+                                    </tbody>
+                                </table>
+                            </div>
+
+                        </div>
+
+
+                        <div class="col-sm-12 form-group valueofcontract all contractenddate paymentterms scopeofwork">
+                            <hr>
+                            <span class="hr-aps"><i class="fas fa-list"></i>Details of Deliverable</span>
+                        </div>
+
+                        <div class="col-sm-2 form-group contractenddate all">
+                            <label>Start Date<sup>*</sup></label>
+                            <input type="date" placeholder="Enter" disabled value="2023-03-25" class="form-control">
+                        </div>
+                        <div class="col-sm-2 form-group  contractenddate all">
+                            <label>End Date<sup>*</sup></label>
+                            <input type="date" placeholder="Enter" value="2023-03-25" class="form-control">
+                        </div>
+                        <div class="col-sm-12 form-group valueofcontract all contractenddate paymentterms scopeofwork">
+                            <table class="table mb-2" id="tblAmendmentPaymentTerm">
+                                <thead>
+                                    <tr>
+                                        <th>Payment Terms</th>
+                                        <th width="100">Amount(Included tax and Frieght)</th>
+                                        <th width="80">Due On	</th>
+                                        <th width="30"></th>
+
+
+
+
+
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>Payment after Delivery</td>
+                                        <td class="text-right">2000</td>
+                                        <td>15/2/2023</td>
+                                        <td></td>
+                                    </tr>
+                                    <tr>
+                                        <td><input type="text" value="Payment after Delivery on submission of Invoice" class="form-control" /></td>
+                                        <td class="text-right"><input type="number" class="form-control text-right" placeholder="0" value="5000"></td>
+                                        <td><input type="date" value="2023-03-28" class="form-control"></td>
+                                        <td class="text-center"><a class="remove" data-toggle="tooltip" data-original-title="Remove"><i class="fas fa-window-close red-clr" aria-hidden="true"></i></a></td>
+
+                                    </tr>
+
+                                </tbody>
+
+                            </table>
+                            <div class="text-right">
+                                <button type="button" class="btn green-clr  m-0"><i class="fas fa-plus"></i>Add</button>
+                            </div>
+                        </div>
+
+
+                        <div class="col-sm-12 form-group valueofcontract scopeofwork all">
+                            <hr>
+                            <span class="hr-aps"><i class="fas fa-list"></i>Scope of Work</span>
+                        </div>
+                        <div class="col-sm-4 form-group valueofcontract scopeofwork all">
+                            <input type="file" class="form-control" />
+                        </div>
+                        <div class="col-sm-12 form-group valueofcontract contractenddate scopeofwork paymentterms all">
+                            <label>Reason for amendment <sup>*</sup></label>
+                            <textarea placeholder="Enter" class="form-control h-80"></textarea>
+                        </div>
+                        <div class="col-sm-12 text-center valueofcontract contractenddate scopeofwork paymentterms all">
+                            <button type="button" data-dismiss="modal" class="btn mtr-o-grn "><i class="fa fa-paper-plane"></i> Submit</button>
+
+                            <button type="button" data-dismiss="modal" class="btn cnl-btn "><i class="fas fa-times"></i>Close</button>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+    <div class="modal fade" id="ipa">
+        <div class="modal-dialog modal-xl ">
+            <div class="modal-content">
+                <!-- Modal Header -->
+                <div class="modal-header">
+                    <h4 class="modal-title">
+                        In principal Approval
+                    </h4>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+
+                <div class="modal-body ">
+                    <div class="row">
+                        <div class="col-sm-2 form-group">
+                            <label>Req No</label>
+                            <p>PR-05</p>
+                        </div>
+                        <div class="col-sm-2 form-group">
+                            <label>Req Date</label>
+                            <p>21/09/2022</p>
+                        </div>
+                        <div class="col-sm-3 form-group">
+                            <label>Process By</label>
+                            <p>Raj Kumar</p>
+                        </div>
+                        <div class="col-sm-2 form-group">
+                            <label>Point of Contact<sup>*</sup></label>
+                            <p>Deepak Kumar</p>
+                        </div>
+                        <div class="col-sm-2 form-group">
+                            <label>Contract/Agreement Type<sup>*</sup></label>
+                            <p>Purchase Order (PO)</p>
+                        </div>
+                        <div class="col-sm-12 form-group">
+                            <div class="table-responsive">
+                                <table id="datatable" class="table mt-0 mb-0 ">
+                                    <thead>
+                                        <tr>
+                                            <th width="10">S.NO</th>
+                                            <th width="90">Project Code</th>
+                                            <th width="250">Project Sub line Item</th>
+                                            <th>Project Line Desc</th>
+                                            <th width="100">Project Manager</th>
+                                            <th width="50">Qty</th>
+                                            <th width="90">Budget Amount</th>
+                                            <th width="80">Req. Amount</th>
+                                            <th width="200">Remarks</th>
+                                            <th width="98">Status</th>
+                                            <th>Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>1</td>
+                                            <td>P076</td>
+                                            <td>P076.05.001</td>
+                                            <td>Asus i3 Laptops</td>
+                                            <td>Rajeev</td>
+                                            <td class="text-right">1</td>
+                                            <td class="text-right">10,000</td>
+                                            <td class="text-right">10,000</td>
+                                            <td>for new joinee</td>
+                                            <td>Approved</td>
+                                            <td></td>
+                                        </tr>
+
+                                        <tr class="green-clr lgt-mtr-o-bg text-right fn-bold">
+                                            <td colspan="6">Total</td>
+                                            <td class="text-right">30,000</td>
+                                            <td class="text-right">10,000</td>
+                                            <td colspan="3"></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="col-sm-12 text-center ">
+
+                            <button type="button" data-dismiss="modal" class="btn cnl-btn ripplelink  pull-right"><i class="fas fa-times"></i>Close</button>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <div class="modal fade" id="dod">
+        <div class="modal-dialog modal-xl ">
+            <div class="modal-content">
+                <!-- Modal Header -->
+                <div class="modal-header">
+                    <h4 class="modal-title">Details of Deliverable</h4>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+
+                <div class="modal-body ">
+                    <div class="table-responsive">
+                        <table class="table mb-2" id="tbldod">
+                            <thead>
+                                <tr>
+                                    <th>Payment Terms</th>
+                                    <th width="150">Amount(Included tax and Others)</th>
+                                    <th width="100">Due On	</th>
+                                    <th width="80">Invoice No</th>
+                                    <th width="100">Invoice Date</th>
+                                    <th width="100">Amount</th>
+                                    <th width="250">Invoice Attachment</th>
+                                    <th width="250">Deliverable Attachment </th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+
+
+
+
+                        </table>
+                        <div class="text-center mt-3 ">
+                            <button style="display:none;" id="btnSavetbldodData" type="button" onclick="SavetbldodData()" class="btn mtr-o-grn btn-l" name="Command" value="Add" data-toggle="modal" data-target="#ratingmdl "><i class="fa fa-paper-plane"></i> Submit</button>
+                            <button id="btnDodClose" type="button" data-dismiss="modal" class="btn cnl-btn ripplelink  pull-right"><i class="fas fa-times"></i>Close</button>
+                        </div>
+                    </div>
+
+
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="modal fade" id="dodSubGrant">
+        <div class="modal-dialog modal-xl ">
+            <div class="modal-content">
+                <!-- Modal Header -->
+                <div class="modal-header">
+                    <h4 class="modal-title">Details of Deliverable</h4>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+
+                <div class="modal-body ">
+                    <div class="table-responsive">
+                        <table class="table mb-2" id="tbldodSubGrant">
+
+                            <thead>
+                                <tr>
+                                    <th>Payment Terms</th>
+                                    <th width="150">Amount(Included tax and Others)</th>
+                                    <th width="100">Due On	</th>
+                                    <th width="80">Invoice No</th>
+                                    <th width="100">Invoice Date</th>
+                                    <th width="100">Amount</th>
+                                    <th width="250">Invoice Attachment</th>
+                                    <th width="250">Deliverable Attachment </th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+
+
+
+
+                        </table>
+                        <div class="text-center mt-3 ">
+                            <button style="display:none" id="btnSavetbldodDataSubGrant" type="button" onclick="SavetbldodDataGrant()" class="btn mtr-o-grn btn-l" name="Command" value="Add" data-toggle="modal" data-target="#ratingmdl "><i class="fa fa-paper-plane"></i> Submit</button>
+                            <button type="button" data-dismiss="modal" class="btn cnl-btn ripplelink  pull-right"><i class="fas fa-times"></i>Close</button>
+                        </div>
+                    </div>
+
+
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="modal fade" id="ratingmdl">
+        <div class="modal-dialog modal-md">
+            <div class="modal-content">
+                <!-- Modal Header -->
+                <div class="modal-header">
+                    <h4 class="modal-title">
+                        <i class="fas fa-star" aria-hidden="true"></i> Rating
+                    </h4>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+
+                <div class="modal-body ">
+                    <div class="row">
+                        <div class="col-sm-12 form-group">
+                            <div class="rating-wrap">
+
+                                <fieldset class="rating">
+                                    <input type="radio" id="star5" name="rating" value="5" onclick="HideErrorMessageOnRadio(this)" /><label for="star5" class="full" title="Awesome"></label>
+                                    <input type="radio" id="star4.5" name="rating" value="4.5" onclick="HideErrorMessageOnRadio(this)" /><label for="star4.5" class="half"></label>
+                                    <input type="radio" id="star4" name="rating" value="4" onclick="HideErrorMessageOnRadio(this)" /><label for="star4" class="full"></label>
+                                    <input type="radio" id="star3.5" name="rating" value="3.5" onclick="HideErrorMessageOnRadio(this)" /><label for="star3.5" class="half"></label>
+                                    <input type="radio" id="star3" name="rating" value="3" onclick="HideErrorMessageOnRadio(this)" /><label for="star3" class="full"></label>
+                                    <input type="radio" id="star2.5" name="rating" value="2.5" onclick="HideErrorMessageOnRadio(this)" /><label for="star2.5" class="half"></label>
+                                    <input type="radio" id="star2" name="rating" value="2" onclick="HideErrorMessageOnRadio(this)" /><label for="star2" class="full"></label>
+                                    <input type="radio" id="star1.5" name="rating" value="1.5" onclick="HideErrorMessageOnRadio(this)" /><label for="star1.5" class="half"></label>
+                                    <input type="radio" id="star1" name="rating" value="1" onclick="HideErrorMessageOnRadio(this)" /><label for="star1" class="full"></label>
+                                    <input type="radio" id="star0.5" name="rating" value="0.5" onclick="HideErrorMessageOnRadio(this)" /><label for="star0.5" class="half"></label>
+                                </fieldset>
+                                <span id="spRdRating" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+                            </div>
+                        </div>
+                        <div class="col-sm-12 form-group">
+                            <label>Reason <sup>*</sup></label>
+                            <textarea class="form-control h-80 maxSize[1200]" id="txtRatingReason" placeholder="Enter" onchange="HideErrorMessage(this)"></textarea>
+                            <span id="sptxtRatingReason" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+
+                        </div>
+                        <div class="col-lg-12 text-center mt-3">
+                            <button type="submit" class="btn mtr-o-grn btn-l ripplelink pull-right" name="Command" value="Add" onclick="SaveVendorRating()"><i class="fas fa-save"></i>Save</button>
+                            <button type="button" data-dismiss="modal" class="btn cnl-btn ripplelink  pull-right"><i class="fas fa-times"></i> Close</button>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <div class="modal fade" id="cod">
+        <div class="modal-dialog modal-lg ">
+            <div class="modal-content">
+                <!-- Modal Header -->
+                <div class="modal-header">
+                    <h4 class="modal-title">
+                        Details of Contract
+                    </h4>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+
+                <div class="modal-body ">
+                    <div class="row">
+
+                        <div class="col-sm-12 form-group">
+                            <hr>
+                            <span class="hr-aps"><i class="fas fa-paperclip"></i>Upload Signed Documents</span>
+                        </div>
+                        <div class="col-sm-12 form-group">
+                            <table class="table m-0 mb-2" id="tblUploadSignedDocuments">
+                                <thead>
+                                    <tr>
+                                        <th width="280">Attachment</th>
+                                        <th>Remarks</th>
+                                    </tr>
+                                </thead>
+
+                            </table>
+
+                        </div>
+                        <div class="col-sm-12 text-center mt-3 ">
+
+                            <button type="button" data-dismiss="modal" class="btn cnl-btn ripplelink  pull-right"><i class="fas fa-times"></i>Close</button>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="modal fade" id="pd1">
+        <div class="modal-dialog modal-xl ">
+            <div class="modal-content">
+                <!-- Modal Header -->
+                <div class="modal-header">
+                    <h4 class="modal-title">Payment Details</h4>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+
+                <div class="modal-body ">
+                    <div class="row">
+
+
+                        <div class="col-sm-12 form-group">
+                            <table class="table mt-2 mb-0 " id="tblpd1">
+                                <thead>
+                                    <tr>
+                                        <th>Payment Terms</th>
+                                        <th width="150">Amount(Included tax and Others)</th>
+                                        <th width="100">Due On	</th>
+                                        <th width="80">Invoice No</th>
+                                        <th width="100">Invoice Date</th>
+                                        <th width="100">Amount</th>
+                                        <th width="250">Invoice Attachment</th>
+                                        <th width="250">Deliverable  Attachment</th>
+                                        <th width="100">Paid Date</th>
+                                        <th width="80">Paid Amount</th>
+                                        <th width="80">TDS</th>
+                                        <th>Remarks</th>
+                                        <th>Status</th>
+                                    </tr>
+
+                                </thead>
+                            </table>
+                        </div>
+                        <div class="col-sm-12 text-center mt-3 ">
+
+                            <button type="button" data-dismiss="modal" class="btn cnl-btn ripplelink  pull-right"><i class="fas fa-times"></i>Close</button>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="modal fade" id="pd2">
+        <div class="modal-dialog modal-xl ">
+            <div class="modal-content">
+                <!-- Modal Header -->
+                <div class="modal-header">
+                    <h4 class="modal-title">Payment Details for Fixed Fee</h4>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+
+                <div class="modal-body ">
+                    <div class="row">
+
+
+                        <div class="col-sm-12 form-group">
+                            <table class="table mt-2 mb-0 " id="tblpd2">
+                                <thead>
+                                    <tr>
+                                        <th>Payment Terms</th>
+                                        <th width="150">Amount(Included tax and Others)</th>
+                                        <th width="100">Due On	</th>
+                                        <th width="80">Invoice No</th>
+                                        <th width="100">Invoice Date</th>
+                                        <th width="100">Amount</th>
+                                        <th width="250">Invoice Attachment</th>
+                                        <th width="250">Deliverable  Attachment</th>
+                                        <th width="100">Paid Date</th>
+                                        <th width="80">Paid Amount</th>
+                                        <th width="80">TDS</th>
+                                        <th>Remarks</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                            </table>
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <!-- Modal Header -->
+                <div class="modal-header">
+                    <h4 class="modal-title">Payment Details for Reimbursable Amount</h4>
+                </div>
+
+                <div class="modal-body ">
+                    <div class="row">
+
+
+                        <div class="col-sm-12 form-group">
+                            <table class="table mt-2 mb-0 " id="tblpd3">
+                                <thead>
+                                    <tr>
+                                        <th>Payment Terms</th>
+                                        <th width="150">Amount(Included tax and Others)</th>
+                                        <th width="100">Due On	</th>
+                                        <th width="80">Invoice No</th>
+                                        <th width="100">Invoice Date</th>
+                                        <th width="100">Amount</th>
+                                        <th width="250">Invoice Attachment</th>
+                                        <th width="250">Deliverable  Attachment</th>
+                                        <th width="100">Paid Date</th>
+                                        <th width="80">Paid Amount</th>
+                                        <th width="80">TDS</th>
+                                        <th>Remarks</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                            </table>
+                        </div>
+                        <div class="col-sm-12 text-center mt-3 ">
+
+                            <button type="button" data-dismiss="modal" class="btn cnl-btn ripplelink  pull-right"><i class="fas fa-times"></i>Close</button>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+    <div class="modal fade" id="pd3">
+        <div class="modal-dialog modal-xl ">
+            <div class="modal-content">
+                <!-- Modal Header -->
+                <div class="modal-header">
+                    <h4 class="modal-title">Payment Details</h4>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+
+                <div class="modal-body ">
+                    <div class="row">
+
+
+                        <div class="col-sm-12 form-group">
+                            <table class="table mt-2 mb-0 " id="tblpd4">
+                                <thead>
+                                    <tr>
+                                        <th>Payment Terms</th>
+                                        <th width="150">Amount(Included tax and Others)</th>
+                                        <th width="100">Due On	</th>
+                                        <th width="80">Invoice No</th>
+                                        <th width="100">Invoice Date</th>
+                                        <th width="100">Amount</th>
+                                        <th width="250">Invoice Attachment</th>
+                                        <th width="250">Deliverable  Attachment</th>
+                                        <th width="100">Paid Date</th>
+                                        <th width="80">Paid Amount</th>
+                                        <th width="80">TDS</th>
+                                        <th>Remarks</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+
+                            </table>
+                        </div>
+                        <div class="col-sm-12 text-center mt-3 ">
+
+                            <button type="button" data-dismiss="modal" class="btn cnl-btn ripplelink  pull-right"><i class="fas fa-times"></i>Close</button>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+    <div class="modal fade" id="pr-a">
+        <div class="modal-dialog modal-xl ">
+            <div class="modal-content">
+                <!-- Modal Header -->
+                <div class="modal-header">
+                    <h4 class="modal-title">
+                        <i class="fa fa-plus" aria-hidden="true"></i> <span id="spnHead">CP003	</span>
+                    </h4>
+                    <button onclick="CloseServicePopup()" type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+
+                <div class="modal-body ">
+                    <div class="row">
+                        <div class="col-sm-1 form-group">
+                            <label>Req No</label>
+                            <input type="text" disabled="" id="ReqNoA" placeholder="Enter" name="">
+                        </div>
+                        <div class="col-sm-2 form-group">
+                            <label>Req Date</label>
+                            <input type="text" disabled="" id="ReqDateA" placeholder="Enter" name="">
+                        </div>
+                        <div class="col-sm-3 form-group">
+                            <label>Process By</label>
+                            <input type="text" disabled="" id="ReqbyA" placeholder="Enter" name="">
+                        </div>
+                        <div class="col-sm-3 form-group">
+                            <label>Point of Contact <sup>*</sup></label>
+                            <select class="form-control applyselect" id="ddlPOCA" disabled="">
+                            </select>
+                        </div>
+                        <div class="col-sm-3 form-group">
+                            <label>Contract/Agreement Type <sup>*</sup></label>
+                            <select class="form-control applyselect" id="ddlAgreementA" disabled="">
+                                <option value="Select">Select</option>
+                                <option value="Purchase Order (PO)">Purchase Order (PO)</option>
+                                <option value="Consultant">Consultant</option>
+                                <option value="Sub-grant">Sub-grant</option>
+                            </select>
+                        </div>
+                        <div class="col-sm-12 form-group">
+                            <div class="table-responsive">
+                                <table id="datatableApproved" class="table mt-0 mb-0 ">
+                                    <thead>
+                                        <tr>
+                                            <th width="10">S.NO</th>
+                                            <th width="100">Project Code<sup>*</sup></th>
+                                            <th width="100">Project Sub line Item<sup>*</sup></th>
+                                            <th>Project Line Desc</th>
+                                            <th width="100">Project Manager</th>
+                                            <th width="50">Qty</th>
+                                            <th width="90">Budget Amount</th>
+                                            <th width="80">Req. Amount<sup>*</sup></th>
+                                            <th width="100">Remarks</th>
+                                            <th width="98">Status</th>
+                                            <th>Action</th>
+                                            <th></th>
+
+                                        </tr>
+
+                                    </thead>
+                                    <tbody>
+                                        @*<tr>
+                                                <td>1</td>
+
+                                                <td>P076</td>
+                                                <td>P076.05.001</td>
+                                                <td>Asus i3 Laptops</td>
+                                                <td>Rajeev</td>
+                                                <td class="text-right">1</td>
+                                                <td class="text-right">10,000</td>
+                                                <td class="text-right">10,000</td>
+                                                <td>for new joinee</td>
+                                                <td>Approved</td>
+                                                <td></td>
+                                                <td class="text-center">
+                                                    <a href="" title="" data-toggle="modal" data-target="#reason" class="red-clr"><i class="fas fa-trash-alt" data-toggle="tooltip" title="Withdraw "></i></a>
+
+                                                </td>
+
+                                            </tr>*@
+
+
+
+
+                                    <tfoot>
+                                        <tr class="green-clr lgt-mtr-o-bg text-right fn-bold">
+                                            <td colspan="6">Total</td>
+                                            <td class="text-right"><label class="text-right" id="lblTotal1A">0</label></td>
+                                            <td class="text-right"><label class="text-right" id="lblTotal2A">0</label></td>
+                                            <td colspan="4"></td>
+                                        </tr>
+                                    </tfoot>
+
+
+
+                                </table>
+                            </div>
+
+                        </div>
+                        <div class="col-sm-12 text-center " id="dvSubmit">
+                            <button class="btn mtr-g-grn" type="button" onclick="SubmitPendingData()"><i class="fas fa-check" aria-hidden="true"></i>Submit</button>
+
+
+                        </div>
+                        <div id="divActionData">
+                            <div class="col-sm-12 form-group yes" id="divProceed">
+                                <label>Please confirm that your request is more than 5 lakh (excluding GST and Freight)<sup>*</sup></label>
+                                <ul class="list-unstyled inline-li mt-2">
+                                    <li>
+                                        <div class="radio-button">
+                                            <input id="yes13" name="radionewone" type="radio" onclick="show1();" value="">
+                                            <label for="yes13" class="radio-label">Yes</label>
+                                        </div>
+                                    </li>
+                                    <li>
+                                        <div class="radio-button">
+                                            <input id="no14" name="radionewone" type="radio" onclick="show2();">
+                                            <label for="no14" class="radio-label">No</label>
+                                        </div>
+                                    </li>
+                                </ul>
+                            </div>
+
+                            <div id="div1" class="hide col-sm-12 mb-0">
+                                <div class="row ">
+                                    <div class="col-sm-12 form-group yes">
+                                        <label>Please select one option <sup>*</sup></label>
+                                        <ul class="list-unstyled  mt-2">
+
+                                            <li class="mb-2">
+                                                <div class="radio-button">
+                                                    <input id="no17" name="option" type="radio" onclick="show4();">
+                                                    <label for="no17" class="radio-label">Follow RFP/RFQ process as per policy</label>
+                                                </div>
+                                            </li>
+
+                                            <li>
+                                                <div class="radio-button">
+                                                    <input id="yes16" name="option" type="radio" onclick="show3();" value="">
+                                                    <label for="yes16" class="radio-label">Want to submit a request to ED for waiver of RFP/RFQ process</label>
+                                                </div>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                    <div id="div2" class="hide col-sm-12 form-group">
+                                        <label>Required justification for waiver <sup>*</sup></label>
+
+                                        <textarea class="form-control h-100 RFPED maxSize[1200]" placeholder="Explain Here" id="txtJustification" onchange="HideErrorMessage(this)"></textarea>
+                                        <span id="sptxtJustification" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+
+                                        <div class="mt-3 text-center ">
+                                            <a href="#" id="btnSaveRFPED" onclick="SaveRFPED()" class="btn mtr-o-grn" type="button"><i class="fa fa-paper-plane" aria-hidden="true"></i>Submit</a>
+                                            <button onclick="CloseServicePopup()" type="button" data-dismiss="modal" class="btn cnl-btn ripplelink  pull-right"><i class="fas fa-times"></i>Close</button>
+                                        </div>
+                                    </div>
+
+                                    <div id="div5" class="hide col-sm-12 form-group">
+
+                                        <div class="mt-3 text-center ">
+                                            <a href="#" id="btnSaveRFP" onclick="SaveRFP()" class="btn mtr-o-grn" type="button"><i class="fa fa-paper-plane" aria-hidden="true"></i>Submit</a>
+                                            <button onclick="CloseServicePopup()" type="button" data-dismiss="modal" class="btn cnl-btn ripplelink  pull-right"><i class="fas fa-times"></i>Close</button>
+                                        </div>
+                                    </div>
+                                    <div style="display:none;">
+                                        <a id="btnRFPEntry" class="btn mtr-g-grn btn-l ripplelink "><i class="fa fa-plus"></i>Add</a>
+
+                                    </div>
+
+
+                                </div>
+                            </div>
+
+                            <div id="div6" class="hide col-sm-12 form-group">
+
+                                <div class="mt-3 text-center " id="DivQuotation">
+                                    <a href="#" onclick="SaveRFPQuatation()" class="btn mtr-o-grn" type="button"><i class="fa fa-paper-plane" aria-hidden="true"></i>Submit</a>
+                                    <button onclick="CloseServicePopup()" type="button" data-dismiss="modal" class="btn cnl-btn ripplelink  pull-right"><i class="fas fa-times"></i>Close</button>
+                                </div>
+                            </div>
+
+                        </div>
+
+
+
+
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="modal fade" id="reason">
+        <div class="modal-dialog modal-md ">
+            <div class="modal-content">
+                <!-- Modal Header -->
+                <div class="modal-header">
+                    <h4 class="modal-title">
+                        <i class="fa fa-plus" aria-hidden="true"></i> P076
+                    </h4>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+
+                <div class="modal-body ">
+                    <div class="row">
+                        <div class="col-sm-12 form-group">
+                            <label>Please share reasons for withdrawing the request <sup>*</sup> </label>
+                            <textarea class="form-control h-100 Withdraw" placeholder="Explain Here" id="txtWithdraw" onchange="HideErrorMessage(this)"></textarea>
+                            <span id="sptxtWithdraw" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+                        </div>
+
+                        <div class="col-sm-12 text-center ">
+                            <button class="btn mtr-o-grn" onclick="SubmitWithdrawLineItem()" type="button"><i class="fa fa-paper-plane" aria-hidden="true"></i>Submit</button>
+
+                            <button type="button" data-dismiss="modal" class="btn cnl-btn ripplelink  pull-right"><i class="fas fa-times"></i>Close</button>
+                        </div>
+
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+    <div class="modal fade" id="er">
+        <div class="modal-dialog modal-lg ">
+            <div class="modal-content">
+                <!-- Modal Header -->
+                <div class="modal-header">
+                    <h4 class="modal-title">
+                        <i class="fa fa-plus" aria-hidden="true"></i> <span id="spnHead">Assets/Equipment</span>
+                    </h4>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+
+                <div class="modal-body ">
+                    <div class="row">
+                        <div class="col-sm-4 form-group">
+                            <label>Project Name</label>
+                            <select class="form-control applyselect" id="ddlProjectCode" onchange="FillProjectLineGrid(this)">
+                            </select>
+
+                        </div>
+                        <div class="col-sm-12 form-group">
+                            <div class="table-scrollable ">
+                                <table id="datatableFillProject" class="table m-0 table-bordered dt-responsive nowrap tbltick new_width results">
+                                    <thead>
+                                        <tr>
+                                            <th width="10">
+                                                <input type="checkbox" id="selectall" class="sltchk" name="AdvanceRequired" onchange="valueChanged()">
+                                                <label for="selectall" class="selectall  m-0"></label>
+                                            </th>
+                                            <th width="10">S.NO</th>
+                                            <th width="80">Project Code</th>
+                                            <th>Project Name</th>
+                                            <th width="100">Thematic Area</th>
+                                            <th width="100">Ledger</th>
+                                            <th width="80">Category</th>
+                                            <th width="100">Subline Item</th>
+
+                                        </tr>
+                                    </thead>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="col-sm-12 text-center ">
+                            <button class="btn mtr-g-grn hide" onclick="SetProjectLineItem()" data-toggle="modal" data-target="#avpr" data-dismiss="modal" type="button"><i class="fa fa-plus" aria-hidden="true"></i>Add</button>
+                            <button type="button" data-dismiss="modal" onclick="ResetProjectList()" class="btn cnl-btn ripplelink  pull-right"><i class="fas fa-times"></i> Close</button>
+                        </div>
+
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+
+
+    <div class="modal fade" id="avpr">
+        <div class="modal-dialog modal-xl ">
+            <div class="modal-content">
+                <!-- Modal Header -->
+                <div class="modal-header">
+                    <h4 class="modal-title">
+                        <i class="fa fa-plus" aria-hidden="true"></i> <span id="spnHead"> Procurement Entry Form</span>
+                    </h4>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+
+                <div class="modal-body ">
+                    <div class="row">
+                        <div class="col-sm-1 form-group">
+                            <label>Req No</label>
+                            <input type="text" disabled="" id="ReqNo" placeholder="Enter" name="">
+                        </div>
+                        <div class="col-sm-2 form-group">
+                            <label>Req Date</label>
+                            <input type="text" disabled="" id="ReqDate" placeholder="Enter" name="">
+                        </div>
+                        <div class="col-sm-3 form-group">
+                            <label>Process By</label>
+                            <input type="text" disabled="" id="Reqby" placeholder="Enter" name="">
+                        </div>
+                        <div class="col-sm-3 form-group">
+                            <label>Point of Contact <sup>*</sup><i class="fas fa-info-circle" data-toggle="tooltip" title="This person shall be responsible for overall coordination of activities under the Agreement, accepting the deliverables and approving payments."></i></label>
+                            <select class="form-control applyselect mandate" id="ddlPOC">
+                            </select>
+                            <span id="spddlPOC" class="text-danger field-validation-error Project" style="display:none;">Hey, You missed this field!!</span>
+                        </div>
+                        <div class="col-sm-3 form-group">
+                            <label>Contract/Agreement Type <sup>*</sup><i class="fas fa-info-circle" data-toggle="tooltip" title="Pl select contract if you are seeking professional/technical services and for rest select PO/ sub-grant, as the case may be."></i></label>
+                            <select class="form-control applyselect mandate" id="ddlAgreement" onchange="HideErrorMessage(this)">
+                                <option value="Select">Select</option>
+                                <option value="Purchase Order (PO)">Purchase Order (PO)</option>
+                                <option value="Consultant">Consultant</option>
+                                <option value="Sub-grant">Sub-grant</option>
+                            </select>
+                            <span id="spddlAgreement" class="text-danger field-validation-error Project" style="display:none;">Hey, You missed this field!!</span>
+                        </div>
+                        <div class="col-sm-12 form-group">
+                            <div class="table-scrollable">
+                                <table id="datatableProject" class="table mt-0 ">
+                                    <thead>
+                                        <tr>
+                                            <th width="10">S.NO</th>
+                                            <th width="60">Project Code<sup>*</sup></th>
+                                            <th width="90">Project Sub Line Item<sup>*</sup></th>
+                                            <th>Project Line Desc</th>
+                                            <th width="100">Project Manager</th>
+                                            <th width="50">Qty</th>
+                                            <th width="90">Budget Amount</th>
+                                            <th width="80">Req. Amount<sup>*</sup></th>
+                                            <th width="200">Remarks</th>
+                                            <th width="10"></th>
+
+                                        </tr>
+                                        `
+                                    </thead>
+                                    <tbody id="tableToModify">
+                                        <tr class="tr_clone" id="rowToClone">
+                                            <td>1 </td>
+
+                                            <td>
+                                                <select class="form-control  applyselect ddlProject mandate" style="width:100px;" id="ddlProject_0" onchange="FillProjectLine(this);HideErrorMessage(this)">
+                                                    <option>Select</option>
+                                                </select>
+                                                <span id="spddlProject_0" class="text-danger field-validation-error Project" style="display:none;">Hey, You missed this field!!</span>
+                                                <label class="lblProjectLineId" style="display:none;" id="lblProjectLineId_0">0</label>
+                                            </td>
+                                            <td>
+                                                <select class="form-control applyselect ddlProjectLine mandate" id="ddlProjectLine_0" onchange="FillProjectDetails(this)" HideErrorMessage(this)">
+                                                    <option>Select</option>
+                                                </select>
+                                                <span id="spddlProjectLine_0" class="text-danger field-validation-error ProjectLine" style="display:none;">Hey, You missed this field!!</span>
+                                            </td>
+                                            <td>
+                                                <label class="lblProjectLineDesc" id="lblProjectLineDesc_0"></label>
+
+                                            </td>
+                                            <td>
+
+                                                <label class="lblProjectManager" id="lblProjectManager_0"></label>
+                                            </td>
+                                            <td class="text-right">
+
+                                                <label class="lblQuantity text-right" id="lblQuantity_0"></label>
+
+                                            </td>
+                                            <td class="text-right">
+
+                                                <label class="lblBudget text-right" id="lblBudget_0"></label>
+
+                                            </td>
+                                            <td>
+                                                <input onchange="calculateTotal(this); HideErrorMessage(this)" type="number" id="txtReqBudget_0" placeholder="0" class="form-control text-right AAmount mandate allow_numeric">
+                                                <span id="sptxtReqBudget_0" class="text-danger field-validation-error Budget" style="display:none;">Hey, You missed this field!</span>
+                                                <span id="ssptxtReqBudget_0" class="text-danger field-validation-error Budget" style="display:none;">Your request amount is more than the budgeted amount!</span>
+                                            </td>
+                                            <td>
+                                                <textarea class="form-control maxSize[1200]" id="txtRemark_0" placeholder="Enter"></textarea>
+                                            </td>
+                                            <td class="text-center" style="visibility:hidden;">
+                                                <a class="remove" data-toggle="tooltip" data-original-title="Remove"><i class="fas fa-window-close red-clr" aria-hidden="true"></i></a>
+
+
+                                            </td>
+                                        </tr>
+
+
+                                    </tbody>
+
+                                    <tfoot>
+                                        <tr class="green-clr lgt-mtr-o-bg text-right fn-bold">
+                                            <td colspan="6">Total</td>
+                                            <td class="text-right"><label class="text-right" id="lblTotal1">0</label></td>
+                                            <td class="text-right"><label class="text-right" id="lblTotal2">0</label></td>
+                                            <td colspan="3"></td>
+                                        </tr>
+                                    </tfoot>
+                                </table>
+
+                            </div>
+                            <div class="text-right" id="btndvAdd">
+                                <button onclick="btnrowactivity1()" class="btn green-clr" type="button"><i class="fa fa-plus" aria-hidden="true"></i>Add</button>
+                            </div>
+                        </div>
+                        <div class="col-sm-12 text-center ">
+                            <button id="btnSubmitData" onclick="SaveProjectLine()" class="btn mtr-o-grn" type="button"><i class="fa fa-paper-plane" aria-hidden="true"></i>Submit</button>
+                            <button type="button" data-toggle="modal" data-target="#er" data-dismiss="modal" class="btn cnl-btn ripplelink  pull-right"><i class="fas fa-arrow-left"></i>Back</button>
+                        </div>
+
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+    <div class="modal fade" id="pr">
+        <div class="modal-dialog modal-xl ">
+            <div class="modal-content">
+                <!-- Modal Header -->
+                <div class="modal-header">
+                    <h4 class="modal-title">
+                        <i class="fa fa-plus" aria-hidden="true"></i> <span id="spnHead">Procurement Entry Form</span>
+                    </h4>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+
+                <div class="modal-body ">
+                    <div class="row">
+                        <div class="col-sm-1 form-group">
+                            <label>Req No</label>
+                            <input type="text" disabled="" id="ReqNoPr" placeholder="Enter" name="">
+                        </div>
+                        <div class="col-sm-2 form-group">
+                            <label>Req Date</label>
+                            <input type="text" disabled="" id="ReqDatePr" placeholder="Enter" name="">
+                        </div>
+                        <div class="col-sm-3 form-group">
+                            <label>Process By</label>
+                            <input type="text" disabled="" id="ReqbyPr" placeholder="Enter" name="">
+                        </div>
+                        <div class="col-sm-3 form-group">
+                            <label>Point of Contact <sup>*</sup></label>
+                            <select class="form-control applyselect" id="ddlPOCPr" disabled="">
+                            </select>
+                        </div>
+                        <div class="col-sm-3 form-group">
+                            <label>Contract/Agreement Type <sup>*</sup></label>
+                            <select class="form-control applyselect " id="ddlAgreementPr" disabled="">
+                                <option value="Select">Select</option>
+                                <option value="Purchase Order (PO)">Purchase Order (PO)</option>
+                                <option value="Consultant">Consultant</option>
+                                <option value="Sub-grant">Sub-grant</option>
+                            </select>
+                        </div>
+                        <div class="col-sm-12 form-group">
+                            <div class="table-responsive">
+                                <table id="datatableLineItemPr" class="table mt-0 ">
+                                    <thead>
+                                        <tr>
+                                            <th width="10">S.NO</th>
+                                            <th width="90">Project Code<sup>*</sup></th>
+                                            <th width="120">Project Sub Line Item<sup>*</sup></th>
+                                            <th>Project Line Desc</th>
+                                            <th width="100">Project Manager</th>
+                                            <th width="50">Qty</th>
+                                            <th width="90">Budget Amount</th>
+                                            <th width="80">Req. Amount <sup>*</sup></th>
+                                            <th width="150">Remarks</th>
+                                            <th><div class="w-50">Action</div></th>
+                                            <th id="thbutton">Approval Remark</th>
+                                            <th width="50">
+                                                <div id="chkAll">
+                                                    <input type="checkbox" id="selectall" class="sltchk" name="AdvanceRequired" onchange="valueChanged()">
+                                                    <label for="selectall" class="selectall  m-0"></label>
+                                                </div>
+                                            </th>
+                                        </tr>
+
+                                    </thead>
+
+                                    <tfoot>
+                                        <tr class="green-clr lgt-mtr-o-bg text-right fn-bold">
+                                            <td colspan="6">Total</td>
+                                            <td class="text-right"><label class="text-right" id="lblTotal1Pr">0</label></td>
+                                            <td class="text-right"><label class="text-right" id="lblTotal2Pr">0</label></td>
+                                            <td colspan="4"></td>
+                                        </tr>
+                                    </tfoot>
+                                </table>
+                            </div>
+
+                        </div>
+                        <div class="col-sm-12 text-center " id="divApproval">
+                            <button class="btn mtr-g-grn hide" type="button" onclick="ApproveRejectRequest()"><i class="fas fa-check" aria-hidden="true"></i>Approve</button>
+                            <button type="button" data-dismiss="modal" class="btn cnl-btn ripplelink  pull-right"><i class="fas fa-times"></i>Close</button>
+                        </div>
+
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="modal fade" id="rjt">
+        <div class="modal-dialog modal-lg ">
+            <div class="modal-content">
+                <!-- Modal Header -->
+                <div class="modal-header">
+                    <h4 class="modal-title">
+                        <i class="fa fa-plus" aria-hidden="true"></i> Reject
+                    </h4>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+
+                <div class="modal-body ">
+                    <div class="row">
+                        <div class="col-sm-12 form-group">
+                            <label>Please share the reason for rejection<sup>*</sup></label>
+                            <textarea class="form-control h-100 maxSize[1200] Reject" placeholder="Explain Hare" id="txtRejectReason" onchange="HideErrorMessage(this)"></textarea>
+                            <span id="sptxtRejectReason" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+                        </div>
+
+                        <div class="col-sm-12 text-center ">
+                            <button class="btn mtr-o-grn" type="button" onclick="RejectReason()"><i class="fa fa-paper-plane" aria-hidden="true"></i>Submit</button>
+                            <button type="button" data-dismiss="modal" class="btn cnl-btn ripplelink  pull-right"><i class="fas fa-times"></i>Close</button>
+                        </div>
+
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+    <div class="modal fade" id="rsbt">
+        <div class="modal-dialog modal-lg ">
+            <div class="modal-content">
+                <!-- Modal Header -->
+                <div class="modal-header">
+                    <h4 class="modal-title">
+                        <i class="fa fa-plus" aria-hidden="true"></i> Resubmitted
+                    </h4>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+
+                <div class="modal-body ">
+                    <div class="row">
+                        <div class="col-sm-12 form-group">
+                            <label>Please share the reason for resubmission<sup>*</sup> </label>
+                            <textarea class="form-control h-100 maxSize[1200] Resubmission" placeholder="Explain Hare" id="txtResubmitReason" onchange="HideErrorMessage(this)"></textarea>
+                            <span id="sptxtResubmitReason" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+                        </div>
+
+                        <div class="col-sm-12 text-center ">
+                            <button class="btn mtr-o-grn" onclick="ReSubmitReason()" type="button"><i class="fa fa-paper-plane" aria-hidden="true"></i>Submit</button>
+
+                            <button type="button" data-dismiss="modal" class="btn cnl-btn ripplelink  pull-right"><i class="fas fa-times"></i>Close</button>
+                        </div>
+
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="modal fade" id="dod1">
+        <div class="modal-dialog modal-xl ">
+            <div class="modal-content">
+                <!-- Modal Header -->
+                <div class="modal-header">
+                    <h4 class="modal-title">Payment terms for fixed fee</h4>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+
+                <div class="modal-body ">
+                    <div class="table-responsive">
+                        <table class="table mb-2" id="tbldod1">
+
+                            <thead>
+                                <tr>
+                                    <th>Payment Terms</th>
+                                    <th width="150">Amount(Included tax and Others)</th>
+                                    <th width="100">Due On	</th>
+                                    <th width="80">Invoice No</th>
+                                    <th width="100">Invoice Date</th>
+                                    <th width="100">Amount</th>
+                                    <th width="250">Invoice Attachment</th>
+                                    <th width="250">Deliverable Attachment </th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+
+
+                        </table>
+
+                        @*<div class="text-center mt-3 ">
+                                <button type="button" onclick="Savetbldod1Data()" class="btn mtr-o-grn btn-l" name="Command" value="Add" data-toggle="modal" data-target="#ratingmdl "><i class="fa fa-paper-plane"></i> Submit</button>
+                                <button type="button" data-dismiss="modal" class="btn cnl-btn ripplelink  pull-right"><i class="fas fa-times"></i>Close</button>
+                            </div>*@
+                    </div>
+
+
+
+                </div>
+
+                <div class="modal-header">
+                    <h4 class="modal-title">Payment terms for reimbursable amount</h4>
+
+                </div>
+
+                <div class="modal-body ">
+                    <div class="table-responsive">
+                        <table class="table mb-2" id="tbldod2">
+
+                            <thead>
+                                <tr>
+                                    <th>Payment Terms</th>
+                                    <th width="150">Amount(Included tax and Others)</th>
+                                    <th width="100">Due On	</th>
+                                    <th width="80">Invoice No</th>
+                                    <th width="100">Invoice Date</th>
+                                    <th width="100">Amount</th>
+                                    <th width="250">Invoice Attachment</th>
+                                    <th width="250">Deliverable Attachment </th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+
+
+
+                        </table>
+                        <div class="text-center mt-3 ">
+                            <button style="display:none" type="button" id="btnSavetbldod1Data" onclick="Savetbldod1Data()" class="btn mtr-o-grn btn-l" name="Command" value="Add" data-toggle="modal" data-target="#ratingmdl "><i class="fa fa-paper-plane"></i> Submit</button>
+                            <button id="btnDod1Close" type="button" data-dismiss="modal" class="btn cnl-btn ripplelink  pull-right"><i class="fas fa-times"></i>Close</button>
+                        </div>
+                    </div>
+
+
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="modal fade" id="dod2">
+        <div class="modal-dialog modal-xl ">
+            <div class="modal-content">
+                <!-- Modal Header -->
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="modal fade" id="mgs">
+        <div class="modal-dialog modal-lg ">
+            <div class="modal-content">
+                <!-- Modal Header -->
+                <div class="modal-header">
+                    <h4 class="modal-title"><i class="fas fa-comments"></i> Message</h4>
+                    <button type="button" class="close" data-dismiss="modal" onclick="MessagePopupClose()">&times;</button>
+                </div>
+
+                <div class="modal-body ">
+                    <div class="row">
+                        <div class="col-sm-12 form-group">
+
+                            <!------>
+                            <!-- Comment #1 //-->
+
+                            <div class="scroll pr-3">
+
+                                <ul class="chatmsgtree">
+                                    <li id="divMessage">
+
+                                    </li>
+                                </ul>
+
+                            </div>
+
+                            <!----->
+
+                        </div>
+                        <div class="col-sm-12 form-group text-center">
+                            <button style="display:none;" type="button" class="btn mtr-o-grn" data-dismiss="modal" data-toggle="modal" data-target="#aq"><i class="fa fa-paper-plane"></i> Ask Query</button>
+                            <button type="button" data-dismiss="modal" class="btn cnl-btn" onclick="MessagePopupClose()"><i class="fas fa-times"></i> Close</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="modal fade" id="wdReason">
+        <div class="modal-dialog modal-lg ">
+            <div class="modal-content">
+                <!-- Modal Header -->
+                <div class="modal-header">
+                    <h4 class="modal-title"><i class="fas fa-comments"></i> Withdrawn Reason</h4>                   
+                </div>
+
+                <div class="modal-body ">
+                    <div class="row">
+                        <div class="col-sm-12 form-group">
+
+                            <!------>
+                            <!-- Comment #1 //-->
+
+                            <div class="scroll pr-3">
+                                <label id="txtWReason"></label>
+                            </div>
+
+                            <!----->
+
+                        </div>
+                        <div class="col-sm-12 form-group text-center">                         
+                            <button type="button" data-dismiss="modal" class="btn cnl-btn"><i class="fas fa-times"></i> Close</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+    <div class="modal fade" id="aq">
+        <div class="modal-dialog modal-md ">
+            <div class="modal-content">
+                <!-- Modal Header -->
+                <div class="modal-header">
+                    <h4 class="modal-title"><i class="fas fa-plus"></i>Ask Query</h4>
+                    <button type="button" class="close" data-dismiss="modal" onclick="MessagePopupClose()">&times;</button>
+                </div>
+
+                <div class="modal-body ">
+                    <div class="row">
+                        <div class="col-sm-12 form-group">
+                            <label>To<sup>*</sup></label>
+                            <select class="form-control applyselect Message" onchange="HideErrorMessage(this)" multiple id="ddlMessageMember">
+                            </select>
+
+                            <span id="spddlMessageMember" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+                        </div>
+                        <div class="col-sm-12 form-group">
+                            <label>Message<sup>*</sup></label>
+                            <textarea class="form-control h-100 Message maxSize[1200]" placeholder="Enter" id="txtMessage" onchange="HideErrorMessage(this)"></textarea>
+                            <span id="sptxtMessage" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+                        </div>
+                        <div class="col-sm-12 form-group text-center">
+                            <button type="button" class="btn mtr-o-grn" onclick="SendMessage()"><i class="fa fa-paper-plane"></i>Send</button>
+                            <button type="button" id="btnModelPopupClose" data-dismiss="modal" class="btn cnl-btn" onclick="MessagePopupClose()"><i class="fas fa-times"></i> Close</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+    @section scripts    {
+        @System.Web.Optimization.Scripts.Render("~/bundle/unobtrusivejs")
+        @System.Web.Optimization.Scripts.Render("~/bundle/dataTablesjs")
+        <script src="~/assets/design/Scripts/AddInit.js?v=@clsApplicationSetting.GetWebConfigValue("Version")"></script>
+
+        <script src="~/Areas/Procurement/DevScript/ProcurementUserRequest.js"></script>
+        <script>
+		 var IsEDUser = '@ViewBag.IsED';
+       var loggedinUserid = '@ViewBag.UserId';
+		var loggedinUserName = '@ViewBag.UserName';
+		var UserGrade = '@ViewBag.Grade';
+        var IsPM = '@ViewBag.IsPM';
+        var VendorRegId = '@ViewBag.VendorRegId';
+        var IsProcurementApprover = '@ViewBag.IsProcurementApprover';
+
+
+        </script>
+    }
+    <script>
+        $('.selectshowdiv').on('change', function () {
+            $('#partpaymentdue').css('display', 'none');
+            $('#fullpaymentdue').css('display', 'none');
+            if ($(this).val() === 'partpaymentdue') {
+                $('#partpaymentdue').css('display', 'block');
+            }
+
+            if ($(this).val() === 'fullpaymentdue') {
+                $('#fullpaymentdue').css('display', 'block');
+            }
+        });
+    </script>
+    <script>
+        $('#modalnoc').change(function () {
+            var opval = $(this).val();
+            if (opval == "halfpayment") {
+                $('#confirmmsgfp').modal("show");
+            }
+
+            var opval = $(this).val();
+            if (opval == "nopayment") {
+                $('#confirmmsgnp').modal("show");
+            }
+        });
+    </script>
+
+    <script>
+        $(document).ready(function () {
+            $('[data-toggle="tooltip"]').tooltip();
+        });
+    </script>
+    <script>
+        $(document).ready(function () {
+            $(".applyselect").select2();
+
+        });
+    </script>
+
+    <script>
+        var MenuID = Number(129);
+
+
+
+
+        function SuccessToaster(Message) {
+            $("#toastMsg").html(Message);
+            $("#toasticon i").addClass("fas fa-check green-clr ");
+            var x = document.getElementById("toast")
+            x.className = "show";
+            setTimeout(function () { x.className = x.className.replace("show", ""); }, 4000);
+        }
+
+        function FailToaster(Message) {
+            $("#toastMsg").html(Message);
+            $("#toasticon i").addClass("fas fa-exclamation-triangle red-clr");
+            var x = document.getElementById("toast")
+            x.className = "show toaster-warning";
+            setTimeout(function () { x.className = x.className.replace("show toaster-warning", ""); }, 4000);
+        }
+
+
+        function ValidateFile(FileName) {
+
+            var result = false;
+            if (document.getElementById(FileName).files[0].name.toUpperCase().match(/\.(PDF|DOCX|TXT|XLS|XLSX)$/)) {
+
+                var filesize = 3145728;
+                var sizeinbytes = document.getElementById(FileName).files[0].size;
+                if (filesize >= sizeinbytes) {
+                    result = true;
+                }
+                else {
+                    FailToaster("File size should be less than 3 MB");
+                    document.getElementById(FileName).value = '';
+                    result = false;
+
+                }
+                return result;
+            }
+            else {
+                FailToaster("Invalid file type , please select valid file again");
+                document.getElementById(FileName).value = '';
+                return result;
+            }
+
+        }
+
+        function ValidateImage(FileName) {
+
+            var result = false;
+            if (document.getElementById(FileName).files[0].name.toUpperCase().match(/\.(JPG|JPEG|PNG|PDF)$/)) {
+
+                var filesize = 2097152;
+                var sizeinbytes = document.getElementById(FileName).files[0].size;
+                if (filesize >= sizeinbytes) {
+                    result = true;
+                }
+                else {
+                    FailToaster("Image should be less than 2 MB");
+
+                    document.getElementById(FileName).value = '';
+                    result = false;
+
+                }
+                return result;
+            }
+            else {
+                FailToaster("Invalid Image type , please select valid Image");
+                document.getElementById(FileName).value = '';
+                return result;
+            }
+
+        }
+    </script>
+    <script>
+        // JavaScript Document
+        $(function () {
+            $('#js-nav-toggle').click(function (e) {
+                e.preventDefault();
+                $("html").toggleClass("is-sideopen");
+                $("#js-nav-toggle").toggleClass("is-active");
+            });
+
+            var $content = $('.l-contents');
+            var $header = $('.l-header');
+
+
+            $content.click(function () {
+                $("html").removeClass("is-sideopen");
+            });
+
+
+            $header.click(function () {
+                $("html").removeClass("is-sideopen");
+            });
+
+
+        });
+
+
+        $(function () {
+
+            var $dropdown = $('.js-dropdown');
+            var $content = $('.l-contents');
+            var $toggle = $('#js-nav-toggle');
+
+
+            $('.js-dropdown-menu').hide();
+            $dropdown.click(function () {
+                $('i').removeClass('is-rotate');
+                $('.js-dropdown-menu').slideUp(200);
+                if ($('+.js-dropdown-menu', this).css('display') == 'none') {
+                    $('i', this).addClass('is-rotate');
+                    $('+.js-dropdown-menu', this).slideDown(200);
+                }
+            });
+
+
+            $content.click(function () {
+                $('i').removeClass('is-rotate');
+                $('.js-dropdown-menu').slideUp(200);
+                if ($('+.js-dropdown-menu', this).css('display') == 'none') {
+                    $('i', this).addClass('is-rotate');
+                    $('+.js-dropdown-menu', this).slideDown(200);
+                }
+            });
+
+
+            $toggle.click(function () {
+                $('i').removeClass('is-rotate');
+                $('.js-dropdown-menu').slideUp(200);
+                if ($('+.js-dropdown-menu', this).css('display') == 'none') {
+                    $('i', this).addClass('is-rotate');
+                    $('+.js-dropdown-menu', this).slideDown(200);
+                }
+            });
+
+        });
+
+        $(function () {
+            $('.is-ac-close').hide();
+            $(".is-ac-click").on("click", function () {
+                if ($(this).children('i').is('.fa-angle-right')) {
+                    $(this).children('i')
+                        .removeClass('fa-angle-right')
+                        .addClass('fa-angle-down');
+                } else {
+                    $(this).children('i')
+                        .removeClass('fa-angle-down')
+                        .addClass('fa-angle-right');
+                }
+                $(this).next().slideToggle(200);
+            });
+
+            $('.is-ac-close').hide();
+            $(".is-ac-bar").on("click", function () {
+
+                if ($(this).find('i').is('.fa-caret-down')) {
+
+                    $(this).find('i')
+                        .removeClass()
+                        .addClass('fa fa-caret-up');
+                } else {
+                    $(this).find('i')
+                        .removeClass()
+                        .addClass('fa fa-caret-down');
+                }
+                $(this).next().slideToggle(200);
+            });
+        });
+
+
+
+
+        //---------------------------------------------------
+        // ▼　tab
+        //---------------------------------------------------
+        $(function () {
+            var rwdTab = $('.c-tab'),
+                switchPoint = 768,
+                fadeSpeed = 300,
+                slideSpeed = 300;
+
+            var tabBtn = rwdTab.children('.c-tab-panel').children('.c-tab-heading'),
+                contentsArea = rwdTab.children('.c-tab-panel').children('.c-tab-body');
+
+            tabBtn.on('click', function () {
+                if (!$(this).hasClass('c-tab-active')) {
+                    tabBtn.removeClass('c-tab-active');
+                    $(this).addClass('c-tab-active');
+
+                    if (window.innerWidth > switchPoint) {
+                        contentsArea.fadeOut(fadeSpeed);
+                        $(this).next().fadeIn(fadeSpeed);
+                    } else {
+                        contentsArea.slideUp(slideSpeed);
+                        $(this).next().slideDown(slideSpeed);
+                    }
+                }
+            });
+
+            tabBtn.first().click();
+        });
+
+
+
+    </script>
+    <!-- required -->
+    <script type="text/javascript">
+        jQuery(document).ready(function ($) {
+            jQuery('.stellarnav').stellarNav({
+                theme: 'dark',
+                breakpoint: 960,
+                position: 'right',
+
+            });
+            $('.notifyjs-corner').empty();
+        });
+    </script>
+    <!-- required -->
+    <script>
+        $("document").ready(function () {
+
+            $('.dropdown-menu').on('click', function (e) {
+                if ($(this).hasClass('dropdown-menu-form')) {
+                    e.stopPropagation();
+                }
+            });
+        });
+
+
+    </script>
+    <script>
+
+        var links = document.querySelectorAll('.ripplelink');
+
+        for (var i = 0, len = links.length; i < len; i++) {
+            links[i].addEventListener('click', function (e) {
+                var targetEl = e.target;
+                var inkEl = targetEl.querySelector('.ink');
+
+                if (inkEl) {
+                    inkEl.classList.remove('animate');
+                }
+                else {
+                    inkEl = document.createElement('span');
+                    inkEl.classList.add('ink');
+                    inkEl.style.width = inkEl.style.height = Math.max(targetEl.offsetWidth, targetEl.offsetHeight) + 'px';
+                    targetEl.appendChild(inkEl);
+                }
+
+                inkEl.style.left = (e.offsetX - inkEl.offsetWidth / 2) + 'px';
+                inkEl.style.top = (e.offsetY - inkEl.offsetHeight / 2) + 'px';
+                inkEl.classList.add('animate');
+            }, false);
+        }
+    </script>
+    <script type="text/javascript">
+        $(window).scroll(function () {
+            if ($(this).scrollTop() > 250) {
+                $('.header').addClass("sticky");
+            }
+            else {
+                $('.header').removeClass("sticky");
+            }
+        });
+
+
+    </script>
+
+    <script type="text/javascript">
+        $(".but").click(function () {
+            // Close all open windows
+            $(".content").stop().slideUp(300);
+            // Toggle this window open/close
+            $(this).next(".content").stop().slideToggle(300);
+            //hitter test//
+            $(".hitter").show()
+        });
+
+        $(".hitter").click(function () {
+            // Close all open windows
+            $(".content").stop().slideUp(300);
+        });
+    </script>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('#selectall').click(function () {
+                $('.selectedId').prop('checked', this.checked);
+            });
+
+            $('.selectedId').change(function () {
+                var check = ($('.selectedId').filter(":checked").length == $('.selectedId').length);
+                $('#selectall').prop("checked", check);
+            });
+        });
+    </script>
+    <script>
+        function valueChanged() {
+            if ($('.sltchk').is(":checked"))
+                $(".hide").show();
+            else
+                $(".hide").hide();
+        };
+    </script>
+    <script>
+        function show2() {
+            document.getElementById('div1').style.display = 'none';
+            document.getElementById('div6').style.display = 'block';
+
+
+        }
+        function show1() {
+            document.getElementById('div1').style.display = 'block';
+            document.getElementById('div6').style.display = 'none';
+
+        }
+    </script>
+
+    <script>
+        function show4() {
+            document.getElementById('div2').style.display = 'none';
+            document.getElementById('div5').style.display = 'block';
+        }
+        function show3() {
+            document.getElementById('div2').style.display = 'block';
+            document.getElementById('div5').style.display = 'none';
+        }
+    </script>
+
+    <script>
+        function show6() {
+            document.getElementById('div3').style.display = 'none';
+        }
+        function show5() {
+            document.getElementById('div3').style.display = 'block';
+        }
+    </script>
+    <script>
+        function show8() {
+            document.getElementById('div4').style.display = 'none';
+        }
+        function show7() {
+            document.getElementById('div4').style.display = 'block';
+        }
+
+
+
+    </script>
+
+    <script>
+        $(document).ready(function () {
+            $('.valueofcontract').hide();
+            $('.contractenddate').hide();
+            $('.scopeofwork').hide();
+            $('.paymentterms').hide();
+            $('.all').hide();
+
+
+            $('.applyselect ').change(function () {
+                $('.valueofcontract').hide();
+                $('.contractenddate').hide();
+                $('.scopeofwork').hide();
+                $('.paymentterms').hide();
+                $('.all').hide();
+
+
+                var test = [];
+                $.each($('.applyselect  :selected'), function () {
+                    test.push($(this).val());
+                    if ($(this).val() == 'all') {
+                        $('.all').show();
+
+                    }
+
+
+
+                    if ($(this).val() == 'valueofcontract') {
+                        $('.valueofcontract').show();
+                    }
+                    if ($(this).val() == 'contractenddate') {
+                        $('.contractenddate').show();
+                    }
+                    if ($(this).val() == 'scopeofwork') {
+                        $('.scopeofwork').show();
+                    }
+                    if ($(this).val() == 'paymentterms') {
+                        $('.paymentterms').show();
+                    }
+                })
+
+            }
+            );
+        });
+
+
+    </script>

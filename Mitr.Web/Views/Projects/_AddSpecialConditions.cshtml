@@ -1,0 +1,35 @@
+﻿@model  Project.SpecialConditions.Condition.Add
+
+@using (Ajax.BeginForm("_AddSpecialConditions", "Projects",
+               new { src = ViewBag.src },
+               new AjaxOptions { HttpMethod = "POST", OnSuccess = "OnSuccess", OnBegin = "ShowLoadingDialog()", OnFailure = "OnPostFailure()" },
+           new { @id = "SpecialConditionsFrom", @autocomplete = "Off" })
+           )
+{
+
+    <div class="row mb-3">
+        <div class="col-md-4 col-sm-3 form-group hw-575">
+            <label>Special Conditions </label>
+            @Html.TextBoxFor(model => Model.Condition, new { @class = "form-control", @placeholder="Enter", @onkeydown = "GetAutofill(this);" })
+            @Html.ValidationMessageFor(model => Model.Condition, "", new { @class = "text-danger" })
+        </div>
+        <div class="col-md-2 col-sm-3 form-group hw-575 align-self-end">
+            <ul class="list-unstyled inlin-list mt-2">
+                <li>
+                    <input type="checkbox" id="@Html.IdFor(x=>x.Chk)" name="@Html.NameFor(x=>x.Chk)"  data-trigger="hidden_fields_one" class="trigger">
+                    <label for="@Html.IdFor(x=>x.Chk)"> Consider for project closure</label>
+                </li>
+            </ul>
+        </div>
+        <div class="col-md-2 col-sm-3 form-group hw-575">
+            <label>Allocated to </label>
+            @Html.DropDownListFor(n => n.AllocatedID, new SelectList(Model.EMPList, "ID", "Name", Model.AllocatedID), "Select",
+                            new { @class = "form-control  applyselect",@disabled="disabled" })
+            @Html.ValidationMessageFor(model => model.AllocatedID, "", new { @class = "text-danger" })
+        </div>
+        <div class="col-md-3 col-sm-3 form-group align-self-end text-left">
+            <button type="submit" name="command" value="Save" class="btn mtr-g-grn m-0 ripplelink mb-2 mt-0"> <i class="fas fa-plus"></i> Add Row </button>
+        </div>
+    </div>
+}
+

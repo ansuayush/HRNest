@@ -1,0 +1,54 @@
+﻿@using System.Data
+@model DataSet
+@{
+	string MenuID = "0";
+	if (ViewBag.MenuID != null)
+	{
+		MenuID = ViewBag.MenuID;
+	}
+}
+<div class="row">
+	<div class="control-section">
+	
+			@Html.EJS().Grid("FlatGrid").DataSource((DataTable)Model.Tables[0]).GridLines(Syncfusion.EJ2.Grids.GridLine.Both).Columns(col =>
+	   {
+		   col.Field("ProjectDetailID").Visible(false).Add();
+		   col.Field("REC_ReqID").Visible(false).Add();
+		   col.Field("RowNum").HeaderText("S.No").Width("30").Add();
+		   col.Field("REC_Code").HeaderText("Code").Width("50").Add();
+		   col.Field("projref_no").HeaderText("Project No").Width("50").Add();
+		   col.Field("proj_name").HeaderText("Project Name").Width("120").Add();
+		   col.Field("JobTitle").HeaderText("Job Title").Width("120").Add();
+		   col.Field("locationName").HeaderText("Location").Width("50").Add();
+		   col.Field("ManagerName").HeaderText("Manager").Width("100").Add();
+
+		   col.HeaderText("Status").TextAlign(Syncfusion.EJ2.Grids.TextAlign.Center).Template("#tmpStatus").Width("40").Add();
+		   col.HeaderText("Action").TextAlign(Syncfusion.EJ2.Grids.TextAlign.Center).Template("#tmpAction").Width("30").Add();
+	   }).AllowPaging().PageSettings(page => page.PageCount(10)).Toolbar(new List<string>() { "Search" }).Render()
+	
+	</div>
+</div>
+
+<script id="tmpStatus" type="text/x-template">
+	${if('@ViewBag.Approve' === "0")}
+	<span class="red-clr">Draft</span>
+	${else}
+	<span class="green-clr">Process</span>
+	${/if}
+
+</script>
+
+<script id="tmpAction" type="text/x-template">
+	<input type="hidden" name="I" value="${REC_ReqID}" />
+
+	<a onclick="BindEdit(this)"><i class="fas fa-eye"></i>View </a>
+
+
+</script>
+
+
+@Html.IncludeVersionedJs(Url.Content("~/assets/design/Scripts/SyncScripts.js"))
+
+
+@(Html.EJS().ScriptManager())
+

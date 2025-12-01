@@ -1,0 +1,143 @@
+﻿
+@{
+    ViewBag.Title = "Reports";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+
+@using (Ajax.BeginForm("Reports", "Compliance",
+     new { src = clsApplicationSetting.EncryptQueryString(ViewBag.MenuID.ToString() + "*/Compliance/Reports") },
+     new AjaxOptions { HttpMethod = "POST", OnSuccess = "BindTarget", OnFailure = "CloseLoadingDialog()", OnBegin = "ShowLoadingDialog();" },
+ new { @id = "ReportsFrom" })
+ )
+{
+    <div class="inner-main defult-height defult-height-scd pb-0">
+
+        <div class="row">
+            <div class="col-sm-12 align-self-center"><h1 class="heading-one mb-0">Report </h1></div>
+            <!-- Finance Year Select Dropdowns -->
+            <div class="col-sm-6 col-md-2 wh-575 form-group slt-dgn slt-45">
+                <label class="lbl-abs">Finance Year <sup>*</sup></label>
+                <select class="form-control applyselect Mandatory " id="ddlFinanceYear" onchange="LoadData(this); HideErrorMessage(this);">
+                </select>
+                <span id="spddlFinanceYear" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+
+                <input type="hidden" id="hdnLegacyId" value="0" />
+            </div>
+
+            <div class="col-lg-2 col-md-2 col-sm-2 slt-dgn  form-group" data-select2-id="8">
+                <label class="lbl-abs">Category</label>
+                <select class="form-control applyselect Mandatory" id="ddlCategorys" onchange="HideErrorMessage(this)">
+                </select>
+            </div>
+            <div class="col-lg-2 col-md-2 col-sm-2 slt-dgn  form-group" data-select2-id="8">
+                <label class="lbl-abs">Sub Category</label>
+                <select class="form-control applyselect Mandatory" id="ddlSubCategorys" onchange="HideErrorMessage(this)">
+                </select>
+
+            </div>
+            <div class="col-lg-2 col-md-2 col-sm-2 slt-dgn  form-group" data-select2-id="8">
+                <button type="button" onclick="Export()" class="btn mtr-g-grn btn-l ripplelink" id="btnExportAll" value="Search" fdprocessedid="34x0kq"><i class="fas fa-file-excel"></i>Export To Excel</button>
+            </div>
+
+            <div class="col-sm-12">
+
+                <div class="table-scrollable">
+                    <table id="tblComplianceData" class="table table-striped table-bordered dt-responsive nowrap tbltick new_width" style="width: 100%;">
+                        <thead>
+                            <tr>
+                                <th>SNo.</th>
+                                <th><div class="w-200">Category</div></th>
+                                <th><div class="w-200">Sub Category</div></th>
+                                <th> <div class="w-200">Compliance</div> </th>
+                                <th><div class="w-400">Frequency</div></th>
+                                <th><div class="w-200">Primary User</div></th>
+                                <th width="100" colspan="3" class="text-center"><label id="m1">Apr-</label></th>
+                                <th width="100" colspan="3" class="text-center"><label id="m2">May-</label></th>
+                                <th width="100" colspan="3" class="text-center"><label id="m3">Jun-</label></th>
+                                <th width="100" colspan="3" class="text-center"><label id="m4">Jul-</label></th>
+                                <th width="100" colspan="3" class="text-center"><label id="m5">Aug-</label></th>
+                                <th width="100" colspan="3" class="text-center"><label id="m6">Sep-</label></th>
+                                <th width="100" colspan="3" class="text-center"><label id="m7">Oct-</label></th>
+                                <th width="100" colspan="3" class="text-center"><label id="m8">Nov-</label></th>
+                                <th width="100" colspan="3" class="text-center"><label id="m9">Dec-</label>	</th>
+                                <th width="100" colspan="3" class="text-center"><label id="m10">Jan-</label>	</th>
+                                <th width="100" colspan="3" class="text-center"><label id="m11">Feb-</label>	</th>
+                                <th width="100" colspan="3" class="text-center"><label id="m12">Mar-</label></th>
+
+
+                            </tr>
+                            <tr>
+                                <th colspan="6"></th>
+                                <th class="text-center">Due</th>
+                                <th class="text-center lgt-mtr-g-bg">Done </th>
+                                <th class="text-center">Attachment</th>
+                                <th class="text-center lgt-mtr-o-bg">Due</th>
+                                <th class="text-center lgt-mtr-g-bg">Done </th>
+                                <th class="text-center">Attachment</th>
+                                <th class="text-center lgt-mtr-o-bg">Due</th>
+                                <th class="text-center lgt-mtr-g-bg">Done </th>
+                                <th class="text-center">Attachment</th>
+                                <th class="text-center lgt-mtr-o-bg">Due</th>
+                                <th class="text-center lgt-mtr-g-bg">Done </th>
+                                <th class="text-center">Attachment</th>
+                                <th class="text-center lgt-mtr-o-bg">Due</th>
+                                <th class="text-center lgt-mtr-g-bg">Done </th>
+                                <th class="text-center">Attachment</th>
+                                <th class="text-center lgt-mtr-o-bg">Due</th>
+                                <th class="text-center lgt-mtr-g-bg">Done </th>
+                                <th class="text-center">Attachment</th>
+                                <th class="text-center lgt-mtr-o-bg">Due</th>
+                                <th class="text-center lgt-mtr-g-bg">Done </th>
+                                <th class="text-center">Attachment</th>
+                                <th class="text-center lgt-mtr-o-bg">Due</th>
+                                <th class="text-center lgt-mtr-g-bg">Done </th>
+                                <th class="text-center">Attachment</th>
+                                <th class="text-center lgt-mtr-o-bg">Due</th>
+                                <th class="text-center lgt-mtr-g-bg">Done </th>
+                                <th class="text-center">Attachment</th>
+                                <th class="text-center lgt-mtr-o-bg">Due</th>
+                                <th class="text-center lgt-mtr-g-bg">Actual </th>
+                                <th class="text-center">Attachment</th>
+                                <th class="text-center lgt-mtr-o-bg">Due</th>
+                                <th class="text-center lgt-mtr-g-bg">Done </th>
+                                <th class="text-center">Attachment</th>
+                                <th class="text-center lgt-mtr-o-bg">Due</th>
+                                <th class="text-center lgt-mtr-g-bg">Done </th>
+                                <th class="text-center">Attachment</th>
+                            </tr>
+
+                        </thead>
+
+                    </table>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    @section scripts    {
+        @System.Web.Optimization.Scripts.Render("~/bundle/unobtrusivejs")
+        @System.Web.Optimization.Scripts.Render("~/bundle/dataTablesjs")
+        <script src="~/assets/design/Scripts/AddInit.js?v=@clsApplicationSetting.GetWebConfigValue("Version")"></script>
+        <script src="~/Areas/Compliance/DevScript/ComplianceReport.js"></script>
+        <script src="~/assets/tableToExcel.js"></script>
+        <script>
+            $("#btnExportAll").click(function (e) {
+                exportReportToExcelAll()
+            });
+            function exportReportToExcelAll() {
+
+                let table = document.getElementsByTagName("table"); // you can use document.getElementById('tableId') as well by providing id to the table tag
+                TableToExcel.convert(table[0], { // html code may contain multiple tables so here we are refering to 1st table tag
+                    name: `Compliance_Report.xlsx`, // fileName you could use any name
+                    sheet: {
+                        name: 'Sheet 1' // sheetName
+                    }
+                });
+            }
+        </script>
+    }
+}
+

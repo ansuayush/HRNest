@@ -1,0 +1,84 @@
+﻿@model IList<SalaryStructure.EmployeeSalary.List>
+@{
+    var Modify = clsApplicationSetting.GetSessionValue("Modify");
+}
+<div class="row">
+
+    <div class="col-sm-12">
+
+        @if (ViewBag.Approve == 0)
+        {
+            <div class="control-section">
+                @Html.EJS().Grid("Grid").DataSource((List<SalaryStructure.EmployeeSalary.List>)Model).GridLines(Syncfusion.EJ2.Grids.GridLine.Both).Columns(col =>
+		   {
+			   col.Field("id").Visible(false).Add();
+			   col.Field("Empid").Visible(false).Add();
+			   col.Field("RowNum").HeaderText("SNo.").Width("30").Add();
+			   col.Field("emp_name").HeaderText("Employee Name").Width("160").Add();
+			   col.Field("EmploymentTerm").HeaderText("Category").Width("60").Add();
+			   col.Field("emp_code").HeaderText("Employee Code").Width("80").Add();
+			   col.Field("Designation").HeaderText("Designation").Width("80").Add();
+			   col.Field("Location").HeaderText("Location").Width("80").Add();
+			   col.Field("Subcategory").HeaderText("Sub Category").Width("80").Add();
+			   col.Field("Step").HeaderText("Step").Width("100").Add();
+			   col.Field("DateOfJoining").HeaderText("Joining Date").Width("100").Add();
+			   col.Field("AnnualSalary").HeaderText("Salary").TextAlign(Syncfusion.EJ2.Grids.TextAlign.Right).Width("100").Add();
+			   col.Field("CTC").Format("{0:c}").HeaderText("CTC").TextAlign(Syncfusion.EJ2.Grids.TextAlign.Right).Width("100").Add();
+			   col.HeaderText("Action").TextAlign(Syncfusion.EJ2.Grids.TextAlign.Center).Template("#tmpAction").Width("60").Add();
+
+		   }).AllowPaging().PageSettings(page => page.PageSize(10)).Created("created").Toolbar(new List<string>() { "Search" }).Render()
+
+            </div>
+        }
+        else
+        {
+            <div class="control-section">
+                @Html.EJS().Grid("Grid").DataSource((List<SalaryStructure.EmployeeSalary.List>)Model).GridLines(Syncfusion.EJ2.Grids.GridLine.Both).Columns(col =>
+		   {
+			   col.Field("id").Visible(false).Add();
+			   col.Field("Empid").Visible(false).Add();
+			   col.Field("RowNum").HeaderText("SNo.").Width("30").Add();
+			   col.Field("emp_name").HeaderText("Employee Name").Width("160").Add();
+			   col.Field("EmploymentTerm").HeaderText("Category").Width("60").Add();
+			   col.Field("emp_code").HeaderText("Employee Code").Width("80").Add();
+			   col.Field("Designation").HeaderText("Designation").Width("80").Add();
+			   col.Field("Department").HeaderText("Location").Width("80").Add();
+			   col.Field("Location").HeaderText("Sub Category").Width("80").Add();
+			   col.Field("Step").HeaderText("Step").Width("100").Add();
+			   col.Field("DateOfJoining").HeaderText("Joining Date").Width("100").Add();
+			   col.Field("AnnualSalary").Format("{0:c}").HeaderText("Salary").TextAlign(Syncfusion.EJ2.Grids.TextAlign.Center).Width("100").Add();
+			   col.Field("CTC").Format("{0:c}").HeaderText("CTC").TextAlign(Syncfusion.EJ2.Grids.TextAlign.Center).Width("100").Add();
+			   col.Field("Structure").HeaderText("Structure").Width("100").Add();
+			   col.HeaderText("Action").TextAlign(Syncfusion.EJ2.Grids.TextAlign.Center).Template("#tmpAction").Width("60").Add();
+
+
+
+		   }).AllowPaging().PageSettings(page => page.PageSize(10)).Created("created").Toolbar(new List<string>() { "Search" }).Render()
+
+            </div>
+        }
+
+
+
+    </div>
+</div>
+
+
+<script id="tmpAction" type="text/x-template">
+    ${if('@Modify' === 'True')}
+    <input type="hidden" name="I" value="${Empid}" />
+    <input type="hidden" name="N" value="${id}" />
+    <a onclick="BindEdit(this)"><i class="fas fa-eye"></i>View </a>
+    ${/if}
+</script>
+<script>
+    function created() {
+        var grid = document.getElementById("Grid").ej2_instances[0];
+        document.getElementById(grid.element.id + "_searchbar").addEventListener('keyup', () => {
+            grid.search(event.target.value)
+        });
+    }
+</script>
+@Html.IncludeVersionedJs(Url.Content("~/assets/design/Scripts/SyncScripts.js"))
+
+@(Html.EJS().ScriptManager())

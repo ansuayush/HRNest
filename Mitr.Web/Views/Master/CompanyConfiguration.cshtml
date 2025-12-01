@@ -1,0 +1,62 @@
+﻿@model CompanyConfig
+@{
+    ViewBag.Title = "CompanyConfiguration";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+<div class="row">
+    <div class="col-sm-6 mx-auto">
+        <div class="inner-main mb-5 pb-0">
+            <h1 class="heading-one ">Company Configuration</h1>
+            @Html.Partial("HeaderMsg_Partial")
+            @using (Html.BeginForm("CompanyConfiguration", "Master", new { src = ViewBag.src }, FormMethod.Post, new { enctype = "multipart/form-data" }))
+
+            {
+                @Html.ValidationSummary(true)
+                @Html.AntiForgeryToken()
+
+                <div class="row">
+                    <div class="col-sm-4 d-none">
+                        <div id="img_contain" class="cclogodgn">
+                            <img id="image-preview" align="middle" src="images/demo-image.jpg" style="display:none" title="">
+
+                        </div>
+                    </div>
+                    <div class="col-sm-8 mx-auto">
+                        <div class="row">
+                            <div class="form-group col-sm-12">
+                                <label>Company logo</label>
+                                @Html.TextBoxFor(model => model.FileUpload, new { @class = "form-control", @accept = ".JPG,.PNG", @type = "file" })
+                                @*<img height=100 width=200 src="@Model.CompanyLogo">*@
+                            </div>
+                            <div class="form-group col-sm-12">
+                                <label>Company Name</label>
+                                @Html.TextBoxFor(model => Model.CompanyName, new { @class = "form-control", @placeholder = "Enter" })
+                                @Html.ValidationMessageFor(model => Model.CompanyName, "", new { @class = "text-danger" })
+                            </div>
+                            <div class="form-group col-sm-12">
+                                <label>Company Address</label>
+                                @Html.TextBoxFor(model => Model.CompanyAdress, new { @class = "form-control h-80", @placeholder = "Enter" })
+                                @Html.ValidationMessageFor(model => Model.CompanyAdress, "", new { @class = "text-danger" })
+                            </div>
+
+                            <div class="form-group col-sm-12 text-center">
+                                <button type="submit" class="btn mtr-o-grn btn-l ripplelink" name="Command" value="submit"><i class="fa fa-paper-plane" aria-hidden="true"></i>Submit</button> <a href="@Url.Action("Dashboard","Account")" class="btn cnl-btn ripplelink  "><i class="fas fa-times"></i>Close</a>
+
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+
+@section scripts    {
+
+    @System.Web.Optimization.Scripts.Render("~/bundle/unobtrusivejs")
+   
+}

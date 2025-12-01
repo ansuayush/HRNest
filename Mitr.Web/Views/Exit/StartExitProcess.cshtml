@@ -1,0 +1,286 @@
+﻿@model Exit.StartExitProcess
+
+@{
+    string MenuID = ViewBag.MenuID.ToString();
+}
+<div class="inner-main mb-5 p-3 pb-0">
+    <h1 class="heading-one mb-3">Star Exit Process</h1>
+    @if (Model.RequestDetails != null)
+    {
+        Html.RenderPartial("_RequestView", Model.RequestDetails);
+    }
+    <div class="col-sm-6 form-group">
+        @if (Model.LevelApprovers_Details.Count > 0)
+        {
+
+            <h3 class="subheading">Approval Comments</h3>
+            <div class="table-responsive">
+                <table class="table table-striped  mt-0 vt-a">
+                    <thead>
+                        <tr>
+                            <th class="w-50">Level</th>
+                            <th class="w-100">Name</th>
+                            <th class="w-100">Suggested Relieving Date</th>
+                            <th>Reason for Declining Notice Period</th>
+                            <th>Comment on Resignation</th>
+
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (Exit.LevelApprovers_Details item in Model.LevelApprovers_Details)
+                        {
+                            <tr>
+                                <td>@item.Doctype</td>
+                                <td>@item.ApproverName</td>
+                                <td>@item.Suggested_RDate</td>
+                                <td>@item.NA_Reason</td>
+                                <td>@item.Comment</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+
+        }
+    </div>
+
+    @using (Ajax.BeginForm("StartExitProcess", "Exit",
+        new { src = ViewBag.src },
+        new AjaxOptions { HttpMethod = "POST", OnSuccess = "OnStartSuccess", OnBegin = "ShowLoadingDialog();" },
+    new { @id = "StartExitProcessFrom" })
+    )
+    {
+
+        <div class="col-sm-12 text-left">
+            @Html.CreateAnchor(MenuID, "/Exit/ApprovedRequestsList", "Back", "btn cnl-btn btn-l ripplelink", "Click to go back", "fa fa-share", "")
+            <button type="button" class="btn blk-gdn-btn btn-l ripplelink " data-keyboard="false" data-backdrop="static" data-toggle="modal" data-target="#ModalHandoverTask"><i class="fas fa-male"></i>Handover Person's</button>
+            <button type="button" class="btn blk-gdn-btn btn-l ripplelink " data-keyboard="false" data-backdrop="static" data-toggle="modal" data-target="#ModalNotifyEMP"><i class="fas fa-sticky-note"></i>Notify</button>
+
+
+
+            @if (Model.Exit_SP_ID == 0)
+            {
+
+                <button type="button" value="resolution" class="btn mtr-y-bg btn-l ripplelink btnResolution"> <i class="fas fa-user-shield"></i> Record Resolution</button>
+                <button type="submit" name="Command" value="Add" class="btn mtr-o-grn btn-l ripplelink"> <i class="fas fa-rocket"></i>Start Exit Process  </button>
+            }
+
+
+        </div>
+
+        <div class="modal" id="ModalNotifyEMP" aria-modal="true">
+            <div class="modal-dialog modal-md">
+                <div class="modal-content ">
+                    <div class="modal-header">
+                        <h4 class="modal-title">Send Notification To</h4>
+                        <button type="button" class="close" data-dismiss="modal">×</button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row ">
+                            <div class="col-sm-12 form-group">
+                                <label>Employee List</label>
+                                @if (string.IsNullOrEmpty(Model.NotifyIDs))
+                                {
+                                    <select id="@Html.IdFor(x=> Model.Notify_CC)" name="@Html.NameFor(x=> Model.Notify_CC)" class="form-control applyselect" multiple="multiple">
+                                        @foreach (var item in Model.EmpList)
+                                        {
+                                            <option value="@item.ID">@item.Name</option>
+                                        }
+                                    </select>
+                                }
+                                else
+                                {
+                                    <select disabled id="@Html.IdFor(x=> Model.Notify_CC)" name="@Html.NameFor(x=> Model.Notify_CC)" class="form-control applyselect" multiple="multiple">
+                                        @foreach (var item in Model.EmpList)
+                                        {
+                                            <option @(("," + Model.NotifyIDs + ",").Contains("," + item.ID + ",") ? "selected" : "") value="@item.ID">@item.Name</option>
+                                        }
+                                    </select>
+                                }
+
+                                @*@Html.DropDownListFor(x => Model.Notify_CC, new SelectList(Model.EmpList, "ID", "Name", Model.Notify_CC), new { @class = "form-control applyselect", @multiple = "multiple" })*@
+                                @Html.ValidationMessageFor(model => Model.Notify_CC, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+    }
+
+</div>
+
+
+
+
+<div class="modal" id="ModalHandoverTask" aria-modal="true">
+    <div class="modal-dialog modal-md">
+        <div class="modal-content ">
+            <div class="modal-header">
+                <h4 class="modal-title">Handover Person's</h4>
+                <button type="button" class="close" data-dismiss="modal">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="text-left">
+                    @if (Model.HandOver_Person.Count == 0)
+                    {
+                        <button type="button" id="btnDefaultHandover" class="btn mtr-o-grn btn-l ripplelink"> <i class="fas fa-rocket"></i>Set Default Handover Person </button>
+                    }
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-striped mt-0 mb-0 vt-a">
+                        <thead>
+                            <tr>
+                                <th class="w-10 text-left">S.No</th>
+                                <th class="w-100">Department</th>
+                                <th class="w-100">Name</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (Model.HandOver_Person.Count > 0)
+                            {
+                                int count = 0;
+                                foreach (Exit.HandOver_Person item in Model.HandOver_Person)
+                                {
+                                    count++;
+                                    <tr>
+                                        <td>@count</td>
+                                        <td>@item.Department </td>
+                                        <td>@item.HODName </td>
+                                    </tr>
+                                }
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<div class="modal" id="ViewModal" aria-modal="true">
+    <div class="modal-dialog modal-md">
+        <div class="modal-content ">
+            <div class="modal-header">
+                <h4 class="modal-title"><span id="spnhead"></span></h4>
+                <button type="button" class="close" data-dismiss="modal">×</button>
+            </div>
+            <div class="modal-body">
+                <div id="ModalTagetDiv"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+@section scripts    {
+
+    @System.Web.Optimization.Scripts.Render("~/bundle/unobtrusivejs")
+    @Html.IncludeVersionedJs(Url.Content("~/assets/design/Scripts/ToolTip.js"))
+    @Html.IncludeVersionedJs(Url.Content("~/assets/design/scripts/AddInit.js"))
+    <script>
+
+        $('#btnDefaultHandover').on('click', function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+            SetDefaultHandoverPerson();
+        });
+        function SetDefaultHandoverPerson() {
+            var Exit_ID = $("#Exit_ID").val();
+            ShowLoadingDialog();
+            $.ajax({
+                url: "/CommonAjax/SetExit_HandoverDefaultJson",
+                type: "Get",
+                data: { Exit_ID: Exit_ID },
+                success: function (obj) {
+
+                    if (obj.Status) {
+                        SuccessToaster(obj.SuccessMessage);
+                        window.location.reload();
+                    }
+                    else {
+                        CloseLoadingDialog();
+                        FailToaster(obj.SuccessMessage);
+                    }
+                },
+                error: function (er) {
+                    console.log(er);
+                    CloseLoadingDialog();
+                }
+            });
+        }
+
+
+    $('.btnResolution').on('click', function (e) {
+            GetPopData($(this).val());
+        });
+
+        function GetPopData(Type)
+        {
+            $("#spnhead").html("Reason for Continuing");
+            var T = $('#ViewModal').find(".modal-dialog.modal-md");
+            $(T).removeClass("modal-lg");
+            var Exit_ID = $("#Exit_ID").val();
+            var Doctype = 'HR';
+			ShowLoadingDialog();
+		   $.ajax({
+			   url: "/Exit/_RequestProcessing",
+				type: "Get",
+               data: { src: EncryptQueryStringJSON(@ViewBag.MenuID+"*" + "/Exit/_RequestProcessing" + "*" + Exit_ID + "*" + Type + "*" + Doctype) },
+                success: function (data)
+                {
+					$("#ModalTagetDiv").empty();
+					$("#ModalTagetDiv").html(data);
+					$('#ViewModal').modal({
+						backdrop: 'static',
+						keyboard: false
+					});
+                     var form = $("form")
+                .removeData("validator")
+                .removeData("unobtrusiveValidation");
+                    $.validator.unobtrusive.parse(form);
+					$(".applyselect").select2();
+                    CloseLoadingDialog();
+				},
+				error: function (er) {
+                    console.log(er);
+                    CloseLoadingDialog();
+
+				}
+			});
+	}
+
+    function OnProcessSuccess(obj) {
+        if (obj.Status) {
+            SuccessToaster(obj.SuccessMessage);
+            window.location.href = obj.RedirectURL;
+        }
+        else {
+            CloseLoadingDialog();
+            FailToaster(obj.SuccessMessage);
+
+        }
+    }
+
+        function OnStartSuccess(obj) {
+            if (obj.Status) {
+                SuccessToaster(obj.SuccessMessage);
+                window.location.href = obj.RedirectURL;
+            }
+            else {
+                CloseLoadingDialog();
+                FailToaster(obj.SuccessMessage);
+
+            }
+        }
+
+
+
+    </script>
+}

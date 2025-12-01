@@ -1,0 +1,890 @@
+﻿@model  FundRaising.Lead.Add
+@{
+    string MenuID = ViewBag.MenuID.ToString();
+}
+
+<div class="mb-100">
+    @using (Ajax.BeginForm("AddLead", "FundRaising",
+            new { src = ViewBag.src },
+            new AjaxOptions { HttpMethod = "POST", OnSuccess = "OnSuccess", OnBegin = "ShowLoadingDialog()", OnFailure = "OnPostFailure()" },
+        new { @id = "AddLeadForm", @autocomplete = "Off" })
+        )
+    {
+    <div class="inner-main mb-2">
+        <h1 class="heading-one mb-3">Create Lead</h1>
+        <div class="row">
+            <!---->
+
+            <div class="col-md-3 col-sm-4 form-group">
+                <label>ID No. </label>
+                @Html.TextBoxFor(model => model.DocNo, new { @class = "form-control", @placeholder = "Prospect Name", @Disabled = "" })
+            </div>
+            <div class="col-md-3 col-sm-4 form-group">
+                <label>Document Created on </label>
+                @Html.TextBoxFor(model => model.DocDate, new { @class = "form-control", @placeholder = "Prospect Name", @Disabled = "" })
+            </div>
+            <div class="col-md-3 col-sm-4 form-group">
+                <label>Stage Name </label>
+                @Html.TextBoxFor(model => model.StageName, new { @class = "form-control", @placeholder = "Prospect Name", @Disabled = "" })
+            </div>
+            <div class="col-md-3 col-sm-4 form-group">
+
+            </div>
+            <div class="col-md-3 col-sm-4 form-group">
+                <label>Lead Name <sup>*</sup> <i class="fas fa-info-circle" data-toggle="tooltip" data-original-title="Name of contact person from a certain Prospect company/entity"></i></label>
+                @Html.TextBoxFor(model => model.NickName, new { @class = "form-control", @placeholder = "Enter" })
+                @Html.ValidationMessageFor(model => model.NickName, "", new { @class = "text-danger" })
+            </div>
+            <div class="col-md-3 col-sm-4 form-group">
+                <label>Prospect Name  <sup>*</sup> <i class="fas fa-info-circle" data-toggle="tooltip" data-original-title="Name of company/entity"></i></label>
+                @Html.DropDownListFor(n => n.Prospectid, new SelectList(Model.lstProspect, "ID", "Name", Model.Prospectid), "Select", new { @class = "form-control  applyselect", @OnChange = "FnGetProspectContacts(this)" })
+                @Html.ValidationMessageFor(model => model.Prospectid, "", new { @class = "text-danger" })
+            </div>
+            <div class="col-md-3 col-sm-4 form-group">
+                <label>Contact <sup>*</sup></label>
+                @Html.DropDownListFor(n => n.ProspectContactid, new SelectList(Model.lstProspectContact, "ID", "Name", Model.ProspectContactid), "Select", new { @class = "form-control  applyselect" })
+                @Html.ValidationMessageFor(model => model.ProspectContactid, "", new { @class = "text-danger" })
+
+                <ul class="list-unstyled inlin-list mt-2">
+                    <li>
+                        @Html.HiddenFor(x => Model.IsConsider)
+                        <input type="checkbox" id="cbIsConsider" name="1" @(Model.IsConsider == 1 ? "Checked" : "") data-trigger="hidden_fields_one" class="trigger">
+                        <label for="cbIsConsider"> This will be considered as prospect</label>
+                    </li>
+                </ul>
+            </div>
+            <div class="col-md-3 col-sm-4 form-group">
+                <label>Lead Other <sup>*</sup></label>
+                @Html.DropDownListFor(n => n.ProspectContactOtherId, new SelectList(Model.lstProspectContact, "ID", "Name", Model.ProspectContactOtherId), "Select", new { @class = "form-control  applyselect" })
+                @Html.ValidationMessageFor(model => model.ProspectContactOtherId, "", new { @class = "text-danger" })
+            </div>
+            <div class="col-md-3 col-sm-4 form-group">
+                <label>Projected Revenue <sup>*</sup> <i class="fas fa-info-circle" data-toggle="tooltip" data-original-title="Proposed ticket size of the donation/proposal budget"></i></label>
+                @Html.TextBoxFor(model => model.Revenue, new { @class = "form-control", @placeholder = "Enter" })
+                @Html.ValidationMessageFor(model => model.Revenue, "", new { @class = "text-danger" })
+            </div>
+            <div class="col-md-3 col-sm-4 form-group ">
+                <label>Proposed Geography <sup>*</sup> <i class="fas fa-info-circle" data-toggle="tooltip" data-original-title="States for which proposed partnership is being pitched"></i></label>
+                @Html.HiddenFor(x => Model.Stateids)
+                <select class="applyselect" multiple="multiple" id="ddlState">
+                    <option>Select</option>
+                    @if (Model.lstState != null)
+                    {
+                        foreach (var item in Model.lstState)
+                        {
+                            if (string.IsNullOrEmpty(Model.Stateids))
+                            {
+                                <option value="@item.ID">@item.Name</option>
+                            }
+                            else
+                            {
+                                <option @(("@" + Model.Stateids.Replace(",", "@") + "@").Contains("@" + item.ID.ToString() + "@") ? "selected" : "") value="@item.ID">@item.Name</option>
+                            }
+
+                        }
+                    }
+                </select>
+                @Html.ValidationMessageFor(model => model.Stateids, "", new { @class = "text-danger" })
+
+            </div>
+            <div class="col-md-3 col-sm-4 form-group ">
+                <label>Sector</label>
+                <input type="text" id="txtCategory" class="form-control" placeholder="Enter" value="" disabled="" name="">
+            </div>
+            <div class="col-md-3 col-sm-4 form-group ">
+                <label>Type</label>
+                <input type="text" id="txtType" class="form-control" placeholder="Enter" value="" disabled="" name="">
+            </div>
+
+            <div class="col-md-3 col-sm-4 form-group ">
+                <label>Country</label>
+                <input type="text" id="txtCountry" class="form-control" placeholder="Enter" value="" disabled="" name="">
+            </div>
+
+            <div class="col-md-3 col-sm-4 form-group ">
+                <label>State</label>
+                <input type="text" id="txtState" class="form-control" placeholder="Enter" value="" disabled="" name="">
+            </div>
+
+            <div class="col-md-3 col-sm-4 form-group ">
+                <label>Key Focus Area</label>
+                <input type="text" id="txtKFA" class="form-control" placeholder="Enter" value="" disabled="" name="">
+            </div>
+
+            <div class="col-md-3 col-sm-4 form-group ">
+                <label>Nature of Lead</label>
+                <input type="text" id="txtC3Fit" class="form-control" placeholder="Enter" value="" disabled="" name="">
+            </div>
+
+            <div class="col-md-3 col-sm-4 form-group ">
+                <label>C3 Fit Area</label>
+                <input type="text" id="txtC3FitScore" class="form-control" placeholder="Enter" value="" disabled="" name="">
+            </div>
+
+            <div class="col-md-3 col-sm-4 form-group ">
+                <label>Existing overall CSR/Philanthropy budget</label>
+                <input type="text" id="txtBudget" class="form-control" placeholder="Enter" value="" disabled="" name="">
+            </div>
+
+            <div class="col-md-3 col-sm-4 form-group ">
+                <label>Responsible By</label>
+                <input type="text" id="txtResponsibleBy" class="form-control" placeholder="Enter" value="" disabled="" name="">
+            </div>
+
+            <div class="col-md-3 col-sm-4 form-group ">
+                <label>Accountable By</label>
+                <input type="text" id="txtAccountableBy" class="form-control" placeholder="Enter" value="" disabled="" name="">
+            </div>
+
+
+            <div class="col-md-3 col-sm-4 form-group ">
+                <label>Informed To</label>
+                <input type="text" id="txtInformedBy" class="form-control" placeholder="Enter" value="" disabled="" name="">
+            </div>
+
+            <div class="col-md-3 col-sm-4 form-group ">
+                <label>Consented</label>
+                <input type="text" id="txtConsentedBy" class="form-control" placeholder="Enter" value="" disabled="" name="">
+            </div>
+            <div class="col-md-3 col-sm-4 form-group ">
+                <label>Company</label>
+                <input type="text" id="txtCompany" class="form-control" placeholder="Enter" value="" disabled="" name="">
+            </div>
+            <div class="col-md-12 col-sm-4 form-group ">
+            </div>
+            <div class="col-md-12 form-group text-right">
+                <button type="button" class="btn mtr-g-grn m-0" data-toggle="modal" data-target="#DivLeadActivity"><i class="fas fa-plus"></i>Add Activity</button>
+            </div>
+
+            <div class="col-md-12 form-group">
+                <table id="tblActivity" class="table scd-tbl-bg table-stripted mb-0 mt-0">
+                    <thead>
+                        <tr>
+                            <th class="w-50">SNo.</th>
+                            <th class="tw-100">Date of Activity</th>
+                            <th class="tw-100">Stage Name </th>
+                            <th>Activity Name</th>
+                            <th>Remarks</th>
+                            <th class="tw-100">Next Action Date </th>
+                            <th class="w-50">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @{ int procount1 = 0;}
+                        @if (Model.lstLeadActivity != null)
+                        {
+                            for (int j = 0; j < Model.lstLeadActivity.Count; j++)
+                            {
+                                procount1++;
+                                <tr>
+                                    <td>
+                                        <label id="spanA_@j" name="spanA_@j">@procount1 </label>
+                                        <input type='hidden' id='CostCenterandItem_@j' Name='CostCenterandItem' value='@Model.lstLeadActivity[j].Activityid' />
+                                        @Html.HiddenFor(modal => Model.lstLeadActivity[j].Id)
+                                    </td>
+                                    <td>@Html.TextBoxFor(model => model.lstLeadActivity[j].ActivityDate, new { @class = "form-control", @Type = "Date" })</td>
+                                    <td>@Html.DropDownListFor(n => n.lstLeadActivity[j].Stageid, new SelectList(Model.lstStage, "ID", "Name", Model.lstLeadActivity[j].Stageid), "Select", new { @class = "form-control  applyselect", @id = "ddlStageA_" + j })</td>
+                                    <td>@Html.DropDownListFor(n => n.lstLeadActivity[j].Activityid, new SelectList(Model.lstActivity, "ID", "Name", Model.lstLeadActivity[j].Activityid), "Select", new { @class = "form-control  applyselect", @id = "ddlActivityA_" + j })</td>
+                                    <td>@Html.TextBoxFor(model => model.lstLeadActivity[j].Remarks, new { @class = "form-control" })</td>
+                                    <td>@Html.TextBoxFor(model => model.lstLeadActivity[j].NextActionDate, new { @class = "form-control", @Type = "Date" })</td>
+                                    <td>
+                                        <i onclick='DeleteRowActivity(this)' class="fas fa-trash-alt red-clr"></i>
+                                    </td>
+
+                                </tr>
+                            }
+
+                        }
+                    </tbody>
+                </table>
+            </div>
+            <div class="col-md-3 col-sm-4 form-group ">
+                <label>Select Action</label>
+                <select class="applyselect" id="ActionTaken" name="ActionTaken">
+                    <option @(Model.ActionTaken != null ? Model.ActionTaken == "" ? "Selected" : "" : "") value="">Select</option>
+                    <option @(Model.ActionTaken != null ? Model.ActionTaken == "Closure Stage" ? "Selected" : "" : "") value="Closure Stage">Closure Stage</option>
+                    <option @(Model.ActionTaken != null ? Model.ActionTaken == "Move to Next Stage" ? "Selected" : "" : "") value="Move to Next Stage">Move to Next Stage</option>
+                </select>
+            </div>
+            <div class="col-md-3 col-sm-4 form-group align-self-end" id="dvNextStage" style="display:@(Model.ActionTaken=="Move to Next Stage"?"":"none")">
+                
+                @Html.DropDownListFor(n => n.StageLevelid, new SelectList(Model.lstStageLevel, "ID", "Name", Model.StageLevelid), "Select", new { @class = "form-control  applyselect" })
+                @Html.ValidationMessageFor(model => model.StageLevelid, "", new { @class = "text-danger" })
+
+            </div>
+            <div class="col-md-3 col-sm-4 form-group align-self-end" id="dvLatestAction" style="display:@(Model.ActionTaken=="Closure Stage"?"":"none")">
+                
+                <select class="applyselect" id="LatestAction" name="LatestAction">
+                    <option @(Model.LatestAction != null ? Model.LatestAction == "" ? "Selected" : "" : "") value="">Select</option>
+                    <option @(Model.LatestAction != null ? Model.LatestAction == "Cheque Received" ? "Selected" : "" : "") value="Cheque Received">Cheque Received/Account Transfer</option>
+                    <option @(Model.LatestAction != null ? Model.LatestAction == "Sorry Not Interested" ? "Selected" : "" : "") value="Sorry Not Interested">Sorry Not Interested</option>
+                    <option @(Model.LatestAction != null ? Model.LatestAction == "Contact Me Later" ? "Selected" : "" : "") value="Contact Me Later">Contact Me Later</option>
+                    <option @(Model.LatestAction != null ? Model.LatestAction == "Referral Given" ? "Selected" : "" : "") value="Referral Given">Referral Given</option>
+                </select>
+            </div>
+            <!---->
+        </div>
+        <div id="dvChequeReceived" style="display:@(Model.ActionTaken=="Closure Stage" && Model.LatestAction=="Cheque Received"?"":"none")">
+            <div class="row">
+                <div class="col-sm-12 form-group">
+                    <hr>
+                    <span class="hr-aps lgt-text font-sm">Cheque Received</span>
+                </div>
+
+                <div class="col-sm-3 form-group">
+                    <label>Cheque For</label>
+                    @Html.TextBoxFor(model => model.ChequeFor, new { @class = "form-control", @placeholder = "Cheque For" })
+                    @Html.ValidationMessageFor(model => model.ChequeFor, "", new { @class = "text-danger" })
+                </div>
+
+                <div class="col-sm-3 form-group">
+                    <label>Cheque By</label>
+                    @Html.TextBoxFor(model => model.ChequeTo, new { @class = "form-control", @placeholder = "Cheque By" })
+                    @Html.ValidationMessageFor(model => model.ChequeTo, "", new { @class = "text-danger" })
+                </div>
+                <div class="col-sm-3 form-group">
+                    <label>Cheque Issued Date</label>
+                    @Html.TextBoxFor(model => model.ChequeIssueDate, new { @class = "form-control", @Type = "Date" })
+                    @Html.ValidationMessageFor(model => model.ChequeIssueDate, "", new { @class = "text-danger" })
+                </div>
+
+                <div class="col-sm-3 form-group">
+                    <label>Name of</label>
+                    @Html.TextBoxFor(model => model.ChequeNameof, new { @class = "form-control", @placeholder = "Name of" })
+                    @Html.ValidationMessageFor(model => model.ChequeNameof, "", new { @class = "text-danger" })
+                </div>
+
+                <div class="col-sm-3 form-group">
+                    <label>Amount </label>
+                    @Html.TextBoxFor(model => model.ChequeAmount, new { @class = "form-control", @placeholder = "Amount" })
+                    @Html.ValidationMessageFor(model => model.ChequeAmount, "", new { @class = "text-danger" })
+                </div>
+
+                <div class="col-sm-3 form-group">
+                    <label>Attachment, if any</label>
+                    <input type="file" placeholder="Enter" class="form-control" name="">
+                </div>
+
+                <div class="col-sm-6 form-group">
+                    <label>Remark </label>
+                    @Html.TextAreaFor(model => model.ChequeRemark, new { @class = "form-control", @placeholder = "Remark" })
+                    @Html.ValidationMessageFor(model => model.ChequeRemark, "", new { @class = "text-danger" })
+                </div>
+            </div>
+        </div>
+        <div class="" id="dvRequiredProposal" style="display:@(Model.ActionTaken=="Closure Stage" && Model.LatestAction=="Referral Given"?"":"none")">
+            <div class="row">
+                <div class="col-sm-12 form-group">
+                    <hr>
+                    <span class="hr-aps lgt-text font-sm">Referral Given</span>
+                </div>
+
+                <div class="col-sm-3 form-group">
+                    <label>Referral Name</label>
+                    <input type="text" id="txtReferralName" placeholder="Enter" class="form-control" name="">
+                </div>
+
+                <div class="col-sm-3 form-group">
+                    <label>Referred Date</label>
+                    <input type="date" id="txtReferralDate" placeholder="Enter" class="form-control" name="">
+                </div>
+
+                <div class="col-sm-3 form-group">
+                    <label>Referred By</label>
+                    <input type="text" id="txtReferredBy" placeholder="Enter" class="form-control" name="">
+                </div>
+
+                <div class="col-sm-3 form-group">
+                    <label>Contact Number</label>
+                    <input type="number" id="txtContactNo" placeholder="Enter" class="form-control" name="">
+                </div>
+                <div class="col-sm-12 text-right form-group ">
+                    <button type="button" class="btn mtr-g-grn m-0" onclick="FillProjectgrid();"><i class="fas fa-plus"></i>Add</button>
+                </div>
+
+                <div class="col-md-12 form-group">
+                    <table id="tblReferral" class="table scd-tbl-bg table-stripted mb-0 mt-0">
+                        <thead>
+                            <tr>
+                                <th class="w-50">SNo.</th>
+                                <th>Referral Name</th>
+                                <th>Referred Date</th>
+                                <th>Referred By</th>
+                                <th class="tw-100">Contact Number </th>
+                                <th class="w-50">Action</th>
+
+
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @{ int procount = 0;}
+                            @if (Model.lstRefferals != null)
+                            {
+                                for (int i = 0; i < Model.lstRefferals.Count; i++)
+                                {
+                                    procount++;
+                                    <tr>
+                                        <td>
+                                            <label id="span_@i" name="span_@i">@procount </label>
+                                            <input type='hidden' id='CostCenterandItem_@i' Name='CostCenterandItem' value='@Model.lstRefferals[i].ReferralName' />
+                                            @Html.HiddenFor(modal => Model.lstRefferals[i].Id)
+                                        </td>
+                                        <td>@Html.TextBoxFor(model => model.lstRefferals[i].ReferralName, new { @class = "form-control" })</td>
+                                        <td>@Html.TextBoxFor(model => model.lstRefferals[i].ReferredDate, new { @class = "form-control", @Type = "Date" })</td>
+                                        <td>@Html.TextBoxFor(model => model.lstRefferals[i].ReferredBy, new { @class = "form-control" })</td>
+                                        <td>@Html.TextBoxFor(model => model.lstRefferals[i].ContactNo, new { @class = "form-control" })</td>
+                                        <td>
+                                            <i onclick='DeleteRow(this)' class="fas fa-trash-alt red-clr"></i>
+                                        </td>
+
+                                    </tr>
+                                }
+
+                            }
+                        </tbody>
+                    </table>
+                </div>
+
+            </div>
+        </div>
+        <div class="col-sm-12 text-center mt-4">
+            <button type="submit" name="Command" value="Add" class="btn mtr-o-grn btn-l ripplelink "> <i class="fas fa-save"></i> Save</button>
+
+            <button type="button" class="btn cnl-btn btn-l ripplelink"><i class="fas fa-times"></i>Close</button>
+
+        </div>
+    </div>
+    }
+</div>
+
+<!-- The Modal -->
+<div class="modal" id="modalSecratory">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content ">
+
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <h4 class="modal-title">Raj</h4>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+
+            <!-- Modal body -->
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-sm-4 form-group">
+                        <label>Secratary Name </label>
+                        <input type="text" id="txtSecratoryNameP" value="" disabled="" class="form-control" placeholder="Enter">
+                    </div>
+                    <div class="col-sm-4 form-group">
+                        <label>Email ID  </label>
+                        <input type="text" id="txtSecratoryEmailP" value="" disabled="" class="form-control" placeholder="Enter">
+                    </div>
+                    <div class="col-sm-4 form-group">
+                        <label>Phone No  </label>
+                        <input type="text" id="txtSecratoryPhoneP" value="" disabled="" class="form-control" placeholder="Enter">
+                    </div>
+
+                    <div class="col-sm-12 form-group">
+                        <label>Other Info</label>
+                        <span id="txtSecratoryOtherInfoP"></span>
+                    </div>
+
+                </div>
+                <!-- Modal footer -->
+                <div class="p-0 text-center ">
+                    <button type="button" class="btn cnl-btn ripplelink" data-dismiss="modal"><i class="fas fa-times"></i>Close</button>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal" id="DivLeadActivity">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content ">
+
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <h4 class="modal-title"><i class="fa fa-plus"></i>Add Activity</h4>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+
+            <!-- Modal body -->
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-sm-4 form-group">
+                        <label>Date of Activity <sup>*</sup></label>
+                        <input type="date" id="txtDateofActivity" class="form-control" placeholder="Enter">
+                    </div>
+                    <div class="col-sm-4 form-group">
+                        <label>Stage Name <sup>*</sup></label>
+                        <select class="applyselect"  id="ddlStageActivity" OnChange="FnGetActivityMaster(this)">
+                            <option>Select</option>
+                            @if (Model.lstStage != null)
+                            {
+                                foreach (var item in Model.lstStage)
+                                {
+                                     <option value="@item.ID">@item.Name</option>                                  
+
+                                }
+                            }
+                        </select>                      
+                    </div>
+                    <div class="col-sm-4 form-group">
+                        <label>Activity Name <sup>*</sup></label>
+                        <select class="applyselect" id="ddlActivity">
+                            <option>Select</option>
+                            @if (Model.lstActivity != null)
+                            {
+                                foreach (var item in Model.lstActivity)
+                                {
+                                    <option value="@item.ID">@item.Name</option>
+                                }
+                            }
+                        </select>
+                    </div>
+                    <div class="col-sm-8 form-group">
+                        <label>Remarks</label>
+                        <textarea id="txtRemarksActivity" placeholder="Enter" class="form-control"></textarea>
+                    </div>
+                    <div class="col-sm-4 form-group">
+                        <label>Next Action on <sup>*</sup></label>
+                        <input id="txtNextActionActivity" type="date" class="form-control" placeholder="Enter">
+                    </div>
+
+                </div>
+                <!-- Modal footer -->
+                <div class="p-0 text-center ">
+                    <button type="button" class="btn cnl-btn ripplelink" data-dismiss="modal"><i class="fas fa-times"></i>Close</button>
+                    <button type="button" onclick="FillActivitygrid()" name="Command" value="Add" class="btn mtr-o-grn btn-l ripplelink "> <i class="fas fa-save"></i> Save</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@section scripts    {
+    @System.Web.Optimization.Scripts.Render("~/bundle/unobtrusivejs")
+    @Html.IncludeVersionedJs(Url.Content("~/assets/design/scripts/AddInit.js"))
+    <script type="text/javascript">
+        $(document).ready(function () {
+           
+            FillProspectData();
+        });
+        $(function () {
+            $("#cbSecretory").click(function () {
+                if ($(this).is(":checked")) {
+                    $("#dvSecratoryDetails").show();
+                } else {
+                    $("#dvSecratoryDetails").hide();
+                }
+            });
+        });
+    </script>
+    <script>
+        function FnGetProspectContacts(obj) {
+            var SelectedID = $("#Prospectid").val();
+            var data = GetDropDownData(SelectedID, 'FR_ProspectContact');
+            $("#ProspectContactid").empty();
+            $("#ProspectContactid").append($("<option />").val("").text("Select"));
+            $(data).each(function () {
+                $("#ProspectContactid").append($("<option />").val(this.ID).text(this.Name));
+                $("#ProspectContactid").select2();
+            });
+
+            $("#ProspectContactOtherId").empty();
+            $("#ProspectContactOtherId").append($("<option />").val("").text("Select"));
+            $(data).each(function () {
+                $("#ProspectContactOtherId").append($("<option />").val(this.ID).text(this.Name));
+                $("#ProspectContactOtherId").select2();
+            });            
+            FillProspectData();
+
+        }
+        function FnGetActivityMaster(obj) {
+            var SelectedID = $("#ddlStageActivity").val();
+            var data = GetDropDownData(SelectedID, 'FR_ACTIVITY');
+            $("#ddlActivity").empty();
+            $("#ddlActivity").append($("<option />").val("").text("Select"));
+            $(data).each(function () {
+                $("#ddlActivity").append($("<option />").val(this.ID).text(this.Name));
+                $("#ddlActivity").select2();
+            });
+        }
+        function FnGetActivityMasterTable(sno) {
+            var SelectedID = $("#ddlStageA_"+sno+"").val();
+            var data = GetDropDownData(SelectedID, 'FR_ACTIVITY');
+            $("#ddlActivityA_" + sno +"").empty();
+            $("#ddlActivityA_" + sno +"").append($("<option />").val("").text("Select"));
+            $(data).each(function () {
+                $("#ddlActivityA_" + sno +"").append($("<option />").val(this.ID).text(this.Name));
+                $("#ddlActivityA_" + sno +"").select2();
+            });            
+            $("#ddlActivityA_" + sno).val($("#ddlActivity").val());
+            $('#ddlActivityA_' + sno).trigger('change');
+        }
+        function FnGetStageMasterTable(sno) {
+            var SelectedID = "0";
+            var data = GetDropDownData(SelectedID, 'FR_STAGE');
+            $("#ddlStageA_" + sno + "").empty();
+            $("#ddlStageA_" + sno + "").append($("<option />").val("").text("Select"));
+            $(data).each(function () {
+                $("#ddlStageA_" + sno + "").append($("<option />").val(this.ID).text(this.Name));
+                $("#ddlStageA_" + sno + "").select2();
+            });
+        }
+        function FillProspectData()
+        {
+            var SelectedID = $("#Prospectid").val();
+            if (parseInt(SelectedID) > 0)
+            {
+                $.ajax({
+                    url: "/CommonAjax/GetFR_ProspectData",
+                    type: "Get",
+                    async: true,
+                    data: { Prospectid: SelectedID },
+                    success: function (data) {
+                        if (data.Id) {
+                            $("#txtCategory").val(data.Category);
+                            $("#txtType").val(data.ProspectType);
+                            $("#txtCountry").val(data.Country);
+                            $("#txtState").val(data.State);
+                            $("#txtKFA").val(data.KFA);
+                            $("#txtC3Fit").val(data.C3Fit);
+                            $("#txtC3FitScore").val(data.C3FitScore);
+                            $("#txtBudget").val(data.Budget);
+                            $("#txtResponsibleBy").val(data.Responsible);
+                            $("#txtAccountableBy").val(data.Accountable);
+                            $("#txtInformedBy").val(data.InformedTo);
+                            $("#txtConsentedBy").val(data.Consented);
+                            $("#txtCompany").val(data.Company);
+                            
+
+                        }
+                    },
+                    error: function (er) {
+                        console.log(er);
+                    }
+                });
+            }
+           
+        }
+        function FillProjectgrid() {
+           
+            $(".notifyjs-wrapper").click();
+            var CombinationExist = false;
+           
+            var txtReferralName = $("#txtReferralName").val();
+            var txtReferralDate = $("#txtReferralDate").val();
+            var txtReferredBy = $("#txtReferredBy").val();
+            var txtContactNo = $("#txtContactNo").val();
+           
+                       
+                if (txtReferralName == "") {
+                    $.notify($("#txtReferralName"), "Referral Name can't be blank", "error");
+                    $("#txtReferralName").focus();
+                }
+                else if (txtReferralDate == "") {
+                    $.notify($("#txtReferralDate"), "Enter Referral Date", "error");
+                    $("#txtReferralDate").focus();
+                }
+                else if (txtReferredBy == "") {
+                    $.notify($("#txtReferredBy"), "Enter Referred by", "error");
+                    $("#txtReferredBy").focus();
+                }
+                else if (txtContactNo == "") {
+                    $.notify($("#txtContactNo"), "Enter Contact No", "error");
+                    $("#txtContactNo").focus();
+                }
+
+            else {
+                var InnerHTML = "";
+                $('[name=CostCenterandItem]').each(function (index) {
+                    if ($(this).val() == txtReferralName) {
+                        CombinationExist = true;
+                    }
+                });
+                if (!CombinationExist) {
+                    var Count = parseInt($('#tblReferral').find("tbody tr").length);
+                    InnerHTML += "<tr>";
+                    InnerHTML += "<td><label id='span_" + Count + "'  Name='span_" + Count + "'>" + (Count + 1) + "</label><input type='hidden' id='CostCenterandItem_" + Count + "'  Name='CostCenterandItem' value='" + txtReferralName + "' />";
+                    InnerHTML += "<input type='hidden' id=\"lstRefferals_" + Count + "__Id\" name=\"lstContactDetails[" + Count + "].Id\" value='0' /></td>";
+                    InnerHTML += "<td><input type='Text' class = 'form-control' id=\"lstRefferals_" + Count + "__ReferralName\" name=\"lstRefferals[" + Count + "].ReferralName\" value='" + txtReferralName + "' /></td>";
+                    InnerHTML += "<td><input type='Date' class = 'form-control' id=\"lstRefferals_" + Count + "__ReferredDate\" name=\"lstRefferals[" + Count + "].ReferredDate\" value='" + txtReferralDate + "' /></td>";
+                    InnerHTML += "<td><input type='Text' class = 'form-control' id=\"lstRefferals_" + Count + "__ReferredBy\" name=\"lstRefferals[" + Count + "].ReferredBy\" value='" + txtReferredBy + "' /></td>";
+                    InnerHTML += "<td><input type='Text' class = 'form-control' id=\"lstRefferals_" + Count + "__ContactNo\" name=\"lstRefferals[" + Count + "].ContactNo\" value='" + txtContactNo + "' /></td>";
+                    InnerHTML += "<td class='text-center'><a onclick='DeleteRow(this)'><i class='fas fa-trash-alt red-clr'></i></a></td>";
+                    InnerHTML += "</tr>";
+
+                    $('#tblReferral').append(InnerHTML);
+                    $('[data-toggle="tooltip"]').tooltip();
+                    $("#txtReferralName").val("");
+                    $("#txtReferralDate").val("");
+                    $("#txtReferredBy").val("");
+                    $("#txtContactNo").val("");                   
+                }
+                else {
+                    swal('Contact details is already Exists!', '');
+                }
+            }
+        }
+        function FillActivitygrid() {
+           
+            $(".notifyjs-wrapper").click();
+            var CombinationExist = false;
+
+            var txtDateofActivity = $("#txtDateofActivity").val();
+            var ddlStageActivity = $("#ddlStageActivity").val();
+            var ddlActivity = $("#ddlActivity").val();
+            var txtRemarksActivity = $("#txtRemarksActivity").val();
+            var txtNextActionActivity = $("#txtNextActionActivity").val();
+            var Activitydate = new Date(txtDateofActivity);
+            var NextActiondate = new Date(txtNextActionActivity);
+            var today = new Date();
+
+            if (txtDateofActivity == "") {
+                $.notify($("#txtDateofActivity"), "Date can't be blank", "error");
+                $("#txtDateofActivity").focus();
+            }
+            else if (ddlStageActivity == "") {
+                $.notify($("#ddlStageActivity"), "Select Stage", "error");
+                $("#ddlStageActivity").focus();
+            }
+            else if (ddlActivity == "") {
+                $.notify($("#ddlActivity"), "Select Activity", "error");
+                $("#ddlActivity").focus();
+            }
+            else if (txtNextActionActivity == "") {
+                $.notify($("#txtNextActionActivity"), "Enter Next Action", "error");
+                $("#txtNextActionActivity").focus();
+            }
+           //else if (Activitydate < today) {
+           //     $.notify($("#txtDateofActivity"), "Enter Correct Date", "error");
+           //     $("#txtDateofActivity").focus();
+           // }
+            else if (NextActiondate < today) {
+                $.notify($("#txtNextActionActivity"), "Enter Correct Date", "error");
+                $("#txtNextActionActivity").focus();
+            }
+            else if (NextActiondate < Activitydate) {
+                $.notify($("#txtNextActionActivity"), "Next Action date can not be less than Activity Date", "error");
+                $("#txtNextActionActivity").focus();
+            }
+            
+            else {
+                var InnerHTML = "";
+                $('[name=CostCenterandItem]').each(function (index) {
+                    if ($(this).val() == txtReferralName) {
+                        CombinationExist = true;
+                    }
+                });
+                if (!CombinationExist) {
+                    var Count = parseInt($('#tblActivity').find("tbody tr").length);
+                    InnerHTML += "<tr>";
+                    InnerHTML += "<td><label id='spanA_" + Count + "'  Name='spanA_" + Count + "'>" + (Count + 1) + "</label><input type='hidden' id='CostCenterandItem_" + Count + "'  Name='CostCenterandItem' value='" + ddlActivity + "' />";
+                    InnerHTML += "<input type='hidden' id=\"lstLeadActivity_" + Count + "__Id\" name=\"lstLeadActivity[" + Count + "].Id\" value='0' /></td>";
+                    InnerHTML += "<td><input type='Date' class = 'form-control' id=\"lstLeadActivity_" + Count + "__ActivityDate\" name=\"lstLeadActivity[" + Count + "].ActivityDate\" value='" + txtDateofActivity + "' /></td>";
+                    InnerHTML += "<td><select class='form-control  applyselect' id='ddlStageA_" + Count + "' name='lstLeadActivity[" + Count + "].Stageid' OnChange='FnGetActivityMasterTable(" + Count + ")'></select ></td>";
+                    InnerHTML += "<td><select class='form-control  applyselect' id='ddlActivityA_" + Count + "' name='lstLeadActivity[" + Count + "].Activityid' ></select ></td>";
+                    InnerHTML += "<td><input type='Text' class = 'form-control' id=\"lstLeadActivity_" + Count + "__Remarks\" name=\"lstLeadActivity[" + Count + "].Remarks\" value='" + txtRemarksActivity + "' /></td>";
+                    InnerHTML += "<td><input type='Date' class = 'form-control' id=\"lstLeadActivity_" + Count + "__NextActionDate\" name=\"lstLeadActivity[" + Count + "].NextActionDate\" value='" + txtNextActionActivity + "' /></td>";
+                    InnerHTML += "<td class='text-center'><a onclick='DeleteRowActivity(this)'><i class='fas fa-trash-alt red-clr'></i></a></td>";
+                    InnerHTML += "</tr>";
+
+                    $('#tblActivity').append(InnerHTML);
+                    $('[data-toggle="tooltip"]').tooltip();
+                    $("#txtDateofActivity").val("");
+                   // $("#ddlStageActivity").val("");
+                   // $("#ddlActivity").val("");
+                    $("#txtRemarksActivity").val("");
+                    $("#txtNextActionActivity").val("");                    
+                    $("#DivLeadActivity").modal("hide");
+                    FnGetStageMasterTable(Count);                    
+                    $("#ddlStageA_" + Count).val(ddlStageActivity);
+                    $('#ddlStageA_' + Count).trigger('change');
+                   
+                }
+                else {
+                    swal('Activity details is already Exists!', '');
+                }
+            }
+        }
+        function SelectUHNI(obj) {
+            var checkAll = $(obj).is(":checked");
+            if (checkAll) {
+                $(obj).closest('tr').find('.hfIsUHNI').val('1');
+            }
+            else {
+                $(obj).closest('tr').find('.hfIsUHNI').val('0');
+            }
+
+        }
+        function FillSecratoryModal(obj) {
+            $("#txtSecratoryNameP").val($(obj).closest('tr').find('.hfSecratoryName').val());
+            $("#txtSecratoryEmailP").val($(obj).closest('tr').find('.hfSecratoryEmail').val());
+            $("#txtSecratoryPhoneP").val($(obj).closest('tr').find('.hfSecratoryPhone').val());
+            $("#txtSecratoryOtherInfoP").html($(obj).closest('tr').find('.hfSecratoryOtherInfo').val());
+            $("#modalSecratory").modal("show");
+        }
+
+        $('#ddlState').change(function () {
+            GetState()
+        });
+        function GetState() {
+            var StateIds = $("#ddlState").val();
+            $("#Stateids").val(StateIds);
+        }
+
+
+        $('#ddSkills').change(function () {
+            GetSkillValue()
+        });
+        function GetSkillValue() {
+            var ddSkills = $("#ddSkills").val();
+            $("#SkillsIDs").val(ddSkills);
+        }
+        $('#ActionTaken').change(function () {
+            var DivStage = document.getElementById("dvNextStage");
+            var DivAction = document.getElementById("dvLatestAction");
+            var selectedval = $("#ActionTaken").val();
+            if (selectedval == "Closure Stage") {
+                DivStage.style.display = "none";
+                DivAction.style.display = "";
+            }
+            else {
+                DivStage.style.display = "";
+                DivAction.style.display = "none";
+            }
+        });
+        $('#LatestAction').change(function () {
+            var DivCR = document.getElementById("dvChequeReceived");
+            var DivRP = document.getElementById("dvRequiredProposal");
+            var selectedval = $("#LatestAction").val();
+            DivRP.style.display = "none";
+            DivCR.style.display = "none";
+            if (selectedval == "Cheque Received") {
+                DivCR.style.display = "";
+                DivRP.style.display = "none";
+            }
+            if (selectedval == "Referral Given") {
+                DivCR.style.display = "none";
+                DivRP.style.display = "";
+            }
+        });
+
+        $(function () {
+            $("#cbIsConsider").click(function () {
+                if ($(this).is(":checked")) {
+                    $("#IsConsider").val('1');
+
+                } else {
+                    $("#IsConsider").val('0');
+                }
+            });
+        });
+
+        function OnSuccess(obj) {
+            if (obj.Status) {
+                SuccessToaster(obj.SuccessMessage);
+                window.location.href = obj.RedirectURL;
+            }
+            else {
+                CloseLoadingDialog();
+                FailToaster(obj.SuccessMessage);
+
+            }
+        }
+        function DeleteRow(obj) {
+            var count = 0;
+            var TotalRowCount = $('#tblReferral').find("tbody tr").length;
+            var srno = TotalRowCount;
+            ConfirmMsgBox("Are you sure want to delete", '', function () {
+               
+                $(obj).closest('tr').remove();
+                $("#tblReferral TBODY TR").each(function (i) {
+                    srno = srno - 1;
+                   
+                    $(this).closest("tr").find("label").each(function () {
+                        $(this).attr({
+                            'id': function (_, id) { var arr = id.split('_'); return id.replace(arr[1], i); },
+                        });
+                        $(this).html(i + 1)
+                    });
+
+                    $(this).closest("tr").find("input").each(function () {
+                        $(this).attr({
+                            'id': function (_, id) { return id.replace('_' + (parseInt(i) + 1) + '_', '_' + i + '_'); },
+                            'name': function (_, name) { return name.replace('[' + (parseInt(i) + 1) + ']', '[' + i + ']'); },
+                        });
+                    });
+                    $(this).closest("tr").find("select").each(function () {
+                        $(this).attr({
+                            'id': function (_, id) { return id.replace('_' + (parseInt(i) + 1) + '_', '_' + i + '_'); },
+                            'name': function (_, name) { return name.replace('[' + (parseInt(i) + 1) + ']', '[' + i + ']'); },
+                        });
+                    });
+                    $(this).closest("tr").find("span").each(function () {
+                        if ($(this).attr("data-valmsg-for")) {
+                            $(this).attr({
+                                'data-valmsg-for': function (_, name) { return name.replace('[' + (parseInt(i) + 1) + ']', '[' + i + ']'); },
+                            });
+                        }
+                        if ($(this).attr("for")) {
+                            $(this).attr({
+                                'for': function (_, id) { return id.replace('_' + (parseInt(i) + 1) + '_', '_' + i + '_'); },
+                            });
+                        }
+                    });
+                });
+
+            })
+        }
+
+       
+        function DeleteRowActivity(obj) {
+            var count = 0;
+            var TotalRowCount = $('#tblActivity').find("tbody tr").length;
+            var srno = TotalRowCount;
+            ConfirmMsgBox("Are you sure want to delete", '', function () {
+
+                $(obj).closest('tr').remove();
+               
+                $("#tblActivity TBODY TR").each(function (i) {
+                    srno = srno - 1;
+                    $(this).closest("tr").find("label").each(function () {
+                        $(this).attr({
+                            'id': function (_, id) { var arr = id.split('_'); return id.replace(arr[1], i); },
+                        });
+                        $(this).html(i + 1)
+                    });
+
+                    $(this).closest("tr").find("input").each(function () {
+                        $(this).attr({
+                            'id': function (_, id) { return id.replace('_' + (parseInt(i) + 1) + '_', '_' + i + '_'); },
+                            'name': function (_, name) { return name.replace('[' + (parseInt(i) + 1) + ']', '[' + i + ']'); },
+                        });
+                    });
+                    $(this).closest("tr").find("select").each(function () {
+                        $(this).attr({
+                            'id': function (_, id) { return id.replace('_' + (parseInt(i) + 1) + '_', '_' + i + '_'); },
+                            'name': function (_, name) { return name.replace('[' + (parseInt(i) + 1) + ']', '[' + i + ']'); },
+                        });
+                    });
+                    $(this).closest("tr").find("span").each(function () {
+                        if ($(this).attr("data-valmsg-for")) {
+                            $(this).attr({
+                                'data-valmsg-for': function (_, name) { return name.replace('[' + (parseInt(i) + 1) + ']', '[' + i + ']'); },
+                            });
+                        }
+                        if ($(this).attr("for")) {
+                            $(this).attr({
+                                'for': function (_, id) { return id.replace('_' + (parseInt(i) + 1) + '_', '_' + i + '_'); },
+                            });
+                        }
+                    });
+                });
+
+            })
+        }
+    </script>
+}

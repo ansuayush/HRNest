@@ -1,0 +1,67 @@
+﻿
+@model Mitr.Models.SubLineItem
+
+
+
+@using (Ajax.BeginForm("_SubLineItemAdd", "Master",
+        new { src = ViewBag.src },
+        new AjaxOptions { HttpMethod = "POST", OnSuccess = "OnSuccess" },
+    new { @id = "_SubLineItemAddFrom" })
+    )
+{
+
+    @Html.AntiForgeryToken()
+    @Html.HiddenFor(x => Model.SubLineItemID)
+    <div class="row">
+
+        <div class="col-lg-6 col-md-6 col-sm-6 form-group">
+            <label>Cost Center<sup>*</sup></label>
+
+            <select class="form-control applyselect" id="@Html.IdFor(x=>x.CostCenterID)" name="@Html.NameFor(x=>x.CostCenterID)" required>
+                <option Name="" value="">-Select-</option>
+                @foreach (Mitr.Models.CostCenter item in ViewBag.CostCenterList)
+                {
+                    <option @(Model.CostCenterID == item.CostCenterID ? "selected" : "") Name="@item.Name" value="@item.CostCenterID">@item.Code</option>
+                }
+            </select>
+
+          
+        </div>
+        <div class="col-lg-6 col-md-6 col-sm-6 form-group">
+            <label>Donor Name</label>
+            <input id="txtDonarName" readonly name="DonorName" placeholder="Enter Donor Name" value="@Model.CostCenterName" class="form-control" />
+        </div>
+
+        <div class="col-lg-6 col-md-6 col-sm-6 form-group">
+            <label>Sub Line Item Code<sup>*</sup></label>
+            @Html.TextBoxFor(model => model.Code, new { @class = "form-control" })
+            @Html.ValidationMessageFor(model => model.Code, "", new { @class = "text-danger" })
+        </div>
+
+        <div class="col-lg-6 col-md-6 col-sm-6 form-group">
+            <label>Sub Line Item Name<sup>*</sup></label>
+            @Html.TextBoxFor(model => model.Name, new { @class = "form-control" })
+            @Html.ValidationMessageFor(model => model.Name, "", new { @class = "text-danger" })
+        </div>
+
+        <div class="col-lg-6 col-md-6 col-sm-6 form-group">
+            <label>Priority<sup>*</sup></label>
+            @Html.TextBoxFor(model => model.Priority, new { @class = "form-control" })
+            @Html.ValidationMessageFor(model => model.Priority, "", new { @class = "text-danger" })
+        </div>
+
+    </div>
+
+    <div class="row">
+
+        @if (Model.SubLineItemID > 0)
+        {
+            <button type="submit" class="btn mtr-o-grn btn-l ripplelink pull-right" name="Command" value="Add"><i class="fa fa-paper-plane" aria-hidden="true"></i> Update</button>
+        }
+        else
+        {
+            <button type="submit" class="btn mtr-o-grn btn-l ripplelink pull-right" name="Command" value="Add"><i class="fa fa-paper-plane" aria-hidden="true"></i> Submit</button>
+        }
+    </div>
+
+}

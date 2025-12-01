@@ -1,0 +1,814 @@
+﻿@model Mitr.Models.ViewTravelRequest
+
+<div class="modal-header blk-gdn-btn">
+	<h4 class="modal-title popuphead">
+		@Model.TravelRequest.traveller_name
+		<small>@Model.TravelRequest.req_no <span>|</span> @Model.TravelRequest.req_date </small>
+		<p>Purpose : @Model.TravelRequest.purpofvisit</p>
+	</h4>
+	<div class="close" data-dismiss="modal">&times;</div>
+</div>
+
+<div class="modal-body p-0">
+	<div class="p-3">
+
+		<div class="table-responsive ">
+			@if (Model.ProjectList_Travel != null)
+			{
+				<table class="table table-striped mt-0">
+					<thead>
+						<tr>
+							<th class="td-10">S.No.</th>
+							<th>Project Name</th>
+							<th>Cost Centre</th>
+							<th>Action</th>
+							<th width="150">In Principle Approved By</th>
+							<th width="150">In Principle Approved On</th>
+						</tr>
+					</thead>
+					<tbody>
+						@{ int ProjectCount = 0;}
+						@for (int i = 0; i < Model.ProjectList_Travel.Count; i++)
+						{
+							ProjectCount++;
+							string status;
+							if (@Model.ProjectList_Travel[i].Approved == 1)
+							{
+								status = "Approved";
+							}
+							else if (@Model.ProjectList_Travel[i].Approved == 2)
+							{
+								status = "Rejected";
+							}
+							else
+							{
+								status = "Pending";
+							}
+							<tr>
+								<td>@ProjectCount</td>
+								<td>@Model.ProjectList_Travel[i].Proj_name</td>
+								<td>@Model.ProjectList_Travel[i].costcenter_Name</td>
+
+								<td>@status</td>
+
+								<td>@Model.ProjectList_Travel[i].ApprovedBy</td>
+								@if (Model.ProjectList_Travel[i].ApprovedDate == "01/01/1900")
+								{
+									<td></td>
+								}
+								else
+								{
+									<td>@Model.ProjectList_Travel[i].ApprovedDate</td>
+								}
+
+							</tr>
+						}
+					</tbody>
+				</table>
+			}
+		</div>
+		<div class="table-responsive">
+			@if (Model.TravelRequestDetail != null)
+			{
+
+				<table class="table mact-tble">
+					<thead>
+						<tr>
+							<th class="td-10">S.No.</th>
+							<th width="80">Travel Date</th>
+							<th>From</th>
+							<th>To</th>
+							<th>Mode</th>
+							<th>Ticket as per rule</th>
+							<th>Hotel </th>
+						</tr>
+					</thead>
+					<tbody>
+						@{ int DetailCount = 0;}
+						@for (int i = 0; i < Model.TravelRequestDetail.Count; i++)
+						{
+							@Html.Hidden("hdfTravelDate", Model.TravelRequestDetail[0].Travel_date)
+							DetailCount++;
+							<tr>
+								<td>@DetailCount</td>
+								<td>@Model.TravelRequestDetail[i].Travel_date </td>
+								<td>@Model.TravelRequestDetail[i].fromCity</td>
+								<td>@Model.TravelRequestDetail[i].toCity</td>
+								<td>@Model.TravelRequestDetail[i].TravelMode</td>
+								<td>
+									@Model.TravelRequestDetail[i].TicketBooking
+									<button style="@(@Model.TravelRequestDetail[i].TicketBooking=="No"?"":"display:none")" tabindex="0" type="button" class=" td-info" data-popover-content="#unique_@DetailCount" data-toggle="popover" data-placement="right"> <i class="fas fa-info-circle"></i> </button>
+									<div id="unique_@DetailCount" style="display:none;">
+										<div class="popover-body">
+											<div class="close">X</div>
+											<ul class="list-unstyled text-clr tr-pophover">
+												<li>
+													<strong>Preferred Airline/Time</strong><br />
+													<p>@Model.TravelRequestDetail[i].ticketdetail</p>
+												</li>
+												<li>
+													<strong>Justification</strong><br />
+													<p>@Model.TravelRequestDetail[i].justification</p>
+												</li>
+											</ul>
+										</div>
+									</div>
+
+
+								</td>
+								@*<td>@Model.TravelRequestDetail[i].hotelbooking</td>*@
+								<td>@Model.TravelRequestDetail[i].HotalName</td>
+							</tr>
+						}
+					</tbody>
+				</table>
+			}
+		</div>
+		@if (Model.TravelRequest.IsAdvanceRequest == 1 && Model.AdvanceTravelRequest != null)
+		{
+			<div class="text-clr">
+				<strong class="green-clr"> Advance Required</strong>
+				<div class="table-responsive mt-2 mb-2">
+					<table class="table scd-table">
+						<thead>
+							<tr>
+								<th>Section </th>
+								<th class="text-right" width="100">Amount (INR)</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr>
+								<td>Perdiem</td>
+
+								@*<td class="text-right AdvancePerdiem">@Model.AdvanceTravelRequest.total_amount</td>*@
+								<td class="text-right AdvancePerdiem">
+
+									@string.Format("{0:c}", @Model.AdvanceTravelRequest.PerDiem_Rate)
+
+								</td>
+							</tr>
+							<tr>
+								<td>Hotel</td>
+								<td class="text-right AdvanceHotel">@string.Format("{0:c}", @Model.AdvanceTravelRequest.Loading_amt)</td>
+							</tr>
+							<tr>
+								<td>Transportation</td>
+								<td class="text-right AdvanceTransportion">
+									@string.Format("{0:c}", @Model.AdvanceTravelRequest.localTravel_amt)
+
+								</td>
+							</tr>
+							@if (!string.IsNullOrEmpty(Model.AdvanceTravelRequest.OtherSection))
+							{
+								<tr>
+									<td class="AdvanceOtherSection">@Model.AdvanceTravelRequest.OtherSection</td>
+									<td class="text-right">
+										@string.Format("{0:c}", @Model.AdvanceTravelRequest.OtherAmount)
+
+									</td>
+								</tr>
+							}
+							@if (!string.IsNullOrEmpty(Model.AdvanceTravelRequest.OtherSection1))
+							{
+								<tr>
+									<td class="AdvanceOtherSection1">@Model.AdvanceTravelRequest.OtherSection1</td>
+									<td class="text-right">
+										@string.Format("{0:c}", @Model.AdvanceTravelRequest.OtherAmount1)
+
+									</td>
+								</tr>
+							}
+							<tr class="fn-bold text-right">
+								<td>Total Amount</td>
+								<td>
+									@string.Format("{0:c}", @Model.AdvanceTravelRequest.total_amount)
+
+								</td>
+							</tr>
+
+							<tr class="fn-bold text-right">
+								<td>Requested Amount</td>
+								<td>
+									@string.Format("{0:c}", @Model.AdvanceTravelRequest.totaladvanceroundoff)
+
+								</td>
+							</tr>
+
+						</tbody>
+					</table>
+
+
+					<table class="table">
+
+						@if (Model.TravelRequest.approved == 1)
+						{
+							<tr>
+								<td width="200">Supervisor Approved On  </td>
+								<td>@Model.TravelRequest.app_date</td>
+								<td width="200">Supervisor Approved By</td>
+								<td>@Model.TravelRequest.ApprovedBy</td>
+							</tr>
+						}
+						else if (Model.TravelRequest.approved == 2)
+						{
+							<tr>
+								<td>Supervisor Approved On</td>
+								<td>@Model.TravelRequest.app_date</td>
+								<td>Supervisor Approved By</td>
+								<td>@Model.TravelRequest.ApprovedBy</td>
+							</tr>
+						}
+						@if ( Model.TravelRequest.ExpectionalApproved == 1)
+						{
+							<tr>
+								<td>Exceptional Approved On </td>
+								<td>@Model.TravelRequest.ExpectionalDate</td>
+								<td>Exceptional Approved By</td>
+								<td>@Model.TravelRequest.ExpectionalBy</td>
+							</tr>
+						}
+
+
+					</table>
+
+
+				</div>
+
+			</div>
+		}
+		else
+		{
+	<table class="table">
+
+		@if (Model.TravelRequest.approved == 1)
+		{
+			<tr>
+				<td width="200">Supervisor Approved On  </td>
+				<td>@Model.TravelRequest.app_date</td>
+				<td width="200">Supervisor Approved By</td>
+				<td>@Model.TravelRequest.ApprovedBy</td>
+			</tr>
+		}
+		else if (Model.TravelRequest.approved == 2)
+		{
+			<tr>
+				<td>Supervisor Approved On</td>
+				<td>@Model.TravelRequest.app_date</td>
+				<td>Supervisor Approved By</td>
+				<td>@Model.TravelRequest.ApprovedBy</td>
+			</tr>
+		}
+		@*@if (Model.TravelRequest.Expectional == 1 && Model.TravelRequest.ExpectionalApproved == 1)*@
+			@if ( Model.TravelRequest.ExpectionalApproved == 1)
+			{
+				<tr>
+					<td>Exceptional Approved On </td>
+					<td>@Model.TravelRequest.ExpectionalDate</td>
+					<td>Exceptional Approved By</td>
+					<td>@Model.TravelRequest.ExpectionalBy</td>
+				</tr>
+			}
+
+
+		</table>
+		}
+		@if (Model.TravelRequest.AmendUserId > 0)
+		{
+
+
+			<div class="row">
+				<div class="col-lg-6 col-md-6 col-sm-6 form-group">
+					<label>
+						Amendment Reason
+					</label>
+
+					@Model.TravelRequest.ReasonAmendment
+
+				</div>
+
+			</div>
+		}
+		@if (Model.TravelRequest.submited > 0)
+		{
+			<div class="row">
+				<div class="col-lg-6 col-md-6 col-sm-6 form-group">
+					<label>
+						Reason
+					</label>
+					@if (Model.TravelRequest.reason == "")
+					{
+						@Model.TravelRequest.Rfcreason
+					}
+					else
+					{
+						@Model.TravelRequest.reason
+					}
+				</div>
+				<div class="col-lg-6 col-md-6 col-sm-6 form-group">
+					<label>
+						User Remarks
+					</label>
+					@Model.TravelRequest.user_remarks
+				</div>
+			</div>
+		}
+		else
+		{
+			<div class="row">
+				<div class="col-lg-6 col-md-6 col-sm-6 form-group">
+					<label>
+						Reason
+					</label>
+
+					@Model.TravelRequest.Rfcreason
+
+				</div>
+
+			</div>
+		}
+		@if (Model.TravelRequest.emp_id.ToString() != clsApplicationSetting.GetSessionValue("EMPID"))
+		{
+			if (Model.TravelRequest.approved == 0)
+			{
+				using (Ajax.BeginForm("_ViewTravelRequest", "Travel",
+				  new { src = clsApplicationSetting.EncryptQueryString(ViewBag.MenuID.ToString() + "*/Travel/_ViewTravelRequest*" + ViewBag.TravelRequestID) },
+				  new AjaxOptions { HttpMethod = "POST", OnSuccess = "ActionOnTravelRequest" },
+			  new { @id = "_ViewTravelRequestFrom" })
+			  )
+				{
+					@Html.AntiForgeryToken()
+					<div class="row">
+						<div class="col-sm-12 text-right">
+							@Html.HiddenFor(model => Model.reason)
+							@Html.HiddenFor(model => Model.ActionType)
+							@Html.ValidationMessageFor(model => Model.reason, "", new { @class = "text-danger" })
+							@if (Model.TravelRequest.submited == 0)
+							{
+								//if (Model.TravelRequest.Status == "Pending for Supervisor's Approval")
+								//{
+								bool status = false;
+								for (int i = 0; i < Model.ProjectList_Travel.Count; i++)
+								{
+
+									if (Model.ProjectList_Travel[i].Approved == 1)
+									{
+										status = true;
+									}
+									else
+									{
+										status = false;
+										break;
+									}
+
+								}
+								if (status == false)
+								{
+									<button type="submit" name="Command" value="Approved" disabled class="btn mtr-g-grn btn-l ripplelink ">
+										<i class="fa fa-check"></i>Approve
+									</button>
+								}
+								else
+								{
+									<button type="submit" name="Command" value="Approved" class="btn mtr-g-grn btn-l ripplelink ">
+										<i class="fa fa-check"></i>Approve
+									</button>
+								}
+
+								<button type="submit" name="Command" value="Reject" class="btn rjt-btn RejectRequest">
+									<i class="fa fa-ban"></i> Reject
+								</button>
+								<button type="submit" name="Command" value="Resubmit" class="btn blk-gdn-btn btn-l ripplelink ResubmitRequest">
+									<i class="fas fa-sync-alt"></i> Resubmit
+								</button>
+								//}
+
+							}
+
+
+							else
+							{
+								@*<button type="submit" name="Command" value="Approved" class="btn mtr-g-grn btn-l ripplelink ">
+										<i class="fa fa-check"></i>Approved
+									</button>
+									<button type="submit" name="Command" value="Reject" class="btn btn-p ResubmitRequest">
+										<i class="fa fa-ban"></i> Reject
+									</button>*@
+								@*<button type="submit" name="Command" value="Resubmit" class="btn blk-gdn-btn btn-l ripplelink ResubmitRequest">
+										<i class="fas fa-sync-alt"></i> Resubmit
+									</button>*@
+							}
+
+
+						</div>
+					</div>
+				}
+			}
+			else if (Model.TravelRequest.Status == "Request forwarded for RFC" && Model.TravelRequest.HodId == Convert.ToInt32(clsApplicationSetting.GetSessionValue("EMPID")))
+			{
+				using (Ajax.BeginForm("_ViewTravelRequest", "Travel",
+			  new { src = clsApplicationSetting.EncryptQueryString(ViewBag.MenuID.ToString() + "*/Travel/_ViewTravelRequest*" + ViewBag.TravelRequestID) },
+			  new AjaxOptions { HttpMethod = "POST", OnSuccess = "ActionOnTravelRequest" },
+		  new { @id = "_ViewTravelRequestFrom" })
+		  )
+				{
+					@Html.AntiForgeryToken()
+					<div class="row">
+						<div class="col-sm-12 text-right">
+							@Html.HiddenFor(model => Model.reason)
+							@Html.HiddenFor(model => Model.ActionType)
+							@Html.ValidationMessageFor(model => Model.reason, "", new { @class = "text-danger" })
+
+
+
+							<button type="submit" name="Command" value="RFCApproved" class="btn rjt-btn RFCApproved">
+								<i class="fa fa-ban"></i> RFCApproved
+							</button>
+
+						</div>
+					</div>
+				}
+			}
+			else if (Model.TravelRequest.Expectional == 1 && Model.TravelRequest.ExpectionalApproved == 0)
+			{
+				using (Ajax.BeginForm("_ViewTravelRequest", "Travel",
+							  new { src = clsApplicationSetting.EncryptQueryString(ViewBag.MenuID.ToString() + "*/Travel/_ViewTravelRequest*" + ViewBag.TravelRequestID) },
+							  new AjaxOptions { HttpMethod = "POST", OnSuccess = "ActionOnTravelRequest" },
+						  new { @id = "_ViewTravelRequestFrom" })
+						  )
+				{
+					@Html.AntiForgeryToken()
+					<div class="row">
+						<div class="col-sm-12 text-right">
+							@Html.HiddenFor(model => Model.reason)
+							@Html.HiddenFor(model => Model.ActionType)
+							@Html.ValidationMessageFor(model => Model.reason, "", new { @class = "text-danger" })
+
+
+							@if (ViewBag.status == "Expect")
+							{
+								<button type="submit" name="Command" value="ExpectApproved" class="btn mtr-g-grn  ExpectApproved">
+									<i class="fa fa-ban"></i> Approve
+
+								</button>
+								<button type="submit" name="Command" value="ExpectReject" class="btn rjt-btn ExpectReject">
+									<i class="fa fa-ban"></i> Reject
+								</button>
+							}
+
+						</div>
+					</div>
+				}
+			}
+			else
+			{
+				<div class="row">
+					<div class="col-sm-12">
+						<label>
+							Reason:
+						</label>
+						@if (Model.TravelRequest.reason == "")
+						{
+							@Model.TravelRequest.Rfcreason
+						}
+						else
+						{
+							@Model.TravelRequest.reason
+						}
+					</div>
+				</div>
+
+			}
+		}
+		else
+		{
+
+			if (Model.TravelRequest.approved == 1 && Model.TravelRequest.isbooked == 0 && Model.TravelRequest.emp_id.ToString() == clsApplicationSetting.GetSessionValue("EMPID"))
+			{
+				using (Ajax.BeginForm("_ViewTravelRequest", "Travel",
+				  new { src = clsApplicationSetting.EncryptQueryString(ViewBag.MenuID.ToString() + "*/Travel/_ViewTravelRequest*" + ViewBag.TravelRequestID) },
+				  new AjaxOptions { HttpMethod = "POST", OnSuccess = "ActionOnTravelRequest" },
+			  new { @id = "_ViewTravelRequestFrom" })
+			  )
+				{
+					@Html.AntiForgeryToken()
+					<div class="row">
+						<div class="col-sm-12 text-right">
+							@Html.HiddenFor(model => Model.reason)
+							@Html.HiddenFor(model => Model.ActionType)
+							@Html.ValidationMessageFor(model => Model.reason, "", new { @class = "text-danger" })
+							@if (Model.TravelRequest.submited == 0 && Model.TravelRequest.Status == "Travel Approved - Pending at Travel Desk")
+							{
+
+
+								@*<button type="submit" name="Command" value="RFC" class="btn rjt-btn RFC">
+										<i class="fa fa-ban"></i> RFC
+									</button>*@
+
+
+
+							}
+
+
+
+						</div>
+					</div>
+				}
+			}
+
+
+
+
+			if (Model.TravelRequest.submited > 0)
+			{
+			}
+			else
+			{
+
+
+				<div class="row">
+					<div class="col-sm-12">
+						<label>
+							Reason:
+						</label>
+						@if (Model.TravelRequest.reason == "")
+						{
+							@Model.TravelRequest.Rfcreason
+						}
+						else
+						{
+							@Model.TravelRequest.reason
+						}
+
+					</div>
+				</div>
+			}
+
+		}
+
+
+	</div>
+</div>
+<div class="modal fade pop-dgn" id="rjct">
+	<div class="modal-dialog ">
+		<div class="modal-content">
+
+			<!-- Modal Header -->
+			<div class="modal-header blk-gdn-btn">
+				<h4 class="modal-title"><i class="fas fa-ban"></i> Reject </h4>
+				<div class="close" data-dismiss="modal">&times;</div>
+			</div>
+
+			<!-- Modal body -->
+			<div class="modal-body">
+				<form>
+					<div class="row">
+						<div class="col-sm-12 form-group">
+							<label>Reason<sup>*</sup></label>
+							<textarea class="form-group h-100" placeholder="Enter"></textarea>
+						</div>
+						<div class="col-sm-12 mt-3 text-center">
+							<button type="submit" class="btn mtr-o-grn btn-l ripplelink  " name="Command" value="Add"> <i class="fa fa-paper-plane" aria-hidden="true"></i> Submit</button>
+							<button type="button" class="btn cnl-btn ripplelink  " data-dismiss="modal"><i class="fas fa-times"></i> Close</button>
+						</div>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+</div>
+<script src="~/assets/design/js/sweetalert2.js?v=@clsApplicationSetting.GetWebConfigValue("Version")"></script>
+<script>
+
+
+	$('.ExpectApproved').on('click', function (e) {
+
+		e.preventDefault();
+		e.stopPropagation();
+		$("#ActionType").val($(this).attr("value"));
+		ExpectApprovedOption();
+	});
+	function ExpectApprovedOption() {
+		$("#_ViewTravelRequestFrom").submit();
+	}
+	$('.ExpectReject').on('click', function (e) {
+		e.preventDefault();
+		e.stopPropagation();
+		$("#ActionType").val($(this).attr("value"));
+		ExpectRejectOption();
+	});
+
+	function ExpectRejectOption() {
+
+		Swal.fire({
+			title: 'Please share the reason for rejection',
+			input: 'textarea',
+			showDenyButton: true,
+			showCancelButton: true,
+			confirmButtonText: 'Yes',
+			denyButtonText: 'No',
+			customClass: {
+				actions: 'my-actions',
+				cancelButton: 'btn cnl-btn',
+				confirmButton: 'order-2',
+				denyButton: 'order-3',
+			}
+		}).then((result) => {
+
+
+			if (typeof result.value != "undefined" && result.value != "") {
+
+				$("#reason").val(result.value);
+				$("#_ViewTravelRequestFrom").submit();
+			} else if (typeof result.value == "undefined") {
+
+			}
+			else {
+				Swal.fire('Cant be Blank', '', 'info')
+			}
+		})
+
+
+	}
+
+
+	$('.RFCApproved').on('click', function (e) {
+
+		e.preventDefault();
+		e.stopPropagation();
+		$("#ActionType").val($(this).attr("value"));
+		RFCApprovedOption();
+	});
+	$('.RFC').on('click', function (e) {
+
+		e.preventDefault();
+		e.stopPropagation();
+		$("#ActionType").val($(this).attr("value"));
+		var TravelDate = $("#hdfTravelDate").val();
+		var dateObject = formatDate(TravelDate);
+
+		//var Traveldate = new Date(TravelDate).toJSON().slice(0, 10).replace(/-/g, '/');
+		var Currentdate = new Date().toJSON().slice(0, 10).replace(/-/g, '/');
+		if (dateObject > Currentdate) {
+			RFCOption();
+		}
+		else {
+			Swal.fire("", "Travel Date is Past not RFC");
+
+		}
+	});
+	function formatDate(date) {
+		var d = new Date(date),
+			month = '' + (d.getMonth() + 1),
+			day = '' + d.getDate(),
+			year = d.getFullYear();
+
+		if (month.length < 2) month = '0' + month;
+		if (day.length < 2) day = '0' + day;
+
+		return [year, month, day].join('/');
+	}
+	$('.RejectRequest').on('click', function (e) {
+		e.preventDefault();
+		e.stopPropagation();
+		$("#ActionType").val($(this).attr("value"));
+		RejectOption();
+	});
+	$('.ResubmitRequest').on('click', function (e) {
+		e.preventDefault();
+		e.stopPropagation();
+		$("#ActionType").val($(this).attr("value"));
+		ResubmitOption();
+	});
+	function RFCApprovedOption() {
+		$("#_ViewTravelRequestFrom").submit();
+	}
+	function RFCOption() {
+		swal.fire({
+			title: 'Please share the reason for the RFC',
+			input: 'textarea'
+		}).then(function (result) {
+			if (result.value) {
+				$("#reason").val(result.value);
+				$("#_ViewTravelRequestFrom").submit();
+			}
+			else {
+				Swal.fire("", "Can't be Blank");
+			}
+		});
+	}
+	function RejectOption() {
+
+		Swal.fire({
+			title: 'Please share the reason for rejection',
+			input: 'textarea',
+			showDenyButton: true,
+			showCancelButton: true,
+			confirmButtonText: 'Yes',
+			denyButtonText: 'No',
+			customClass: {
+				actions: 'my-actions',
+				cancelButton: 'btn cnl-btn',
+				confirmButton: 'order-2',
+				denyButton: 'order-3',
+			}
+		}).then((result) => {
+
+
+			if (typeof result.value != "undefined" && result.value != "") {
+
+				$("#reason").val(result.value);
+				$("#_ViewTravelRequestFrom").submit();
+			} else if (typeof result.value == "undefined") {
+				/*Swal.fire('Changes are not saved', '', 'info')*/
+			}
+			else {
+				Swal.fire('Cant be Blank', '', 'info')
+			}
+		})
+
+		// change above
+		//swal.fire({
+		//	title: 'Please share the reason for the rejection',
+		//	input: 'textarea'
+
+		//}).then(function (result) {
+		//	if (result.value) {
+		//		$("#reason").val(result.value);
+		//		$("#_ViewTravelRequestFrom").submit();
+		//	}
+		//	else {
+		//		Swal.fire("", "Can't be Blank");
+		//	}
+		//});
+	}
+
+	function ResubmitOption() {
+		//swal.fire({
+		//	title: 'Please share the reason for resubmission',
+		//	input: 'textarea'
+		//}).then(function (result) {
+		//	if (result.value) {
+		//		$("#reason").val(result.value);
+		//		$("#_ViewTravelRequestFrom").submit();
+		//	}
+		//	else {
+		//		Swal.fire("", "Can't be Blank");
+		//	}
+		//});
+
+		Swal.fire({
+			title: ' Reason ',
+			input: 'textarea',
+			showDenyButton: true,
+			showCancelButton: true,
+			confirmButtonText: 'Yes',
+			denyButtonText: 'No',
+			customClass: {
+				actions: 'my-actions',
+				cancelButton: 'btn cnl-btn',
+				confirmButton: 'order-2',
+				denyButton: 'order-3',
+			}
+		}).then((result) => {
+
+
+			if (typeof result.value != "undefined" && result.value != "") {
+				debugger;
+
+				$("#reason").val(result.value);
+				$("#_ViewTravelRequestFrom").submit();
+			} else if (typeof result.value == "undefined") {
+				/*Swal.fire('Changes are not saved', '', 'info')*/
+			}
+			else {
+				Swal.fire('Cant be Blank', '', 'info')
+			}
+		})
+
+	}
+
+	function ActionOnTravelRequest(obj) {
+
+		if (obj.Status) {
+			window.location.reload();
+		} else {
+			FailToaster("Action Not Taken");
+		}
+
+	}
+
+
+</script>
+
+<script>
+
+	$("[data-toggle=popover]").popover({
+		html: true,
+		trigger: 'hover',
+
+		content: function () {
+			var content = $(this).attr("data-popover-content");
+			return $(content).children(".popover-body").html();
+		}
+	});
+</script>

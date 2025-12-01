@@ -1,0 +1,92 @@
+﻿@using System.Data
+@model Mitr.Models.BoardMembershipRegister
+
+@section style{
+    @System.Web.Optimization.Styles.Render("~/bundle/dataTablecss")
+}
+
+
+<div class="right_col" role="main">
+    @Html.Partial("HeaderMsg_Partial")
+    <h1 class="heading-one">
+        Membership Registration
+
+    </h1>
+
+    @using (Ajax.BeginForm("_MemshipRegisterRpt_Partial", "Board",
+            new { src = clsApplicationSetting.EncryptQueryString(ViewBag.MenuID.ToString() + "*/Board/_MemshipRegisterRpt_Partial") },
+            new AjaxOptions { HttpMethod = "POST", OnSuccess = "BindTarget",OnFailure="BindTarget" },
+        new { @id = "_MemshipRegisterRpt_PartialFrom" })
+        )
+    {
+
+        <div class="tab-main mb-5">
+            <div class="row text-clr">
+
+                <div class="col-sm-3 form-group">
+                    <label>Date As On</label>
+                    @Html.TextBoxFor(model => model.DateAsOn, new { @class = "form-control", @type = "date" })
+                    @Html.ValidationMessageFor(model => model.DateAsOn, "", new { @class = "text-danger" })
+                </div>
+
+                <div class="col-sm-3 form-group">
+                    <label>Type</label>
+
+                    @Html.DropDownListFor(model => model.Type, new List<SelectListItem>
+               { new SelectListItem{Text="All",Value="All" },
+                  new SelectListItem{Text="Resigned",Value="Resigned" } ,
+                   new SelectListItem{Text="Current",Value="Current" } ,
+                     new SelectListItem{Text="Desirous Person",Value="Desirous Person" } },
+                new { @class = "form-control  applyselect" })
+                    @Html.ValidationMessageFor(model => model.Type, "", new { @class = "text-danger" })
+
+                </div>
+
+
+
+                <div style="display:none">
+                    <button type="submit" class="btn mtr-g-grn btn-l ripplelink" id="btnSearch" name="Command" value="Search"><i class="fas fa-search"></i>Search</button>
+                </div>
+
+            </div>
+        </div>
+    }
+    <div id="TargetDiv"></div>
+
+</div>
+
+
+@section scripts    {
+    @System.Web.Optimization.Scripts.Render("~/bundle/dataTablesjs")
+    @System.Web.Optimization.Scripts.Render("~/bundle/unobtrusivejs")
+    <script>
+        $(document).ready(function () {
+            $("#btnSearch").click();
+        });
+
+        $('#DateAsOn').bind("change", function () {
+    ShowLoadingDialog();
+    $("#btnSearch").click();
+
+        });
+
+         $('#Type').on("change", function () {
+    ShowLoadingDialog();
+    $("#btnSearch").click();
+
+        });
+
+
+function BindTarget(args) {
+    CloseLoadingDialog();
+    $("#TargetDiv").empty();
+    $("#TargetDiv").html(args);
+
+    DatatableScriptsWithColumnSearch("tableApprove");
+
+
+}
+
+    </script>
+
+}

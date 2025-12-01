@@ -1,0 +1,317 @@
+﻿
+@{
+    ViewBag.Title = "HeadFinanceNOCList";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container-fluid">
+
+    <!-- Start -->
+    <div class="inner-main defult-height p-3 pb-0">
+        <h1 class="heading-one mb-3">Head Finance NOC Request List </h1>
+        <div class="tab-main mb-3">
+            <ul id="tabs" class="nav nav-tabs " role="tablist">
+                <li class="nav-item"> <a id="tab-A" href="#pending" class="nav-link active ripplelink" data-toggle="tab" role="tab"><i class="fas fa-clock"></i>Pending </a> </li>
+                <li class="nav-item"> <a id="tab-B" href="#process" class="nav-link ripplelink" data-toggle="tab" role="tab"><i class="fas fa-check"></i>Pending for Part B (F&F)</a> </li>
+                <li class="nav-item"> <a id="tab-C" href="#completed" class="nav-link ripplelink" data-toggle="tab" role="tab"><i class="fas fa-check"></i>Completed</a> </li>
+                <input type="hidden" value="@ViewBag.EMPID" id="hdfEMPID" />
+                <input type="hidden" value="@ViewBag.Doctype" id="hdfdoctype" />
+            </ul>
+            <div id="content" class="tab-content shadow-box p-0" role="tablist">
+                <div id="pending" class="card tab-pane fade show active" role="tabpanel" aria-labelledby="tab-A">
+                    <div class="card-header" role="tab" id="heading-A">
+                        <h5 class="mb-0">
+                            <!-- Note: `data-parent` removed from here -->
+                            <a data-toggle="collapse" href="#collapse-A" aria-expanded="true" aria-controls="collapse-A">Pending<i class="fas fa-clock"></i></a>
+                        </h5>
+                    </div>
+
+                    <!-- Note: New place of `data-parent` -->
+                    <div id="collapse-A" class="collapse show" data-parent="#content" role="tabpanel" aria-labelledby="heading-A">
+                        <div class="card-body p-0">
+                            <!-- Start -->
+                            <div class="table-responsive">
+                                <table id="tabelpending" class="table mt-0  table-bordered dt-responsive nowrap tbltick new_width">
+                                    <thead>
+                                        <tr>
+                                            <th width="33">S.No</th>
+                                            <th width="100">Employee Code</th>
+                                            <th>Employee Name</th>
+                                            <th width="100">Location</th>
+                                            <th width="100">Department</th>
+                                            <th width="100">Designation</th>
+                                            <th width="100">Relieving Date	</th>
+                                            <th width="50">Days left</th>
+                                            <th width="80">Action</th>
+                                        </tr>
+                                        <tr class="searchbar" role="row">
+                                            <th class="searchhide"></th>
+                                            <th></th>
+                                            <th></th>
+                                            <th></th>
+                                            <th></th>
+                                            <th></th>
+                                            <th></th>
+                                            <th></th>
+                                            <th class="searchhide"></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <!-- End -->
+                        </div>
+                    </div>
+                </div>
+                <div id="process" class="card tab-pane fade" role="tabpanel" aria-labelledby="tab-B">
+                    <div class="card-header" role="tab" id="heading-B">
+                        <h5 class="mb-0"> <a class="collapsed" data-toggle="collapse" href="#collapse-B" aria-expanded="false" aria-controls="collapse-B">Process<i class="fas fa-check"></i></a> </h5>
+                    </div>
+                    <div id="collapse-B" class="collapse" data-parent="#content" role="tabpanel" aria-labelledby="heading-B">
+                        <!-- Start -->
+                        <div class="table-responsive">
+                            <table id="tabelapproved" class="table mt-0  table-bordered dt-responsive nowrap tbltick new_width">
+                                <thead>
+                                    <tr>
+                                        <th width="33">S.No</th>
+                                        <th width="100">Employee Code</th>
+                                        <th>Employee Name</th>
+                                        <th width="100">Location</th>
+                                        <th width="100">Department</th>
+                                        <th width="100">Designation</th>
+                                        <th width="100">Relieving Date	</th>
+                                        <th width="50">Days left</th>
+                                        <th width="50">No.of Assets Deficient</th>
+                                        <th width="80">Action</th>
+                                    </tr>
+                                    <tr class="searchbar" role="row">
+                                        <th class="searchhide"></th>
+                                        <th></th>
+                                        <th></th>
+                                        <th></th>
+                                        <th></th>
+                                        <th></th>
+                                        <th></th>
+                                        <th></th>
+                                        <th></th>
+                                        <th class="searchhide"></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- End -->
+                    </div>
+                </div>
+
+                <div id="completed" class="card tab-pane fade" role="tabpanel" aria-labelledby="tab-c">
+                    <div class="card-header" role="tab" id="heading-B">
+                        <h5 class="mb-0"> <a class="collapsed" data-toggle="collapse" href="#collapse-B" aria-expanded="false" aria-controls="collapse-B">Process<i class="fas fa-check"></i></a> </h5>
+                    </div>
+                    <div id="collapse-B" class="collapse" data-parent="#content" role="tabpanel" aria-labelledby="heading-B">
+                        <!-- Start -->
+                        <div class="table-responsive">
+                            <table id="tabelCompleted" class="table mt-0  table-bordered dt-responsive nowrap tbltick new_width">
+                                <thead>
+                                    <tr>
+                                        <th width="33">S.No</th>
+                                        <th width="100">Employee Code</th>
+                                        <th>Employee Name</th>
+                                        <th width="100">Location</th>
+                                        <th width="100">Department</th>
+                                        <th width="100">Designation</th>
+                                        <th width="100">Relieving Date	</th>
+                                        <th width="50">Days left</th>
+                                        <th width="80">Action</th>
+                                    </tr>
+                                    <tr class="searchbar" role="row">
+                                        <th class="searchhide"></th>
+                                        <th></th>
+                                        <th></th>
+                                        <th></th>
+                                        <th></th>
+                                        <th></th>
+                                        <th></th>
+                                        <th></th>
+                                        <th class="searchhide"></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- End -->
+                    </div>
+                </div>
+
+
+
+
+            </div>
+        </div>
+
+    </div>
+    <!--
+    ENd -->
+</div>
+
+<div class="modal show" id="fn">
+    <div class="modal-dialog modal-dialog-centered modal-xl" data-select2-id="17">
+        <div class="modal-content " data-select2-id="16">
+            <input type="hidden" id="hdfid"  value="" />          <!-- Modal Header -->
+            <div class="modal-header">
+                <h4 class="modal-title">Employee Name </h4>
+                <button type="button" class="close" data-dismiss="modal">×</button>
+            </div>
+
+            <!-- Modal body -->
+            <div class="modal-body" data-select2-id="15">
+                <div class="row" data-select2-id="14">
+                    <div class="col-sm-12 form-group">
+                        <input type="hidden" id="hdfid" value="" />
+                        <ul class="list-unstyled inline-li m-0 rqt-dtl">
+                            <li><label>Requested by</label><span id="labelreqby"></span> </li>
+                            <li><label>Req No</label><span id="labelreq"></span></li>
+                            <li><label>Location</label><span id="labelloc"></span> </li>
+                            <li>
+                                <label>Department</label><span id="labeldept"></span>
+                            </li>
+                            <li>
+                                <label>Designation</label><span id="labeldesg"></span>
+                            </li>
+                            <li>  <label>Requested Date</label><span id="labelreqdate"></span></li>
+                            <li><label>Last Working Day </label><span id="labelRdate"></span> </li>
+                            <li><label>Status </label><span id="labelStatus"></span> </li>
+                        </ul>
+                      
+                    </div>
+                    <div class="col-sm-12">
+                        <div class="table-responsive">
+                            <table id="tabelHeadFinance"  class="table mt-0  table-bordered vt-a dt-responsive nowrap tbltick new_width" data-select2-id="datatable">
+                                <thead>
+                                    <tr>
+                                        <th width="30">S.No</th>
+                                        <th width="100">Department</th>
+                                        <th width="200">Asset ID</th>
+                                        <th>Date of Return</th>
+                                        <th>Description</th>
+                                        <th>Impact</th>
+                                        <th>Status</th>
+                                        <th width="150">Remarks</th>
+                                        <th width="100">Recovered</th>
+                                        <th width="100">Amount of Recovery</th>
+                                        <th width="100">Write Off Amount</th>
+                                        <th>Component </th>
+                                        <th width="150">Head Finance Remarks</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                  
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+
+
+                </div>
+            </div>
+            <!-- Modal footer -->
+            <div class="p-0 text-center ">
+
+                <button type="button" id="btnsave" style="display:none" onclick="SubmitFinancedata()" class="btn blk-gdn-btn btn-l "><i class="fas fa-arrow-circle-right"></i>Proceed</button>
+                <button type="button" id="btnsubmit" style="display:none" onclick="SaveFinancedata()" class="btn mtr-o-grn btn-l "><i class="fas fa-save"></i>Save</button>
+                <button type="button" class="btn cnl-btn ripplelink" data-dismiss="modal"><i class="fas fa-times"></i>Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal show" id="fnA">
+    <div class="modal-dialog modal-dialog-centered modal-xl" data-select2-id="17">
+        <div class="modal-content " data-select2-id="16">
+            <input type="hidden" id="hdfid" value="" />          <!-- Modal Header -->
+            <div class="modal-header">
+                <h4 class="modal-title">Employee Name </h4>
+                <button type="button" class="close" data-dismiss="modal">×</button>
+            </div>
+
+            <!-- Modal body -->
+            <div class="modal-body" data-select2-id="15">
+                <div class="row" data-select2-id="14">
+                    <div class="col-sm-12 form-group">
+                        <input type="hidden" id="hdfid" value="" />
+                        <ul class="list-unstyled inline-li m-0 rqt-dtl">
+                            <li><label>Requested by</label><span id="labelsreqby"></span> </li>
+                            <li><label>Req No</label><span id="labelsreq"></span></li>
+                            <li><label>Location</label><span id="labelsloc"></span> </li>
+                            <li>
+                                <label>Department</label><span id="labelsdept"></span>
+                            </li>
+                            <li>
+                                <label>Designation</label><span id="labelsdesg"></span>
+                            </li>
+                            <li>  <label>Requested Date</label><span id="labelsreqdate"></span></li>
+                            <li><label>Last Working Day </label><span id="labelsRdate"></span> </li>
+                            
+                        </ul>
+
+                    </div>
+                    <div class="col-sm-12">
+                        <div class="table-responsive">
+                            <table id="tabelHeadsaveFinance" class="table mt-0  table-bordered vt-a dt-responsive nowrap tbltick new_width" data-select2-id="datatable">
+                                <thead>
+                                    <tr>
+                                        <th width="30">S.No</th>
+                                        <th width="100">Department</th>
+                                        <th width="200">Asset ID</th>
+                                        <th>Date of Return</th>
+                                        <th>Description</th>
+                                        <th>Impact</th>
+                                        <th>Status</th>
+                                        <th width="150">Remarks</th>
+                                        <th width="100">Recovered</th>
+                                        <th width="100">Amount of Recovery</th>
+                                        <th width="100">Write Off Amount</th>
+                                        <th>Component </th>
+                                        <th width="150">Head Finance Remarks</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+
+
+                </div>
+            </div>
+            <!-- Modal footer -->
+            <div class="p-0 text-center ">
+
+                <button type="button" class="btn blk-gdn-btn btn-l " id="btnSendHR" style="display:none" onclick="ProceedFinancedata()"><i class="fas fa-arrow-circle-right"></i>Proceed &amp; Send to HR</button>
+                <button type="button" class="btn mtr-o-grn btn-l " id="btnSaveHR" style="display:none" onclick="SaveBandBFinancedata()"><i class="fas fa-save"></i>Save</button>
+                <button type="button" class="btn cnl-btn ripplelink" data-dismiss="modal"><i class="fas fa-times"></i>Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section scripts    {
+    @System.Web.Optimization.Scripts.Render("~/bundle/unobtrusivejs")
+    @System.Web.Optimization.Scripts.Render("~/bundle/dataTablesjs")
+    <script src="~/assets/design/Scripts/AddInit.js?v=@clsApplicationSetting.GetWebConfigValue("Version")"></script>
+    <script src="~/assets/design/scripts/DevScriptExit/ExitHeadFinNoc.js"></script>
+    <script>
+
+
+
+    </script>
+
+
+}

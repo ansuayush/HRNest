@@ -1,0 +1,45 @@
+﻿@model IList<Mitr.Models.BudgetMaster.IndirectCostRate>
+@{
+    ViewBag.Title = "IndirectCostRateMaster";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="inner-main mb-5">
+   
+    @Html.Partial("ListHeader_Partial", "Add Indirect Cost Rate")
+    <input type="hidden" id="hdnAddUrl" name="hdnAddUrl" value="@Url.Action("AddIndirectCostRate",new { src = clsApplicationSetting.EncryptFriendly(ViewBag.MenuID+"*"+"/Budget/AddIndirectCostRate*0") })" />
+    <div class="table-responsive">
+        <div class="table-responsive">
+            <table class="table mt-0">
+                <thead>
+                    <tr>
+                        <th class="w-33">S.No </th>
+                        <th>Year</th>
+                        <th class="tw-100">Action</th>
+
+                    </tr>
+                </thead>
+                <tbody>
+                    @{ int Count = 0;}
+                    @foreach (Mitr.Models.BudgetMaster.IndirectCostRate item in Model)
+                            {
+                                Count++;
+                    <tr>
+                        <td>@Count</td>
+
+
+                        <td>@item.SetYear </td>
+
+                        <td><a href="@Url.Action("AddIndirectCostRate",new { src = clsApplicationSetting.EncryptFriendly(ViewBag.MenuID+"*"+"/Budget/AddIndirectCostRate*"+item.Id+"") })"><i class="fas fa-eye"></i> View</a></td>
+                  
+                    </tr>
+                    
+                    }
+                </tbody>
+                 
+            </table>
+        </div>
+    </div>
+
+</div>
+

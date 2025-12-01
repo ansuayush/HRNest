@@ -1,0 +1,736 @@
+﻿@model Employee.Declaration
+
+@section style{
+	@System.Web.Optimization.Styles.Render("~/bundle/dataTablecss")
+}
+@{
+	ViewBag.Title = "DeclarationDetails";
+	Layout = "~/Views/Shared/_UserProcess.cshtml";
+}
+<script>
+        var CandidateId = '@ViewBag.RequestId';
+		var IsEDUser = '@ViewBag.IsED';
+        var loggedinUserid = '@ViewBag.UserId';
+		var loggedinUserName = '@ViewBag.UserName';
+		var UserGrade = '@ViewBag.Grade';
+		var IsPM = '@ViewBag.IsPM';
+		var IPAddress = '@ViewBag.IPAddress';
+
+	//$(document).ready(function () {
+	//	UpdatePageStatus();
+	//});
+	//function UpdatePageStatus() {
+	//	CommonAjaxMethod(virtualPath + 'UserProcess/UpdateVideoReview', { CandidateId: CandidateId, VideoReviewed: "DeclarationDetails" }, 'POST', function (response) {
+	//		//SuccessToaster(response.SuccessMessage);
+	//		//window.location.href = virtualPath + 'UserProcess/Introduction';
+	//	});
+	//}
+</script>
+<script>
+	$(document).ready(function () {
+		showtable(1)
+	});
+
+	function showtable(tabname) {
+		if (tabname == "1") {
+			ShowLoadingDialog();
+			$.ajax({
+				url: "/UserProcess/_PendingDeclaration",
+				type: "Get",
+				async: true,
+				data: { src: EncryptQueryStringJSON(@ViewBag.MenuID+"*" + "/UserProcess/_PendingDeclaration" + "*" + CandidateId) },
+				success: function (data) {
+					debugger;
+					$("#TargetDiv").empty();
+					$("#TargetDiv").html(data);
+					CloseLoadingDialog();
+
+				},
+				error: function (er) {
+					alert(er);
+
+				}
+			});
+
+		}
+		else if (tabname == "2") {
+			ShowLoadingDialog();
+			$.ajax({
+				url: "/UserProcess/_ApproveDeclaration",
+				type: "Get",
+				async: true,
+				data: { src: EncryptQueryStringJSON(@ViewBag.MenuID+"*" + "/UserProcess/_ApproveDeclaration") },
+				success: function (data) {
+					debugger;
+					$("#TargetDivApproved").empty();
+					$("#TargetDivApproved").html(data);
+					CloseLoadingDialog();
+					//DatatableScriptsWithColumnSearch("ApprovedTable");
+
+
+				},
+				error: function (er) {
+					alert(er);
+
+				}
+			});
+
+		}
+	}
+	$(".acceptchksdw").change(function () {
+
+		if ($(this).is(":checked")) {
+			$("#hdfAccept").val(1);
+		}
+		else {
+			$("#hdfAccept").val(0);
+		}
+	});
+	function btnconfirm() {
+		debugger;
+		var Id = $("#hdfId").val();
+		var Accept = parseInt($("#hdfAccept").val());
+		var Remark = $("#txtremark").val();
+		var status = $("#hdfStatus").val();
+		if (isNaN(Accept)) {
+			 Accept = 0;
+		}
+		if (parseInt(Id) > 0) {
+			//if (Accept > 0) {
+				$.ajax({
+					url: "/CommonAjax/DeclrationApproved",
+					type: "Get",
+					async: true,
+					data: { ID: Id, Accept: Accept, Remark: Remark, status: status },
+					success: function (data) {
+						if (data == 1) {
+							SuccessToaster('Declaration Approved successfully');
+							showtable(2)
+							window.location.reload();
+						}
+						else {
+							FailToaster('Can not Approved.')
+						}
+					},
+					error: function (er) {
+						alert(er);
+					}
+				});
+			//}
+			//else {
+			//	SuccessToaster('Please Select check box');
+			//	//window.location.reload();
+			//}
+
+		}
+	}
+	function CheckRadio() {
+		var Radio = $("input[name='Status']:checked").val()
+		$("#hdfStatus").val(Radio);
+		if (Radio == "1") {
+			$('#divremark').hide();
+			$('#divchk').hide();
+		}
+		else if (Radio == "2") {
+			$('#divremark').show();
+			$('#divchk').hide();
+		}
+	}
+	function ShowData(obj) {
+		debugger;
+		$("#nothing").prop('checked', false);
+		$("#declare").prop('checked', false);
+		$('#divremark').show();
+		$('#divchk').show();
+		$('#lbldcname').text("");
+		$("#divbutton").show();
+		$("#txtremark").val();
+		$("#hdfId").val();
+		$("#hdfStatus").val();
+		$("#acceptchksdw" + name).prop('checked', false);
+		$("#txtremark").val("");
+		$("#hdfAccept").val();
+		var ID = parseInt($(obj).closest('tr').find("td.hdftableid input[type='hidden']").val());
+		var Name = $(obj).closest('tr').find("td.hdftableName input[type='hidden']").val();
+		var RemarkName = $(obj).closest('tr').find("td.hdftableReqRemark input[type='hidden']").val();
+		if (ID > 0) {
+			$('#lbldcname').text(Name);
+			$("#ViewModal").modal("show");
+			$("#hdfId").val(ID)
+
+
+			$('#divContent').html("");
+			if (RemarkName == "1") {
+				$('#divrdb').show();
+				$('#divremark').hide();
+				$('#divchk').hide();
+
+
+			}
+			else {
+				$('#divremark').hide();
+
+			}
+
+		}
+		$.ajax({
+			url: "/CommonAjax/ShowDeclarationContent",
+			type: "Get",
+			async: true,
+			data: { ID: ID },
+			success: function (data) {
+				debugger;
+				$("#btnconfirm").prop('disabled', false);
+				$('#divContent').html(data);
+			},
+			error: function (er) {
+				alert(er);
+			}
+		});
+	}
+	function ShowApprovedData(obj) {
+		debugger;
+		$('#lbldcname').text("");
+		$("#txtremark").val();
+		$("#hdfId").val();
+		$("#hdfAccept").val();
+		$("#acceptchksdw" + name).prop('checked', false);
+		$("#nothing").prop('checked', false);
+		$("#declare").prop('checked', false);
+		var ID = parseInt($(obj).closest('tr').find("td.hdftableid input[type='hidden']").val());
+		var Name = $(obj).closest('tr').find("td.hdftableName input[type='hidden']").val();
+
+		if (ID > 0) {
+			$('#lbldcname').text(Name);
+			$("#ViewModal").modal("show");
+			$("#hdfId").val(ID)
+			$('#divContent').html("");
+
+
+		}
+		$.ajax({
+			url: "/CommonAjax/ShowDeclarationApprovedContent",
+			type: "Get",
+			async: true,
+			data: { ID: ID },
+			success: function (data) {
+				debugger;
+
+				$('#divContent').html(data.Content);
+				$("#txtremark").val(data.Remark);
+				if (data.Accept == 1) {
+					$('#divremark').hide();
+					$('#divchk').hide();
+					$("#divchk").show();
+					$("#acceptchksdw" + name).prop('checked', true);
+
+				}
+				else if (data.Status == "1") {
+					$("#nothing").prop('checked', true);
+					$('#divremark').hide();
+					$('#divchk').hide();
+					$("#divrdb").show();
+
+				}
+				else if (data.Status == "2") {
+
+					$("#divrdb").show();
+					$("#declare").prop('checked', true);
+					$('#divchk').hide();
+
+				}
+				//$("#divbutton").hide();
+				//$("#btnconfirm").prop('disabled', true);
+			},
+			error: function (er) {
+				alert(er);
+			}
+		});
+	}
+	function OnSuccess(obj) {
+		if (obj.Status) {
+			SuccessToaster(obj.SuccessMessage);
+			window.location.reload();
+		}
+		else {
+			FailToaster(obj.SuccessMessage);
+			CloseLoadingDialog();
+		}
+
+	}
+</script>
+@*@Html.Partial("_EmployeeHeader")*@
+<div class="container-fluid">
+	
+		<!-- Start -->
+		<div class="inner-main defult-height">
+			<h1 class="heading-one mb-3">Declaration Details</h1>
+			<!------->
+			<div class="tab-main mb-5">
+				<ul id="tabs" class="nav nav-tabs " role="tablist">
+					<li class="nav-item"> <a id="tab-A" href="#active-log" onClick="showtable(1);" class="nav-link active ripplelink" data-toggle="tab" role="tab"><i class="fas fa-clock"></i>Pending</a> </li>
+					<li class="nav-item"> <a id="tab-B" href="#leaves" onClick="showtable(2);" class="nav-link ripplelink" data-toggle="tab" role="tab"><i class="fas fa-check"></i>Approved </a></li>
+				</ul>
+				<div id="content" class="tab-content p-0" role="tablist">
+					<div id="active-log" class="card tab-pane fade show active" role="tabpanel" aria-labelledby="tab-A">
+						<div class="card-header" role="tab" id="heading-A">
+							<h5 class="mb-0">
+								<!-- Note: `data-parent` removed from here -->
+								<a data-toggle="collapse" href="#collapse-A" aria-expanded="true" aria-controls="collapse-A"> <i class="fas fa-ticket-alt"></i> Pending </a>
+							</h5>
+						</div>
+
+						<!-- Note: New place of `data-parent` -->
+
+						<div id="TargetDiv">
+
+						</div>
+
+					</div>
+					<div id="leaves" class="card tab-pane fade" role="tabpanel" aria-labelledby="tab-B">
+						<div class="card-header" role="tab" id="heading-B">
+							<h5 class="mb-0"> <a class="collapsed" data-toggle="collapse" href="#collapse-B" aria-expanded="false" aria-controls="collapse-B"><i class="fa fa-check" aria-hidden="true"></i> Resolved</a> </h5>
+						</div>
+						<div id="TargetDivApproved">
+
+						</div>
+					</div>
+
+				</div>
+
+
+			</div>
+			<!------->
+		</div>
+
+	
+
+
+	<!-- The Modal -->
+	<div class="modal" id="dcl">
+		<div class="modal-dialog modal-lg">
+			<div class="modal-content ">
+
+				<!-- Modal Header -->
+				<div class="modal-header">
+					<h4 class="modal-title"><i class="fas fa-sticky-note"></i>NDA</h4>
+					<button type="button" class="close" data-dismiss="modal">×</button>
+				</div>
+
+				<!-- Modal body -->
+				<div class="modal-body p-0">
+					<div class="scroll p-2">
+						<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer porttitor arcu augue.Ut feugiat mi non lorem tincidunt efficitur. Phasellus eget arcu sed enim mollis placerat quis at leo. Nunc consequat mi ac lorem ullamcorper aliquam. Quisque convallis ante turpis, sed pretium dui ultrices eu. Vestibulum in libero a elit condimentum rutrum elementum ultrices nunc. Mauris consequat rhoncus enim, eu rutrum quam congue ac. Praesent condimentum neque vitae lectus pulvinar, nec maximus purus ultrices. Donec vulputate sem consectetur, mattis massa sed, auctor nisi. Vestibulum lacinia ac lectus id malesuada. Duis enim orci, bibendum eu eros vel, venenatis pharetra purus.</p>
+						<p>Maecenas vitae tortor varius, ullamcorper velit at, vehicula dolor. Nulla vel magna viverra, cursus tellus id, molestie leo. Vivamus consequat sollicitudin diam, et gravida lorem tincidunt a. Aliquam erat volutpat. Integer ac luctus dolor. Donec leo magna, hendrerit ut tortor sed, commodo ornare tellus. Nulla facilisi. Mauris quis faucibus arcu.</p>
+						<p>Pellentesque mollis dui et nulla eleifend commodo. Sed rhoncus ipsum eget pharetra tristique. Proin vel nulla a felis rhoncus accumsan id eu erat. Vivamus metus dolor, aliquet nec elementum et, finibus a lectus. Aliquam vel tortor nec felis tempor venenatis. Quisque tincidunt neque quis placerat vehicula. Fusce blandit, lorem vel ornare ultrices, purus nulla finibus justo, quis imperdiet tortor nisi a est. Mauris ut mi mattis sapien suscipit pulvinar sed sit amet ex.</p>
+						<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer porttitor arcu augue.Ut feugiat mi non lorem tincidunt efficitur. Phasellus eget arcu sed enim mollis placerat quis at leo. Nunc consequat mi ac lorem ullamcorper aliquam. Quisque convallis ante turpis, sed pretium dui ultrices eu. Vestibulum in libero a elit condimentum rutrum elementum ultrices nunc. Mauris consequat rhoncus enim, eu rutrum quam congue ac. Praesent condimentum neque vitae lectus pulvinar, nec maximus purus ultrices. Donec vulputate sem consectetur, mattis massa sed, auctor nisi. Vestibulum lacinia ac lectus id malesuada. Duis enim orci, bibendum eu eros vel, venenatis pharetra purus.</p>
+						<p>Maecenas vitae tortor varius, ullamcorper velit at, vehicula dolor. Nulla vel magna viverra, cursus tellus id, molestie leo. Vivamus consequat sollicitudin diam, et gravida lorem tincidunt a. Aliquam erat volutpat. Integer ac luctus dolor. Donec leo magna, hendrerit ut tortor sed, commodo ornare tellus. Nulla facilisi. Mauris quis faucibus arcu.</p>
+						<p>Pellentesque mollis dui et nulla eleifend commodo. Sed rhoncus ipsum eget pharetra tristique. Proin vel nulla a felis rhoncus accumsan id eu erat. Vivamus metus dolor, aliquet nec elementum et, finibus a lectus. Aliquam vel tortor nec felis tempor venenatis. Quisque tincidunt neque quis placerat vehicula. Fusce blandit, lorem vel ornare ultrices, purus nulla finibus justo, quis imperdiet tortor nisi a est. Mauris ut mi mattis sapien suscipit pulvinar sed sit amet ex.</p>
+					</div>
+
+					<!-- Modal footer -->
+					<div class="p-2 ftr-shw">
+
+						<div class="row">
+							<div class="col-sm-12 mb-3 align-self-center">
+
+								<input type="checkbox" id="Feedback" name="Feedback">
+								<label for="Feedback"> <strong>acknowledge that I have read the above policy and declaration and understand that abiding by the terms of the policy is a condition of my employment at C3 and any violation of the term(s) of the above policy may result in disciplinary action, which may include termination.</strong> </label>
+							</div>
+							<div class="col-sm-12 mb-3 text-center">
+								<button type="button" class="btn mtr-o-grn btn-l m-0 "><i class="fas fa-paper-plane"></i>Submit</button>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!-- The Modal -->
+	<div class="modal" id="accepted">
+		<div class="modal-dialog modal-lg">
+			<div class="modal-content ">
+
+				<!-- Modal Header -->
+				<div class="modal-header">
+					<h4 class="modal-title"><i class="fas fa-sticky-note"></i>Conflict of Interest	</h4>
+					<button type="button" class="close" data-dismiss="modal">×</button>
+				</div>
+
+				<!-- Modal body -->
+				<div class="modal-body p-0">
+					<div class="scroll p-2">
+						<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer porttitor arcu augue.Ut feugiat mi non lorem tincidunt efficitur. Phasellus eget arcu sed enim mollis placerat quis at leo. Nunc consequat mi ac lorem ullamcorper aliquam. Quisque convallis ante turpis, sed pretium dui ultrices eu. Vestibulum in libero a elit condimentum rutrum elementum ultrices nunc. Mauris consequat rhoncus enim, eu rutrum quam congue ac. Praesent condimentum neque vitae lectus pulvinar, nec maximus purus ultrices. Donec vulputate sem consectetur, mattis massa sed, auctor nisi. Vestibulum lacinia ac lectus id malesuada. Duis enim orci, bibendum eu eros vel, venenatis pharetra purus.</p>
+						<p>Maecenas vitae tortor varius, ullamcorper velit at, vehicula dolor. Nulla vel magna viverra, cursus tellus id, molestie leo. Vivamus consequat sollicitudin diam, et gravida lorem tincidunt a. Aliquam erat volutpat. Integer ac luctus dolor. Donec leo magna, hendrerit ut tortor sed, commodo ornare tellus. Nulla facilisi. Mauris quis faucibus arcu.</p>
+						<p>Pellentesque mollis dui et nulla eleifend commodo. Sed rhoncus ipsum eget pharetra tristique. Proin vel nulla a felis rhoncus accumsan id eu erat. Vivamus metus dolor, aliquet nec elementum et, finibus a lectus. Aliquam vel tortor nec felis tempor venenatis. Quisque tincidunt neque quis placerat vehicula. Fusce blandit, lorem vel ornare ultrices, purus nulla finibus justo, quis imperdiet tortor nisi a est. Mauris ut mi mattis sapien suscipit pulvinar sed sit amet ex.</p>
+						<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer porttitor arcu augue.Ut feugiat mi non lorem tincidunt efficitur. Phasellus eget arcu sed enim mollis placerat quis at leo. Nunc consequat mi ac lorem ullamcorper aliquam. Quisque convallis ante turpis, sed pretium dui ultrices eu. Vestibulum in libero a elit condimentum rutrum elementum ultrices nunc. Mauris consequat rhoncus enim, eu rutrum quam congue ac. Praesent condimentum neque vitae lectus pulvinar, nec maximus purus ultrices. Donec vulputate sem consectetur, mattis massa sed, auctor nisi. Vestibulum lacinia ac lectus id malesuada. Duis enim orci, bibendum eu eros vel, venenatis pharetra purus.</p>
+						<p>Maecenas vitae tortor varius, ullamcorper velit at, vehicula dolor. Nulla vel magna viverra, cursus tellus id, molestie leo. Vivamus consequat sollicitudin diam, et gravida lorem tincidunt a. Aliquam erat volutpat. Integer ac luctus dolor. Donec leo magna, hendrerit ut tortor sed, commodo ornare tellus. Nulla facilisi. Mauris quis faucibus arcu.</p>
+						<p>Pellentesque mollis dui et nulla eleifend commodo. Sed rhoncus ipsum eget pharetra tristique. Proin vel nulla a felis rhoncus accumsan id eu erat. Vivamus metus dolor, aliquet nec elementum et, finibus a lectus. Aliquam vel tortor nec felis tempor venenatis. Quisque tincidunt neque quis placerat vehicula. Fusce blandit, lorem vel ornare ultrices, purus nulla finibus justo, quis imperdiet tortor nisi a est. Mauris ut mi mattis sapien suscipit pulvinar sed sit amet ex.</p>
+					</div>
+
+					<!-- Modal footer -->
+					<div class="p-2 ftr-shw">
+
+						<div class="row">
+
+							<div class="col-sm-12 text-center">
+								<button type="button" class="btn cnl-btn m-0 ripplelink" data-dismiss="modal"><i class="fas fa-times"></i>Close</button>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<script>
+		$(document).ready(function () {
+			$(".dpselect").select2();
+		});
+	</script>
+	<script type="text/javascript">
+		$(function () {
+			$(".fold-table tr.view").on("click", function () {
+				$(this).toggleClass("open").next(".fold").toggleClass("open");
+			});
+		});
+	</script>
+	<script>
+		var MenuID = Number(129);
+
+		//wow = new WOW();
+		//wow.init();
+
+
+		function SuccessToaster(Message) {
+			$("#toastMsg").html(Message);
+			$("#toasticon i").addClass("fas fa-check green-clr ");
+			var x = document.getElementById("toast")
+			x.className = "show";
+			setTimeout(function () { x.className = x.className.replace("show", ""); }, 4000);
+		}
+
+		function FailToaster(Message) {
+			$("#toastMsg").html(Message);
+			$("#toasticon i").addClass("fas fa-exclamation-triangle red-clr");
+			var x = document.getElementById("toast")
+			x.className = "show toaster-warning";
+			setTimeout(function () { x.className = x.className.replace("show toaster-warning", ""); }, 4000);
+		}
+
+
+		function ValidateFile(FileName) {
+
+			var result = false;
+			if (document.getElementById(FileName).files[0].name.toUpperCase().match(/\.(PDF|DOCX|TXT|XLS|XLSX)$/)) {
+
+				var filesize = 3145728;
+				var sizeinbytes = document.getElementById(FileName).files[0].size;
+				if (filesize >= sizeinbytes) {
+					result = true;
+				}
+				else {
+					FailToaster("File size should be less than 3 MB");
+					document.getElementById(FileName).value = '';
+					result = false;
+
+				}
+				return result;
+			}
+			else {
+				FailToaster("Invalid file type , please select valid file again");
+				document.getElementById(FileName).value = '';
+				return result;
+			}
+
+		}
+
+		function ValidateImage(FileName) {
+
+			var result = false;
+			if (document.getElementById(FileName).files[0].name.toUpperCase().match(/\.(JPG|JPEG|PNG|PDF)$/)) {
+
+				var filesize = 2097152;
+				var sizeinbytes = document.getElementById(FileName).files[0].size;
+				if (filesize >= sizeinbytes) {
+					result = true;
+				}
+				else {
+					FailToaster("Image should be less than 2 MB");
+
+					document.getElementById(FileName).value = '';
+					result = false;
+
+				}
+				return result;
+			}
+			else {
+				FailToaster("Invalid Image type , please select valid Image");
+				document.getElementById(FileName).value = '';
+				return result;
+			}
+
+		}
+	</script>
+	<script>
+		// JavaScript Document
+		$(function () {
+			$('#js-nav-toggle').click(function (e) {
+				e.preventDefault();
+				$("html").toggleClass("is-sideopen");
+				$("#js-nav-toggle").toggleClass("is-active");
+			});
+
+			var $content = $('.l-contents');
+			var $header = $('.l-header');
+
+
+			$content.click(function () {
+				$("html").removeClass("is-sideopen");
+			});
+
+
+			$header.click(function () {
+				$("html").removeClass("is-sideopen");
+			});
+
+
+		});
+
+
+		$(function () {
+
+			var $dropdown = $('.js-dropdown');
+			var $content = $('.l-contents');
+			var $toggle = $('#js-nav-toggle');
+
+
+			$('.js-dropdown-menu').hide();
+			$dropdown.click(function () {
+				$('i').removeClass('is-rotate');
+				$('.js-dropdown-menu').slideUp(200);
+				if ($('+.js-dropdown-menu', this).css('display') == 'none') {
+					$('i', this).addClass('is-rotate');
+					$('+.js-dropdown-menu', this).slideDown(200);
+				}
+			});
+
+
+			$content.click(function () {
+				$('i').removeClass('is-rotate');
+				$('.js-dropdown-menu').slideUp(200);
+				if ($('+.js-dropdown-menu', this).css('display') == 'none') {
+					$('i', this).addClass('is-rotate');
+					$('+.js-dropdown-menu', this).slideDown(200);
+				}
+			});
+
+
+			$toggle.click(function () {
+				$('i').removeClass('is-rotate');
+				$('.js-dropdown-menu').slideUp(200);
+				if ($('+.js-dropdown-menu', this).css('display') == 'none') {
+					$('i', this).addClass('is-rotate');
+					$('+.js-dropdown-menu', this).slideDown(200);
+				}
+			});
+
+		});
+
+		$(function () {
+			$('.is-ac-close').hide();
+			$(".is-ac-click").on("click", function () {
+				if ($(this).children('i').is('.fa-angle-right')) {
+					$(this).children('i')
+						.removeClass('fa-angle-right')
+						.addClass('fa-angle-down');
+				} else {
+					$(this).children('i')
+						.removeClass('fa-angle-down')
+						.addClass('fa-angle-right');
+				}
+				$(this).next().slideToggle(200);
+			});
+
+			$('.is-ac-close').hide();
+			$(".is-ac-bar").on("click", function () {
+
+				if ($(this).find('i').is('.fa-caret-down')) {
+
+					$(this).find('i')
+						.removeClass()
+						.addClass('fa fa-caret-up');
+				} else {
+					$(this).find('i')
+						.removeClass()
+						.addClass('fa fa-caret-down');
+				}
+				$(this).next().slideToggle(200);
+			});
+		});
+
+
+
+
+		//---------------------------------------------------
+		// ▼　tab
+		//---------------------------------------------------
+		$(function () {
+			var rwdTab = $('.c-tab'),
+				switchPoint = 768,
+				fadeSpeed = 300,
+				slideSpeed = 300;
+
+			var tabBtn = rwdTab.children('.c-tab-panel').children('.c-tab-heading'),
+				contentsArea = rwdTab.children('.c-tab-panel').children('.c-tab-body');
+
+			tabBtn.on('click', function () {
+				if (!$(this).hasClass('c-tab-active')) {
+					tabBtn.removeClass('c-tab-active');
+					$(this).addClass('c-tab-active');
+
+					if (window.innerWidth > switchPoint) {
+						contentsArea.fadeOut(fadeSpeed);
+						$(this).next().fadeIn(fadeSpeed);
+					} else {
+						contentsArea.slideUp(slideSpeed);
+						$(this).next().slideDown(slideSpeed);
+					}
+				}
+			});
+
+			tabBtn.first().click();
+		});
+
+
+
+	</script>
+	<!-- required -->
+	<script type="text/javascript">
+		jQuery(document).ready(function ($) {
+			jQuery('.stellarnav').stellarNav({
+				theme: 'dark',
+				breakpoint: 960,
+				position: 'right',
+
+			});
+			$('.notifyjs-corner').empty();
+		});
+	</script>
+	<!-- required -->
+	<script>
+		$("document").ready(function () {
+
+			$('.dropdown-menu').on('click', function (e) {
+				if ($(this).hasClass('dropdown-menu-form')) {
+					e.stopPropagation();
+				}
+			});
+		});
+
+
+	</script>
+	<script>
+
+		var links = document.querySelectorAll('.ripplelink');
+
+		for (var i = 0, len = links.length; i < len; i++) {
+			links[i].addEventListener('click', function (e) {
+				var targetEl = e.target;
+				var inkEl = targetEl.querySelector('.ink');
+
+				if (inkEl) {
+					inkEl.classList.remove('animate');
+				}
+				else {
+					inkEl = document.createElement('span');
+					inkEl.classList.add('ink');
+					inkEl.style.width = inkEl.style.height = Math.max(targetEl.offsetWidth, targetEl.offsetHeight) + 'px';
+					targetEl.appendChild(inkEl);
+				}
+
+				inkEl.style.left = (e.offsetX - inkEl.offsetWidth / 2) + 'px';
+				inkEl.style.top = (e.offsetY - inkEl.offsetHeight / 2) + 'px';
+				inkEl.classList.add('animate');
+			}, false);
+		}
+	</script>
+	<script type="text/javascript">
+		$(window).scroll(function () {
+			if ($(this).scrollTop() > 250) {
+				$('.header').addClass("sticky");
+			}
+			else {
+				$('.header').removeClass("sticky");
+			}
+		});
+
+
+	</script>
+	<noscript>
+		<p class="NojavaScript">Javascripts is disabled</a></p>
+	</noscript>
+
+
+</div>
+
+<div class="modal fade pop-dgn" id="ViewModal">
+	<div class="modal-dialog  modal-lg">
+		<div class="modal-content ">
+
+			<!-- Modal Header -->
+			<div class="modal-header">
+				<h4 class="modal-title"><i class="fas fa-sticky-note"></i><label id="lbldcname"></label></h4>
+				<button type="button" class="close" data-dismiss="modal">&times;</button>
+			</div>
+			<input type="hidden" value="" id="hdfId" />
+			<input type="hidden" value="" id="hdfAccept" />
+			<input type="hidden" value="" id="hdfStatus" />
+			<!-- Modal body -->
+			<div class="modal-body pl-2 pr-2">
+
+				<div class="row">
+					<div class="col-sm-12">
+						<div class="scroll mxh-264 " id="divContent"></div>
+					</div>
+					<div class="col-sm-12 form-group " style="display:none" id="divrdb">
+						<ul class="list-unstyled radio-btn rdo-block">
+
+							<li class="radio">
+								<input type="radio" onclick="CheckRadio()" id="nothing" class="form-control" name="Status" value="1" />
+								<label for="nothing" class="radio-label">I have nothing to declare</label>
+							</li>
+							<li class="radio">
+								<input type="radio" onclick="CheckRadio()" id="declare" class="form-control" name="Status" value="2" />
+								<label for="declare" class="radio-label">I declare the following interests on behalf of myself and/or my family member:</label>
+							</li>
+						</ul>
+
+					</div>
+				</div>
+				<!-- Modal footer -->
+				<div class="ftr-shw">
+
+
+					<div class="row" id="submit_buttonsdw">
+						<div class="form-group col-sm-12" id="divremark">
+							@*<label>Remark</label>*@
+							<textarea class="form-control h-150" id="txtremark" placeholder="Enter"></textarea>
+						</div>
+
+
+						<div class="col-sm-12" id="divchk">
+							<input type="checkbox" class="newwidth acceptchksdw chknew" id="acceptchksdw" name="">
+							<label for="acceptchksdw">I acknowledge that I have read the above policy and declaration and understand that abiding by the terms of the policy is a condition of my employment at C3 and any violation of the term(s) of the above policy may result in disciplinary action, which may include termination.</label>
+						</div>
+						<div class="col-sm-12 text-center" id="divbutton">
+							<button type="button" id="btnconfirm" onclick="btnconfirm()" class="btn mtr-o-grn btn-l m-0 checkbtnsdw"><i class="fas fa-paper-plane"></i>Submit</button>
+						</div>
+					</div>
+				</div>
+
+			</div>
+		</div>
+	</div>
+</div>

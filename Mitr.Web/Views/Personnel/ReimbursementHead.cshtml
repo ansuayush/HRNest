@@ -1,0 +1,105 @@
+﻿@model Personnels.ReimbursementBooking.ReimbursementHead
+@{
+	var Modify = clsApplicationSetting.GetSessionValue("Modify");
+}
+@{
+	string MenuID = "0";
+	if (ViewBag.MenuID != null)
+	{
+		MenuID = ViewBag.MenuID;
+	}
+}
+<div class="inner-main defult-height pb-0">
+	<h1 class="heading-one">Reimbursement Head</h1>
+	<div class="row">
+		<div class="col-sm-8 form-group">
+			<div class="row">
+			<div class="col-md-3 col-sm-4 form-group">
+				<label>Employee Name </label>
+				<p>@Model.EmployeeName</p>
+			</div>
+			<div class="col-md-3 col-sm-4 form-group">
+				<label>Employee Code </label>
+				<p>@Model.EmployeeCode</p>
+			</div>
+			<div class="col-md-3 col-sm-4 form-group">
+				<label>Location </label>
+				<p>@Model.Location</p>
+			</div>
+			<div class="col-md-3 col-sm-4 form-group">
+				<label>Designation </label>
+				<p>@Model.Designation</p>
+			</div>
+			
+			<div class="col-sm-12 form-group">
+                  <hr>
+                  <span class="hr-aps "><i class="fas fa-signal"></i>Reimbursement Status</span>
+            </div>
+			<div class="col-sm-12 form-group">
+			@Html.EJS().Grid("Grid").DataSource((List<Personnels.ReimbursementBooking.ClaimHead>)Model.claimhead).GridLines(Syncfusion.EJ2.Grids.GridLine.Both).Columns(col =>
+	   		{
+		   col.Field("FYId").Visible(false).Add();
+		   col.Field("EmpId").Visible(false).Add();
+		   col.Field("HeadId").Visible(false).Add();
+		   col.Field("HeadName").HeaderText("Claim Head").Width("100").Add();
+		   col.Field("Entitlement").HeaderText("Entitlement").TextAlign(Syncfusion.EJ2.Grids.TextAlign.Right).Width("90").Format("n").Add();
+		   col.Field("UnderProcess").HeaderText("Under Process").TextAlign(Syncfusion.EJ2.Grids.TextAlign.Right).Width("90").Format("n").Add();
+		   col.Field("PaidAmount").HeaderText("Paid Amount").TextAlign(Syncfusion.EJ2.Grids.TextAlign.Right).Width("90").Format("n").Add();
+		   col.Field("BalanceAmt").HeaderText("Balance Amt").TextAlign(Syncfusion.EJ2.Grids.TextAlign.Right).Width("90").Format("n").Add();
+		   col.HeaderText("Action").TextAlign(Syncfusion.EJ2.Grids.TextAlign.Center).Template("#tmpAction").Width("80").Add();
+	 	  }).Aggregates(
+		  agg =>
+		  {
+			  agg.Columns(new List<Syncfusion.EJ2.Grids.GridAggregateColumn>() {
+					new Syncfusion.EJ2.Grids.GridAggregateColumn() { Field = "Entitlement", Format ="n" , Type = "Sum", FooterTemplate = "Total: ${Sum}" }
+					, new Syncfusion.EJ2.Grids.GridAggregateColumn() { Field = "UnderProcess", Format ="n" ,  Type = "Sum", FooterTemplate = "${Sum}" }
+					, new Syncfusion.EJ2.Grids.GridAggregateColumn() { Field = "PaidAmount", Format ="n" ,  Type = "Sum", FooterTemplate = "${Sum}" }
+					, new Syncfusion.EJ2.Grids.GridAggregateColumn() { Field = "BalanceAmt", Format ="n",   Type = "Sum", FooterTemplate = "${Sum}" }
+				 }).Add();
+		  }
+			).Toolbar(new List<string>() { "Search" }).Render()
+			</div>
+			</div>
+			<div class="col-sm-12 form-group text-center ">
+				<a class="btn cnl-btn" href="@Url.Action("ReimbursementBooking",new { src = clsApplicationSetting.EncryptFriendly(ViewBag.MenuID+"*"+"/Personnel/ReimbursementBooking*"+ Model.FYId) })"><i class="fas fa-arrow-left"></i>Back</a>
+			</div>
+		</div>
+	</div>
+</div>
+
+<script id="tmpAction" type="text/x-template">
+	${if('@Modify' === 'True')}
+		<input type="hidden" name="I" value="${FYId},${HeadId}" />
+		<a onclick="BindEdit(this)"><i class="fas fa-eye"></i>Load Voucher</a>
+	${/if}
+</script>
+<script>
+    function created() {
+        var grid = document.getElementById("Grid").ej2_instances[0];
+        document.getElementById(grid.element.id + "_searchbar").addEventListener('keyup', () => {
+            grid.search(event.target.value)
+        });
+    }
+</script>
+@Html.IncludeVersionedJs(Url.Content("~/assets/design/Scripts/SyncScripts.js"))
+
+@(Html.EJS().ScriptManager())
+
+@section scripts    {
+	@System.Web.Optimization.Scripts.Render("~/bundle/unobtrusivejs")
+
+	@Html.IncludeVersionedJs(Url.Content("~/assets/design/Scripts/ToolTip.js"))
+
+	@Html.IncludeVersionedJs(Url.Content("~/assets/design/Scripts/SyncScripts.js"))
+	@Html.IncludeVersionedJs(Url.Content("~/assets/tableToExcel.js"))
+	<script>
+		function ListAdd(ID) {
+            var ID = ID;
+            var MenuID = Number('@MenuID');
+            ShowLoadingDialog();
+			var url = "/Personnel/ReimbLoadVoucher?src=" + EncryptQueryStringJSON(MenuID + "*" + "/Personnel/ReimbLoadVoucher" + "*" + ID);
+            window.location.href = url;
+		}
+	</script>
+}
+

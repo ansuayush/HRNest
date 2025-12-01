@@ -1,0 +1,89 @@
+﻿@model ListTabs
+@section style{
+    @System.Web.Optimization.Styles.Render("~/bundle/dataTablecss")
+}
+@{
+    string MenuID = "0";
+    if (ViewBag.MenuID != null)
+    {
+        MenuID = ViewBag.MenuID;
+    }
+}
+<div class="inner-main">
+    <div class="right_col" role="main">
+        @Html.Partial("ListHeader_Partial", "Employee Salary")
+
+        <input type="hidden" id="hdnAddUrl" name="hdnAddUrl" value="@Url.Action("AddEmployeeSalary",new { src = clsApplicationSetting.EncryptFriendly(ViewBag.MenuID+"*"+"/SalaryStructure/AddEmployeeSalary*0*0*0*New") })" />
+
+        @using (Ajax.BeginForm("_EmployeeSalaryList", "SalaryStructure",
+           new { src = clsApplicationSetting.EncryptQueryString(ViewBag.MenuID.ToString() + "*/SalaryStructure/_EmployeeSalaryList") },
+           new AjaxOptions { HttpMethod = "POST", OnSuccess = "BindTarget" },
+       new { @id = "_EmployeeSalaryListFrom" })
+       )
+        {
+
+            <div class="tab-main ">
+                <div class="row text-clr">
+                    <div class="col-md-12">
+                        <ul id="tabs" class="nav nav-tabs " role="tablist">
+                            <li class="nav-item"> <a tabvalue="0" class="nav-link active ripplelink AnchorApproval" data-toggle="tab" role="tab"><i class="far fa-clock"></i>Live Employee</a> </li>
+                            <li class="nav-item"> <a tabvalue="1" class="nav-link ripplelink AnchorApproval" data-toggle="tab" role="tab"><i class="fas fa-database"></i>Alumni</a> </li>                            
+
+                        </ul>
+                    </div>
+                    <div style="display:none">
+                           @Html.HiddenFor(model => model.Approve)
+                          <button type="submit" class="btn mtr-g-grn btn-l ripplelink" id="btnSearch" name="Command" value="Search">
+                            <i class="fas fa-search"></i>Search
+                          </button>
+                    </div>
+                </div>
+            </div>
+
+        }
+
+        <div id="TargetDiv"></div>
+    </div>
+</div>
+
+
+@section scripts    {
+
+    @System.Web.Optimization.Scripts.Render("~/bundle/unobtrusivejs")
+
+    @Html.IncludeVersionedJs(Url.Content("~/assets/design/Scripts/ToolTip.js"))
+
+    @Html.IncludeVersionedJs(Url.Content("~/assets/design/Scripts/SyncScripts.js"))
+    <script>
+        $(document).ready(function () {
+            $("#btnSearch").click();
+        });
+        $('.AnchorApproval').on('click', function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+            var att = $(this).attr("tabvalue");
+            $(".AnchorApproval.active").removeClass("active");
+            $(this).addClass("active");
+            $("#Approve").val(att);
+            ShowLoadingDialog();
+            $("#btnSearch").click();
+        });
+
+
+         function BindTarget(args) {
+            CloseLoadingDialog();
+            $("#TargetDiv").empty();
+            $("#TargetDiv").html(args);
+		}
+
+
+               function ListAdd(Empid, ID) {          
+				var ID = Number(ID);
+				var MenuID = Number('@MenuID');
+                ShowLoadingDialog();
+                var url = "/SalaryStructure/AddEmployeeSalary?src=" + EncryptQueryStringJSON(MenuID + "*" + "/SalaryStructure/AddEmployeeSalary" + "*" + Empid +"*"+ID+"*0*Edit");
+                window.location.href = url;
+	}
+
+    </script>
+}

@@ -1,0 +1,487 @@
+﻿
+@{
+    ViewBag.Title = "TrainingCalendar";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+<!-- Start -->
+<div class="inner-main defult-height">
+    <input type="hidden" id="hdnIdToEditRecord" />
+    <div class="row">
+        <div class="col-sm-4 align-self-center"><h1 class="heading-one mb-3">Training Calendar</h1></div>
+        <div class="col-sm-8 text-right">
+            <a href="" data-toggle="modal" onclick="AddTrainingCalendar();"  class="btn mtr-g-grn btn-l ripplelink btnAdd "><i class="fas fa-plus"></i>Add </a>
+        </div>
+    </div>
+
+    <div class="col-md-2 ml-auto form-group">
+        <label>Search</label>
+        <input id="txtsearch" type="text">
+    </div>
+
+    <div class="table-responsive">
+        <table id="tblTrainingCalendar" class="table table-striped table-bordered dt-responsive nowrap tbltick new_width dataTable no-footer">
+            <thead>
+				<tr>
+					<th>S.No </th>
+					<th>Training Type </th>
+					<th>Training Name</th>
+					<th>Tentative Date</th>
+					<th>Training Mode</th>
+					<th>Action</th>
+					<th>Status</th>
+				</tr>
+
+            </thead>
+        </table>
+
+    </div>
+</div>
+<!----- add slot ---->
+<!-- TASK Modal -->
+<div class="modal fade pop-dgn" id="tc">
+    <div class="modal-dialog mdl-lg">
+        <div class="modal-content">
+
+            <!-- Modal Header -->
+            <div class="modal-header blk-gdn-btn">
+                <h4 class="modal-title">Add Training Calendar </h4>
+                <div class="close" data-dismiss="modal">&times;</div>
+            </div>
+
+            <!-- Modal body -->
+            <div class="modal-body p-2">
+                <div class="row">
+                    <div class="col-md-3 col-sm-3 form-group">
+                        <label>Training Type  <sup>*</sup></label>
+                        <select id="ddlTrainingType" class="form-control dpselect MandatoryEdit" placeholder="Enter Title" value="" onchange="TrainingType(); HideErrorMessage(this)">
+                        </select>
+                        <span id="spddlTrainingType" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+                    </div>
+
+                    <div class="col-md-9 col-sm-9 form-group">
+                        <label>Training Description  <sup>*</sup> </label>
+                        <input id="txtTrainingDesc" type="text" class="form-control MandatoryEdit" placeholder="Enter" value="" onchange="HideErrorMessage(this)">
+                        <span id="sptxtTrainingDesc" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+                    </div>
+
+					<div class="col-md-3 col-sm-3 form-group">
+						<label>Training Name  <sup>*</sup> </label>
+						<input type="hidden" id="hddUserId" class="hdnRecordExit" />@*onblur="CheckTrainingNameDetailsExists(this)"*@
+						<input id="txtTrainingName" type="text" class="form-control MandatoryEdit" placeholder="Enter Title" value="" onchange="HideErrorMessage(this)">
+						<label id="lblTrainingNameConfirmation"></label>
+						<span id="sptxtTrainingName" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+					</div>
+                    <div class="col-md-3 col-sm-3 form-group">
+                        <label>Tentative From Date  <sup>*</sup></label>                      
+                        <input class="form-control  datepicker MandatoryEdit" autocomplete="off" placeholder="dd/mm/yyyy" id="txtFromDate" onchange="HideErrorMessage(this)">
+                        <span id="sptxtFromDate" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+                    </div>
+                    <div class="col-md-3 col-sm-3 form-group">
+                        <label>Tentative To Date  <sup>*</sup></label>
+                        <input id="txtToDate" class="form-control  datepicker MandatoryEdit" autocomplete="off" placeholder="dd/mm/yyyy" onchange="HideErrorMessage(this)">
+                        <span id="sptxtToDate" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+                    </div>
+
+                    <div class="col-md-3 col-sm-3 form-group">
+                        <label>Training Mode <sup>*</sup></label>
+                        <select id="ddlTrainingMode" class="form-control dpselect MandatoryEdit" onchange="TrainingMode(); HideErrorMessage(this)">
+                        </select>
+                        <span id="spddlTrainingMode" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+                    </div>
+
+                    <div class="col-md-12 col-sm-12 form-group Physical box" id="divLocation" style="display:none">
+                        <label>Location  <sup>*</sup> </label>
+                        <input id="txtlocation" type="text" class="form-control " placeholder="Enter" value="" onchange="HideErrorMessage(this)">
+                        <span id="sptxtlocation" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+                    </div>
+
+                    <div class="col-md-12 col-sm-12 form-group  Virtual box" id="divLink" style="display:none">
+                        <label>Link<sup>*</sup> </label>
+                        <input id="txtlink" type="url" class="form-control " placeholder="Enter" value="" onchange="HideErrorMessage(this)">
+                        <span id="sptxtlink" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+                    </div>
+                    <div class="col-sm-12  text-center mt-2">
+                        <button type="button" class="btn cnl-btn ripplelink  pull-right" data-dismiss="modal"><i class="fas fa-times"></i> Close</button>
+                        @*<button type="submit" class="btn mtr-o-grn"><i class="fas fa-save" aria-hidden="true" onclick="SaveTrainingCalendar()"></i> Save</button>*@
+                        <button type="submit" class="btn mtr-o-grn" name="Command" value="Add" onclick="ShowandCloseLoader(); SaveTrainingCalendar();"><i class="fas fa-save"></i>Save</button>
+                    </div>
+
+                </div>
+
+
+
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal" id="ModelAddTrainingCalendar">
+	<div class="modal-dialog mdl-lg">
+		<div class="modal-content">
+
+			<!-- Modal Header -->
+			<div class="modal-header blk-gdn-btn">
+				<h4 class="modal-title">Add Training Calendar </h4>
+				<div class="close" data-dismiss="modal">&times;</div>
+			</div>
+
+			<!-- Modal body -->
+			<div class="modal-body p-2">
+				<div class="row">
+					<div class="col-md-3 col-sm-3 form-group">
+						<label>Training Type  <sup>*</sup></label>
+						<select id="ddlAddTrainingType" class="form-control dpselect MandatoryAdd" onchange="AddTrainingType(); HideErrorMessage(this)">
+						</select>
+						<span id="spddlAddTrainingType" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+					</div>
+
+					<div class="col-md-9 col-sm-9 form-group">
+						<label>Training Description  <sup>*</sup> </label>
+						<input id="txtAddTrainingDesc" type="text" class="form-control MandatoryAdd"  onchange="HideErrorMessage(this)">
+						<span id="sptxtAddTrainingDesc" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+					</div>
+
+					<div class="col-md-3 col-sm-3 form-group">
+						<label>Training Name  <sup>*</sup> </label>
+						<input type="hidden" id="hddAddUserId" class="hdnRecordExit" />
+						<input id="txtAddTrainingName" type="text" class="form-control MandatoryAdd" onblur="AddCheckTrainingNameDetailsExists(this)"  onchange="HideErrorMessage(this)">
+						<label id="lblAddTrainingNameConfirmation"></label>
+						<span id="sptxtAddTrainingName" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+					</div>
+					<div class="col-md-3 col-sm-3 form-group">
+						<label>Tentative From Date  <sup>*</sup></label>
+						<input class="form-control  datepicker MandatoryAdd" autocomplete="off"  id="txtAddFromDate" onchange="HideErrorMessage(this)">
+						<span id="sptxtAddFromDate" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+					</div>
+					<div class="col-md-3 col-sm-3 form-group">
+						<label>Tentative To Date  <sup>*</sup></label>
+						<input id="txtAddToDate" class="form-control  datepicker MandatoryAdd" autocomplete="off"  onchange="HideErrorMessage(this)">
+						<span id="sptxtAddToDate" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+					</div>
+
+					<div class="col-md-3 col-sm-3 form-group">
+						<label>Training Mode <sup>*</sup></label>
+						<select id="ddlAddTrainingMode" class="form-control dpselect MandatoryAdd" onchange="AddTrainingMode(); HideErrorMessage(this)">
+						</select>
+						<span id="spddlAddTrainingMode" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+					</div>
+
+					<div class="col-md-12 col-sm-12 form-group Physical box" id="divAddLocation" style="display:none">
+						<label>Location  <sup>*</sup> </label>
+						<input id="txtAddlocation" type="text" class="form-control " placeholder="Enter" value="" onchange="HideErrorMessage(this)">
+						<span id="sptxtAddlocation" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+					</div>
+
+					<div class="col-md-12 col-sm-12 form-group  Virtual box" id="divAddLink" style="display:none">
+						<label>Link<sup>*</sup> </label>
+						<input id="txtAddlink" type="url" class="form-control " placeholder="Enter" value="" onchange="HideErrorMessage(this)">
+						<span id="sptxtAddlink" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+					</div>
+					<div class="col-sm-12  text-center mt-2">
+						<button type="button" class="btn cnl-btn ripplelink  pull-right" data-dismiss="modal"><i class="fas fa-times"></i> Close</button>
+						@*<button type="submit" class="btn mtr-o-grn"><i class="fas fa-save" aria-hidden="true" onclick="SaveTrainingCalendar()"></i> Save</button>*@
+						<button type="submit" class="btn mtr-o-grn" name="Command" value="Add" onclick="ShowandCloseLoader(); AddSaveTrainingCalendar();"><i class="fas fa-save"></i>Save</button>
+					</div>
+
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+@section scripts    {
+    @System.Web.Optimization.Scripts.Render("~/bundle/unobtrusivejs")
+    @System.Web.Optimization.Scripts.Render("~/bundle/dataTablesjs")
+    <script src="~/assets/design/Scripts/AddInit.js?v=@clsApplicationSetting.GetWebConfigValue("Version")"></script>
+    <script src="~/Areas/Capacity/DevScript/TrainingCalendar.js"></script>
+
+    <script>
+		 var IsEDUser = '@ViewBag.IsED';
+       var loggedinUserid = '@ViewBag.UserId';
+		var loggedinUserName = '@ViewBag.UserName';
+		var UserGrade = '@ViewBag.Grade';
+        var IsPM = '@ViewBag.IsPM';
+            var TraingCalendarID =   '@ViewBag.Id';
+    </script>
+}
+<script>
+    $(function () {
+        $("#datepicker").datepicker({
+            autoclose: true,
+            todayHighlight: true
+        }).datepicker('update', new Date());
+    });
+
+</script>
+<script>
+    // JavaScript Document
+    $(function () {
+        $('#js-nav-toggle').click(function (e) {
+            e.preventDefault();
+            $("html").toggleClass("is-sideopen");
+            $("#js-nav-toggle").toggleClass("is-active");
+        });
+
+        var $content = $('.l-contents');
+        var $header = $('.l-header');
+
+
+        $content.click(function () {
+            $("html").removeClass("is-sideopen");
+        });
+
+
+        $header.click(function () {
+            $("html").removeClass("is-sideopen");
+        });
+
+
+    });
+
+
+    $(function () {
+
+        var $dropdown = $('.js-dropdown');
+        var $content = $('.l-contents');
+        var $toggle = $('#js-nav-toggle');
+
+
+        $('.js-dropdown-menu').hide();
+        $dropdown.click(function () {
+            $('i').removeClass('is-rotate');
+            $('.js-dropdown-menu').slideUp(200);
+            if ($('+.js-dropdown-menu', this).css('display') == 'none') {
+                $('i', this).addClass('is-rotate');
+                $('+.js-dropdown-menu', this).slideDown(200);
+            }
+        });
+
+
+        $content.click(function () {
+            $('i').removeClass('is-rotate');
+            $('.js-dropdown-menu').slideUp(200);
+            if ($('+.js-dropdown-menu', this).css('display') == 'none') {
+                $('i', this).addClass('is-rotate');
+                $('+.js-dropdown-menu', this).slideDown(200);
+            }
+        });
+
+
+        $toggle.click(function () {
+            $('i').removeClass('is-rotate');
+            $('.js-dropdown-menu').slideUp(200);
+            if ($('+.js-dropdown-menu', this).css('display') == 'none') {
+                $('i', this).addClass('is-rotate');
+                $('+.js-dropdown-menu', this).slideDown(200);
+            }
+        });
+
+    });
+
+    $(function () {
+        $('.is-ac-close').hide();
+        $(".is-ac-click").on("click", function () {
+            if ($(this).children('i').is('.fa-angle-right')) {
+                $(this).children('i')
+                    .removeClass('fa-angle-right')
+                    .addClass('fa-angle-down');
+            } else {
+                $(this).children('i')
+                    .removeClass('fa-angle-down')
+                    .addClass('fa-angle-right');
+            }
+            $(this).next().slideToggle(200);
+        });
+
+        $('.is-ac-close').hide();
+        $(".is-ac-bar").on("click", function () {
+
+            if ($(this).find('i').is('.fa-caret-down')) {
+
+                $(this).find('i')
+                    .removeClass()
+                    .addClass('fa fa-caret-up');
+            } else {
+                $(this).find('i')
+                    .removeClass()
+                    .addClass('fa fa-caret-down');
+            }
+            $(this).next().slideToggle(200);
+        });
+    });
+
+
+
+
+    //---------------------------------------------------
+    // ▼　tab
+    //---------------------------------------------------
+    $(function () {
+        var rwdTab = $('.c-tab'),
+            switchPoint = 768,
+            fadeSpeed = 300,
+            slideSpeed = 300;
+
+        var tabBtn = rwdTab.children('.c-tab-panel').children('.c-tab-heading'),
+            contentsArea = rwdTab.children('.c-tab-panel').children('.c-tab-body');
+
+        tabBtn.on('click', function () {
+            if (!$(this).hasClass('c-tab-active')) {
+                tabBtn.removeClass('c-tab-active');
+                $(this).addClass('c-tab-active');
+
+                if (window.innerWidth > switchPoint) {
+                    contentsArea.fadeOut(fadeSpeed);
+                    $(this).next().fadeIn(fadeSpeed);
+                } else {
+                    contentsArea.slideUp(slideSpeed);
+                    $(this).next().slideDown(slideSpeed);
+                }
+            }
+        });
+
+        tabBtn.first().click();
+    });
+
+
+
+</script>
+<!-- required -->
+
+<script type="text/javascript" src="https://mitr2.c3india.org/assets/design/js/stellarnav.min.js"></script>
+<script type="text/javascript">
+    jQuery(document).ready(function ($) {
+        jQuery('.stellarnav').stellarNav({
+            theme: 'dark',
+            breakpoint: 960,
+            position: 'right',
+
+        });
+    });
+</script>
+<!-- required -->
+<script>
+    $("document").ready(function () {
+
+        $('.dropdown-menu').on('click', function (e) {
+            if ($(this).hasClass('dropdown-menu-form')) {
+                e.stopPropagation();
+            }
+        });
+    });
+
+
+</script>
+<script>
+
+    var links = document.querySelectorAll('.ripplelink');
+
+    for (var i = 0, len = links.length; i < len; i++) {
+        links[i].addEventListener('click', function (e) {
+            var targetEl = e.target;
+            var inkEl = targetEl.querySelector('.ink');
+
+            if (inkEl) {
+                inkEl.classList.remove('animate');
+            }
+            else {
+                inkEl = document.createElement('span');
+                inkEl.classList.add('ink');
+                inkEl.style.width = inkEl.style.height = Math.max(targetEl.offsetWidth, targetEl.offsetHeight) + 'px';
+                targetEl.appendChild(inkEl);
+            }
+
+            inkEl.style.left = (e.offsetX - inkEl.offsetWidth / 2) + 'px';
+            inkEl.style.top = (e.offsetY - inkEl.offsetHeight / 2) + 'px';
+            inkEl.classList.add('animate');
+        }, false);
+    }
+</script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $(".dpselect").select2();
+
+    });
+</script>
+<script type="text/javascript">
+    $(window).scroll(function () {
+        if ($(this).scrollTop() > 50) {
+            $('.scrolltop:hidden').stop(true, true).fadeIn();
+        } else {
+            $('.scrolltop').stop(true, true).fadeOut();
+        }
+    });
+    $(function () { $(".scroll-btm").click(function () { $("html,body").animate({ scrollTop: $(".thetop").offset().top }, ""); return false }) })
+</script>
+<script>
+    //$(document).ready(function () {
+    //    $('[data-toggle="tooltip"]').tooltip();
+    //});
+
+    $(function () {
+        $('#finselector').change(function () {
+            $('.finyear').hide();
+            $('#' + $(this).val()).show();
+        });
+    });
+
+</script>
+<script type="text/javascript">
+    function formChoice(x) {
+        if (x == 0) {
+            $('#field1').css('display', 'block');
+            $('#field2').css('display', 'none');
+        } else {
+            $('#field1').css('display', 'none');
+            $('#field2').css('display', 'block');
+        }
+    }
+
+</script>
+<script type="text/javascript">
+    /*$('[data-toggle="tooltip"]').tooltip();*/
+
+    //$("[data-toggle=popover]").popover({
+    //    html: true,
+    //    trigger: 'hover',
+    //    content: function () {
+    //        var content = $(this).attr("data-popover-content");
+    //        return $(content).children(".popover-body").html();
+    //    }
+    //});
+</script>
+<script type="text/javascript">
+    $('#membertype ').on('change', function () {
+        $('#internal').css('display', 'none');
+        if ($(this).val() === 'internal') {
+            $('#internal').css('display', 'block');
+        }
+
+        $('#external').css('display', 'none');
+        if ($(this).val() === 'external') {
+            $('#external').css('display', 'block');
+        }
+    });
+
+</script>
+
+<script>
+    $(document).ready(function () {
+        $("select").change(function () {
+            $(this).find("option:selected").each(function () {
+                if ($(this).attr("value") == "Virtual") {
+                    $(".box").not(".Virtual").hide();
+                    $(".Virtual").show();
+                }
+                else if ($(this).attr("value") == "Physical") {
+                    $(".box").not(".Physical").hide();
+                    $(".Physical").show();
+                }
+
+                else {
+                    $(".box").hide();
+                }
+            });
+        }).change();
+    });
+</script>

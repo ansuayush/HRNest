@@ -1,0 +1,303 @@
+﻿
+@model Mitr.Models.Consultant
+@using System.Data
+
+@Html.Partial("HeaderMsg_Partial")
+
+@using (Html.BeginForm("ConsultantAdd", "Master",
+new { src = ViewBag.src }, FormMethod.Post,
+new
+{
+    name = "ConsultantAddForm",
+    id = "ConsultantAddForm",
+    @class = "form-horizontal form-label-left input_mask",
+    enctype = "multipart/form-data"
+}))
+{
+
+    @Html.AntiForgeryToken()
+    @Html.HiddenFor(x => Model.ConsultantID)
+
+    <h1 class="heading-one mb-2">Consultant Details</h1>
+
+    <div class="inner-main mb-4 p-0">
+        <div class="header-two"><i class="fas fa-info"></i> Information </div>
+        <div class="pl-2 pr-2 text-clr">
+            <div class="row">
+                <div class="col-sm-12 form-group ">
+                    <ul class="list-unstyled radio-btn">
+                        <li><strong>Consultant type</strong><sup>*</sup></li>
+                        <li class="radio">
+                            <input type="radio" onclick="CheckRadio()" id="individual" class="form-control" @(string.IsNullOrEmpty(Model.Status) ? "checked" : Model.Status == "Individual" ? "checked" : "") name="Status" value="Individual" />
+                            <label for="individual" class="radio-label">Individual</label>
+                        </li>
+                        <li class="radio">
+                            <input type="radio" onclick="CheckRadio()" id="firm" class="form-control" @(Model.Status == "Firm" ? "checked" : "") name="Status" value="Firm" />
+                            <label for="firm" class="radio-label">Firm</label>
+                        </li>
+                    </ul>
+                    <hr class="frline mb-0">
+                </div>
+                <div class="col-lg-2 col-md-3 col-sm-6  form-group">
+                    <label>Title</label>
+                    <select class="form-control applyselect" id="@Html.IdFor(model => model.Title)" name="@Html.NameFor(model => model.Title)"></select>
+                    @Html.ValidationMessageFor(model => model.Title, "", new { @class = "text-danger" })
+                </div>
+                <div class="col-lg-2 col-md-3 col-sm-6  form-group">
+                    <label>Consultant Name<sup>*</sup></label>
+                    @Html.TextBoxFor(model => model.ConsultantName, new { @class = "form-control" })
+                    @Html.ValidationMessageFor(model => model.ConsultantName, "", new { @class = "text-danger" })
+                </div>
+
+                <div class="col-lg-2 col-md-3 col-sm-6  form-group">
+                    <label>Consultant Code <sup>*</sup></label>
+                    @Html.TextBoxFor(model => model.Code, new { @class = "form-control", @readonly = "readonly" })
+                    @Html.ValidationMessageFor(model => model.Code, "", new { @class = "text-danger" })
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="inner-main mb-4 p-0">
+        <div class="header-two"><i class="fas fa-globe"></i>Consultant Details</div>
+        <div class="pl-2 pr-2 text-clr">
+            <div class="row">
+                <div class="col-lg-2 col-md-3 col-sm-6  form-group" id="divFathers">
+                    <label>Father's/Husband's Name</label>
+                    @Html.TextBoxFor(model => model.FatherName, new { @class = "form-control" })
+                    @Html.ValidationMessageFor(model => model.FatherName, "", new { @class = "text-danger" })
+
+
+                </div>
+                <div class="col-lg-2 col-md-3 col-sm-6  form-group isforfirm">
+                    <label>Contact Person</label>
+                    @Html.TextBoxFor(model => model.ContactPerson, new { @class = "form-control" })
+                    @Html.ValidationMessageFor(model => model.ContactPerson, "", new { @class = "text-danger" })
+
+                </div>
+                <div class="col-lg-2 col-md-3 col-sm-6  form-group isforfirm">
+
+                    <label>Designation</label>
+                    @Html.TextBoxFor(model => model.Design, new { @class = "form-control" })
+                    @Html.ValidationMessageFor(model => model.Design, "", new { @class = "text-danger" })
+
+
+                </div>
+
+
+
+                <div class="col-lg-2 col-md-3 col-sm-6  form-group">
+                    <label>Phone/Mobile No.<sup>*</sup> </label>
+                    @Html.TextBoxFor(model => model.PhoneNO, new { @class = "form-control" })
+                    @Html.ValidationMessageFor(model => model.PhoneNO, "", new { @class = "text-danger" })
+                </div>
+
+                <div class="col-lg-2 col-md-3 col-sm-6  form-group">
+
+                    <label>Email</label>
+                    @Html.TextBoxFor(model => model.Email, new { @class = "form-control" })
+                    @Html.ValidationMessageFor(model => model.Email, "", new { @class = "text-danger" })
+
+
+                </div>
+                <div class="col-lg-2 col-md-3 col-sm-6  form-group isforfirm">
+                    <label>Name On Pan Card	</label>
+                    @Html.TextBoxFor(model => model.PanName, new { @class = "form-control" })
+                    @Html.ValidationMessageFor(model => model.PanName, "", new { @class = "text-danger" })
+
+                </div>
+                <div class="col-lg-2 col-md-3 col-sm-4 form-group">
+
+                    <label>Pan No <sup>*</sup> </label>
+                    @Html.TextBoxFor(model => model.PanNo, new { @class = "form-control" })
+                    @Html.ValidationMessageFor(model => model.PanNo, "", new { @class = "text-danger" })
+
+
+                </div>
+                <div class="col-lg-6 col-md-6   form-group">
+
+                    <label>Local Address <sup>*</sup></label>
+                    @Html.TextAreaFor(model => model.LocalAddress, new { @class = "form-control" })
+                    @Html.ValidationMessageFor(model => model.LocalAddress, "", new { @class = "text-danger" })
+
+
+
+                </div>
+                <div class="col-lg-6 col-md-6 form-group">
+                    <label>Permanent Address </label>
+                    @Html.TextAreaFor(model => model.PerAddress, new { @class = "form-control" })
+                    @Html.ValidationMessageFor(model => model.PerAddress, "", new { @class = "text-danger" })
+
+                </div>
+
+                <div class="col-lg-2 col-md-3 col-sm-4 form-group">
+
+                    <label>Location</label>
+                    @Html.TextBoxFor(model => model.Location, new { @class = "form-control" })
+                    @Html.ValidationMessageFor(model => model.Location, "", new { @class = "text-danger" })
+
+
+                </div>
+
+                <div class="col-lg-2 col-md-3 col-sm-6 form-group">
+                    <label>Payment Mode</label>
+                    <select class="form-control" id="@Html.IdFor(model => model.PayMode)" name="@Html.NameFor(model => model.PayMode)" onchange="ShowBank()">
+                        <option @(Model.PayMode == "NEFT" ? "selected" : "") value="NEFT">NEFT</option>
+                        <option @(Model.PayMode == "Cheque" ? "selected" : "") value="Cheque">Cheque</option>
+                    </select>
+                </div>
+
+
+                <div class="col-lg-2 col-md-3 col-sm-6 form-group">
+
+                    <label>Thematic Area</label>
+                    <select class="form-control applyselect" multiple id="@Html.IdFor(model => model.ThematicAreaID)" name="@Html.NameFor(model => model.ThematicAreaID)">
+                        @if (Model.ThematicAreaData != null)
+                        {
+                            foreach (DataRow item in Model.ThematicAreaData.Tables[0].Rows)
+                            {
+
+                                <option @(!string.IsNullOrEmpty(Model.LinkedThematicArea) && ("," + Model.LinkedThematicArea + ",").Contains("," + item["ID"].ToString() + ",") ? "selected" : "") value="@item["ID"]">@item["ThematicArea_Code"]</option>
+                            }
+                        }
+                    </select>
+                </div>
+
+
+                <div class="col-lg-2 col-md-3 col-sm-6 form-group">
+                    <label>Upload Profile </label>
+                    @Html.HiddenFor(modal => modal.AttachmentID)
+                    <div id="divAttachmentShow" style="@(Model.AttachmentID > 0 ? "" : "display:none")">
+
+                        <a class="achor-link" target="_blank" href="~/Attachments/@Model.AttachmentID@Model.ContentType">@Model.FileName</a>
+
+                        <a style="color:red;cursor:pointer;" onclick="DeleteFile(@Model.AttachmentID);"><i class="fa fa-times" aria-hidden="true"></i></a>
+
+                    </div>
+
+                    <div id="divAttachmentUpload" style="@(Model.AttachmentID > 0 ? "display:none" : "")">
+                        @Html.TextBoxFor(model => model.UploadCV, new { @class = "form-control", @type = "file", @onchange = "ValidateFile('UploadCV')" })
+                        @Html.ValidationMessageFor(model => model.UploadCV, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+    <div class="inner-main mb-4 p-0">
+        <div class="header-two"><i class="fas fa-university"></i>Bank Details</div>
+        <div class="pl-2 pr-2 text-clr">
+
+            <div class="row">
+                <div class="col-lg-2 col-md-3 col-sm-6  form-group">
+
+                    <label>Bank A/C No</label>
+                    @Html.TextBoxFor(model => model.AccountNo, new { @class = "form-control" })
+                    @Html.ValidationMessageFor(model => model.AccountNo, "", new { @class = "text-danger" })
+
+                </div>
+
+
+                <div class="col-lg-2 col-md-3 col-sm-6  form-group">
+                    <label>Bank Name & Address</label>
+                    @Html.TextBoxFor(model => model.BankName, new { @class = "form-control" })
+                    @Html.ValidationMessageFor(model => model.BankName, "", new { @class = "text-danger" })
+
+                </div>
+
+                <div class="col-lg-2 col-md-3 col-sm-6  form-group">
+                    <label>IFSC Code</label>
+                    @Html.TextBoxFor(model => model.IFSCCode, new { @class = "form-control" })
+                    @Html.ValidationMessageFor(model => model.IFSCCode, "", new { @class = "text-danger" })
+
+                </div>
+
+                <div class="col-lg-2 col-md-3 col-sm-6  form-group">
+                    <label>Account Name</label>
+                    @Html.TextBoxFor(model => model.AccountName, new { @class = "form-control" })
+                    @Html.ValidationMessageFor(model => model.AccountName, "", new { @class = "text-danger" })
+
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-12 text-center">
+
+            @if (Model.ConsultantID > 0)
+            {
+                <button type="submit" class="btn mtr-o-grn btn-l ripplelink pull-right" name="Command" value="Add"><i class="fa fa-paper-plane" aria-hidden="true"></i> Update</button>
+            }
+            else
+            {
+                <button type="submit" class="btn mtr-o-grn btn-l ripplelink pull-right" name="Command" value="Add"><i class="fa fa-paper-plane" aria-hidden="true"></i> Submit</button>
+            }
+            <button type="button" class="btn cnl-btn ripplelink  pull-right" onclick="ShowLoadingDialog();window.location='@Url.Action("ConsultantList", new { src = clsApplicationSetting.EncryptQueryString(ViewBag.MenuID.ToString() + "*/Master/ConsultantList*0")  })';"><i class="fas fa-times"></i> Cancel</button>
+        </div>
+    </div>
+
+}
+
+@section scripts    {
+
+    @System.Web.Optimization.Scripts.Render("~/bundle/unobtrusivejs")
+    @Html.IncludeVersionedJs(Url.Content("~/assets/design/Scripts/AddInit.js"))
+    <script>
+    $(document).ready(function () {
+            CheckRadio();
+            ShowBank();
+    });
+
+      function DeleteFile() {
+            ConfirmMsgBox('Do you really Want to Change Attachemnt?', '', function () {
+                $("#divAttachmentUpload").show();
+                $("#divAttachmentShow").hide();
+                $("#AttachmentID").val('0');
+            });
+    }
+
+     function ShowBank() {
+            var PaymentMode = $("#PayMode option:selected").val();
+            if (PaymentMode == "NEFT") {
+                $("#divBank").show();
+            }
+            else {
+                $("#divBank").hide();
+            }
+        }
+    function CheckRadio()
+        {
+            var Radio = $("input[name='Status']:checked").val()
+            $("#Title").empty();
+            var Title = '@Model.Title'
+            if (Radio == "Individual") {
+                $("#Title").append(
+                    $('<option>', { value: "Mr.", text: "Mr." }),
+                    $('<option>', { value: "Ms.", text: "Ms." }),
+                    $('<option>', { value: "Dr.", text: "Dr." })
+                );
+                $("#divFathers").show();
+                $(".isforfirm").hide();
+
+            }
+            else {
+                $("#Title").append(
+                    $('<option>', { value: "M/S", text: "M/S" })
+                );
+                $("#divFathers").hide();
+
+                $(".isforfirm").show();
+            }
+            $("#Title").val(Title);
+        }
+
+        $('#ConsultantName').blur(function () {
+            var I = $("#ConsultantID").val();
+            CheckDuplicateJson('Consultant Name', I, this);
+        });
+    </script>
+}

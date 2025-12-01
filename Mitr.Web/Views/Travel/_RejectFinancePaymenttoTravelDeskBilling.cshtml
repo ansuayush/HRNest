@@ -1,0 +1,85 @@
+﻿
+@using Mitr.CommonClass;
+@using Mitr.Models;
+@model Mitr.Models.TravelDeskToFinaceCard.TravelDeskToFinance
+<div id="Reject" class="card tab-pane fade show active" role="tabpanel" aria-labelledby="tab-C">
+	<div class="card-header" role="tab" id="heading-C">
+		<h5 class="mb-0"> <a class="collapsed" data-toggle="collapse" href="#collapse-C" aria-expanded="false" aria-controls="collapse-B"><i class="fa fa-check" aria-hidden="true"></i> Completed</a> </h5>
+	</div>
+	<div id="collapse-C" class="collapse" data-parent="#content" role="tabpanel" aria-labelledby="heading-C">
+		<div class="card-body p-0">
+			<table id="PendingTable" class="table table-striped">
+				<thead>
+					<tr>
+						<th width="20" rowspan="2">SR.No</th>
+						<th rowspan="2" width="80">Request No		</th>
+						<th rowspan="2" width="90">Request Date		</th>
+						<th rowspan="2" width="120">Traveller's Name</th>
+
+						<th rowspan="2" width="110">Vendor	</th>
+						<th rowspan="2">Description	</th>
+						<th rowspan="2" width="200">Project Code</th>
+						<th rowspan="2" width="120">Bill No/Credit No	</th>
+						<th rowspan="2" width="120">Bill Date/Credit Date</th>
+						<th colspan="2" class="text-center" width="150">Bill Amount</th>
+						@*<th rowspan="2" width="80">Paid Amount <sup class="red-clr">*</sup>	</th>
+							 <th rowspan="2" width="120">Paid Date  <sup class="red-clr">*</sup>	</th>
+							<th rowspan="2" width="120">UTR No</th>*@
+						<th rowspan="2" width="120">Reason*</th>
+						<th rowspan="2" width="100">Action</th>
+
+
+					</tr>
+
+					<tr>
+						<th width="100">Payable</th>
+						<th width="70">Refund</th>
+
+					</tr>
+				</thead>
+				<tbody>
+					@{ int Count = 0;}
+					@foreach (var item in Model.listTravelDeskToFinance_Card.Where(x => x.Approved == 2))
+					{
+						Count++;
+					<tr>
+						<td>@Count<</td>
+						<td>TRN-@item.req_no</td>
+						<td>@item.req_Date</td>
+						<td>@item.traveller_name</td>
+						<td>@item.BookBy</td>
+						<td>@item.DocumentType</td>
+						<td>@item.doc_no</td>
+						<td>@item.BillNo</td>
+						<td>@item.Billdate</td>
+						<td class="text-right">
+							@string.Format("{0:c}", @item.Amount)
+
+						</td>
+						<td class="text-right">
+							@string.Format("{0:c}", @item.RefundAmount)
+
+						</td>
+						@*<td class="text-right">
+			@string.Format("{0:c}", @item.FinanceAmount)
+		</td>
+		<td>@item.Financeentrydate</td>*@
+						<td>
+							<p class="ellipsis w-250 m-0">@item.reason</p>
+							<i class="fas fa-info-circle td-info" data-toggle="tooltip" data-placement="right" data-original-title="@item.reason"></i>
+						</td>
+						<td><a href="@Url.Action("FinancePaymenttoTravelDeskBillingPrint",new { src = clsApplicationSetting.EncryptFriendly(ViewBag.MenuID+"*"+"/Travel/FinancePaymenttoTravelDeskBillingPrint*"+item.ReqId+"*"+item.TravelDocID) })" class="green-clr"><i class="fas fa-print"></i>Print</a></td>
+
+					</tr>
+					}
+				</tbody>
+			</table>
+		</div>
+	</div>
+</div>
+
+<script>
+$(document).ready(function(){
+  $('[data-toggle="tooltip"]').tooltip();
+});
+</script>

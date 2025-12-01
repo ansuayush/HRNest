@@ -1,0 +1,92 @@
+﻿@model IList<PMS.KPA.List>
+@{
+    var Modify = clsApplicationSetting.GetSessionValue("Modify");
+    int isdeleted = 0, Approved = 0;
+    string ApprovedStatus = "", Remarks = "";
+    if (Model != null)
+    {
+
+        ApprovedStatus = Model.Select(x => x.ApprovedStatus).FirstOrDefault();
+        Remarks = Model.Select(x => x.Remarks).FirstOrDefault();
+        if (Model.Any(x => x.isdeleted == 2))
+        {
+            isdeleted = 2;
+        }
+        if (Model.Any(x => x.Approved == 1))
+        {
+            Approved = 1;
+        }
+        else if (Model.Any(x => x.Approved == 2))
+        {
+            Approved = 2;
+        }
+    }
+}
+<div class="row">
+    <input type="hidden" id="hdnApproved" value="@Approved" />
+    <input type="hidden" id="hdnisdeleted" value="@isdeleted" />
+    <input type="hidden" id="hdnApprovedStatus" value="@ApprovedStatus" />
+    <input type="hidden" id="hdnRemarks" value="@Remarks" />
+    <input type="hidden" id="hdnRowCount" value="@Model.Count()" />
+    <div class="col-sm-12">
+
+        <div class="control-section">
+     
+            @Html.EJS().Grid("Grid").DataSource((List<PMS.KPA.List>)Model).GridLines(Syncfusion.EJ2.Grids.GridLine.Both).Columns(col =>
+       {
+           col.Field("PMS_KPAID").Visible(false).Add();
+           col.Field("RowNum").HeaderText("SNo.").Width("30").Add();
+           col.Field("Priority").HeaderText("Priority").Width("80").Add();
+           col.Field("Area").HeaderText("Key Performance Area").Width("300").Add();
+           col.Field("UOMName").HeaderText("UOM").Width("160").Add();
+           col.Field("UOMType").HeaderText("UOM Type").Width("80").Add();
+           col.Field("IncType").HeaderText("KPA Type").Width("80").Add();
+           col.Field("AutoRating").HeaderText("Auto Rating").Width("80").Add();
+           col.Field("IsProbation").HeaderText("Probation").Width("80").Add();
+           col.Field("IsActive").HeaderText("IsActive").Width("80").Add();
+           col.HeaderText("Action").TextAlign(Syncfusion.EJ2.Grids.TextAlign.Center).Template("#tmpAction").Width("80").Add();
+       }).AllowPaging().PageSettings(page => page.PageSize(10)).Toolbar(new List<string>() { "Search" }).AllowExcelExport(true).Render()
+
+        </div>
+    </div>
+</div>
+
+<script id="tmpPriority" type="text/x-template">
+    ${if('@Modify' === 'True')}
+    <input type="number" onblur="BindPriority(this)" list="pmsKPA" value="${Priority}" />
+    ${else}
+    ${Priority}
+    ${/if}
+</script>
+<script id="tmpAction" type="text/x-template">
+    <input type="hidden" name="I" value="${PMS_KPAID}" />
+    <input type="hidden" name="N" value="${Area}" />
+
+    <a data-toggle="tooltip" data-original-title="View"  data-placement="right" onclick="BindEdit(this)"><i class="fas fa-eye" aria-hidden="true"></i> </a>
+
+
+    ${if('@Modify' === 'True' && '@ApprovedStatus'!='Approved' && '@isdeleted'!=0) }
+
+    <a data-toggle="tooltip" data-original-title="Make Copy" data-placement="right" onclick="Duplicate(this)"><i class="fas fa-clone" aria-hidden="true"></i> </a>
+
+    ${if(IsActive)}
+    <a title='Click to DeActivate' onclick="BindIsActive(this)" list='pmsKPA' OP='0' class='AIsActive'> <i class='fa fa-check-circle checkgreen' aria-hidden='true'></i></a>
+    ${else}
+    <a title='Click to Activate' onclick="BindIsActive(this)" list='pmsKPA' OP='1' class='AIsActive'> <i class='fa fa-times-circle crossred' aria-hidden='true'></i></a>
+    ${/if}
+    ${/if}
+</script>
+
+
+<script>
+    var pivotObj;
+    document.getElementById('excel').onclick = function () {
+    debugger;
+        pivotObj = document.getElementById('Grid').ej2_instances[0];
+        pivotObj.excelExport();
+    }
+</script>
+
+@Html.IncludeVersionedJs(Url.Content("~/assets/design/Scripts/SyncScripts.js"))
+
+@(Html.EJS().ScriptManager())

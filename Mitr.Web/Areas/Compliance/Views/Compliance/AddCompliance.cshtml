@@ -1,0 +1,981 @@
+﻿
+@{
+    ViewBag.Title = "AddCompliance";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+@using (Ajax.BeginForm("AddCompliance", "Compliance",
+     new { src = clsApplicationSetting.EncryptQueryString(ViewBag.MenuID.ToString() + "*/Compliance/AddCompliance") },
+     new AjaxOptions { HttpMethod = "POST", OnSuccess = "BindTarget", OnFailure = "CloseLoadingDialog()", OnBegin = "ShowLoadingDialog();" },
+ new { @id = "AddComplianceFrom" })
+ )
+{
+    <div class="inner-main defult-height pb-0">
+
+        <div class="row">
+            <div class="col-sm-8 align-self-center"><h1 class="heading-one mb-0">Add Compliance</h1></div>
+            <div class="col-sm-4 pr">
+                <div class="act-nxt npdgn tp-15" id="versionTxt" style="display: none">
+                    <a onclick="ChangePrevCompliance()" class="ver_prev" data-toggle="tooltip" title="" data-original-title="Previous"> <i class="fas fa-arrow-left"></i></a>
+                    <input type="hidden" id="prevVersion" />
+                    <span class="green-clr"><enum id="start">1</enum> <small>/</small> <enum id="end">1</enum></span>
+                    <input type="hidden" id="nextVersion" />
+                    <a onclick="ChangeNextCompliance()" class="ver_next" data-toggle="tooltip" title="" data-original-title="Next"> <i class="fas fa-arrow-right"></i></a>
+                </div>
+            </div>
+
+            <div class="col-sm-3 form-group">
+                <label>Doc No<sup>*</sup></label>
+                <p id="Doc_no"></p>
+            </div>
+
+            <div class="col-sm-3 form-group">
+                <label>Doc Date<sup>*</sup></label>
+                <p id="Doc_Date"></p>
+            </div>
+            <input type="hidden" id="hdnComplianceMasterId" />
+            <input type="hidden" id="hdnMaxVersionID" />
+
+            <div class="col-sm-3 form-group">
+                <label>Sub Category<sup style="color: red">*</sup></label>
+                <select class="form-control applyselect Mandatory" id="ddlSubCategory" onchange="ChangeCategory(this)">
+                </select>
+                <span id="spddlSubCategory" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+            </div>
+
+            <div class="col-sm-3 form-group">
+                <label>Category<sup>*</sup></label>
+                <input type="hidden" id="Category" />
+                <p id="cate">Select</p>
+            </div>
+
+            <div class="col-sm-3 form-group">
+                <label>Compliance Type<sup>*</sup></label>
+                <select class="form-control applyselect Mandatory" onchange="HideErrorMessage(this); CheckForOneTime(this)" id="ddlCompType">
+                    <option value="Select">Select</option>
+                    <option value="1">One Time</option>
+                    <option value="2">Recurring</option>
+                </select>
+                <span id="spddlCompType" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+            </div>
+
+
+            <div class="col-sm-3 form-group">
+                <label>Sub Sub Category</label>
+                <input type="text" id="subsubcate" class="form-control" value="" placeholder="Enter" />
+            </div>
+
+            <div class="col-sm-3 form-group">
+                <label>Risk Type<sup>*</sup></label>
+                <select class="form-control applyselect Mandatory risktype" id="dldRisk" onchange="ChangeRiskType(this)">
+                </select>
+                <span id="spdldRisk" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+            </div>
+
+            <div id="vh" class="col-sm-3 divhide form-group" style="display: none">
+                <label>Description <sup>*</sup></label>
+                <p id="description">Lorem ipsum dolor sit amet, consectetur adipiscing elit</p>
+            </div>
+
+            <div class="col-sm-12 form-group">
+                <label>Compliance Name<sup>*</sup></label>
+                <input type="text" class="form-control Mandatory" value="" onchange="HideErrorMessage(this)" placeholder="Enter" id="ComplianceName" />
+                <span id="spComplianceName" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+            </div>
+
+
+            <div class="col-sm-12 form-group yes">
+                <hr>
+                <span class="hr-aps"><i class="fa fa-plus"></i>Add Frequency</span>
+            </div>
+
+            <div class="col-sm-3 form-group align-self-center ">
+                <label>Frequency<sup>*</sup></label>
+                <select class="form-control applyselect selectvaul Mandatory" onchange="HideErrorMessage(this)" id="ddlFrequency">
+                    <option value="Select">Select</option>
+
+                    <option value="weekly_1">Weekly</option>
+                    <option value="months_2">Months</option>
+
+                    <option value="yearly_3">Yearly</option>
+                </select>
+                <span id="spddlFrequency" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+
+
+            </div>
+
+            <!--  -->
+
+
+            <div class="col-sm-3 box weekly_1 " style="display: none;">
+                <div class="frqdign">
+                    <div class="row">
+                        <div class="col-sm-12 form-group">
+                            <strong>Select Day</strong>
+                            <ul class="list-unstyled weeklylistdgn">
+                                <li>
+
+                                    <div class="radio">
+                                        <input type="radio" id="Sun" class="form-control" onchange="HideComplianceError('spWeekly')" name="weekly" value="">
+                                        <label for="Sun" class="radio-label">Sun</label>
+                                    </div>
+
+                                </li>
+                                <li>
+                                    <div class="radio">
+                                        <input type="radio" id="mon" class="form-control" onchange="HideComplianceError('spWeekly')" name="weekly" value="">
+                                        <label for="mon" class="radio-label">Mon</label>
+                                    </div>
+                                </li>
+                                <li>
+                                    <div class="radio">
+                                        <input type="radio" id="tue" class="form-control" onchange="HideComplianceError('spWeekly')" name="weekly" value="">
+                                        <label for="tue" class="radio-label">Tue</label>
+                                    </div>
+                                </li>
+                                <li>
+                                    <div class="radio">
+                                        <input type="radio" id="wed" class="form-control" onchange="HideComplianceError('spWeekly')" name="weekly" value="">
+                                        <label for="wed" class="radio-label">Wed</label>
+                                    </div>
+                                </li>
+                                <li>
+                                    <div class="radio">
+                                        <input type="radio" id="thu" class="form-control" onchange="HideComplianceError('spWeekly')" name="weekly" value="">
+                                        <label for="thu" class="radio-label">Thu</label>
+                                    </div>
+                                </li>
+                                <li>
+                                    <div class="radio">
+                                        <input type="radio" id="fri" class="form-control" onchange="HideComplianceError('spWeekly')" name="weekly" value="">
+                                        <label for="fri" class="radio-label">Fri</label>
+                                    </div>
+                                </li>
+                                <li>
+                                    <div class="radio">
+                                        <input type="radio" id="sat" class="form-control" onchange="HideComplianceError('spWeekly')" name="weekly" value="">
+                                        <label for="sat" class="radio-label">Sat</label>
+                                    </div>
+                                </li>
+                            </ul>
+
+                        </div>
+                    </div>
+                    <span id="spWeekly" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+                </div>
+            </div>
+            <div class="col-sm-5 box months_2 align-self-center " style="display: none;">
+                <div class="frqdign">
+                    <div class="d-flex">
+                        <div class="leftside form-group align-self-center">
+                            <label for="dayof">Day of<sup>*</sup></label>
+                            <input type="number" placeholder="0" id="dayofM" onchange="validateMinMax(this)" class="form-control numeric-only w-40 text-center Mandatory" min="1" max="31">
+                            <span id="spdayofM" class="text-danger field-validation-error" style="display:none;">Invalid no.of Days!!</span>
+                        </div>
+                        <div class="rightside form-group">
+
+                            <input type="checkbox" name="checkbox" id="checkAllone">
+                            <label for="checkAllone">Select All</label>
+                            <ul class="list-unstyled weeklylistdgn">
+                                <li>
+                                    <div class="checkdgn checkdgnlsit  ">
+                                        <input id="M_1" name="checkbox" class="checkbox itemCheckboxone" type="checkbox">
+                                        <label for="M_1">Jan</label>
+                                    </div>
+                                </li>
+                                <li>
+                                    <div class="checkdgn checkdgnlsit  ">
+                                        <input id="M_2" name="checkbox" class="checkbox itemCheckboxone" type="checkbox">
+                                        <label for="M_2">Feb</label>
+                                    </div>
+                                </li>
+                                <li>
+                                    <div class="checkdgn checkdgnlsit  ">
+                                        <input id="M_3" name="checkbox" class="checkbox itemCheckboxone" type="checkbox">
+                                        <label for="M_3">Mar</label>
+                                    </div>
+                                </li>
+                                <li>
+                                    <div class="checkdgn checkdgnlsit  ">
+                                        <input id="M_4" name="checkbox" class="checkbox itemCheckboxone" type="checkbox">
+                                        <label for="M_4">Apr</label>
+                                    </div>
+                                </li>
+                                <li>
+                                    <div class="checkdgn checkdgnlsit  ">
+                                        <input id="M_5" name="checkbox" class="checkbox itemCheckboxone" type="checkbox">
+                                        <label for="M_5">May</label>
+                                    </div>
+                                </li>
+                                <li>
+                                    <div class="checkdgn checkdgnlsit  ">
+                                        <input id="M_6" name="checkbox" class="checkbox itemCheckboxone" type="checkbox">
+                                        <label for="M_6">June</label>
+                                    </div>
+                                </li>
+                                <li>
+                                    <div class="checkdgn checkdgnlsit  ">
+                                        <input id="M_7" name="checkbox" class="checkbox itemCheckboxone" type="checkbox">
+                                        <label for="M_7">July</label>
+                                    </div>
+                                </li>
+                                <li>
+                                    <div class="checkdgn checkdgnlsit  ">
+                                        <input id="M_8" name="checkbox" class="checkbox itemCheckboxone" type="checkbox">
+                                        <label for="M_8">Aug</label>
+                                    </div>
+                                </li>
+                                <li>
+                                    <div class="checkdgn checkdgnlsit  ">
+                                        <input id="M_9" name="checkbox" class="checkbox itemCheckboxone" type="checkbox">
+                                        <label for="M_9">Sept</label>
+                                    </div>
+                                </li>
+                                <li>
+                                    <div class="checkdgn checkdgnlsit  ">
+                                        <input id="M_10" name="checkbox" class="checkbox itemCheckboxone" type="checkbox">
+                                        <label for="M_10">Oct</label>
+                                    </div>
+                                </li>
+                                <li>
+                                    <div class="checkdgn checkdgnlsit  ">
+                                        <input id="M_11" name="checkbox" class="checkbox itemCheckboxone" type="checkbox">
+                                        <label for="M_11">Nov</label>
+                                    </div>
+                                </li>
+                                <li>
+                                    <div class="checkdgn checkdgnlsit  ">
+                                        <input id="M_12" name="checkbox" class="checkbox itemCheckboxone" type="checkbox">
+                                        <label for="M_12">Dec</label>
+                                    </div>
+                                </li>
+                            </ul>
+
+
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+            @*<div class="col-sm-5 box quarterly align-self-center " style="display: none;">
+            <div class="frqdign">
+                <div class="d-flex">
+                    <div class="leftside form-group align-self-center">
+                        <label for="dayof">Day of<sup>*</sup> </label>
+                        <input type="number" placeholder="0" id="dayofM" class="form-control w-40 text-center" />
+                        <span id="spdayofM" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+                    </div>
+                    <div class="rightside form-group">
+
+                        <input type="checkbox" id="checkAlltwo">
+                        <label for="checkAlltwo">Select All</label>
+                        <ul class="list-unstyled weeklylistdgn">
+                            <li>
+                                <div class="checkdgn checkdgnlsit  ">
+                                    <input id="Janquarterly" name="checkbox" class="checkbox itemCheckboxtwo" type="checkbox">
+                                    <label for="Janquarterly">Jan</label>
+                                </div>
+                            </li>
+                            <li>
+                                <div class="checkdgn checkdgnlsit  ">
+                                    <input id="Febquarterly" name="checkbox" class="checkbox itemCheckboxtwo" type="checkbox">
+                                    <label for="Febquarterly">Feb</label>
+                                </div>
+                            </li>
+                            <li>
+                                <div class="checkdgn checkdgnlsit  ">
+                                    <input id="Marquarterly" name="checkbox" class="checkbox itemCheckboxtwo" type="checkbox">
+                                    <label for="Marquarterly">Mar</label>
+                                </div>
+                            </li>
+                            <li>
+                                <div class="checkdgn checkdgnlsit  ">
+                                    <input id="Aprquarterly" name="checkbox" class="checkbox itemCheckboxtwo" type="checkbox">
+                                    <label for="Aprquarterly">Apr</label>
+                                </div>
+                            </li>
+                            <li>
+                                <div class="checkdgn checkdgnlsit  ">
+                                    <input id="Mayquarterly" name="checkbox" class="checkbox itemCheckboxtwo" type="checkbox">
+                                    <label for="Mayquarterly">May</label>
+                                </div>
+                            </li>
+                            <li>
+                                <div class="checkdgn checkdgnlsit  ">
+                                    <input id="Junequarterly" name="checkbox" class="checkbox itemCheckboxtwo" type="checkbox">
+                                    <label for="Junequarterly">June</label>
+                                </div>
+                            </li>
+                            <li>
+                                <div class="checkdgn checkdgnlsit  ">
+                                    <input id="Julyquarterly" name="checkbox" class="checkbox itemCheckboxtwo" type="checkbox">
+                                    <label for="Julyquarterly">July</label>
+                                </div>
+                            </li>
+                            <li>
+                                <div class="checkdgn checkdgnlsit  ">
+                                    <input id="Augquarterly" name="checkbox" class="checkbox itemCheckboxtwo" type="checkbox">
+                                    <label for="Augquarterly">Aug</label>
+                                </div>
+                            </li>
+                            <li>
+                                <div class="checkdgn checkdgnlsit  ">
+                                    <input id="Septquarterly" name="checkbox" class="checkbox itemCheckboxtwo" type="checkbox">
+                                    <label for="Septquarterly">Sept</label>
+                                </div>
+                            </li>
+                            <li>
+                                <div class="checkdgn checkdgnlsit  ">
+                                    <input id="Octquarterly" name="checkbox" class="checkbox itemCheckboxtwo" type="checkbox">
+                                    <label for="Octquarterly">Oct</label>
+                                </div>
+                            </li>
+                            <li>
+                                <div class="checkdgn checkdgnlsit  ">
+                                    <input id="Novquarterly" name="checkbox" class="checkbox itemCheckboxtwo" type="checkbox">
+                                    <label for="Novquarterly">Nov</label>
+                                </div>
+                            </li>
+                            <li>
+                                <div class="checkdgn checkdgnlsit  ">
+                                    <input id="Decquarterly" name="checkbox" class="checkbox itemCheckboxtwo" type="checkbox">
+                                    <label for="Decquarterly">Dec</label>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>*@
+            <div class="col-sm-5 box yearly_3 align-self-center " style="display: none;">
+                <div class="frqdign">
+                    <div class="d-flex">
+                        <div class="leftside form-group align-self-center">
+                            <label for="dayof">Day of<sup>*</sup></label>
+                            <input type="number" min="1" max="31" placeholder="0" id="dayofY" onchange="validateMinMax(this)" class="form-control number-input numeric-only w-40 text-center Mandatory" />
+                            <span id="spdayofY" class="text-danger field-validation-error" style="display:none;">Invalid no. of Days!!</span>
+                        </div>
+                        <div class="rightside form-group">
+
+                            <ul class="list-unstyled weeklylistdgn">
+                                <li>
+
+                                    <div class="radio">
+                                        <input type="radio" id="Y_1" class="form-control" name="year" value="">
+                                        <label for="Y_1" class="radio-label">Jan</label>
+                                    </div>
+
+                                </li>
+                                <li>
+                                    <div class="radio">
+                                        <input type="radio" id="Y_2" class="form-control" name="year" value="">
+                                        <label for="Y_2" class="radio-label">Feb</label>
+                                    </div>
+                                </li>
+                                <li>
+                                    <div class="radio">
+                                        <input type="radio" id="Y_3" class="form-control" name="year" value="">
+                                        <label for="Y_3" class="radio-label">Mar</label>
+                                    </div>
+                                </li>
+                                <li>
+                                    <div class="radio">
+                                        <input type="radio" id="Y_4" class="form-control" name="year" value="">
+                                        <label for="Y_4" class="radio-label">Apr</label>
+                                    </div>
+                                </li>
+                                <li>
+                                    <div class="radio">
+                                        <input type="radio" id="Y_5" class="form-control" name="year" value="">
+                                        <label for="Y_5" class="radio-label">May</label>
+                                    </div>
+                                </li>
+                                <li>
+                                    <div class="radio">
+                                        <input type="radio" id="Y_6" class="form-control" name="year" value="">
+                                        <label for="Y_6" class="radio-label">June</label>
+                                    </div>
+                                </li>
+                                <li>
+                                    <div class="radio">
+                                        <input type="radio" id="Y_7" class="form-control" name="year" value="">
+                                        <label for="Y_7" class="radio-label">July</label>
+                                    </div>
+                                </li>
+                                <li>
+                                    <div class="radio">
+                                        <input type="radio" id="Y_8" class="form-control" name="year" value="">
+                                        <label for="Y_8" class="radio-label">Aug</label>
+                                    </div>
+                                </li>
+                                <li>
+                                    <div class="radio">
+                                        <input type="radio" id="Y_9" class="form-control" name="year" value="">
+                                        <label for="Y_9" class="radio-label">Sept</label>
+                                    </div>
+                                </li>
+                                <li>
+                                    <div class="radio">
+                                        <input type="radio" id="Y_10" class="form-control" name="year" value="">
+                                        <label for="Y_10" class="radio-label">Oct</label>
+                                    </div>
+                                </li>
+                                <li>
+                                    <div class="radio">
+                                        <input type="radio" id="Y_11" class="form-control" name="year" value="">
+                                        <label for="Y_11" class="radio-label">Nov</label>
+                                    </div>
+                                </li>
+                                <li>
+                                    <div class="radio">
+                                        <input type="radio" id="Y_12" class="form-control" name="year" value="">
+                                        <label for="Y_12" class="radio-label">Dec</label>
+                                    </div>
+                                </li>
+                            </ul>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+            <!--  -->
+            <div class="col-lg-3 form-group align-self-lg-center">
+
+                <label for="Lead Details" class="form-control-label">Visibility In Advance</label>
+                <div class="d-flex">
+                    <div class="input-group mr-2 w-100" id="visDay">
+                        <input type="text" class="form-control numeric-only" placeholder="0" id="LeadDay" name="">
+                        <div class="input-group-append">
+                            <span class="input-group-text">Day</span>
+                        </div>
+                    </div>
+
+                    <div class="input-group mr-2" style="display:none;">
+                        <input type="text" class="form-control numeric-only" placeholder="0" id="LeadHour" name="">
+                        <div class="input-group-append">
+                            <span class="input-group-text">Hr.</span>
+                        </div>
+                    </div>
+
+                    <div class="input-group " style="display:none;">
+                        <input type="text" class="form-control numeric-only" placeholder="0" id="LeadMin" name="">
+                        <div class="input-group-append">
+                            <span class="input-group-text">Min.</span>
+                        </div>
+                    </div>
+
+                </div>
+
+
+
+            </div>
+            <div class="col-sm-12">
+                <hr>
+            </div>
+
+            <div class="col-sm-3 form-group">
+                <label>Effective Date <sup>*</sup></label>
+                <input class="form-control Mandatory datepicker" autocomplete="off" placeholder="dd-mm-yyyy" id="startDate" onchange="HideErrorMessage(this)">
+                <span id="spstartDate" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+            </div>
+
+            <div class="col-sm-3 form-group" id="divDueDate" style="display:none;">
+                <label>Due Date <sup>*</sup></label>
+                <input class="form-control datepicker" autocomplete="off" placeholder="dd-mm-yyyy" id="dueDate" onchange="HideErrorMessage(this)">
+                <span id="spdueDate" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+            </div>
+            <div class="col-sm-3 form-group">
+                <label>Is Required Approval<sup>*</sup></label>
+                <select class="form-control applyselect rpselect Mandatory" onchange="PCChange(this)" id="isApproval">
+                    <option>Select</option>
+                    <option value="ra_yes">Yes</option>
+                    <option value="ra_no">No</option>
+                </select>
+                <span id="spisApproval" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+            </div>
+
+            <div class="col-sm-3 form-group">
+                <label>Is Escalation Required<sup>*</sup></label>
+                <select class="form-control applyselect erselect Mandatory" onchange="HideErrorMessage(this)" id="isEscalation">
+                    <option>Select</option>
+                    <option value="er_yes">Yes</option>
+                    <option value="er_no">No</option>
+
+                </select>
+                <span id="spisEscalation" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+            </div>
+
+            <div class="col-sm-3 form-group">
+                <label>Primary User<sup>*</sup></label>
+                <select class="form-control applyselect Mandatory" onchange="ChangeDepartment(this)" id="ddlDoer">
+                </select>
+                <span id="spddlDoer" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+            </div>
+
+            <div class="col-sm-3 form-group">
+                <label>Department<sup>*</sup></label>
+                <input type="hidden" id="DepartmentId" />
+                <p id="Department">Select	</p>
+            </div>
+            <div class="col-sm-3 form-group">
+                <label>Secondary User</label>
+                <select class="form-control applyselect" id="ddlsecDoer">
+                    <option>Select</option>
+                    <option>Arun Kumar</option>
+                    <option>Abhishek Kumar	</option>
+
+                </select>
+
+            </div>
+
+            <div class="col-sm-3 form-group ra_yes rpcontent" style="display: none;">
+                <label>Approval Level 1 <sup>*</sup></label>
+                <select class="form-control applyselect Mandatory" onchange="HideErrorMessage(this)" id="PC">
+                </select>
+                <span id="spPC" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+            </div>
+
+            <div class="col-sm-3 form-group ra_yes rpcontent" style="display: none;">
+                <label>Approval Level 2</label>
+                <select class="form-control applyselect " id="PC2">
+                    <option>Select</option>
+                    <option>Arun Kumar</option>
+                    <option>Abhishek Kumar	</option>
+
+                </select>
+
+            </div>
+
+            <div class="col-sm-3 form-group">
+                <label>Do you required Sub task ?<sup>*</sup></label>
+                <select class="form-control applyselect subtask Mandatory" onchange="HideErrorMessage(this)" id="isChecklist">
+                    <option>Select</option>
+                    <option value="subtask_yes">Yes</option>
+                    <option value="subtask_no">No</option>
+
+                </select>
+                <span id="spisChecklist" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+            </div>
+
+            <div class="col-sm-3 form-group">
+                <label>
+                    Closure Type<sup>*</sup> <i class="fas fa-info-circle" data-html="true"
+                                                data-toggle="popover"
+                                                data-placement="top"
+                                                data-trigger="focus"
+                                                data-content="<ul class='list-unstyled listoptiondgn'><li><strong>Option -1</strong>	<br />Open <i class='fas fa-chevron-right'></i> Compliant and closed </li><li><strong>Option -2</strong><br />Open <i class='fas fa-chevron-right'></i>Compliant -- Complaint but not closed <i class='fas fa-chevron-right'></i> Compliant and closed  </li></ul> "></i>
+                </label>
+
+                <select class="form-control applyselect Mandatory" onchange="HideErrorMessage(this)" id="ClosureType">
+                    <option>Select</option>
+                    <option value="1">Option 1</option>
+                    <option value="2">Option 2</option>
+
+                </select>
+                <span id="spClosureType" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+            </div>
+
+
+            <div class="col-sm-12 subtask_yes " style="display: none;">
+                <div class="row">
+                    <div class="col-sm-12 form-group yes">
+                        <hr>
+                        <span class="hr-aps"><i class="fas fa-tasks"></i>Add Sub Task </span>
+                    </div>
+
+                    <div class="col-sm-12">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Sub Task Name<sup>*</sup></th>
+                                    <th width="150">Response Type<sup>*</sup></th>
+                                    <th width="33">Mandatory</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody id="subTaskTableBody">
+                                <tr id="row-1">
+                                    <td><input type="text" id="subTaskName-1" value="" class="form-control Mandatory" placeholder="Enter" onchange="HideErrorMessage(this)" name="subTaskName[]"><span id="spsubTaskName-1" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span></td>
+                                    <td>
+                                        <select class="form-control applyselect Mandatory" id="responseType-1" onchange="HideErrorMessage(this)" name="responseType[]">
+                                            <option>Select</option>
+                                            <option value="Text_1">Text</option>
+                                            <option value="Numeric_1">Numeric</option>
+                                            <option value="Attachment_1">Attachment</option>
+                                        </select>
+                                        <span id="spresponseType-1" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+                                    </td>
+                                    <td>
+                                        <div class="switch--box">
+                                            <label class="cswitch m-0">
+                                                <input class="cswitch--input" type="checkbox" id="mandatory-1" name="mandatory[]"><span class="cswitch--trigger wrapper"></span>
+                                            </label>
+                                        </div>
+                                    </td>
+                                    <td class="text-center">
+                                        <i class="fas fa-window-close" data-toggle="tooltip" title="Remove" aria-hidden="true"></i>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <div class="text-right">
+                            <button type="button" class="btn green-clr m-0" id="addRowButton"><i class="fas fa-plus"></i> Add</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-sm-12 form-group er_yes ercontent" style="display: none;">
+                <div class="row">
+                    <div class="col-sm-12 form-group">
+                        <hr>
+                        <span class="hr-aps"><i class="fa fa-plus"></i>Escalation Required</span>
+                    </div>
+                    <div class="col-sm-12 form-group">
+                        <label>Escalate To<sup>*</sup></label>
+                        <select class="form-control applyselect Mandatory" onchange="HideErrorMessage(this)" id="EscalateTo" multiple>
+                            <option>Select</option>
+                            <option>Arun Kumar</option>
+                            <option>Abhishek Kumar	</option>
+
+                        </select>
+                        <span id="spEscalateTo" class="text-danger  field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+                    </div>
+
+                    <div class="col-sm-3 form-group">
+                        <label>Escalation Interval Hrs<sup>*</sup></label>
+                        <input type="number" class="form-control numeric-only Mandatory" onchange="HideErrorMessage(this)" id="EscalationTime" placeholder="Enter" />
+                        <span id="spEscalationTime" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+                    </div>
+
+                    <div class="col-sm-3 form-group">
+                        <label>Escalate Reminder Hrs<sup>*</sup></label>
+                        <input type="text" class="form-control numeric-only Mandatory" onchange="HideErrorMessage(this)" id="ReminderTime" placeholder="Enter" />
+                        <span id="spReminderTime" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+                    </div>
+                </div>
+            </div>
+
+
+
+
+
+            <div class="col-sm-12 form-group yes">
+                <hr>
+                <span class="hr-aps"><i class="fa fa-plus"></i>Add Conditions</span>
+            </div>
+
+
+
+            <div class="col-sm-9 form-group">
+                <table id="conditionsTable" class="table table-striped mb-2">
+                    <thead>
+                        <tr>
+                            <th>Conditions</th>
+                            <th width="50"></th>
+                        </tr>
+                    </thead>
+                    <tbody id="conditionsTableBody">
+                        <tr id="conditionRow-1">
+                            <td><input type="text" id="conditionInput-1" class="form-control conditionInput" placeholder="Enter Condition" name="conditions[]"></td>
+                            <td class="text-center"><i class="fas fa-window-close" data-toggle="tooltip" title="Remove" aria-hidden="true"></i></td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div class="text-right">
+                    <button type="button" class="btn green-clr m-0" onclick="addConditionRow()"><i class="fas fa-plus"></i>Add</button>
+                </div>
+            </div>
+
+            <div class="col-sm-12 form-group yes">
+                <hr>
+                <span class="hr-aps"><i class="fas fa-upload"></i>Upload Documents</span>
+            </div>
+
+            <div class="col-sm-9 form-group">
+                <table id="imageTable" class="table table-striped mb-2">
+                    <thead>
+                        <tr>
+                            <th width="500">Upload Document</th>
+                            <th>Description<sup>*</sup></th>
+                            <th width="33"></th>
+                        </tr>
+                    </thead>
+                    <tbody id="imageTableBody">
+                        <tr id="imageRow-1" class="imageRow">
+                            <td>
+                                <input type="file" id="imageFile_1" class="form-control imageFile" onchange="UploadocumentQuesReport(this.id)" placeholder="Upload Image" name="imageFiles[]">
+                                <a id="ancUploadActualFileName_1" onclick="DownloadFileQuotation(this)" class="attacehdownbtn"><i class="fas fa-download float-right" data-toggle="tooltip" title="Download"></i></a>
+                                <input type="hidden" id="hdnUploadActualFileName_1" />
+                                <input type="hidden" id="hdnUploadNewFileName_1" />
+                                <input type="hidden" id="hdnUploadFileUrl_1" />
+
+                            </td>
+                            <td>
+                                <textarea id="imageDescription-1" class="form-control imageDescription" onchange="HideErrorMessage(this)" placeholder="Enter Description" name="imageDescriptions[]"></textarea>
+                                <span id="spimageDescription-1" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+                            </td>
+                            <td class="text-center"><i class="fas fa-window-close" data-toggle="tooltip" title="Remove" aria-hidden="true"></i></td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div class="text-right">
+                    <button type="button" class="btn green-clr m-0" onclick="addImageRow()"><i class="fas fa-plus"></i>Add</button>
+                </div>
+            </div>
+
+            <div class="col-sm-12 form-group" id="Justremarks">
+
+            </div>
+
+            <div class="col-sm-12 text-center">
+
+                <button type="button" id="saveCompliance" onclick="SaveCompliance()" class="btn mtr-o-grn btn-l ripplelink pull-right" name="Command" value="Add"><i class="fas fa-save"></i>Save</button>
+                <button type="button" onclick="ComplianceMaster()" class="btn cnl-btn ripplelink" data-dismiss="modal"><i class="fas fa-times"></i>Close</button>
+            </div>
+        </div>
+    </div>
+
+    @section scripts    {
+        @System.Web.Optimization.Scripts.Render("~/bundle/unobtrusivejs")
+        @System.Web.Optimization.Scripts.Render("~/bundle/dataTablesjs")
+        <script src="~/assets/design/Scripts/AddInit.js?v=@clsApplicationSetting.GetWebConfigValue("Version")"></script>
+        <script src="~/Areas/Compliance/DevScript/AddCompliance.js"></script>
+        <!--  -->
+
+        <script>
+
+     function ComplianceMaster() {
+         ShowLoadingDialog();
+          window.location = '@Url.Action("Compliance", "ComplianceMaster", new { src = clsApplicationSetting.EncryptQueryString(ViewBag.MenuID.ToString() + "*/Activity/ActivityLogApproval") })';
+
+         setTimeout(function () {
+
+
+             CloseLoadingDialog();
+
+         }, 4000);
+     }
+        </script>
+        
+
+        <script>
+            $('.selectvaul').change(function () { //on change do stuff
+                $('.box').hide(); //hide all with .box class
+                if ($(this).val() == 'weekly_1') {
+                    $('#spWeekly').hide();
+                    $('#dayofM').val('');
+                    $('#dayofM').removeClass('Mandatory');
+                    $('input[name="checkbox"]').prop('checked', false);
+                    $('#dayofY').val('');
+                    $('#dayofY').removeClass('Mandatory');
+                    $('input[name="year"]').prop('checked', false);
+
+                }
+                else if ($(this).val() == 'months_2') {
+                    $('#spdayofM').hide();
+                    $('#dayofM').addClass('Mandatory');
+                    $('input[name="weekly"]').prop('checked', false);
+                    $('#dayofY').val('');
+                    $('#dayofY').removeClass('Mandatory');
+                    $('input[name="year"]').prop('checked', false);
+                    $('#dayofY').removeClass('Mandatory');
+
+                }
+                else if ($(this).val() == 'yearly_3') {
+                    $('#spdayofY').hide();
+                    $('#dayofY').addClass('Mandatory');
+                    $('#dayofM').val('');
+                    $('#dayofM').removeClass('Mandatory');
+                    $('input[name="checkbox"]').prop('checked', false);
+                    $('input[name="weekly"]').prop('checked', false);
+                }
+                else {
+                    $('#dayofM').val('');
+                    $('#dayofM').removeClass('Mandatory');
+                    $('input[name="checkbox"]').prop('checked', false);
+                    $('input[name="weekly"]').prop('checked', false);
+                    $('#dayofY').val('');
+                    $('#dayofY').removeClass('Mandatory');
+                    $('input[name="year"]').prop('checked', false);
+                }
+                $('.' + $(this).val()).show(); //show selected option's respective element
+            });
+        </script>
+        <script>
+            $(function () {
+                $('.risktype').change(function () {
+                    $('.divhide').hide();
+                    $('#' + $(this).val()).show();
+                });
+            });
+
+         
+           
+            
+
+
+
+        </script>
+
+        <script>
+            $(document).ready(function () {
+                // When the 'Check All' checkbox is clicked
+                $('#checkAllone').click(function () {
+                    // This will check or uncheck all checkboxes depending on the 'Check All' checkbox's state
+                    $('.itemCheckboxone').prop('checked', this.checked);
+                });
+
+                // When any single checkbox is unchecked, uncheck the 'Check All' checkbox
+                // If all are checked, check the 'Check All' checkbox
+                $('.itemCheckboxone').change(function () {
+                    var allChecked = $('.itemCheckboxone').length === $('.itemCheckboxone:checked').length;
+                    $('#checkAllone').prop('checked', allChecked);
+                });
+            });
+
+         
+                $('.subtask').change(function () {
+                    $('.subtask_yes').hide();
+                    $('#responseType-1').removeClass('Mandatory');
+                    $('#subTaskName-1').removeClass('Mandatory');
+                    $('#spresponseType-1').hide();
+                    $('#spsubTaskName-1').hide();
+                    $('#responseType-1').val('');
+                    $('#subTaskName-1').val('');
+                    removeAllSubTaskRows();
+                    if ($(this).val() == 'subtask_yes') {
+                        $('#responseType-1').addClass('Mandatory');
+                        $('#subTaskName-1').addClass('Mandatory');
+                        $('.' + $(this).val()).show();
+                    }
+
+                });
+
+
+                $('.erselect').on("change",function () {
+                    $('.ercontent').hide();
+                    $('#EscalateTo').removeClass('Mandatory');
+                    $('#EscalationTime').removeClass('Mandatory');
+                    $('#ReminderTime').removeClass('Mandatory');
+                    $('#spEscalateTo').hide();
+                    $('#spEscalationTime').hide();
+                    $('#spReminderTime').hide();
+                    $("#EscalateTo").val('').trigger('change');
+                    $('#EscalationTime').val('');
+                    $('#ReminderTime').val('');
+                    if ($(this).val() == 'er_yes') {
+                        $('#EscalateTo').addClass('Mandatory');
+                        $('#EscalationTime').addClass('Mandatory');
+                        $('#ReminderTime').addClass('Mandatory');
+                    }
+                    $('.' + $(this).val()).show();
+                });
+
+
+            $('#ddlCompType').on("change", function () {
+                if ($(this).val() == 1) {
+                    $('#ddlFrequency').prop('disabled', true);
+                    $('#ddlFrequency').removeClass('Mandatory');
+                    $('#dayofM').removeClass('Mandatory');
+                    $('#dayofY').removeClass('Mandatory');
+                    $('#ddlFrequency').val('Select').trigger('change');
+                    
+                    $('#LeadDay').val('');
+                    $('#LeadHour').val('');
+                    $('#LeadMin').val('');
+
+                }
+                else {
+                    $('#ddlFrequency').prop('disabled', false);
+                    $('#ddlFrequency').addClass('Mandatory');
+                    $('#dayofM').addClass('Mandatory');
+                    $('#dayofY').addClass('Mandatory');
+                }
+
+            });
+
+
+            
+
+
+        </script>
+
+        <script>
+            // Function to validate the effective date
+            function validateEffectiveDate() {
+                var startDateInput = document.getElementById('startDate');
+                var startDateValue = new Date(startDateInput.value);
+                var today = new Date();
+                today.setHours(0, 0, 0, 0); // Ignore time part for today's date
+
+                // Check if the selected date is greater than today's date
+                if (startDateValue <= today) {
+                    // Display the error message
+                    var errorMessage = document.getElementById('spstartDate');
+                    errorMessage.innerHTML = 'Effective date should be greater than todays date!!';
+                    errorMessage.style.display = 'inline';
+
+                    // Clear the input field
+                    startDateInput.value = '';
+
+                    // Hide the error message after 4 seconds
+                    setTimeout(function () {
+                        errorMessage.innerHTML = 'Hey, You missed this field!!';
+                        errorMessage.style.display = 'none';
+                    }, 4000);
+
+                    return false; // Validation failed
+                }
+
+                return true; // Validation passed
+            }
+
+            // Attach the validation function to the input field's change event
+            document.getElementById('startDate').addEventListener('change', validateEffectiveDate);
+
+        </script>
+
+        <script>
+            $(document).ready(function () {
+                $(".applyselect").select2();
+
+                $('#addRowButton').click(function () {
+                    addSubTaskRow();
+                });
+            });
+
+        </script>
+
+
+        <script>
+            function validateMinMax(input) {
+                const min = parseInt(input.min);
+                const max = parseInt(input.max);
+                const value = parseInt(input.value);
+
+                if (value < min || value > max) {
+                    $('#sp' + input.id).html('Invalid no. of Days!!');
+                    document.getElementById('sp' + input.id).style.display = 'inline';
+                    input.value = '';
+                } else {
+                    document.getElementById('sp' + input.id).style.display = 'none';
+                }
+            }
+        </script>
+
+      
+
+        <script>
+            var EditId = "@ViewBag.id";
+        </script>
+    }
+}
+
+

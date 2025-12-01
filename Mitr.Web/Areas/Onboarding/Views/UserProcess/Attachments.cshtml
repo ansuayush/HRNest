@@ -1,0 +1,437 @@
+﻿
+@{
+	Layout = "~/Views/Shared/_UserProcess.cshtml";
+}
+<script src="~/Areas/Onboarding/DevScript/DocumentsUpload.js"></script>
+<script>
+        var CandidateId = '@ViewBag.RequestId';
+		var IsEDUser = '@ViewBag.IsED';
+        var loggedinUserid = '@ViewBag.UserId';
+		var loggedinUserName = '@ViewBag.UserName';
+		var UserGrade = '@ViewBag.Grade';
+	    var IsPM = '@ViewBag.IsPM';
+		var ScreenLock = '@ViewBag.ScreenLock';
+</script>
+<script>
+	function RedirectToOnboard() {
+		window.location.href = virtualPath + 'UserProcess/Joined';
+	}
+</script>
+<h1 class="heading-one ">Upload Document</h1>
+<div class="inner-main">
+	<div class="row">
+		<!---->
+		<div class="col-md-2 mb-3">
+			<strong><i class="fas fa-paperclip"></i>Upload Document</strong>
+		</div>
+		<div class="col-md-8">
+			<div class="row">
+				<div class="col-sm-12">
+					<table class="table table-striped mb-2" id="tblDocumentList">
+						<thead>
+						<th width="60">SR. No</th>
+						<th width="180">Nature of Documents</th>
+						<th width="300">Attachments</th>
+						<th width="200">File Name</th>
+						<th width="300">Remarks</th>
+						<th width="10"></th>
+						</thead>
+						<tbody>
+							<tr>
+								<td>1</td>
+								<td>PAN Card <span id="supPANCard" class="red-clr"></span><input type="hidden" value="PAN" id="hdnNature1" /></td>
+								<td>
+									<input type="file" onchange="HideErrorMessage(this)" class="form-control" placeholder="Enter" name="" id="fileAttach1">
+									<span id="spfileAttach1" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+								</td>
+								<td>
+									<a id="lblAttachementView1" href="" target="_blank" style="margin-top: -18px;">
+										<label id="lblAttachement1">
+										</label>
+									</a>
+								</td>
+
+								<td>
+									<textarea class="form-control maxSize[1200]" placeholder="Enter" id="txtAttach1"></textarea>
+									<input type="hidden" id="hdnUploadFileUrl1" />
+									<input type="hidden" id="hdnUploadActualFileName1" />
+									<input type="hidden" id="hdnUploadNewFileName1" />
+									<input type="hidden" id="hdnAttachmentID1" />
+								</td>
+								<td>
+									<a title='Click to Remove' onclick="DeleteAttachment(this,1)" data-toggle='tooltip' data-original-title='Click to DeActivate'><i class='fas fa-window-close m-0 red-clr' aria-hidden='true'></i> </a>
+								</td>
+							</tr>
+							<tr class="no">
+								<td>2</td>
+								<td>Aadhar <span id="supAadhar" class="red-clr"></span><input type="hidden" value="Aadhaar" id="hdnNature2" /></td>
+								<td>
+									<input type="file" onchange="HideErrorMessage(this)" class="form-control" placeholder="Enter" name="" id="fileAttach2">
+									<span id="spfileAttach2" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+								</td>
+								<td>
+									<a id="lblAttachementView2" href="" target="_blank" style="margin-top: -18px;">
+										<label id="lblAttachement2">
+										</label>
+									</a>
+								</td>
+								<td>
+									<textarea class="form-control maxSize[1200]" placeholder="Enter" id="txtAttach2"></textarea>
+									<input type="hidden" id="hdnUploadFileUrl2" />
+									<input type="hidden" id="hdnUploadActualFileName2" />
+									<input type="hidden" id="hdnUploadNewFileName2" />
+									<input type="hidden" id="hdnAttachmentID2" />
+								</td>
+								<td>
+									<a title='Click to Remove' onclick="DeleteAttachment(this,2)" data-toggle='tooltip' data-original-title='Click to DeActivate'><i class='fas fa-window-close m-0 red-clr' aria-hidden='true'></i> </a>
+								</td>
+							</tr>
+							<tr class="no">
+								<td>3</td>
+								<td>
+									<strong class="hd-wm f-width">Educational Qualification Certificate</strong><small class="lgt-text dstable">(Last Academic Qualification)</small>
+									<input type="hidden" value="Educational Qualification Certificate" id="hdnNature3" />
+								</td>
+								<td>
+									<input type="file" class="form-control" placeholder="Enter" name="" id="fileAttach3">
+
+								</td>
+								<td>
+									<a id="lblAttachementView3" href="" target="_blank" style="margin-top: -18px;">
+										<label id="lblAttachement3">
+										</label>
+									</a>
+								</td>
+								<td>
+									<textarea class="form-control maxSize[1200]" placeholder="Enter" id="txtAttach3"></textarea>
+									<input type="hidden" id="hdnUploadFileUrl3" />
+									<input type="hidden" id="hdnUploadActualFileName3" />
+									<input type="hidden" id="hdnUploadNewFileName3" />
+									<input type="hidden" id="hdnAttachmentID3" />
+								</td>
+								<td>
+									<a title='Click to Remove' onclick="DeleteAttachment(this,3)" data-toggle='tooltip' data-original-title='Click to DeActivate'><i class='fas fa-window-close m-0 red-clr' aria-hidden='true'></i> </a>
+								</td>
+
+							</tr>
+							<tr class="no">
+								<td>4</td>
+								<td>Voter ID <span id="supVoterID" class="red-clr"></span><input type="hidden" value="Voter ID" id="hdnNature4" /></td>
+								<td>
+									<input type="file" class="form-control" onchange="HideErrorMessage(this)" placeholder="Enter" name="" id="fileAttach4">
+									<span id="spfileAttach4" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+								</td>
+								<td>
+									<a id="lblAttachementView4" href="" target="_blank" style="margin-top: -18px;">
+										<label id="lblAttachement4">
+										</label>
+									</a>
+								</td>
+								<td>
+									<textarea class="form-control maxSize[1200]" placeholder="Enter" id="txtAttach4"></textarea>
+									<input type="hidden" id="hdnUploadFileUrl4" />
+									<input type="hidden" id="hdnUploadActualFileName4" />
+									<input type="hidden" id="hdnUploadNewFileName4" />
+									<input type="hidden" id="hdnAttachmentID4" />
+								</td>
+								<td>
+									<a id="aAttach4" title='Click to Remove' onclick="DeleteAttachment(this,4)" data-toggle='tooltip' data-original-title='Click to DeActivate'><i class='fas fa-window-close m-0 red-clr' aria-hidden='true'></i> </a>
+								</td>
+
+							</tr>
+							<tr class="yes">
+								<td>5</td>
+								<td>Passport <span id="supPassportID" class="red-clr"></span><input type="hidden" value="Passport" id="hdnNature5" /></td>
+								<td>
+									<input type="file" onchange="HideErrorMessage(this)" class="form-control" placeholder="Enter" name="" id="fileAttach5">
+									<span id="spfileAttach5" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+								</td>
+								<td>
+									<a id="lblAttachementView5" href="" target="_blank" style="margin-top: -18px;">
+										<label id="lblAttachement5">
+										</label>
+									</a>
+								</td>
+								<td>
+									<textarea class="form-control maxSize[1200]" placeholder="Enter" id="txtAttach5"></textarea>
+									<input type="hidden" id="hdnUploadFileUrl5" />
+									<input type="hidden" id="hdnUploadActualFileName5" />
+									<input type="hidden" id="hdnUploadNewFileName5" />
+									<input type="hidden" id="hdnAttachmentID5" />
+								</td>
+								<td>
+									<a title='Click to Remove' onclick="DeleteAttachment(this,5)" data-toggle='tooltip' data-original-title='Click to DeActivate'><i class='fas fa-window-close m-0 red-clr' aria-hidden='true'></i> </a>
+								</td>
+							</tr>
+							<tr class="yes">
+								<td>6</td>
+								<td>UAN <span id="supUANID" class="red-clr"></span><input type="hidden" value="UAN" id="hdnNature6" /></td>
+								<td>
+									<input type="file" onchange="HideErrorMessage(this)" class="form-control" placeholder="Enter" name="" id="fileAttach6">
+									<span id="spfileAttach6" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+								</td>
+								<td>
+									<a id="lblAttachementView6" href="" target="_blank" style="margin-top: -18px;">
+										<label id="lblAttachement6">
+										</label>
+									</a>
+								</td>
+								<td>
+									<textarea class="form-control maxSize[1200]" placeholder="Enter" id="txtAttach6"></textarea>
+									<input type="hidden" id="hdnUploadFileUrl6" />
+									<input type="hidden" id="hdnUploadActualFileName6" />
+									<input type="hidden" id="hdnUploadNewFileName6" />
+									<input type="hidden" id="hdnAttachmentID6" />
+								</td>
+								<td>
+									<a title='Click to Remove' onclick="DeleteAttachment(this,6)" data-toggle='tooltip' data-original-title='Click to DeActivate'><i class='fas fa-window-close m-0 red-clr' aria-hidden='true'></i> </a>
+								</td>
+
+							</tr>
+							<tr class="yes">
+								<td>7</td>
+								<td>PIO, if applicable <span id="supPIOID" class="red-clr"></span><input type="hidden" value="PIO/OCI" id="hdnNature7" /></td>
+								<td>
+									<input type="file" class="form-control" onchange="HideErrorMessage(this)" placeholder="Enter" name="" id="fileAttach7">
+									<span id="spfileAttach7" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+								</td>
+								<td>
+									<a id="lblAttachementView7" href="" target="_blank" style="margin-top: -18px;">
+										<label id="lblAttachement7">
+										</label>
+									</a>
+								</td>
+								<td>
+									<textarea class="form-control maxSize[1200]" placeholder="Enter" id="txtAttach7"></textarea>
+									<input type="hidden" id="hdnUploadFileUrl7" />
+									<input type="hidden" id="hdnUploadActualFileName7" />
+									<input type="hidden" id="hdnUploadNewFileName7" />
+									<input type="hidden" id="hdnAttachmentID7" />
+								</td>
+								<td>
+									<a title='Click to Remove' onclick="DeleteAttachment(this,7)" data-toggle='tooltip' data-original-title='Click to DeActivate'><i class='fas fa-window-close m-0 red-clr' aria-hidden='true'></i> </a>
+								</td>
+
+							</tr>
+							<tr class="yes">
+								<td>8</td>
+								<td>DL <span id="supDL" class="red-clr"></span><input type="hidden" value="Driving License" id="hdnNature8" /></td>
+								<td>
+									<input type="file" class="form-control" onchange="HideErrorMessage(this)" placeholder="Enter" name="" id="fileAttach8">
+									<span id="spfileAttach8" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+								</td>
+								<td>
+									<a id="lblAttachementView8" href="" target="_blank" style="margin-top: -18px;">
+										<label id="lblAttachement8">
+										</label>
+									</a>
+								</td>
+								<td>
+									<textarea class="form-control maxSize[1200]" placeholder="Enter" id="txtAttach8"></textarea>
+									<input type="hidden" id="hdnUploadFileUrl8" />
+									<input type="hidden" id="hdnUploadActualFileName8" />
+									<input type="hidden" id="hdnUploadNewFileName8" />
+									<input type="hidden" id="hdnAttachmentID8" />
+								</td>
+								<td>
+									<a title='Click to Remove' onclick="DeleteAttachment(this,8)" data-toggle='tooltip' data-original-title='Click to DeActivate'><i class='fas fa-window-close m-0 red-clr' aria-hidden='true'></i> </a>
+								</td>
+
+							</tr>
+							<tr class="yes">
+								<td>9</td>
+								<td>CV<input type="hidden" value="CV" id="hdnNature9" /></td>
+								<td><input type="file" class="form-control" placeholder="Enter" name="" id="fileAttach9"></td>
+								<td>
+									<a id="lblAttachementView9" href="" target="_blank" style="margin-top: -18px;">
+										<label id="lblAttachement9">
+										</label>
+									</a>
+								</td>
+								<td>
+									<textarea class="form-control maxSize[1200]" placeholder="Enter" id="txtAttach9"></textarea>
+									<input type="hidden" id="hdnUploadFileUrl9" />
+									<input type="hidden" id="hdnUploadActualFileName9" />
+									<input type="hidden" id="hdnUploadNewFileName9" />
+									<input type="hidden" id="hdnAttachmentID9" />
+								</td>
+								<td>
+									<a title='Click to Remove' onclick="DeleteAttachment(this,9)" data-toggle='tooltip' data-original-title='Click to DeActivate'><i class='fas fa-window-close m-0 red-clr' aria-hidden='true'></i> </a>
+								</td>
+							</tr>
+							<tr class="yes">
+								<td>10</td>
+								<td>Copy of the cancelled cheque<input type="hidden" value="Copy of the cancelled cheque" id="hdnNature10" /></td>
+								<td><input type="file" class="form-control" placeholder="Enter" name="" id="fileAttach10"></td>
+								<td>
+									<a id="lblAttachementView10" href="" target="_blank" style="margin-top: -18px;">
+										<label id="lblAttachement10">
+										</label>
+									</a>
+								</td>
+								<td>
+									<textarea class="form-control maxSize[1200]" placeholder="Enter" id="txtAttach10"></textarea>
+									<input type="hidden" id="hdnUploadFileUrl10" />
+									<input type="hidden" id="hdnUploadActualFileName10" />
+									<input type="hidden" id="hdnUploadNewFileName10" />
+									<input type="hidden" id="hdnAttachmentID10" />
+								</td>
+								<td>
+									<a title='Click to Remove' onclick="DeleteAttachment(this,10)" data-toggle='tooltip' data-original-title='Click to DeActivate'><i class='fas fa-window-close m-0 red-clr' aria-hidden='true'></i> </a>
+								</td>
+							</tr>
+							<tr class="yes">
+								<td>11</td>
+								<td>Certificate of income/TDS/PT deposited by previous employee <input type="hidden" value="Certificate of income/TDS/PT deposited by previous employee" id="hdnNature11" /></td>
+								<td><input type="file" class="form-control" placeholder="Enter" name="" id="fileAttach11"></td>
+								<td>
+									<a id="lblAttachementView11" href="" target="_blank" style="margin-top: -18px;">
+										<label id="lblAttachement11">
+										</label>
+									</a>
+								</td>
+								<td>
+									<textarea class="form-control maxSize[1200]" placeholder="Enter" id="txtAttach11"></textarea>
+									<input type="hidden" id="hdnUploadFileUrl11" />
+									<input type="hidden" id="hdnUploadActualFileName11" />
+									<input type="hidden" id="hdnUploadNewFileName11" />
+									<input type="hidden" id="hdnAttachmentID11" />
+								</td>
+								<td>
+									<a title='Click to Remove' onclick="DeleteAttachment(this,11)" data-toggle='tooltip' data-original-title='Click to DeActivate'><i class='fas fa-window-close m-0 red-clr' aria-hidden='true'></i> </a>
+								</td>
+							</tr>
+							<tr class="yes">
+								<td>12</td>
+								<td>Work Visa, if applicable <span id="supWorkVisaifApplicable" class="red-clr"></span><input type="hidden" value="Work Visa" id="hdnNature12" /></td>
+								<td>
+									<input type="file" class="form-control" onchange="HideErrorMessage(this)" placeholder="Enter" name="" id="fileAttach12">
+									<span id="spfileAttach12" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+								</td>
+								<td>
+									<a id="lblAttachementView12" href="" target="_blank" style="margin-top: -18px;">
+										<label id="lblAttachement12">
+										</label>
+									</a>
+								</td>
+								<td>
+									<textarea class="form-control maxSize[1200]" placeholder="Enter" id="txtAttach12"></textarea>
+									<input type="hidden" id="hdnUploadFileUrl12" />
+									<input type="hidden" id="hdnUploadActualFileName12" />
+									<input type="hidden" id="hdnUploadNewFileName12" />
+									<input type="hidden" id="hdnAttachmentID12" />
+								</td>
+								<td>
+									<a title='Click to Remove' onclick="DeleteAttachment(this,12)" data-toggle='tooltip' data-original-title='Click to DeActivate'><i class='fas fa-window-close m-0 red-clr' aria-hidden='true'></i> </a>
+								</td>
+							</tr>
+							<tr class="yes">
+								<td>13</td>
+								<td>Relieving Letter from the recent employer <input type="hidden" value="Relieving Letter from Last Employer" id="hdnNature13" /></td>
+								<td><input type="file" class="form-control" placeholder="Enter" name="" id="fileAttach13"></td>
+								<td>
+									<a id="lblAttachementView13" href="" target="_blank" style="margin-top: -18px;">
+										<label id="lblAttachement13">
+										</label>
+									</a>
+								</td>
+								<td>
+									<textarea class="form-control maxSize[1200]" placeholder="Enter" id="txtAttach13"></textarea>
+									<input type="hidden" id="hdnUploadFileUrl13" />
+									<input type="hidden" id="hdnUploadActualFileName13" />
+									<input type="hidden" id="hdnUploadNewFileName13" />
+									<input type="hidden" id="hdnAttachmentID13" />
+								</td>
+								<td>
+									<a title='Click to Remove' onclick="DeleteAttachment(this,13)" data-toggle='tooltip' data-original-title='Click to DeActivate'><i class='fas fa-window-close m-0 red-clr' aria-hidden='true'></i> </a>
+								</td>
+							</tr>
+							<tr>
+								<td></td>
+								<td>
+									<input type="text" placeholder="Enter Other Document" id="txtDocOtherNature" class="form-control AddRowMandatory" onchange="HideErrorMessage(this)">
+									<span id="sptxtDocOtherNature" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+								</td>
+								<td><input type="file" class="form-control" id="fileDocOtherUpload" placeholder="Enter" name=""></td>
+								<td>
+									<a id="lblAttachementView" href="" target="_blank" style="margin-top: -18px;">
+										<label id="lblAttachement">
+										</label>
+									</a>
+								</td>
+								<td>
+									<textarea class="form-control maxSize[1200] " placeholder="Enter" id="txtDocOtherRemark"></textarea>
+								</td>
+								<td>
+									<a title='Click to Remove' data-toggle='tooltip' data-original-title='Click to Remove'><i class='fas fa-window-close m-0 red-clr' aria-hidden='true'></i> </a>
+								</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+				<div class="text-right">
+					<button type="button" onclick="UploadOtherDocumentExtra()" class="btn green-clr  m-0"><i class="fas fa-plus"></i>Add</button>
+				</div>
+			</div>
+			<div class="col-sm-12 text-center mt-2">
+				<button id="btnSubmitAttachments" type="button" onclick="SaveAttachments();" class="btn mtr-o-grn btn-l ripplelink pull-right"><i class="fa fa-paper-plane"></i> Submit</button>
+				<button type="button" onclick="RedirectToOnboard();" class="btn cnl-btn ripplelink  pull-right"><i class="fas fa-times"></i> Close</button>
+			</div>
+		</div>
+	</div>
+</div>
+<!-- The Modal -->
+<div class="modal" id="vf">
+	<div class="modal-dialog modal-lg">
+		<div class="modal-content ">
+			<!-- Modal Header -->
+			<div class="modal-header">
+				<h4 class="modal-title"><i class="fas fa-user-tie"></i>Ashok</h4>
+				<button type="button" class="close" data-dismiss="modal">×</button>
+			</div>
+
+			<!-- Modal body -->
+			<div class="modal-body">
+				<div class="row">
+					<div class="col-sm-12 form-group">
+						<label>Feedback</label>
+						<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer porttitor arcu augue, in venenatis nunc feugiat ut. Quisque ut condimentum tortor. Ut feugiat mi non lorem tincidunt efficitur. Phasellus eget arcu sed enim mollis placerat quis at leo. Nunc consequat mi ac lorem ullamcorper aliquam. </p>
+					</div>
+				</div>
+				<!-- Modal footer -->
+				<div class="p-0 text-center mt-3 ">
+					<button type="button" class="btn cnl-btn ripplelink" data-dismiss="modal"><i class="fas fa-times"></i>Close</button>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<!-- The Modal -->
+<div class="modal" id="cf">
+	<div class="modal-dialog modal-lg">
+		<div class="modal-content ">
+
+			<!-- Modal Header -->
+			<div class="modal-header">
+				<h4 class="modal-title"><i class="fas fa-user-tie"></i>Amit Kumar</h4>
+				<button type="button" class="close" data-dismiss="modal">×</button>
+			</div>
+
+			<!-- Modal body -->
+			<div class="modal-body">
+				<div class="row">
+					<div class="col-sm-12 form-group">
+						<label>Feedback</label>
+						<textarea class="form-control h-100" placeholder="Enter Feedback"></textarea>
+					</div>
+				</div>
+				<!-- Modal footer -->
+				<div class="p-0 text-center mt-3 ">
+					<button type="button" class="btn cnl-btn ripplelink" data-dismiss="modal"><i class="fas fa-times"></i>Close</button>
+					<button type="button" class="btn mtr-o-grn btn-l "><i class="fas fa-paper-plane"></i>Submit</button>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+

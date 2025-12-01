@@ -1,0 +1,285 @@
+﻿
+@{
+    ViewBag.Title = "DigitalLib";
+}
+<link href="~/Areas/DigitalLibrary/assets/css/tagsinput.css" rel="stylesheet" />
+<script src="~/Areas/DigitalLibrary/assets/js/tagsinput.js"></script>
+
+<div class="row">
+    <div class="col-md-8 mb-0">
+        <h2 class="headingscd mb-3">Welcome to <span class="mtr-o-clr">Digital Library!</span> </h2>
+    </div>
+    <div class="col-md-4 text-right align-self-center mb-0">
+        <a href="~/DigitalLibrary/MySharedContent" data-toggle="tooltip" data-original-title="Shared Content" class="btn btn-icon"><i class="fas fa-share-alt m-0"></i> <span class="count-nt " id="mySharedContent">0</span></a>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-8 fw-799 mb-0">
+        <div class="serbox searchbox">
+
+            <div class="row">
+                <div class="col-sm-8 form-group align-self-end">
+                    <label>What are you looking for at the library?</label>
+                    <input type="text" id="txtSearchBox" class="form-control" placeholder="Search Here..." name="">
+                </div>
+                <div class="col-sm-4 form-group">
+                    <label>Project Code</label>
+                    <select class="form-control applyselect " id="ProjectCode">
+                    </select>
+                </div>
+                <div class="col-sm-4 form-group">
+                    <label>Category</label>
+                    <select class="form-control applyselect " id="ddlCategory" onchange="FillSubCategory(this)">
+                    </select>
+
+                </div>
+                <div class="col-sm-4 form-group">
+                    <label>Sub Category</label>
+                    <select class="form-control applyselect " id="ddlSubCategory">
+                    </select>
+                </div>
+
+
+                <div class="col-sm-4 form-group mt-3 align-self-end">
+
+                    <a href="~/DigitalLibrary/SearchBox" id="AnchorAddButton" onclick="return FillFilterOption()" class="btn mtr-o-grn btn-l  ripplelink "><i class="fas fa-search"></i>Search</a>
+
+                </div>
+                <div class="col-sm-6 form-group align-self-center" style="display:none;">
+                    <a href="" data-toggle="modal" data-target="#as" class="adsrh"><i class="fas fa-plus-circle"></i>Advanced Search</a>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="col-md-4 fw-799">
+        <div class="uploadheredng boxeffect">
+            <img src="~/assets/images/upload-here-image.png" class="uloadimg" />
+            <div class="row align-items-center">
+                <div class="col-sm-8 align-self-center ">
+                    <h6 class="">Would you like to upload content?</h6>
+                    <p>Knowledge, You want to store in the digital library for the organization and for yourself </p>
+                    <a href="~/DigitalLibrary/ContentDetail" class="btn mtr-o-grn scale"><i class="fas fa-upload"></i>Add Content</a>
+                </div>
+                <!-- end col -->
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6" id="divMyContent" style="display:none;" >
+        <div class="inner-main dllisthgt br-20 p-0">
+            <div class="row">
+                <div class="col-md-6 p-4 br-r-aft mb-0">
+                    <h2 class="dlsubheading ">My Contents <i class="fas fa-info-circle" data-toggle="tooltip" data-placement="right" data-original-title="User request content stages"></i></h2>
+                    <ul class="list-unstyled dllistdtl  ">
+                        <li>
+                            <a href="~/DigitalLibrary/MyContent?id=1" class="d-flex dllist boxeffect">
+                                <div class="flex-shrink-0 mr-2 align-self-center  align-self-center  "> <img src="~/assets/images/icon/dl-icon/document-upload-icon.png" alt=""> </div>
+                                <div class="flex-grow-1 fn-bold align-self-center  align-self-center "> No of Document Uploaded </div>
+                                <div class="flex-shrink-0 ">
+                                    <div class="count-nt count-lg" id="divUserTotalDoc">0</div>
+                                </div>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="~/DigitalLibrary/MyContent?id=2" class="d-flex dllist boxeffect">
+                                <div class="flex-shrink-0 mr-2 align-self-center "> <img src="~/assets/images/icon/dl-icon/approved-icon.png" alt=""> </div>
+                                <div class="flex-grow-1 fn-bold align-self-center  "> Approved </div>
+                                <div class="flex-shrink-0 ">
+                                    <div class="count-nt count-lg" id="divUserTotalApproved">0</div>
+                                </div>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="~/DigitalLibrary/MyContent?id=3" class="d-flex dllist boxeffect">
+                                <div class="flex-shrink-0 mr-2 align-self-center "> <img src="~/assets/images/icon/dl-icon/pending-icon.png" alt=""> </div>
+                                <div class="flex-grow-1 fn-bold align-self-center  "> Pending/Draft </div>
+                                <div class="flex-shrink-0 ">
+                                    <div class="count-nt count-lg" id="divUserTotalPending">0</div>
+                                </div>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="~/DigitalLibrary/MyContent?id=4" class="d-flex dllist boxeffect">
+                                <div class="flex-shrink-0 mr-2 align-self-center "> <img src="~/assets/images/icon/dl-icon/resubmit-icon.png" alt=""> </div>
+                                <div class="flex-grow-1 fn-bold align-self-center  "> Resubmit </div>
+                                <div class="flex-shrink-0 ">
+                                    <div class="count-nt count-lg" id="divUserTotalResub">0</div>
+                                </div>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="~/DigitalLibrary/MyContent?id=5" class="d-flex dllist boxeffect">
+                                <div class="flex-shrink-0 mr-2 align-self-center "> <img src="~/assets/images/icon/dl-icon/movedbackup-icon.png" alt=""> </div>
+                                <div class="flex-grow-1 fn-bold align-self-center  "> Moved to Backup </div>
+                                <div class="flex-shrink-0 ">
+                                    <div class="count-nt count-lg" id="divUserTotalMove">0</div>
+                                </div>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+                <div class="col-md-6 p-4 mb-0 ml-auto">
+                    <h2 class="dlsubheading">My Request for Download <i class="fas fa-info-circle" data-toggle="tooltip" data-placement="right" data-original-title="My team content upload's stages"></i></h2>
+                    <ul class="list-unstyled dllistdtl">
+                        <li>
+                            <a href="~/DigitalLibrary/MyPendingDocument?id=1" class="d-flex dllist boxeffect">
+                                <div class="flex-shrink-0 mr-2 align-self-center "> <img src="~/assets/images/icon/dl-icon/document-uploaded-icon.png" alt=""> </div>
+                                <div class="flex-grow-1 fn-bold align-self-center  ">No of Request for Download </div>
+                                <div class="flex-shrink-0 ">
+                                    <div class="count-nt count-lg" id="divUserAprTotalDoc">0</div>
+                                </div>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="~/DigitalLibrary/MyPendingDocument?id=2" class="d-flex dllist boxeffect">
+                                <div class="flex-shrink-0 mr-2 align-self-center "> <img src="~/assets/images/icon/dl-icon/download-approved-icon.png" alt=""> </div>
+                                <div class="flex-grow-1 fn-bold align-self-center  "> Request Approved </div>
+                                <div class="flex-shrink-0 ">
+                                    <div class="count-nt count-lg" id="divUserAprTotalApproved">0</div>
+                                </div>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="~/DigitalLibrary/MyPendingDocument?id=3" class="d-flex dllist boxeffect">
+                                <div class="flex-shrink-0 mr-2 align-self-center "> <img src="~/assets/images/icon/dl-icon/pending-icon.png" alt=""> </div>
+                                <div class="flex-grow-1 fn-bold align-self-center  "> Pending </div>
+                                <div class="flex-shrink-0 ">
+                                    <div class="count-nt count-lg" id="divUserAprTotalPending">0</div>
+                                </div>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="~/DigitalLibrary/MyPendingDocument?id=4" class="d-flex dllist boxeffect">
+                                <div class="flex-shrink-0 mr-2 align-self-center "> <img src="~/assets/images/icon/dl-icon/notapproved-icon.png" alt=""> </div>
+                                <div class="flex-grow-1 fn-bold align-self-center  "> Not Approved </div>
+                                <div class="flex-shrink-0 ">
+                                    <div class="count-nt count-lg" id="divUserAprTotalNotAprroved">0</div>
+                                </div>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6" id="dvMyTeamContent" style="display:none;">
+        <div class="inner-main dllisthgt br-20 p-0">
+            <div class="row">
+                <div class="col-md-6 p-4 br-r-aft mb-0">
+                    <h2 class="dlsubheading">My Team <i class="fas fa-info-circle" data-toggle="tooltip" data-placement="right" data-original-title="User request content stages"></i></h2>
+                    <ul class="list-unstyled dllistdtl ">
+                        <li>
+                            <a href="~/DigitalLibrary/TeamContentRequest?id=1" class="d-flex dllist boxeffect">
+                                <div class="flex-shrink-0 mr-2 align-self-center "> <img src="~/assets/images/icon/dl-icon/document-upload-icon.png" alt=""> </div>
+                                <div class="flex-grow-1 fn-bold align-self-center  ">No of Document Uploaded </div>
+                                <div class="flex-shrink-0 ">
+                                    <div class="count-nt count-lg" id="divManagerTotalDoc">0</div>
+                                </div>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="~/DigitalLibrary/TeamContentRequest?id=2" class="d-flex dllist boxeffect">
+                                <div class="flex-shrink-0 mr-2 align-self-center "> <img src="~/assets/images/icon/dl-icon/approved-icon.png" alt=""> </div>
+                                <div class="flex-grow-1 fn-bold align-self-center  "> Approved </div>
+                                <div class="flex-shrink-0 ">
+                                    <div class="count-nt count-lg" id="divManagerTotalApprved">0</div>
+                                </div>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="~/DigitalLibrary/TeamContentRequest?id=3" class="d-flex dllist boxeffect">
+                                <div class="flex-shrink-0 mr-2 align-self-center "> <img src="~/assets/images/icon/dl-icon/pending-icon.png" alt=""> </div>
+                                <div class="flex-grow-1 fn-bold align-self-center  "> Pending </div>
+                                <div class="flex-shrink-0 ">
+                                    <div class="count-nt count-lg" id="divManagerTotalPending">0</div>
+                                </div>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="~/DigitalLibrary/TeamContentRequest?id=4" class="d-flex dllist boxeffect">
+                                <div class="flex-shrink-0 mr-2 align-self-center "> <img src="~/assets/images/icon/dl-icon/resubmit-icon.png" alt=""> </div>
+                                <div class="flex-grow-1 fn-bold align-self-center  "> Resubmit </div>
+                                <div class="flex-shrink-0 ">
+                                    <div class="count-nt count-lg" id="divManagerTotalRessubmit">0</div>
+                                </div>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="~/DigitalLibrary/TeamContentRequest?id=5" class="d-flex dllist boxeffect">
+                                <div class="flex-shrink-0 mr-2 align-self-center "> <img src="~/assets/images/icon/dl-icon/movedbackup-icon.png" alt=""> </div>
+                                <div class="flex-grow-1 fn-bold align-self-center  "> Moved to Backup </div>
+                                <div class="flex-shrink-0 ">
+                                    <div class="count-nt count-lg" id="divManagerTotalMove">0</div>
+                                </div>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+                <div class="col-md-6 p-4 mb-0 ml-auto">
+                    <h2 class="dlsubheading">My Team Request for Download <i class="fas fa-info-circle" data-toggle="tooltip" data-placement="right" data-original-title="My team content upload's stages"></i></h2>
+                    <ul class="list-unstyled dllistdtl">
+                        <li>
+                            <a href="~/DigitalLibrary/MyTeamPendingDocument?id=1" class="d-flex dllist boxeffect">
+                                <div class="flex-shrink-0 mr-2 align-self-center "> <img src="~/assets/images/icon/dl-icon/document-uploaded-icon.png" alt=""> </div>
+                                <div class="flex-grow-1 fn-bold align-self-center  ">No of Request for Download</div>
+                                <div class="flex-shrink-0 ">
+                                    <div class="count-nt count-lg" id="divManagerAprTotalDoc">0</div>
+                                </div>
+                            </a>
+                        </li>
+                        <li>
+                            <a  href="~/DigitalLibrary/MyTeamPendingDocument?id=2" class="d-flex dllist boxeffect">
+                                <div class="flex-shrink-0 mr-2 align-self-center "> <img src="~/assets/images/icon/dl-icon/download-approved-icon.png" alt=""> </div>
+                                <div class="flex-grow-1 fn-bold align-self-center  "> Request Approved</div>
+                                <div class="flex-shrink-0 ">
+                                    <div class="count-nt count-lg" id="divManagerAprTotalApproved">0</div>
+                                </div>
+                            </a>
+                        </li>
+                        <li>
+                            <a  href="~/DigitalLibrary/MyTeamPendingDocument?id=3" class="d-flex dllist boxeffect">
+                                <div class="flex-shrink-0 mr-2 align-self-center "> <img src="~/assets/images/icon/dl-icon/pending-icon.png" alt=""> </div>
+                                <div class="flex-grow-1 fn-bold align-self-center  "> Pending </div>
+                                <div class="flex-shrink-0 ">
+                                    <div class="count-nt count-lg" id="divManagerAprTotalPending">0</div>
+                                </div>
+                            </a>
+                        </li>
+                        <li>
+                            <a  href="~/DigitalLibrary/MyTeamPendingDocument?id=4" class="d-flex dllist boxeffect">
+                                <div class="flex-shrink-0 mr-2 align-self-center "> <img src="~/assets/images/icon/dl-icon/notapproved-icon.png" alt=""> </div>
+                                <div class="flex-grow-1 fn-bold align-self-center  "> Not Approved </div>
+                                <div class="flex-shrink-0 ">
+                                    <div class="count-nt count-lg" id="divManagerAprTotalNotAprroved">0</div>
+                                </div>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+</div>
+
+@section scripts    {
+    @System.Web.Optimization.Scripts.Render("~/bundle/unobtrusivejs")
+    @System.Web.Optimization.Scripts.Render("~/bundle/dataTablesjs")
+    <script src="~/assets/design/Scripts/AddInit.js?v=@clsApplicationSetting.GetWebConfigValue("Version")"></script>
+    <script src="~/Areas/DigitalLibrary/DevScript/DigitalLibDashboard.js"></script>
+
+    <script>
+        var IsEDUser = '@ViewBag.IsED';
+       var loggedinUserid = '@ViewBag.UserId';
+		var loggedinUserName = '@ViewBag.UserName';
+		var UserGrade = '@ViewBag.Grade';
+        var IsPM = '@ViewBag.IsPM';
+        var IsHOD =  '@ViewBag.IsHOD';
+
+
+    </script>
+}

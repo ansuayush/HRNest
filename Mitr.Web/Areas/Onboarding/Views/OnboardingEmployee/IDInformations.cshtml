@@ -1,0 +1,568 @@
+﻿
+@{
+	ViewBag.Title = "IDInformations";
+	Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@model Mitr.Models.Employee.IDInfo
+@{
+	string MenuID = ViewBag.MenuID.ToString();
+}
+@Html.Partial("_EmployeeHeaderOnBoarding")
+
+
+
+<div class="mb-100">
+	@using (Ajax.BeginForm("IDInformations", "OnboardingEmployee",
+		new { src = ViewBag.src },
+		new AjaxOptions { HttpMethod = "POST", OnSuccess = "OnSuccess", OnBegin = "ShowLoadingDialog()", OnFailure = "OnPostFailure()" },
+	new { @id = "IDInformationFrom", @autocomplete = "Off" })
+	)
+	{
+		<div class="inner-main mb-2">
+			<div class="row">
+				<div class="col-sm-12">
+					<div class="table-responsive mb-lst mt-0">
+						<table class="table mt-0 mb-0 tble-lr-non">
+							<tbody>
+								@{ int count = 0;}
+								@if (Model.EMPAttachmentsList != null)
+								{
+									for (int i = 0; i < Model.EMPAttachmentsList.Count; i++)
+									{
+										count += 1;
+
+
+										<tr>
+											<td class="btm-m w-150">
+												@Html.HiddenFor(model => Model.EMPAttachmentsList[i].EAttachID)
+												@Html.HiddenFor(model => Model.EMPAttachmentsList[i].OfficialName, new { @class = "hdnOfficialName" })
+												<strong class="hd-wm">@Model.EMPAttachmentsList[i].OfficialName</strong>
+											</td>
+											<td class="w-50 mp-0">
+												<div class="toggle-btn tgl-hdrm">
+													<input type="checkbox" class="toggle chkmain" id="Opted_@count" name="@Html.NameFor(x => x.EMPAttachmentsList[i].Chk)" @(Model.EMPAttachmentsList[i].IsOpted == 1 ? "checked" : "")>
+													<label for="Opted_@count"> <span class="off">No</span> <span class="on">Yes</span> </label>
+												</div>
+											</td>
+
+											@switch (Model.EMPAttachmentsList[i].OfficialName.ToLower())
+											{
+												case "pan":
+													<td class="w-100 ">
+														<div class="form-group mb-0">
+															<label class="lbl-ab">PAN No</label>
+															@Html.TextBoxFor(model => Model.EMPAttachmentsList[i].No, new { @class = "form-control" })
+															@Html.ValidationMessageFor(model => Model.EMPAttachmentsList[i].No, "", new { @class = "text-danger" })
+														</div>
+													</td>
+													<td class="w-100">
+														<div class="form-group mb-0">
+															<label class="lbl-ab">Name on PAN</label>
+															@Html.TextBoxFor(model => Model.EMPAttachmentsList[i].Name, new { @class = "form-control" })
+															@Html.ValidationMessageFor(model => Model.EMPAttachmentsList[i].Name, "", new { @class = "text-danger" })
+														</div>
+													</td>
+													<td class="w-150">
+														<div class="form-group mb-0">
+															<label class="lbl-ab">Remarks</label>
+															@Html.TextAreaFor(model => Model.EMPAttachmentsList[i].Remarks, new { @class = "form-control" })
+															@Html.ValidationMessageFor(model => Model.EMPAttachmentsList[i].Remarks, "", new { @class = "text-danger" })
+														</div>
+													</td>
+													break;
+
+												case "aadhaar":
+													<td class="w-100 ">
+														<div class="form-group mb-0">
+															<label class="lbl-ab">Aadhaar No</label>
+															@Html.TextBoxFor(model => Model.EMPAttachmentsList[i].No, new { @class = "form-control" })
+															@Html.ValidationMessageFor(model => Model.EMPAttachmentsList[i].No, "", new { @class = "text-danger" })
+														</div>
+													</td>
+													<td class="w-200">
+														<div class="form-group mb-0">
+															<label class="lbl-ab">Name on Aadhaar</label>
+															@Html.TextBoxFor(model => Model.EMPAttachmentsList[i].Name, new { @class = "form-control" })
+															@Html.ValidationMessageFor(model => Model.EMPAttachmentsList[i].Name, "", new { @class = "text-danger" })
+														</div>
+													</td>
+													break;
+												case "voter id":
+													<td class="w-200 ">
+														<div class="form-group mb-0">
+															<label class="lbl-ab">Voter No</label>
+															@Html.TextBoxFor(model => Model.EMPAttachmentsList[i].No, new { @class = "form-control" })
+															@Html.ValidationMessageFor(model => Model.EMPAttachmentsList[i].No, "", new { @class = "text-danger" })
+														</div>
+													</td>
+													break;
+
+												case "passport":
+													<td class="w-200 ">
+														<div class="form-group mb-0">
+															<label class="lbl-ab">Passport No</label>
+															@Html.TextBoxFor(model => Model.EMPAttachmentsList[i].No, new { @class = "form-control" })
+															@Html.ValidationMessageFor(model => Model.EMPAttachmentsList[i].No, "", new { @class = "text-danger" })
+														</div>
+													</td>
+													<td class="w-200">
+														<div class="form-group mb-0">
+															<label class="lbl-ab">Name on Passport</label>
+															@Html.TextBoxFor(model => Model.EMPAttachmentsList[i].Name, new { @class = "form-control" })
+															@Html.ValidationMessageFor(model => Model.EMPAttachmentsList[i].Name, "", new { @class = "text-danger" })
+														</div>
+													</td>
+													<td class="w-150">
+														<div class="form-group mb-0">
+															<label class="lbl-ab">Place Of Issue</label>
+															@Html.TextBoxFor(model => Model.EMPAttachmentsList[i].PlaceOfIssue, new { @class = "form-control" })
+															@Html.ValidationMessageFor(model => Model.EMPAttachmentsList[i].PlaceOfIssue, "", new { @class = "text-danger" })
+														</div>
+													</td>
+
+													<td class="w-100">
+														<div class="form-group mb-0">
+															<label class="lbl-ab">Passport Expiry Date</label>
+															@Html.TextBoxFor(model => Model.EMPAttachmentsList[i].ExpiryDate, new { @class = "form-control", @type = "date" })
+															@Html.ValidationMessageFor(model => Model.EMPAttachmentsList[i].ExpiryDate, "", new { @class = "text-danger" })
+														</div>
+													</td>
+													break;
+												case "director identification number":
+													<td class="w-200 ">
+														<div class="form-group mb-0">
+															<label class="lbl-ab">DIN</label>
+															@Html.TextBoxFor(model => Model.EMPAttachmentsList[i].No, new { @class = "form-control" })
+															@Html.ValidationMessageFor(model => Model.EMPAttachmentsList[i].No, "", new { @class = "text-danger" })
+														</div>
+													</td>
+													<td class="w-200 ">
+														<div class="form-group mb-0">
+															<label class="lbl-ab">Name on DIN</label>
+															@Html.TextBoxFor(model => Model.EMPAttachmentsList[i].Name, new { @class = "form-control" })
+															@Html.ValidationMessageFor(model => Model.EMPAttachmentsList[i].Name, "", new { @class = "text-danger" })
+														</div>
+													</td>
+													break;
+												case "uan":
+													<td class="w-200 ">
+														<div class="form-group mb-0">
+															<label class="lbl-ab">UAN</label>
+															@Html.TextBoxFor(model => Model.EMPAttachmentsList[i].No, new { @class = "form-control" })
+															@Html.ValidationMessageFor(model => Model.EMPAttachmentsList[i].No, "", new { @class = "text-danger" })
+														</div>
+													</td>
+													<td class="w-200 ">
+														<div class="form-group mb-0">
+															<label class="lbl-ab">Name on UAN</label>
+															@Html.TextBoxFor(model => Model.EMPAttachmentsList[i].Name, new { @class = "form-control" })
+															@Html.ValidationMessageFor(model => Model.EMPAttachmentsList[i].Name, "", new { @class = "text-danger" })
+														</div>
+													</td>
+													break;
+												case "old pf":
+													<td class="w-200 ">
+														<div class="form-group mb-0">
+															<label class="lbl-ab">Old PF No</label>
+															@Html.TextBoxFor(model => Model.EMPAttachmentsList[i].No, new { @class = "form-control" })
+															@Html.ValidationMessageFor(model => Model.EMPAttachmentsList[i].No, "", new { @class = "text-danger" })
+														</div>
+													</td>
+													break;
+												case "pio/oci":
+													<td class="w-200 ">
+														<div class="form-group mb-0">
+															<label class="lbl-ab">PIO/OCI</label>
+															@Html.TextBoxFor(model => Model.EMPAttachmentsList[i].No, new { @class = "form-control" })
+															@Html.ValidationMessageFor(model => Model.EMPAttachmentsList[i].No, "", new { @class = "text-danger" })
+														</div>
+													</td>
+													<td class="w-200 ">
+														<div class="form-group mb-0">
+															<label class="lbl-ab">Name on PIO/OCI</label>
+															@Html.TextBoxFor(model => Model.EMPAttachmentsList[i].Name, new { @class = "form-control" })
+															@Html.ValidationMessageFor(model => Model.EMPAttachmentsList[i].Name, "", new { @class = "text-danger" })
+														</div>
+													</td>
+
+													break;
+
+												case "driving license":
+													<td class="w-200 ">
+														<div class="form-group mb-0">
+                                                            <label class="lbl-ab">Driving License No</label>
+															@Html.TextBoxFor(model => Model.EMPAttachmentsList[i].No, new { @class = "form-control" })
+															@Html.ValidationMessageFor(model => Model.EMPAttachmentsList[i].No, "", new { @class = "text-danger" })
+														</div>
+													</td>
+													break;
+												case "professional tax already deposited":
+													<td class="w-200 ">
+														<div class="form-group mb-0">
+															<label class="lbl-ab">Amount</label>
+															@Html.TextBoxFor(model => Model.EMPAttachmentsList[i].No, new { @class = "form-control" })
+															@Html.ValidationMessageFor(model => Model.EMPAttachmentsList[i].No, "", new { @class = "text-danger" })
+														</div>
+													</td>
+													@*<td class="w-150">
+															<div class="form-group mb-0">
+																<label class="lbl-ab">Remarks</label>
+																@Html.TextAreaFor(model => Model.EMPAttachmentsList[i].Remarks, new { @class = "form-control" })
+																@Html.ValidationMessageFor(model => Model.EMPAttachmentsList[i].Remarks, "", new { @class = "text-danger" })
+															</div>
+														</td>*@
+
+													break;
+												case "residential status":
+													<td class="w-200 ">
+														<div class="form-group mb-0">
+															<label class="lbl-ab">Residential Status</label>
+															@Html.DropDownListFor(model => Model.EMPAttachmentsList[i].No, new SelectList(Model.ResidentStatus, "ID", "Name", Model.EMPAttachmentsList[i].No), "Select",
+															new { @class = "form-control  applyselect" })
+															@Html.ValidationMessageFor(model => model.EMPAttachmentsList[i].No, "", new { @class = "text-danger" })
+
+
+
+														</div>
+													</td>
+													
+
+													break;
+												default:
+
+													<td class="w-200 ">
+														<div class="form-group mb-0">
+															<label class="lbl-ab">No</label>
+															@Html.TextBoxFor(model => Model.EMPAttachmentsList[i].No, new { @class = "form-control" })
+															@Html.ValidationMessageFor(model => Model.EMPAttachmentsList[i].No, "", new { @class = "text-danger" })
+														</div>
+													</td>
+													@*if (@Model.EMPAttachmentsList[i].OfficialName != "Driving License")
+														{
+															<td class="w-200">
+																<div class="form-group mb-0">
+																	<label class="lbl-ab">Name</label>
+																	@Html.TextBoxFor(model => Model.EMPAttachmentsList[i].Name, new { @class = "form-control", @Value = "" })
+																	@Html.ValidationMessageFor(model => Model.EMPAttachmentsList[i].Name, "", new { @class = "text-danger" })
+																</div>
+															</td>
+														}*@
+
+
+													@*<td class="w-100" style="display:none;">
+															<div class="form-group mb-0">
+																<label class="lbl-ab">Issue Date</label>
+																@Html.TextBoxFor(model => Model.EMPAttachmentsList[i].IssueDate, new { @class = "form-control", @type = "date" })
+																@Html.ValidationMessageFor(model => Model.EMPAttachmentsList[i].IssueDate, "", new { @class = "text-danger" })
+															</div>
+														</td>
+														<td class="w-100" style="display:none;">
+															<div class="form-group mb-0">
+																<label class="lbl-ab">Expiry Date</label>
+																@Html.TextBoxFor(model => Model.EMPAttachmentsList[i].ExpiryDate, new { @class = "form-control", @type = "date" })
+																@Html.ValidationMessageFor(model => Model.EMPAttachmentsList[i].ExpiryDate, "", new { @class = "text-danger" })
+															</div>
+														</td>
+														<td class="w-150" style="display:none;">
+															<div class="form-group mb-0">
+																<label class="lbl-ab">Place Of Issue</label>
+																@Html.TextBoxFor(model => Model.EMPAttachmentsList[i].PlaceOfIssue, new { @class = "form-control" })
+																@Html.ValidationMessageFor(model => Model.EMPAttachmentsList[i].PlaceOfIssue, "", new { @class = "text-danger" })
+															</div>
+														</td>*@
+													@*if (@Model.EMPAttachmentsList[i].OfficialName == "PAN Card")
+														{
+															<td class="w-300" colspan="2">
+																<div class="form-group mb-0">
+																	<label class="lbl-ab">Remark</label>
+																	@Html.TextAreaFor(model => Model.EMPAttachmentsList[i].Remarks, new { @class = "form-control" })
+																	@Html.ValidationMessageFor(model => Model.EMPAttachmentsList[i].Remarks, "", new { @class = "text-danger" })
+																</div>
+															</td>
+														}*@
+													break;
+											}
+										</tr>
+
+									}
+								}
+							</tbody>
+						</table>
+					</div>
+				</div>
+				<!---->
+			</div>
+		</div><div class="inner-main mb-2">
+			<h2 class="headingtwo"><i class="fas fa-file-alt"></i>Insurance Policy Details</h2>
+			<div class="row">
+				<!---->
+
+				<div class="col-md-12 mb-0 form-group">
+					<label>Insurance Type</label>
+					<ul class="list-unstyled inlin-list mt-2">
+						<li>
+							@if (Model.Accident != null)
+							{
+								<input type="checkbox" id="chkAccident" name="1" class="trigger" @(string.IsNullOrEmpty(Model.Accident.Provider) ? "" : "checked")>
+								<label for="chkAccident"> Accident</label>
+							}
+						</li>
+					</ul>
+				</div>
+				<div class="col-sm-12 hidden" id="hidden_fields_one" style="@(string.IsNullOrEmpty(Model.Accident.Provider)?"display:none;":"")">
+					<div class="row">
+						<div class="col-md-3 col-sm-6 form-group">
+							<label>Insurance Provider <sup>*</sup></label>
+							@Html.HiddenFor(model => Model.Accident.InsuranceID)
+							@Html.TextBoxFor(model => Model.Accident.Provider, new { @class = "form-control Accireq" })
+
+							@Html.ValidationMessageFor(model => Model.Accident.Provider, "", new { @class = "text-danger" })
+						</div>
+						<div class="col-md-3 col-sm-6 form-group">
+							<label>Policy Number</label>
+							@Html.TextBoxFor(model => Model.Accident.PolicyNo, new { @class = "form-control Accireq" })
+							@Html.ValidationMessageFor(model => Model.Accident.PolicyNo, "", new { @class = "text-danger" })
+						</div>
+						<div class="col-md-3 col-sm-6 form-group">
+							<label>TPA</label>
+							@Html.TextBoxFor(model => Model.Accident.TPA, new { @class = "form-control" })
+							@Html.ValidationMessageFor(model => Model.Accident.TPA, "", new { @class = "text-danger" })
+						</div>
+						<div class="col-md-3 col-sm-6 form-group">
+							<label>TPA Contact Detail</label>
+							@Html.TextBoxFor(model => Model.Accident.TPAContactDetail, new { @class = "form-control" })
+							@Html.ValidationMessageFor(model => Model.Accident.TPAContactDetail, "", new { @class = "text-danger" })
+						</div>
+						<div class="col-md-3 col-sm-6 form-group">
+							<label>Coverage (In Amount)</label>
+							@Html.TextBoxFor(model => Model.Accident.CoverageAmt, new { @class = "form-control Accireq" })
+							@Html.ValidationMessageFor(model => Model.Accident.CoverageAmt, "", new { @class = "text-danger" })
+						</div>
+						<div class="col-md-3 col-sm-6 form-group">
+							<label>Policy Start Date</label>
+							@Html.TextBoxFor(model => Model.Accident.StartDate, new { @class = "form-control Accireq", @type = "date" })
+							@Html.ValidationMessageFor(model => Model.Accident.StartDate, "", new { @class = "text-danger" })
+						</div>
+						<div class="col-md-3 col-sm-6 form-group">
+							<label>Policy Renewal Date</label>
+							@Html.TextBoxFor(model => Model.Accident.RenewalDate, new { @class = "form-control Accireq", @type = "date" })
+							@Html.ValidationMessageFor(model => Model.Accident.RenewalDate, "", new { @class = "text-danger" })
+						</div>
+					</div>
+				</div>
+				<div class="col-sm-12 form-group">
+					<ul class="list-unstyled inlin-list">
+						<li>
+							<input type="checkbox" id="chkMedical" name="2" @(string.IsNullOrEmpty(Model.Medical.Provider) ? "" : "checked") class="trigger">
+							<label for="chkMedical"> Medical </label>
+						</li>
+					</ul>
+				</div>
+				<div class="col-sm-12 hidden" id="hidden_fields_two" style="@(string.IsNullOrEmpty(Model.Medical.Provider)?"display:none;":"")">
+					<div class="row">
+						<div class="col-md-3 col-sm-6 form-group">
+							@Html.HiddenFor(model => Model.Medical.InsuranceID)
+							<label>Insurance Provider</label>
+							@Html.TextBoxFor(model => Model.Medical.Provider, new { @class = "form-control Medireq" })
+							@Html.ValidationMessageFor(model => Model.Medical.Provider, "", new { @class = "text-danger" })
+						</div>
+						<div class="col-md-3 col-sm-6 form-group">
+							<label>Policy Number</label>
+							@Html.TextBoxFor(model => Model.Medical.PolicyNo, new { @class = "form-control Medireq" })
+							@Html.ValidationMessageFor(model => Model.Medical.PolicyNo, "", new { @class = "text-danger" })
+						</div>
+						<div class="col-md-3 col-sm-6 form-group">
+							<label>TPA</label>
+							@Html.TextBoxFor(model => Model.Medical.TPA, new { @class = "form-control" })
+							@Html.ValidationMessageFor(model => Model.Medical.TPA, "", new { @class = "text-danger" })
+						</div>
+						<div class="col-md-3 col-sm-6 form-group">
+							<label>TPA Contact Detail</label>
+							@Html.TextBoxFor(model => Model.Medical.TPAContactDetail, new { @class = "form-control" })
+							@Html.ValidationMessageFor(model => Model.Medical.TPAContactDetail, "", new { @class = "text-danger" })
+						</div>
+						<div class="col-md-3 col-sm-6 form-group">
+							<label>Coverage (In Amount)</label>
+							@Html.TextBoxFor(model => Model.Medical.CoverageAmt, new { @class = "form-control Medireq" })
+							@Html.ValidationMessageFor(model => Model.Medical.CoverageAmt, "", new { @class = "text-danger" })
+						</div>
+						<div class="col-md-3 col-sm-6 form-group">
+							<label>Policy Start Date</label>
+							@Html.TextBoxFor(model => Model.Medical.StartDate, new { @class = "form-control Medireq", @type = "date" })
+							@Html.ValidationMessageFor(model => Model.Medical.StartDate, "", new { @class = "text-danger" })
+						</div>
+						<div class="col-md-3 col-sm-6 form-group">
+							<label>Policy Renewal Date</label>
+							@Html.TextBoxFor(model => Model.Medical.RenewalDate, new { @class = "form-control Medireq", @type = "date" })
+							@Html.ValidationMessageFor(model => Model.Medical.RenewalDate, "", new { @class = "text-danger" })
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+
+
+		<div class="ftr-btn">
+			<div class="container-fluid">
+				<div class="row">
+					<div class="col-sm-4 text-right mb-0 align-self-center">
+						<strong>Employee Name: @Model.emp_name (@Model.emp_code)</strong>
+					</div>
+					<div class="col-sm-8 text-right mb-0">
+
+						<button type="submit" class="btn mtr-o-grn " name="Command" value="Add"><i class="fas fa-paper-plane"></i>Submit</button>
+
+						@*@Html.CreateAnchor(MenuID, "/Employee/GeneralInfo*" + Model.id, "Previous", "btn blk-gdn-btn", "Click to go back", "fas fa-angle-double-left m-0", "")
+							@Html.CreateAnchor(MenuID, "/Employee/Attachments*" + Model.id, "Next", "btn blk-gdn-btn", "Click to Next", "fas fa-angle-double-right m-0", "")*@
+						<a data-toggle="tooltip" data-original-title="Click to go back" target="" class="btn blk-gdn-btn" href="/OnboardingEmployee/GeneralInformation?src=@(clsApplicationSetting.EncryptQueryString(ViewBag.MenuID.ToString() + "*/OnboardingEmployee/GeneralInformation" + "*" + ViewBag.CandidateID + "*" + ViewBag.EMPID + "*" + ViewBag.LoginID))"><i class="fas fa-angle-double-left" aria-hidden="true"></i>Previous</a>
+						<a data-toggle="tooltip" data-original-title="Click to Next" target="" class="btn blk-gdn-btn" href="/OnboardingEmployee/Attachments?src=@(clsApplicationSetting.EncryptQueryString(ViewBag.MenuID.ToString() + "*/OnboardingEmployee/Attachments" + "*" + ViewBag.CandidateID + "*" + ViewBag.EMPID + "*" + ViewBag.LoginID))">Next <i class="fas fa-angle-double-right m-0" aria-hidden="true"></i></a>
+					</div>
+				</div>
+			</div>
+		</div>
+
+
+	}
+</div>
+
+@section scripts    {
+	@System.Web.Optimization.Scripts.Render("~/bundle/unobtrusivejs")
+	@System.Web.Optimization.Scripts.Render("~/bundle/dataTablesjs")
+	<script src="~/assets/design/Scripts/AddInit.js?v=@clsApplicationSetting.GetWebConfigValue("Version")"></script>
+	<script>
+		$(document).ready(function () {
+			if ($("#chkMedical").is(':checked')) {
+				ValidateInsurance('Medical');
+			}
+			if ($("#chkAccident").is(':checked')) {
+				ValidateInsurance('Accident');
+			}
+
+			$('.chkmain').each(function () {
+				MakeManditory(this)
+			});
+		});
+		$('#chkMedical').change(function () {
+			ValidateInsurance('Medical');
+		});
+		$('#chkAccident').change(function () {
+			ValidateInsurance('Accident');
+		});
+
+		function ValidateInsurance(Type) {
+			if (Type == "Medical") {
+				if ($("#chkMedical").is(':checked')) {
+					$("#hidden_fields_two").show();
+					$(".Medireq").each(function () {
+						$(this).rules('add', {
+							required: true,
+							messages: {
+								required: "Hey! You missed this field."
+							}
+						});
+					});
+				}
+				else {
+					$("#hidden_fields_two").hide();
+					$(".Medireq").each(function () {
+						$(this).rules('add', {
+							required: false,
+							messages: {
+								required: ""
+							}
+						});
+
+						if ($(this).attr('type') == 'text') {
+							$(this).val('');
+						}
+
+					});
+				}
+			}
+			else if (Type == "Accident") {
+				if ($('#chkAccident').is(':checked')) {
+					$("#hidden_fields_one").show();
+					$(".Accireq").each(function () {
+						$(this).rules('add', {
+							required: true,
+							messages: {
+								required: "Hey! You missed this field."
+							}
+						});
+					});
+
+				}
+				else {
+					$("#hidden_fields_one").hide();
+					$(".Accireq").each(function () {
+						$(this).rules('add', {
+							required: false,
+							messages: {
+								required: ""
+							}
+						});
+
+						if ($(this).attr('type') == 'text') {
+							$(this).val('');
+						}
+
+					});
+				}
+			}
+		}
+
+
+
+		function OnSuccess(obj) {
+			if (obj.Status) {
+				SuccessToaster(obj.SuccessMessage);
+				window.location.href = obj.RedirectURL;
+			}
+			else {
+				CloseLoadingDialog();
+				FailToaster(obj.SuccessMessage);
+
+			}
+		}
+
+
+		$('.chkmain').change(function () {
+			MakeManditory(this)
+		});
+
+
+		function MakeManditory(obj) {
+			var $cells = $(obj).closest("tr").find("td input");
+			if ($(obj).is(':checked')) {
+				$cells.each(function () {
+					$(this).rules('add', {
+						required: true,
+						messages: {
+							required: "Hey! You missed this field."
+						}
+					});
+				});
+			} else {
+				$cells.each(function () {
+					$(this).rules('add', {
+						required: false,
+						messages: {
+							required: ""
+						}
+					});
+					if ($(this).attr('type') == 'text') {
+						$(this).val('');
+					}
+
+				});
+			}
+
+
+		}
+
+
+	</script>
+}
+

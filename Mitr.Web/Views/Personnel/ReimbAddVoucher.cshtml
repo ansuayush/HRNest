@@ -1,0 +1,657 @@
+﻿@model Personnels.ReimbursementBooking.ClaimVoucher
+@using (Ajax.BeginForm("ReimbAddVoucher", "Personnel",
+		new { src = ViewBag.src },
+		new AjaxOptions { HttpMethod = "POST", OnSuccess = "OnSuccess", OnBegin = "ShowLoadingDialog();", OnFailure = "CloseLoadingDialog();" },
+	new { name = "ReimbAddVoucherForm", @id = "ReimbAddVoucher" })
+	)
+{
+	@Html.AntiForgeryToken()
+	@Html.HiddenFor(x => Model.FYId)
+	@Html.HiddenFor(x => Model.EmpId)
+	@Html.HiddenFor(x => Model.HeadId)
+	@Html.HiddenFor(x => Model.ClaimId)
+	@Html.HiddenFor(x => Model.ClaimType)
+	@Html.HiddenFor(x => Model.TotalAmount)
+	@Html.HiddenFor(x => Model.RequestNo)
+	@Html.HiddenFor(x => Model.RequestDate)
+	@Html.HiddenFor(x => Model.CFYId)
+	<div class="modal-body">
+		<div class="row">
+			<div class="col-sm-4 form-group">
+				<label>Employee Name </label>
+				<p>@Model.EmployeeName</p>
+			</div>
+			<div class="col-sm-2 form-group">
+				<label>Employee Code </label>
+				<p>@Model.EmployeeCode</p>
+			</div>
+			<div class="col-sm-4 form-group">
+				<label>Request No</label>
+				<p>@Model.RequestNo</p>
+			</div>
+			<div class="col-sm-2 form-group">
+				<label>Request Date</label>
+				<p>@(Convert.ToDateTime(Model.RequestDate).ToString("dd/MM/yyyy"))</p>
+			</div>
+		</div>
+		<div class="row">
+			@Html.ValidationSummary(false, "", new { @class = "text-danger" })
+		</div>
+		<div class="row">
+			<div class="col-md-12 form-group mb-1">
+				<div id="divvouchertable" class=@(Model.IsDeleted==2?"scroll":"")>
+					<div class='table-responsive'>
+						<table id="tblvoucher" class="table  table-stripted lg-table mb-0 mt-0">
+							<thead>
+								<tr>
+									<th width="10" class="text-center">SNo. </th>
+									@if (Model.ClaimType == "RLIC")
+									{
+										<th width="120">Insurance Company<sup>*</sup> </th>
+										<th width="80">Policy No.<sup>*</sup></th>
+										<th width="80">Start Date<sup>*</sup></th>
+										<th width="80">End Date<sup>*</sup></th>
+										<th width="100">Insured Person<sup>*</sup></th>
+										<th width="120">Amount of Premium <sup>*</sup></th>
+										<th width="100">Receipt No.<sup>*</sup></th>
+										<th width="80">Receipt Date<sup>*</sup></th>
+										<th>Reason</th>
+									}
+									@if (Model.ClaimType == "RMed")
+									{
+										<th width="150">Bill No.<sup>*</sup> </th>
+										<th width="80">Bill Date<sup>*</sup></th>
+										<th width="100">Bill Amount<sup>*</sup></th>
+										<th width="200">Name of Patient<sup>*</sup></th>
+										<th width="200">Relation with Employee<sup>*</sup></th>
+										<th>Remark</th>
+									}
+									@if (Model.ClaimType == "ROth")
+									{
+										<th width="100">Bill/Invoice No<sup>*</sup> </th>
+										<th width="120">Bill/Invoice Date<sup>*</sup></th>
+										<th width="100">Amount<sup>*</sup></th>
+										<th width="180">Details of bill/invoice<sup>*</sup></th>
+										<th>Particulars<sup>*</sup></th>
+										<th width="120">Attachment No.<sup>*</sup></th>
+									}
+									@if (Model.IsDeleted == 2 && Model.FYId==Model.CFYId)
+									{
+										<th></th>
+									}
+								</tr>
+							</thead>
+							<tbody>
+								@if (Model.ClaimType == "RLIC")
+								{
+									if (Model.insuranceentry != null)
+									{
+										int Rcount = 0;
+										for (int i = 0; i < Model.insuranceentry.Count; i++)
+										{
+											Rcount++;
+											<tr>
+												<td>
+													<div class='sno'>
+														@Html.HiddenFor(model => Model.insuranceentry[i].Id)
+														<label id="span_@Rcount" name="span_@Rcount">@Rcount </label>
+													</div>
+												</td>
+												<td>
+													@if (Model.IsDeleted == 2 && Model.FYId == Model.CFYId)
+													{
+														@Html.TextBoxFor(model => Model.insuranceentry[i].InsuranceCompany, new { @class = "form-control", @placeholder = "Insurance Company" })
+														@Html.ValidationMessageFor(model => Model.insuranceentry[i].InsuranceCompany, "", new { @class = "text-danger" })
+													}
+													else
+													{
+														@Model.insuranceentry[i].InsuranceCompany
+													}
+												</td>
+												<td>
+													@if (Model.IsDeleted == 2 && Model.FYId == Model.CFYId)
+													{
+														@Html.TextBoxFor(model => Model.insuranceentry[i].PolicyNo, new { @class = "form-control", @placeholder = "Policy No" })
+														@Html.ValidationMessageFor(model => Model.insuranceentry[i].PolicyNo, "", new { @class = "text-danger" })
+													}
+													else
+													{
+														@Model.insuranceentry[i].PolicyNo
+													}
+												</td>
+												<td>
+													@if (Model.IsDeleted == 2 && Model.FYId == Model.CFYId)
+													{
+														@Html.TextBoxFor(model => Model.insuranceentry[i].StartDate, new { @class = "form-control txtDate", Type = "date", @placeholder = "Start Date" })
+														@Html.ValidationMessageFor(model => Model.insuranceentry[i].StartDate, "", new { @class = "text-danger" })
+													}
+													else
+													{
+														@Convert.ToDateTime(Model.insuranceentry[i].StartDate).ToString("dd/MM/yyyy")														
+													}
+												</td>
+												<td>
+													@if (Model.IsDeleted == 2 && Model.FYId == Model.CFYId)
+													{
+														@Html.TextBoxFor(model => Model.insuranceentry[i].EndDate, new { @class = "form-control txtDate", Type = "date", @placeholder = "End Date" })
+														@Html.ValidationMessageFor(model => Model.insuranceentry[i].EndDate, "", new { @class = "text-danger" })
+													}
+													else
+													{
+														@Convert.ToDateTime(Model.insuranceentry[i].EndDate).ToString("dd/MM/yyyy")														
+													}
+												</td>
+												<td>
+													@if (Model.IsDeleted == 2 && Model.FYId == Model.CFYId)
+													{
+														@Html.TextBoxFor(model => Model.insuranceentry[i].InsuredPerson, new { @class = "form-control", @placeholder = "Insured Person" })
+														@Html.ValidationMessageFor(model => Model.insuranceentry[i].InsuredPerson, "", new { @class = "text-danger" })
+													}
+													else
+													{
+														@Model.insuranceentry[i].InsuredPerson
+													}
+												</td>
+												<td class="text-right">
+													@if (Model.IsDeleted == 2 && Model.FYId == Model.CFYId)
+													{
+														@Html.TextBoxFor(model => Model.insuranceentry[i].PremiumAmount, new { @class = "form-control txttotal text-right", @placeholder = "0" })
+														@Html.ValidationMessageFor(model => Model.insuranceentry[i].PremiumAmount, "", new { @class = "text-danger" })
+													}
+													else
+													{
+														@Model.insuranceentry[i].PremiumAmount.ToString("#,##0")
+													}
+												</td>
+												<td>
+													@if (Model.IsDeleted == 2 && Model.FYId == Model.CFYId)
+													{
+														@Html.TextBoxFor(model => Model.insuranceentry[i].ReceiptNo, new { @class = "form-control", @placeholder = "Receipt No" })
+														@Html.ValidationMessageFor(model => Model.insuranceentry[i].ReceiptNo, "", new { @class = "text-danger" })
+													}
+													else
+													{
+														@Model.insuranceentry[i].ReceiptNo
+													}
+												</td>
+												<td>
+													@if (Model.IsDeleted == 2 && Model.FYId == Model.CFYId)
+													{
+														@Html.TextBoxFor(model => Model.insuranceentry[i].ReceiptDate, new { @class = "form-control txtDate", Type = "date", @placeholder = "Receipt Date" })
+														@Html.ValidationMessageFor(model => Model.insuranceentry[i].ReceiptDate, "", new { @class = "text-danger" })
+													}
+													else
+													{
+														@Convert.ToDateTime(Model.insuranceentry[i].ReceiptDate).ToString("dd/MM/yyyy")														
+													}
+												</td>
+												<td>
+													@if (Model.IsDeleted == 2 && Model.FYId == Model.CFYId)
+													{
+														@Html.TextBoxFor(model => Model.insuranceentry[i].Reason, new { @class = "form-control", @placeholder = "Reason" })
+														@Html.ValidationMessageFor(model => Model.insuranceentry[i].Reason, "", new { @class = "text-danger" })
+													}
+													else
+													{
+														@Model.insuranceentry[i].Reason
+													}
+												</td>
+												@if (Model.IsDeleted == 2 && Model.FYId == Model.CFYId)
+												{
+													<td class="text-center">
+														@if (Rcount > 1)
+														{
+															<a onclick="DeleteRow(this)" data-toggle="tooltip" data-original-title="remove" class="remove"><i class="fas fa-window-close red-clr" aria-hidden="true"></i></a>
+														}
+														else
+														{
+															<a class="disabled"><i class="fas fa-window-close" aria-hidden="true"></i></a>
+														}
+													</td>
+												}
+											</tr>
+										}
+									}
+								}
+								@if (Model.ClaimType == "RMed")
+								{
+									if (Model.medicalentry != null)
+									{
+										int Rcount = 0;
+										for (int i = 0; i < Model.medicalentry.Count; i++)
+										{
+											Rcount++;
+											<tr>
+												<td>
+													<div class='sno'>
+														@Html.HiddenFor(model => Model.medicalentry[i].Id)
+														<label id="span_@Rcount" name="span_@Rcount">@Rcount </label>
+													</div>
+												</td>
+												<td>
+													@if (Model.IsDeleted == 2 && Model.FYId == Model.CFYId)
+													{
+														@Html.TextBoxFor(model => Model.medicalentry[i].BillNo, new { @class = "form-control", @placeholder = "Bill No" })
+														@Html.ValidationMessageFor(model => Model.medicalentry[i].BillNo, "", new { @class = "text-danger" })
+													}
+													else
+													{
+														@Model.medicalentry[i].BillNo
+													}
+												</td>
+												<td>
+													@if (Model.IsDeleted == 2 && Model.FYId == Model.CFYId)
+													{
+														@Html.TextBoxFor(model => Model.medicalentry[i].BillDate, new { @class = "form-control txtDate", Type = "date", @placeholder = "Bill Date" })
+														@Html.ValidationMessageFor(model => Model.medicalentry[i].BillDate, "", new { @class = "text-danger" })
+													}
+													else
+													{
+														@Convert.ToDateTime(Model.medicalentry[i].BillDate).ToString("dd/MM/yyyy")														
+													}
+												</td>
+												<td class="text-right">
+													@if (Model.IsDeleted == 2 && Model.FYId == Model.CFYId)
+													{
+														@Html.TextBoxFor(model => Model.medicalentry[i].BillAmt, new { @class = "form-control txttotal text-right", @placeholder = "0" })
+														@Html.ValidationMessageFor(model => Model.medicalentry[i].BillAmt, "", new { @class = "text-danger" })
+													}
+													else
+													{
+														@Model.medicalentry[i].BillAmt.ToString("#,##0")
+													}
+												</td>
+												<td>
+													@if (Model.IsDeleted == 2 && Model.FYId == Model.CFYId)
+													{
+														@Html.TextBoxFor(model => Model.medicalentry[i].PatientName, new { @class = "form-control", @placeholder = "Patient Name" })
+														@Html.ValidationMessageFor(model => Model.medicalentry[i].PatientName, "", new { @class = "text-danger" })
+													}
+													else
+													{
+														@Model.medicalentry[i].PatientName
+													}
+												</td>
+												<td>
+													@if (Model.IsDeleted == 2 && Model.FYId == Model.CFYId)
+													{
+														@Html.TextBoxFor(model => Model.medicalentry[i].PatientRelation, new { @class = "form-control", @placeholder = "Relation with Patient" })
+														@Html.ValidationMessageFor(model => Model.medicalentry[i].PatientRelation, "", new { @class = "text-danger" })
+													}
+													else
+													{
+														@Model.medicalentry[i].PatientRelation
+													}
+												</td>
+												<td>
+													@if (Model.IsDeleted == 2 && Model.FYId == Model.CFYId)
+													{
+														@Html.TextBoxFor(model => Model.medicalentry[i].Remark, new { @class = "form-control", @placeholder = "Remark" })
+														@Html.ValidationMessageFor(model => Model.medicalentry[i].Remark, "", new { @class = "text-danger" })
+													}
+													else
+													{
+														@Model.medicalentry[i].Remark
+													}
+												</td>
+												@if (Model.IsDeleted == 2 && Model.FYId == Model.CFYId)
+												{
+													<td class="text-center">
+														@if (Rcount > 1 && Model.IsDeleted == 2)
+														{
+															<a onclick="DeleteRow(this)" data-toggle="tooltip" data-original-title="remove" class="remove"><i class="fas fa-window-close red-clr" aria-hidden="true"></i></a>
+														}
+														else
+														{
+															<a class="disabled"><i class="fas fa-window-close" aria-hidden="true"></i></a>
+														}
+													</td>
+												}
+											</tr>
+										}
+									}
+								}
+								@if (Model.ClaimType == "ROth")
+								{
+									if (Model.otherentry != null)
+									{
+										int Rcount = 0;
+										for (int i = 0; i < Model.otherentry.Count; i++)
+										{
+											Rcount++;
+											<tr>
+												<td>
+													<div class='sno'>
+														@Html.HiddenFor(model => Model.otherentry[i].Id)
+														<label id="span_@Rcount" name="span_@Rcount">@Rcount </label>
+													</div>
+												</td>
+												<td>
+													@if (Model.IsDeleted == 2 && Model.FYId == Model.CFYId)
+													{
+														@Html.TextBoxFor(model => Model.otherentry[i].BillNo, new { @class = "form-control", @placeholder = "Bill/invoice No" })
+														@Html.ValidationMessageFor(model => Model.otherentry[i].BillNo, "", new { @class = "text-danger" })
+													}
+													else
+													{
+														@Model.otherentry[i].BillNo
+													}
+												</td>
+												<td>
+													@if (Model.IsDeleted == 2 && Model.FYId == Model.CFYId)
+													{
+														@Html.TextBoxFor(model => Model.otherentry[i].BillDate, new { @class = "form-control txtDate", Type = "date", @placeholder = "Bill/invoice Date" })
+														@Html.ValidationMessageFor(model => Model.otherentry[i].BillDate, "", new { @class = "text-danger" })
+													}
+													else
+													{
+														@Convert.ToDateTime(Model.otherentry[i].BillDate).ToString("dd/MM/yyyy")														
+													}
+												</td>
+												<td class="text-right">
+													@if (Model.IsDeleted == 2 && Model.FYId == Model.CFYId)
+													{
+														@Html.TextBoxFor(model => Model.otherentry[i].BillAmt, new { @class = "form-control txttotal text-right", @placeholder = "0" })
+														@Html.ValidationMessageFor(model => Model.otherentry[i].BillAmt, "", new { @class = "text-danger" })
+													}
+													else
+													{
+														@Model.otherentry[i].BillAmt.ToString("#,##0")
+													}
+												</td>
+												<td>
+													@if (Model.IsDeleted == 2 && Model.FYId == Model.CFYId)
+													{
+														@Html.TextBoxFor(model => Model.otherentry[i].DetailsBill, new { @class = "form-control", @placeholder = "Details of bill/invoice" })
+														@Html.ValidationMessageFor(model => Model.otherentry[i].DetailsBill, "", new { @class = "text-danger" })
+													}
+													else
+													{
+														@Model.otherentry[i].DetailsBill
+													}
+												</td>
+												<td>
+													@if (Model.IsDeleted == 2 && Model.FYId == Model.CFYId)
+													{
+														@Html.TextBoxFor(model => Model.otherentry[i].Particulars, new { @class = "form-control", @placeholder = "Particulars" })
+														@Html.ValidationMessageFor(model => Model.otherentry[i].Particulars, "", new { @class = "text-danger" })
+													}
+													else
+													{
+														@Model.otherentry[i].Particulars
+													}
+												</td>
+												<td>
+													@if (Model.IsDeleted == 2 && Model.FYId == Model.CFYId)
+													{
+														@Html.TextBoxFor(model => Model.otherentry[i].AttachmentNo, new { @class = "form-control", @placeholder = "Enter" })
+														@Html.ValidationMessageFor(model => Model.otherentry[i].AttachmentNo, "", new { @class = "text-danger" })
+													}
+													else
+													{
+														@Model.otherentry[i].AttachmentNo
+													}
+												</td>
+												@if (Model.IsDeleted == 2 && Model.FYId == Model.CFYId)
+												{
+													<td class="text-center">
+														@if (Rcount > 1 && Model.IsDeleted == 2)
+														{
+															<a onclick="DeleteRow(this)" data-toggle="tooltip" data-original-title="remove" class="remove"><i class="fas fa-window-close red-clr" aria-hidden="true"></i></a>
+														}
+														else
+														{
+															<a class="disabled"><i class="fas fa-window-close" aria-hidden="true"></i></a>
+														}
+													</td>
+												}
+											</tr>
+										}
+									}
+								}
+							</tbody>
+							<tfoot>
+								<tr class="green-clr lgt-mtr-o-bg">
+									<th class=" text-center"></th>
+									@if (Model.ClaimType == "RLIC")
+									{
+										<th></th>
+										<th></th>
+										<th></th>
+										<th></th>
+										<th class="text-right fn-bold">Total</th>
+										<th class="text-right fn-bold"><span id="spnTotal">@Model.TotalAmount.ToString("#,##0")</span></th>
+										<th></th>
+										<th></th>
+										<th></th>
+									}
+									@if (Model.ClaimType == "RMed")
+									{
+										<th></th>
+										<th class="text-right fn-bold">Total</th>
+										<th class="text-right fn-bold"><span id="spnTotal">@Model.TotalAmount.ToString("#,##0")</span></th>
+										<th></th>
+										<th></th>
+										<th></th>
+									}
+									@if (Model.ClaimType == "ROth")
+									{
+										<th></th>
+										<th class="text-right fn-bold">Total</th>
+										<th class="text-right fn-bold"><span id="spnTotal">@Model.TotalAmount.ToString("#,##0")</span></th>
+										<th></th>
+										<th></th>
+										<th></th>
+									}
+									@if (Model.IsDeleted == 2 && Model.FYId == Model.CFYId)
+									{
+										<th></th>
+									}
+								</tr>
+							</tfoot>
+						</table>
+					</div>
+					<div class="text-right">
+						@if (Model.ClaimId == 0 || Model.IsDeleted == 2)
+						{
+							<div class="text-right mt-2"><button type="button" class="btn green-clr ripplelink btnNewRow"><i class="fas fa-plus"></i> Add Row</button></div>
+						}
+					</div>
+				</div>
+			</div>
+		</div>
+		@if (Model.Approved == 2)
+		{
+			<div id="dvreject" class="row">
+				<div class="col-md-12 form-group">
+					<hr>
+					<span class="hr-aps"><i class="fas fa-ban"></i>Rejected</span>
+				</div>
+				<div class="col-sm-12 form-group">
+					<label>Reason</label>
+					<p>@Model.Reason</p>
+				</div>
+			</div>
+		}
+		@if (Model.Approved == 1)
+		{
+			<div id="dvpayment" class="row">
+				<div class="col-md-12 form-group">
+					<hr>
+					<span class="hr-aps"><i class="fas fa-rupee-sign"></i>Payment</span>
+				</div>
+				<div class="col-sm-3 form-group">
+					<label>Paid Date</label>
+					<p>@(Convert.ToDateTime(Model.PaidDate).ToString("dd/MM/yyyy"))</p>
+				</div>
+				<div class="col-sm-3 form-group">
+					<label>Paid Amount</label>
+					<p>@Model.PaidAmount.ToString("#,##0")</p>
+				</div>
+				<div class="col-sm-3 form-group">
+					<label>Project Code</label>
+					<p>@Model.ProjectCode</p>
+				</div>
+				<div class="col-sm-12 form-group">
+					<label>Reason for change in paid amount</label>
+					<p>@Model.Reason</p>
+				</div>
+				<div class="col-sm-3 form-group">
+					<label>Account No</label>
+					<p>@Model.AccountNo</p>
+				</div>
+				<div class="col-sm-3 form-group">
+					<label>Bank Name</label>
+					<p>@Model.BankName</p>
+				</div>
+				<div class="col-sm-3 form-group">
+					<label>Neft Code</label>
+					<p>@Model.NeftCode</p>
+				</div>
+				<div class="col-sm-3 form-group">
+					<label>Branch</label>
+					<p>@Model.Branch</p>
+				</div>
+			</div>
+		}
+		<div class="row">
+			<div class="col-sm-12 text-center mt-3">
+				@if (Model.ClaimId == 0 || Model.IsDeleted == 2 && Model.FYId==Model.CFYId)
+				{
+					<button type="submit" class="btn mtr-o-grn btn-l ripplelink pull-right" name="Command" value="Draft"><i class="fa fa-paper-plane" aria-hidden="true"></i> Save</button>
+				}
+				@if (Model.ClaimId == 0 || Model.IsDeleted == 2 && Model.FYId == Model.CFYId)
+				{
+					<button type="submit" class="btn mtr-o-grn btn-l ripplelink pull-right" name="Command" value="Add"><i class="fa fa-paper-plane" aria-hidden="true"></i>Submit</button>
+				}
+				@*@if (Model.IsDeleted == 0)
+					{
+						<button class="btn mtr-g-grn btn-l ripplelink pull-right btnprint" ><i class="fa fa-print"></i>Print</button>
+					}*@
+				<button type="button" class="btn cnl-btn ripplelink  " data-dismiss="modal"><i class="fas fa-times"></i>Close</button>
+			</div>
+		</div>
+	</div>
+}
+<script>
+	$(".btnNewRow").click(function (e) {
+		AddNewRow();
+	});
+
+	$('.txttotal').bind("change", function () {
+		calculatetotal();
+	});
+
+	function AddNewRow() {
+		var LastTRCount = parseInt($('#tblvoucher').find("tbody tr").length) - 1;
+		var $tableBody = $('#tblvoucher').find("tbody"),
+			$trLast = $tableBody.find("tr:last"),
+			$trNew = $trLast.clone();
+		$trNew.find("td:last").html('<a onclick="DeleteRow(this)" class="remove"><i class="fas fa-window-close red-clr" aria-hidden="true"></i></a>')
+		$trNew.find("label").each(function () {
+			$(this).attr({
+				'id': function (_, id) { var arr = id.split('_'); return id.replace(arr[1], LastTRCount + 1); },
+			});
+			$(this).html(parseInt($('#tblvoucher').find("tbody tr").length) + 1);
+		});
+		$trNew.find("input").each(function (i) {
+			$(this).attr({
+				'id': function (_, name) { return name.replace('_' + LastTRCount + '_', '_' + (parseInt(LastTRCount) + 1) + '_'); },
+				'name': function (_, name) { return name.replace('[' + LastTRCount + ']', '[' + (parseInt(LastTRCount) + 1) + ']'); },
+			});
+			$(this).val('');
+		});
+		$trNew.find("select").each(function (i) {
+			$(this).attr({
+				'id': function (_, name) { return name.replace('_' + LastTRCount + '_', '_' + (parseInt(LastTRCount) + 1) + '_'); },
+				'name': function (_, name) { return name.replace('[' + LastTRCount + ']', '[' + (parseInt(LastTRCount) + 1) + ']'); },
+			});
+		});
+
+		$trNew.find("span").each(function (i) {
+			if ($(this).attr("data-valmsg-for")) {
+				$(this).attr({
+					'data-valmsg-for': function (_, name) { return name.replace('[' + LastTRCount + ']', '[' + (parseInt(LastTRCount) + 1) + ']'); }
+				});
+			}
+			if ($(this).attr("for")) {
+				$(this).attr({
+					'for': function (_, name) { return name.replace('_' + LastTRCount + '_', '_' + (parseInt(LastTRCount) + 1) + '_'); }
+				});
+			}
+		});
+
+		$trLast.after($trNew);
+		var form = $("#LeaveRequestForm").closest("form");
+		form.removeData('validator');
+		form.removeData('unobtrusiveValidation');
+		$.validator.unobtrusive.parse(form);
+		$('[data-toggle="tooltip"]').tooltip();
+
+		$('.deleterow').on('click', function (e) {
+			e.preventDefault();
+			e.stopPropagation();
+			DeleteRow(this);
+		});
+
+		calculatetotal();
+	}
+
+	function DeleteRow(obj) {
+		var count = 0;
+		var TotalRowCount = $('#tblvoucher').find("tbody tr").length;
+		ConfirmMsgBox("Are you sure want to delete this row", '', function () {
+			$(obj).closest('tr').remove();
+			$("#tblvoucher TBODY TR").each(function (i) {
+				$(this).closest("tr").find("label").each(function () {
+					$(this).attr({
+						'id': function (_, id) { var arr = id.split('_'); return id.replace(arr[1], i); },
+					});
+					$(this).html(i + 1)
+				});
+
+				$(this).closest("tr").find("input").each(function () {
+					$(this).attr({
+						'id': function (_, id) { return id.replace('_' + (parseInt(i) + 1) + '_', '_' + i + '_'); },
+						'name': function (_, name) { return name.replace('[' + (parseInt(i) + 1) + ']', '[' + i + ']'); },
+					});
+
+				});
+
+				$(this).closest("tr").find("select").each(function () {
+					$(this).attr({
+						'id': function (_, id) { return id.replace('_' + (parseInt(i) + 1) + '_', '_' + i + '_'); },
+						'name': function (_, name) { return name.replace('[' + (parseInt(i) + 1) + ']', '[' + i + ']'); },
+					});
+				});
+				$(this).closest("tr").find("span").each(function () {
+					if ($(this).attr("data-valmsg-for")) {
+						$(this).attr({
+							'data-valmsg-for': function (_, name) { return name.replace('[' + (parseInt(i) + 1) + ']', '[' + i + ']'); },
+						});
+					}
+					if ($(this).attr("for")) {
+						$(this).attr({
+							'for': function (_, id) { return id.replace('_' + (parseInt(i) + 1) + '_', '_' + i + '_'); },
+						});
+					}
+				});
+			});
+			var form = $("#LeaveRequestForm").closest("form");
+			form.removeData('validator');
+			form.removeData('unobtrusiveValidation');
+			$.validator.unobtrusive.parse(form);
+			calculatetotal();
+		})
+	}
+
+	function calculatetotal() {
+		var Total = 0
+		$(".txttotal").each(function () {
+			var current = Number($(this).val());
+			Total += parseFloat(current);
+		});
+		$("#TotalAmount").val(Total);
+		$("#spnTotal").html(Total);
+	}
+</script>

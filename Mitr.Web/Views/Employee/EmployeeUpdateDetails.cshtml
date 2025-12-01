@@ -1,0 +1,2086 @@
+﻿
+@{
+	ViewBag.Title = "EmployeeUpdateDetails";
+	Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="inner-main defult-height">
+	<div class="row">
+		<div class="col-sm-4">
+			<h1 class="heading-one mb-3">Employee List</h1>
+		</div>
+	</div>
+
+
+
+
+
+
+	<!-- tab--->
+	<div class="tab-main">
+		<ul id="tabs" class="nav nav-tabs " role="tablist">
+			<li class="nav-item"> <a id="tab-C" href="#pending" class="nav-link ripplelink active" onClick="showtable(1,0);" data-toggle="tab" role="tab"><i class="far fa-clock"></i>Pending</a> </li>
+			<li class="nav-item"> <a id="tab-A" href="#completed" class="nav-link ripplelink " onClick="showtable(2,1);" data-toggle="tab" role="tab" aria-selected="true"><i class="fas fa-check"></i>Completed</a> </li>
+
+		</ul>
+		<div id="content" class="tab-content shadow-box p-0" role="tablist">
+
+			<div id="TargetDiv">
+
+			</div>
+		</div>
+
+
+	</div>
+</div>
+
+<div class="modal fade pop-dgn" id="ae">
+	<div class="modal-dialog modal-lg">
+		<div class="modal-content ">
+			<!-- Modal Header -->
+			<div class="modal-header">
+				<h4 class="modal-title" id="empName"><i class="fas fa-user-tie"></i></h4>
+				<button type="button" class="close" data-dismiss="modal">&times;</button>
+			</div>
+			<input type="hidden" id="hdfempid" value="" />
+			<input type="hidden" id="hdfid" value="" />
+			<input type="hidden" id="hdfDocType" value="" />
+			<!-- Modal body -->
+			<div class="modal-body p-0">
+				<ul class="nav nav-tabs responsive-tabs" id="myTab" role="tablist" style="display:none">
+					<li class="nav-item active" id="lihome-tab">
+						<a class="nav-link" id="home-tab" data-toggle="tab" href="#bi" role="tab" onClick="showtable(3,0);" aria-controls="" aria-selected="true">Basic Information</a>
+					</li>
+					<li class="nav-item" id="liprofile-tab">
+						<a class="nav-link" id="profile-tab" data-toggle="tab" href="#pi" role="tab" onClick="showtable(4,0);" aria-controls="" aria-selected="false">Personal Information</a>
+					</li>
+
+					<li class="nav-item" id="licontact-tab">
+						<a class="nav-link" id="contact-tab" data-toggle="tab" href="#gi" role="tab" onClick="showtable(5,0);" aria-controls="" aria-selected="false">General Information</a>
+					</li>
+
+					<li class="nav-item" id="liId-tab">
+						<a class="nav-link" id="Id-tab" data-toggle="tab" href="#idi" role="tab" onClick="showtable(6,0);" aria-controls="" aria-selected="false">ID Information</a>
+					</li>
+
+					<li class="nav-item" id="liAtt-tab">
+						<a class="nav-link" id="Att-tab" data-toggle="tab" href="#ath" role="tab" onClick="showtable(7,0);" aria-controls="" aria-selected="false">Attachments</a>
+					</li>
+					<i class="fa fa-caret-up"></i>
+					<i class="fa fa-caret-down"></i>
+				</ul>
+				<ul class="nav nav-tabs responsive-tabs" id="myTabApproved" role="tablist" style="display:none">
+					<li class="nav-item active" id="lihome-taba">
+						<a class="nav-link" id="home-tab" data-toggle="tab" href="#bi" role="tab" onClick="showtable(3,1);" aria-controls="" aria-selected="true">Basic Information</a>
+					</li>
+					<li class="nav-item" id="liprofile-taba">
+						<a class="nav-link" id="profile-tab" data-toggle="tab" href="#pi" role="tab" onClick="showtable(4,1);" aria-controls="" aria-selected="false">Personal Information</a>
+					</li>
+
+					<li class="nav-item" id="licontact-taba">
+						<a class="nav-link" id="contact-tab" data-toggle="tab" href="#gi" role="tab" onClick="showtable(5,1);" aria-controls="" aria-selected="false">General Information</a>
+					</li>
+
+					<li class="nav-item" id="liId-taba">
+						<a class="nav-link" id="Id-tab" data-toggle="tab" href="#idi" role="tab" onClick="showtable(6,1);" aria-controls="" aria-selected="false">ID Information</a>
+					</li>
+
+					<li class="nav-item" id="liAtt-taba">
+						<a class="nav-link" id="Att-tab" data-toggle="tab" href="#ath" role="tab" onClick="showtable(7,1);" aria-controls="" aria-selected="false">Attachments</a>
+					</li>
+					<i class="fa fa-caret-up"></i>
+					<i class="fa fa-caret-down"></i>
+				</ul>
+				<div class="tab-content p-2" id="myTabContent">
+					<div id="TargetinnerDiv">
+
+					</div>
+
+
+
+
+				</div>
+			</div>
+			<!-- Modal footer -->
+			<div class="p-0 text-center mt-3 ">
+				<button type="button" class="btn mtr-g-grn btn-l " id="btnapprove" onclick="btnApproved(this)"><i class="fas fa-check"></i>Approve</button>
+				<button type="button" class="btn rjt-btn btn-l " id="btncancel" onclick="btnReject(this)"><i class="fas fa-ban"></i>Reject</button>
+				<button type="button" class="btn cnl-btn ripplelink" data-dismiss="modal"><i class="fas fa-times"></i>Close</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+
+<!-- The Modal -->
+<div class="modal" id="vzm">
+	<div class="modal-dialog modal-md">
+		<div class="modal-content ">
+
+			<!-- Modal Header -->
+			<div class="modal-header">
+				<h4 class="modal-title">
+					<i class="fas fa-paperclip"></i>PAN - Aakash Kumar Singh
+				</h4>
+				<button type="button" class="close" data-dismiss="modal">&times;</button>
+			</div>
+
+			<!-- Modal body -->
+			<div class="modal-body">
+				<div class="attshowimg ">
+					<div>
+						<div class="col-sm-12 form-group mb-3 text-center">
+							<img src="../images/pan-img.jpg" alt="">
+						</div>
+
+					</div>
+
+				</div>
+				<!-- Modal footer -->
+				<div class="p-0 text-center mt-4 ">
+					<button type="button" class="btn cnl-btn ripplelink" data-toggle="modal" data-target="#ae" data-dismiss="modal"><i class="fas fa-arrow-left"></i>Back</button>
+					<button type="button" class="btn mtr-g-grn btn-l "><i class="fas fa-download"></i>Download</button>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+
+@section scripts    {
+	@System.Web.Optimization.Scripts.Render("~/bundle/dataTablesjs")
+	@System.Web.Optimization.Scripts.Render("~/bundle/unobtrusivejs")
+	@Html.IncludeVersionedJs(Url.Content("~/assets/design/Scripts/AddInit.js"))
+	@Html.IncludeVersionedJs(Url.Content("~/assets/design/Scripts/ToolTip.js"))
+	@Html.IncludeVersionedJs(Url.Content("~/assets/design/scripts/PagesJS/EmployeeMasterUpdate.js"))
+	<script type="text/javascript">
+		$(document).ready(function () {
+			showtable(1,0)
+		});
+
+		function btnReject() {
+		
+			var PersonalDetails = [];
+			$('input.selectedId:checkbox:checked').each(function () {
+				
+				var id = $(this).attr("id");
+				var ChkId = $('#' + id).val();
+				var myArray = ChkId.split('_');
+				var DocType = myArray[0];
+				var Column = myArray[1];
+				var arr = myArray[2].split('+');
+				var EmpId = parseInt(arr[0]);
+				var ColumnUpdate = arr[1];
+				var UID = arr[2];
+				if (Column == "maritalstatus") {
+					Column = "marital_status";
+				}
+				PersonalDetails.push({ ["Id"]: EmpId, Column, DocType, ColumnUpdate, UID });
+
+			});
+			var countRPe = 0;
+			for (let b = 0; b < PersonalDetails.length; b++) {
+
+				countRPe++;
+				$.ajax({
+					url: "/CommonAjax/RejectPersonalDetailsJson",
+					type: "Get",
+					async: true,
+					data: { EmpId: PersonalDetails[b].Id, Column: PersonalDetails[b].Column, DocType: PersonalDetails[b].DocType, ColumnUpdate: PersonalDetails[b].ColumnUpdate, UID: PersonalDetails[b].UID },
+					success: function (data) {
+						if (data == 1) {
+							if (countRPe == PersonalDetails.length) {
+								SuccessToaster(' Rejected successfully');
+								window.location.reload();
+							}
+						}
+						else {
+							failtoaster('can not save.')
+						}
+					},
+					error: function (er) {
+						alert(er);
+					}
+				});
+
+			}
+			var MealandSeat = [];
+			$('input.selectedSeat:checkbox:checked').each(function () {
+				
+				var id = $(this).attr("id");
+				var ChkId = $('#' + id).val();
+				var myArray = ChkId.split('_');
+				var DocType = myArray[0];
+				var Column = myArray[1];
+				var arr = myArray[2].split('+');
+				var EmpId = parseInt(arr[1]);
+				var ColumnUpdate = arr[0];
+				var UID = arr[2];
+
+				if (ColumnUpdate != "") {
+					MealandSeat.push({ ["Id"]: EmpId, Column, DocType, ColumnUpdate, UID });
+				}
+
+			});
+			var countMS = 0;
+			for (let b = 0; b < MealandSeat.length; b++) {
+				countMS++;
+				$.ajax({
+					url: "/CommonAjax/RejectPersonalDetailsJson",
+					type: "Get",
+					async: true,
+					data: { EmpId: MealandSeat[b].Id, Column: MealandSeat[b].Column, DocType: MealandSeat[b].DocType, ColumnUpdate: MealandSeat[b].ColumnUpdate, UID: MealandSeat[b].UID },
+					success: function (data) {
+						if (data == 1) {
+							if (countMS == MealandSeat.length) {
+								SuccessToaster('Rejected Successfully');
+								window.location.reload();
+							}
+						}
+						else {
+							failtoaster('can not save.')
+						}
+					},
+					error: function (er) {
+						alert(er);
+					}
+				});
+
+			}
+
+
+
+
+
+			var Local = [];
+			$('input.selectedLocId:checkbox:checked').each(function () {
+
+				var id = $(this).attr("id");
+				var ChkId = $('#' + id).val();
+				var myArray = ChkId.split('_');
+				var DocType = myArray[0];
+				var Column = myArray[1];
+				var arr = myArray[2].split('+');
+				var EmpId = parseInt(arr[0]);
+				var ColumnUpdate = arr[1];
+				var UID = arr[2];
+				if (Column == "zipcode") {
+					Column = "zip_code";
+				}
+				else if (Column == "phoneno") {
+					Column = "phone_no";
+				}
+				Local.push({ ["Id"]: EmpId, Column, DocType, ColumnUpdate, UID });
+
+			});
+			var countle = 0;
+			for (let b = 0; b < Local.length; b++) {
+				countle++;
+				$.ajax({
+					url: "/CommonAjax/RejectPersonalDetailsJson",
+					type: "Get",
+					async: true,
+					data: { EmpId: Local[b].Id, Column: Local[b].Column, DocType: Local[b].DocType, ColumnUpdate: Local[b].ColumnUpdate, UID: Local[b].UID },
+					success: function (data) {
+						if (data == 1) {
+							if (countle == Local.length) {
+								SuccessToaster(' Rejected successfully');
+								window.location.reload();
+							}
+						}
+						else {
+							failtoaster('can not save.')
+						}
+					},
+					error: function (er) {
+						alert(er);
+					}
+				});
+
+			}
+			var Permanent = [];
+			$('input.selectedPerId:checkbox:checked').each(function () {
+
+				var id = $(this).attr("id");
+				var ChkId = $('#' + id).val();
+				var myArray = ChkId.split('_');
+				var DocType = myArray[0];
+				var Column = myArray[1];
+				var arr = myArray[2].split('+');
+				var EmpId = parseInt(arr[0]);
+				var ColumnUpdate = arr[1];
+				var UID = arr[2];
+				if (Column == "zipcode") {
+					Column = "zip_code";
+				}
+				else if (Column == "phoneno") {
+					Column = "phone_no";
+				}
+				if (ColumnUpdate != "") {
+					Permanent.push({ ["Id"]: EmpId, Column, DocType, ColumnUpdate, UID });
+				}
+
+			});
+			var countPe = 0;
+			for (let b = 0; b < Permanent.length; b++) {
+				countPe++;
+				$.ajax({
+					url: "/CommonAjax/RejectPersonalDetailsJson",
+					type: "Get",
+					async: true,
+					data: { EmpId: Permanent[b].Id, Column: Permanent[b].Column, DocType: Permanent[b].DocType, ColumnUpdate: Permanent[b].ColumnUpdate, UID: Permanent[b].UID },
+					success: function (data) {
+						if (data == 1) {
+							if (countPe == Permanent.length) {
+								SuccessToaster(' Rejected successfully');
+								window.location.reload();
+							}
+						}
+						else {
+							failtoaster('can not save.')
+						}
+					},
+					error: function (er) {
+						alert(er);
+					}
+				});
+
+			}
+			var Medical = [];
+			$('input.selectedMedId:checkbox:checked').each(function () {
+				
+				var id = $(this).attr("id");
+				var ChkId = $('#' + id).val();
+				var myArray = ChkId.split('_');
+				var DocType = myArray[0];
+				var Column = myArray[1];
+				var arr = myArray[2].split('+');
+				var EmpId = parseInt(arr[0]);
+				var ColumnUpdate = arr[1];
+				var UID = arr[2];
+				if (Column == "PhysicianAlternateNo") {
+					Column = "PhysicianAlternate_No";
+				}
+				else if (Column == "emergContactName") {
+					Column = "emergContact_Name";
+				}
+				else if (Column == "emergContactno") {
+					Column = "emergContact_no";
+				}
+				else if (Column == "emergContactRelation") {
+					Column = "emergContact_Relation";
+				}
+				if (ColumnUpdate != "") {
+					Medical.push({ ["Id"]: EmpId, Column, DocType, ColumnUpdate, UID });
+				}
+
+			});
+			var countMe = 0;
+			for (let b = 0; b < Medical.length; b++) {
+				countMe++;
+				$.ajax({
+					url: "/CommonAjax/RejectPersonalDetailsJson",
+					type: "Get",
+					async: true,
+					data: { EmpId: Medical[b].Id, Column: Medical[b].Column, DocType: Medical[b].DocType, ColumnUpdate: Medical[b].ColumnUpdate, UID: Medical[b].UID },
+					success: function (data) {
+						if (data == 1) {
+							if (countMe == Medical.length) {
+								SuccessToaster(' Rejected successfully');
+								window.location.reload();
+							}
+						}
+						else {
+							failtoaster('can not save.')
+						}
+					},
+					error: function (er) {
+						alert(er);
+					}
+				});
+
+			}
+
+			var Salary = [];
+			$('input.selectedSallary:checkbox:checked').each(function () {
+
+				var id = $(this).attr("id");
+				var ChkId = $('#' + id).val();
+				var myArray = ChkId.split('_');
+				var DocType = myArray[0];
+				var Column = myArray[1];
+				var arr = myArray[2].split('+');
+				var EmpId = parseInt(arr[0]);
+				var ColumnUpdate = arr[1];
+				var UID = arr[2];
+
+				if (ColumnUpdate != "") {
+					Salary.push({ ["Id"]: EmpId, Column, DocType, ColumnUpdate, UID });
+				}
+
+			});
+			var countS = 0;
+			for (let b = 0; b < Salary.length; b++) {
+				countS++;
+				$.ajax({
+					url: "/CommonAjax/RejectPersonalDetailsJson",
+					type: "Get",
+					async: true,
+					data: { EmpId: Salary[b].Id, Column: Salary[b].Column, DocType: Salary[b].DocType, ColumnUpdate: Salary[b].ColumnUpdate, UID: Salary[b].UID },
+					success: function (data) {
+						if (data == 1) {
+							if (countS == Salary.length) {
+								SuccessToaster('Rejected successfully');
+								window.location.reload();
+							}
+						}
+						else {
+							failtoaster('can not save.')
+						}
+					},
+					error: function (er) {
+						alert(er);
+					}
+				});
+
+			}
+
+			var Reimbursement = [];
+			$('input.selectedReimbursement:checkbox:checked').each(function () {
+
+				var id = $(this).attr("id");
+				var ChkId = $('#' + id).val();
+				var myArray = ChkId.split('_');
+				var DocType = myArray[0];
+				var Column = myArray[1];
+				var arr = myArray[2].split('+');
+				var EmpId = parseInt(arr[0]);
+				var ColumnUpdate = arr[1];
+				var UID = arr[2];
+				if (ColumnUpdate != "") {
+					Reimbursement.push({ ["Id"]: EmpId, Column, DocType, ColumnUpdate, UID });
+				}
+
+			});
+			var countR = 0;
+			for (let b = 0; b < Reimbursement.length; b++) {
+				countR++;
+				$.ajax({
+					url: "/CommonAjax/RejectPersonalDetailsJson",
+					type: "Get",
+					async: true,
+					data: { EmpId: Reimbursement[b].Id, Column: Reimbursement[b].Column, DocType: Reimbursement[b].DocType, ColumnUpdate: Reimbursement[b].ColumnUpdate, UID: Reimbursement[b].UID },
+					success: function (data) {
+						if (data == 1) {
+							if (countR == Reimbursement.length) {
+								SuccessToaster('Rejected successfully');
+								window.location.reload();
+							}
+						}
+						else {
+							failtoaster('can not save.')
+						}
+					},
+					error: function (er) {
+						alert(er);
+					}
+				});
+
+			}
+			var PF = [];
+			$('input.selectedOldPF:checkbox:checked').each(function () {
+
+				var id = $(this).attr("id");
+				var ChkId = $('#' + id).val();
+				var myArray = ChkId.split('+');
+				var DocType = "Old PF";
+				var EmpId = parseInt(myArray[1]);
+				var ColumnUpdate = myArray[0];
+				var Column = "OldPFNo";
+				PF.push({ ["Id"]: EmpId, ColumnUpdate, DocType, Column });
+
+			});
+			for (let b = 0; b < PF.length; b++) {
+				$.ajax({
+					url: "/CommonAjax/RejectPersonalDetailsJson",
+					type: "Get",
+					async: true,
+					data: { EmpId: PF[b].Id, Column: PF[b].Column, DocType: PF[b].DocType, ColumnUpdate: PF[b].ColumnUpdate },
+					success: function (data) {
+						if (data == 1) {
+							SuccessToaster(' Rejected successfully');
+							window.location.reload();
+						}
+						else {
+							failtoaster('can not save.')
+						}
+					},
+					error: function (er) {
+						alert(er);
+					}
+				});
+
+			}
+
+			var PIO = [];
+			$('input.selectedPIO:checkbox:checked').each(function () {
+
+				var id = $(this).attr("id");
+				var ChkId = $('#' + id).val();
+				var myArray = ChkId.split('+');
+				var DocType = "PIO/OCI";
+				var EmpId = parseInt(myArray[1]);
+				var Column = myArray[0];
+				var ColumnUpdate = myArray[0];
+				PIO.push({ ["Id"]: EmpId, Column, DocType, ColumnUpdate });
+
+			});
+			for (let b = 0; b < PIO.length; b++) {
+				$.ajax({
+					url: "/CommonAjax/RejectPersonalDetailsJson",
+					type: "Get",
+					async: true,
+					data: { EmpId: PIO[b].Id, Column: PIO[b].Column, DocType: PIO[b].DocType, ColumnUpdate: PIO[b].ColumnUpdate },
+					success: function (data) {
+						if (data == 1) {
+							SuccessToaster(' Rejected successfully');
+							window.location.reload();
+						}
+						else {
+							failtoaster('can not save.')
+						}
+					},
+					error: function (er) {
+						alert(er);
+					}
+				});
+
+			}
+			var PROF = [];
+			$('input.selectedProf:checkbox:checked').each(function () {
+
+				var id = $(this).attr("id");
+				var ChkId = $('#' + id).val();
+				var myArray = ChkId.split('+');
+				var DocType = "ProfessionalTax";
+				var EmpId = parseInt(myArray[1]);
+				var Column = myArray[0];
+				var ColumnUpdate = myArray[0];
+				PROF.push({ ["Id"]: EmpId, Column, DocType, ColumnUpdate });
+
+			});
+			for (let b = 0; b < PROF.length; b++) {
+				$.ajax({
+					url: "/CommonAjax/RejectPersonalDetailsJson",
+					type: "Get",
+					async: true,
+					data: { EmpId: PROF[b].Id, Column: PROF[b].Column, DocType: PROF[b].DocType, ColumnUpdate: PROF[b].ColumnUpdate },
+					success: function (data) {
+						if (data == 1) {
+							SuccessToaster(' Rejected successfully');
+							window.location.reload();
+						}
+						else {
+							failtoaster('can not save.')
+						}
+					},
+					error: function (er) {
+						alert(er);
+					}
+				});
+
+			}
+
+
+			var Airline = [];
+			$('input.selectedAirline:checkbox:checked').each(function () {
+
+				var id = $(this).attr("id");
+				var ChkId = $('#' + id).val();
+				var myArray = ChkId.split('_');
+				var DocType = myArray[0];
+				var arr = myArray[1].split('+');
+				var EmpId = parseInt(arr[2]);
+				var AirlineName = arr[0]
+				var FlyerNo = arr[1]
+				var AirId = arr[2]
+				Airline.push({ ["Id"]: EmpId, AirlineName, DocType, FlyerNo, AirId });
+
+			});
+			for (let b = 0; b < Airline.length; b++) {
+				$.ajax({
+					url: "/CommonAjax/RejectdPersonalAirlineDetailsJson",
+					type: "Get",
+					async: true,
+					data: { EmpId: Airline[b].Id, AirlineName: Airline[b].AirlineName, DocType: Airline[b].DocType, FlyerNo: Airline[b].FlyerNo, AirId: Airline[b].AirId },
+					success: function (data) {
+						if (data == 1) {
+							SuccessToaster(' Rejected successfully');
+							window.location.reload();
+						}
+						else {
+							failtoaster('can not save.')
+						}
+					},
+					error: function (er) {
+						alert(er);
+					}
+				});
+
+			}
+
+			var Qualification = [];
+			$('input.selectedEducation:checkbox:checked').each(function () {
+				
+				var id = $(this).attr("id");
+				var ChkId = $('#' + id).val();
+				var myArray = ChkId.split('_');
+				var DocType = myArray[0];
+				var arr = myArray[1].split('+');
+				var EmpId = parseInt(arr[4]);
+				var Course = arr[0];
+				var University = arr[1];
+				var Location = arr[2];
+				var Year = arr[3]
+				var QId = arr[5]
+				Qualification.push({ ["Id"]: EmpId, Course, DocType, University, Location, Year, QId });
+
+			});
+			var countRQ = 0;
+			for (let b = 0; b < Qualification.length; b++) {
+				countRQ++;
+				$.ajax({
+					url: "/CommonAjax/RejectPersonalQualificationDetailsJson",
+					type: "Get",
+					async: true,
+					data: { EmpId: Qualification[b].Id, Course: Qualification[b].Course, DocType: Qualification[b].DocType, University: Qualification[b].University, Location: Qualification[b].Location, Year: Qualification[b].Year, QId: Qualification[b].QId },
+					success: function (data) {
+						if (data == 1) {
+							if (countRQ == Qualification.length) {
+								SuccessToaster(' Rejected successfully');
+								window.location.reload();
+							}
+						}
+						else {
+							failtoaster('can not save.')
+						}
+					},
+					error: function (er) {
+						alert(er);
+					}
+				});
+
+			}
+			var PSDoc = [];
+			$('input.selectedP:checkbox:checked').each(function () {
+			
+				var id = $(this).attr("id");
+				var ChkId = $('#' + id).val();
+				var myArray = ChkId.split('+');
+				var AttachmentID = parseInt(myArray[0]);
+				var MUID = parseInt(myArray[1]);
+				var EMPID = parseInt(myArray[2]);
+				PSDoc.push({ ["Id"]: AttachmentID, MUID, EMPID });
+
+			});
+			var countPSDoc = 0;
+			for (let b = 0; b < PSDoc.length; b++) {
+				countPSDoc++;
+				$.ajax({
+					url: "/CommonAjax/RejectPersonalDocDetailsJson",
+					type: "Get",
+					async: true,
+					data: { AttachmentID: PSDoc[b].Id, MUID: PSDoc[b].MUID, EMPID: PSDoc[b].EMPID, DocType: "Passport" },
+					success: function (data) {
+						if (data == 1) {
+							if (countPSDoc == PSDoc.length) {
+								SuccessToaster(' approved successfully');
+								window.location.reload();
+							}
+						}
+						else {
+							failtoaster('can not save.')
+						}
+					},
+					error: function (er) {
+						alert(er);
+					}
+				});
+
+			}
+
+			var VDoc = [];
+			$('input.selectedV:checkbox:checked').each(function () {
+				
+				var id = $(this).attr("id");
+				var ChkId = $('#' + id).val();
+				var myArray = ChkId.split('+');
+				var AttachmentID = parseInt(myArray[0]);
+				var MUID = parseInt(myArray[1]);
+				var EMPID = parseInt(myArray[2]);
+				VDoc.push({ ["Id"]: AttachmentID, MUID, EMPID });
+
+			});
+			var countVDoc = 0;
+			for (let b = 0; b < VDoc.length; b++) {
+				countVDoc++;
+				$.ajax({
+					url: "/CommonAjax/RejectPersonalDocDetailsJson",
+					type: "Get",
+					async: true,
+					data: { AttachmentID: VDoc[b].Id, MUID: VDoc[b].MUID, EMPID: VDoc[b].EMPID, DocType: "Voter ID" },
+					success: function (data) {
+						if (data == 1) {
+							if (countVDoc == VDoc.length) {
+								SuccessToaster(' approved successfully');
+								window.location.reload();
+							}
+						}
+						else {
+							failtoaster('can not save.')
+						}
+					},
+					error: function (er) {
+						alert(er);
+					}
+				});
+
+			}
+
+			var DinDoc = [];
+			$('input.selectedD:checkbox:checked').each(function () {
+				
+				var id = $(this).attr("id");
+				var ChkId = $('#' + id).val();
+				var myArray = ChkId.split('+');
+				var AttachmentID = parseInt(myArray[0]);
+				var MUID = parseInt(myArray[1]);
+				var EMPID = parseInt(myArray[2]);
+				DinDoc.push({ ["Id"]: AttachmentID, MUID, EMPID });
+
+			});
+			var countDinDocc = 0;
+			for (let b = 0; b < DinDoc.length; b++) {
+				countDinDocc++;
+				$.ajax({
+					url: "/CommonAjax/RejectPersonalDocDetailsJson",
+					type: "Get",
+					async: true,
+					data: { AttachmentID: DinDoc[b].Id, MUID: DinDoc[b].MUID, EMPID: DinDoc[b].EMPID, DocType: "Director Identification Number" },
+					success: function (data) {
+						if (data == 1) {
+							if (countDinDocc == DinDoc.length) {
+								SuccessToaster(' approved successfully');
+								window.location.reload();
+							}
+						}
+						else {
+							failtoaster('can not save.')
+						}
+					},
+					error: function (er) {
+						alert(er);
+					}
+				});
+
+			}
+
+			var DlDoc = [];
+			$('input.selectedD:checkbox:checked').each(function () {
+				
+				var id = $(this).attr("id");
+				var ChkId = $('#' + id).val();
+				var myArray = ChkId.split('+');
+				var AttachmentID = parseInt(myArray[0]);
+				var MUID = parseInt(myArray[1]);
+				var EMPID = parseInt(myArray[2]);
+				DlDoc.push({ ["Id"]: AttachmentID, MUID, EMPID });
+
+			});
+			var countDlDocc = 0;
+			for (let b = 0; b < DlDoc.length; b++) {
+				countDlDocc++;
+				$.ajax({
+					url: "/CommonAjax/RejectPersonalDocDetailsJson",
+					type: "Get",
+					async: true,
+					data: { AttachmentID: DlDoc[b].Id, MUID: DlDoc[b].MUID, EMPID: DlDoc[b].EMPID, DocType: "Driving License" },
+					success: function (data) {
+						if (data == 1) {
+							if (countDlDocc == DlDoc.length) {
+								SuccessToaster(' approved successfully');
+								window.location.reload();
+							}
+						}
+						else {
+							failtoaster('can not save.')
+						}
+					},
+					error: function (er) {
+						alert(er);
+					}
+				});
+
+			}
+
+
+		var PanDoc = [];
+			$('input.selectedPan:checkbox:checked').each(function () {
+				
+				var id = $(this).attr("id");
+				var ChkId = $('#' + id).val();
+				var myArray = ChkId.split('+');
+				var AttachmentID = parseInt(myArray[0]);
+				var MUID = parseInt(myArray[1]);
+				var EMPID = parseInt(myArray[2]);
+				PanDoc.push({ ["Id"]: AttachmentID, MUID, EMPID });
+
+			});
+			var countPanDoc = 0;
+			for (let b = 0; b < PanDoc.length; b++) {
+				countPanDoc++;
+				$.ajax({
+					url: "/CommonAjax/RejectPersonalDocDetailsJson",
+					type: "Get",
+					async: true,
+					data: { AttachmentID: PanDoc[b].Id, MUID: PanDoc[b].MUID, EMPID: PanDoc[b].EMPID, DocType: "PAN" },
+					success: function (data) {
+						if (data == 1) {
+							if (countPanDoc == PanDoc.length) {
+								SuccessToaster('Approved Successfully');
+								window.location.reload();
+							}
+						}
+						else {
+							failtoaster('can not save.')
+						}
+					},
+					error: function (er) {
+						alert(er);
+					}
+				});
+
+			}
+
+
+				var AdharDoc = [];
+			$('input.selectedA:checkbox:checked').each(function () {
+				
+				var id = $(this).attr("id");
+				var ChkId = $('#' + id).val();
+				var myArray = ChkId.split('+');
+				var AttachmentID = parseInt(myArray[0]);
+				var MUID = parseInt(myArray[1]);
+				var EMPID = parseInt(myArray[2]);
+				AdharDoc.push({ ["Id"]: AttachmentID, MUID, EMPID });
+
+			});
+			var countAdharDoc = 0;
+			for (let b = 0; b < AdharDoc.length; b++) {
+				countAdharDoc++;
+				$.ajax({
+					url: "/CommonAjax/RejectPersonalDocDetailsJson",
+					type: "Get",
+					async: true,
+					data: { AttachmentID: AdharDoc[b].Id, MUID: AdharDoc[b].MUID, EMPID: AdharDoc[b].EMPID, DocType: "Aadhaar" },
+					success: function (data) {
+						if (data == 1) {
+							if (countAdharDoc == AdharDoc.length) {
+								SuccessToaster('Approved Successfully');
+								window.location.reload();
+							}
+						}
+						else {
+							failtoaster('can not save.')
+						}
+					},
+					error: function (er) {
+						alert(er);
+					}
+				});
+
+			}
+
+		}
+		function btnApproved() {
+
+
+			
+			var PersonalDetails = [];
+			$('input.selectedId:checkbox:checked').each(function () {
+				debugger;
+				var id = $(this).attr("id");
+				var ChkId = $('#' + id).val();
+				var myArray = ChkId.split('_');
+				var DocType = myArray[0];
+				var Column = myArray[1];
+				var arr = myArray[2].split('+');
+				var EmpId = parseInt(arr[0]);
+				var ColumnUpdate = arr[1]
+				var UID = arr[2]
+				if (Column == "maritalstatus") {
+					Column = "marital_status";
+				}
+				if (ColumnUpdate != "") {
+					PersonalDetails.push({ ["Id"]: EmpId, Column, DocType, ColumnUpdate, UID });
+				}
+
+			});
+			var countPer = 0;
+			for (let b = 0; b < PersonalDetails.length; b++) {
+
+				countPer++;
+				$.ajax({
+					url: "/CommonAjax/ApprovedPersonalDetailsJson",
+					type: "Get",
+					async: true,
+					data: { EmpId: PersonalDetails[b].Id, Column: PersonalDetails[b].Column, DocType: PersonalDetails[b].DocType, ColumnUpdate: PersonalDetails[b].ColumnUpdate, UID: PersonalDetails[b].UID },
+					success: function (data) {
+
+						if (data == 1) {
+							if (countPer == PersonalDetails.length) {
+								SuccessToaster(' Approved Successfully');
+								window.location.reload();
+							}
+							}
+							else {
+								failtoaster('can not save.')
+							}
+					},
+					error: function (er) {
+						alert(er);
+					}
+				});
+
+			}
+			var Local = [];
+			$('input.selectedLocId:checkbox:checked').each(function () {
+				debugger;
+				var id = $(this).attr("id");
+				var ChkId = $('#' + id).val();
+				var myArray = ChkId.split('_');
+				var DocType = myArray[0];
+				var Column = myArray[1];
+				var arr = myArray[2].split('+');
+				var EmpId = parseInt(arr[0]);
+				var ColumnUpdate = arr[1];
+				var UID = arr[2];
+				if (Column == "zipcode") {
+					Column = "zip_code";
+				}
+				else if (Column == "phoneno") {
+					Column = "phone_no";
+				}
+				if (ColumnUpdate != "") {
+					Local.push({ ["Id"]: EmpId, Column, DocType, ColumnUpdate, UID });
+				}
+
+			});
+			var countL = 0;
+			for (let b = 0; b < Local.length; b++) {
+				countL++;
+				$.ajax({
+					url: "/CommonAjax/ApprovedPersonalDetailsJson",
+					type: "Get",
+					async: true,
+					data: { EmpId: Local[b].Id, Column: Local[b].Column, DocType: Local[b].DocType, ColumnUpdate: Local[b].ColumnUpdate, UID: Local[b].UID },
+					success: function (data) {
+						if (data == 1) {
+							if (countL == Local.length) {
+								SuccessToaster('Approved Successfully');
+								window.location.reload();
+							}
+						}
+						else {
+							failtoaster('can not save.')
+						}
+					},
+					error: function (er) {
+						alert(er);
+					}
+				});
+
+			}
+			var Permanent = [];
+			$('input.selectedPerId:checkbox:checked').each(function () {
+				debugger;
+				var id = $(this).attr("id");
+				var ChkId = $('#' + id).val();
+				var myArray = ChkId.split('_');
+				var DocType = myArray[0];
+				var Column = myArray[1];
+				var arr = myArray[2].split('+');
+				var EmpId = parseInt(arr[0]);
+				var ColumnUpdate = arr[1];
+				var UID = arr[2];
+				if (Column == "zipcode") {
+					Column = "zip_code";
+				}
+				else if (Column == "phoneno") {
+					Column = "phone_no";
+				}
+				if (ColumnUpdate != "") {
+					Permanent.push({ ["Id"]: EmpId, Column, DocType, ColumnUpdate, UID });
+				}
+
+			});
+			var countPerma = 0;
+			for (let b = 0; b < Permanent.length; b++) {
+				countPerma++;
+				$.ajax({
+					url: "/CommonAjax/ApprovedPersonalDetailsJson",
+					type: "Get",
+					async: true,
+					data: { EmpId: Permanent[b].Id, Column: Permanent[b].Column, DocType: Permanent[b].DocType, ColumnUpdate: Permanent[b].ColumnUpdate, UID: Permanent[b].UID },
+					success: function (data) {
+						if (data == 1) {
+							if (countPerma == Permanent.length) {
+								SuccessToaster('Approved Successfully');
+								window.location.reload();
+							}
+						}
+						else {
+							failtoaster('can not save.')
+						}
+					},
+					error: function (er) {
+						alert(er);
+					}
+				});
+
+			}
+			var Medical = [];
+			$('input.selectedMedId:checkbox:checked').each(function () {
+				debugger;
+				var id = $(this).attr("id");
+				var ChkId = $('#' + id).val();
+				var myArray = ChkId.split('_');
+				var DocType = myArray[0];
+				var Column = myArray[1];
+				var arr = myArray[2].split('+');
+				var EmpId = parseInt(arr[0]);
+				var ColumnUpdate = arr[1];
+				var UID = arr[2];
+				if (Column == "PhysicianAlternateNo") {
+					Column = "PhysicianAlternate_No";
+				}
+				else if (Column == "emergContactName") {
+					Column = "emergContact_Name";
+				}
+				else if (Column == "emergContactno") {
+					Column = "emergContact_no";
+				}
+				else if (Column == "emergContactRelation") {
+					Column = "emergContact_Relation";
+				}
+				if (ColumnUpdate != "") {
+					Medical.push({ ["Id"]: EmpId, Column, DocType, ColumnUpdate, UID });
+				}
+
+			});
+			var count = 0;
+			for (let b = 0; b < Medical.length; b++) {
+
+
+				count++;
+				$.ajax({
+					url: "/CommonAjax/ApprovedPersonalDetailsJson",
+					type: "Get",
+					async: true,
+					data: { EmpId: Medical[b].Id, Column: Medical[b].Column, DocType: Medical[b].DocType, ColumnUpdate: Medical[b].ColumnUpdate, UID: Medical[b].UID },
+					success: function (data) {
+
+						if (data == 1) {
+
+							if (count == Medical.length) {
+								SuccessToaster('Approved Successfully');
+								window.location.reload();
+							}
+
+						}
+						else {
+							failtoaster('can not save.')
+						}
+					},
+					error: function (er) {
+						alert(er);
+					}
+				});
+
+			}
+
+			var Salary = [];
+			$('input.selectedSallary:checkbox:checked').each(function () {
+				debugger;
+				var id = $(this).attr("id");
+				var ChkId = $('#' + id).val();
+				var myArray = ChkId.split('_');
+				var DocType = myArray[0];
+				var Column = myArray[1];
+				var arr = myArray[2].split('+');
+				var EmpId = parseInt(arr[0]);
+				var ColumnUpdate = arr[1];
+				var UID = arr[2];
+				if (ColumnUpdate != "") {
+					Salary.push({ ["Id"]: EmpId, Column, DocType, ColumnUpdate, UID });
+				}
+
+
+			});
+			var countPS = 0;
+			for (let b = 0; b < Salary.length; b++) {
+				countPS++;
+				$.ajax({
+					url: "/CommonAjax/ApprovedPersonalDetailsJson",
+					type: "Get",
+					async: true,
+					data: { EmpId: Salary[b].Id, Column: Salary[b].Column, DocType: Salary[b].DocType, ColumnUpdate: Salary[b].ColumnUpdate, UID: Salary[b].UID },
+					success: function (data) {
+						debugger;
+						if (data == 1) {
+							if (countPS == Salary.length) {
+								debugger;
+								SuccessToaster('Approved Successfully');
+								location.reload();
+								//$("#ae").modal("hide");
+								//showtable(2, 3);
+								
+							}
+						}
+						else {
+							failtoaster('can not save.')
+						}
+					},
+					error: function (er) {
+						alert(er);
+					}
+				});
+
+			}
+
+			var Reimbursement = [];
+			$('input.selectedReimbursement:checkbox:checked').each(function () {
+
+				var id = $(this).attr("id");
+				var ChkId = $('#' + id).val();
+				var myArray = ChkId.split('_');
+				var DocType = myArray[0];
+				var Column = myArray[1];
+				var arr = myArray[2].split('+');
+				var EmpId = parseInt(arr[0]);
+				var ColumnUpdate = arr[1];
+				var UID = arr[2];
+				if (ColumnUpdate != "" ) {
+					Reimbursement.push({ ["Id"]: EmpId, Column, DocType, ColumnUpdate, UID });
+				}
+
+			});
+			var countR = 0;
+			for (let b = 0; b < Reimbursement.length; b++) {
+				countR++;
+				$.ajax({
+					url: "/CommonAjax/ApprovedPersonalDetailsJson",
+					type: "Get",
+					async: true,
+					data: { EmpId: Reimbursement[b].Id, Column: Reimbursement[b].Column, DocType: Reimbursement[b].DocType, ColumnUpdate: Reimbursement[b].ColumnUpdate, UID: Reimbursement[b].UID },
+					success: function (data) {
+						if (data == 1) {
+							if (countR == Reimbursement.length) {
+								SuccessToaster('Approved Successfully');
+								window.location.reload();
+								//$("#ae").modal("hide");
+								//showtable(2, 3);
+							}
+						}
+						else {
+							failtoaster('can not save.')
+						}
+					},
+					error: function (er) {
+						alert(er);
+					}
+				});
+
+			}
+
+			var Airline = [];
+			$('input.selectedAirline:checkbox:checked').each(function () {
+			
+				var id = $(this).attr("id");
+				var ChkId = $('#' + id).val();
+				var myArray = ChkId.split('_');
+				var DocType = myArray[0];
+				var arr = myArray[1].split('+');
+				var EmpId = parseInt(arr[2]);
+				var AirlineName = arr[0]
+				var FlyerNo = arr[1]
+				var AirId = arr[3]
+				Airline.push({ ["Id"]: EmpId, AirlineName, DocType, FlyerNo, AirId });
+
+			});
+			var countA = 0;
+			for (let b = 0; b < Airline.length; b++) {
+				countA++;
+				$.ajax({
+					url: "/CommonAjax/ApprovedPersonalAirlineDetailsJson",
+					type: "Get",
+					async: true,
+					data: { EmpId: Airline[b].Id, AirlineName: Airline[b].AirlineName, DocType: Airline[b].DocType, FlyerNo: Airline[b].FlyerNo, AirId: Airline[b].AirId },
+					success: function (data) {
+						if (data == 1) {
+							if (countA == Airline.length) {
+								SuccessToaster('Approved Successfully');
+								window.location.reload();
+							}
+						}
+						else {
+							failtoaster('can not save.')
+						}
+					},
+					error: function (er) {
+						alert(er);
+					}
+				});
+
+			}
+
+			var Qualification = [];
+			$('input.selectedEducation:checkbox:checked').each(function () {
+				
+				var id = $(this).attr("id");
+				var ChkId = $('#' + id).val();
+				var myArray = ChkId.split('_');
+				var DocType = myArray[0];
+				var arr = myArray[1].split('+');
+				var EmpId = parseInt(arr[4]);
+				var Course = arr[0];
+				var University = arr[1];
+				var Location = arr[2];
+				var Year = arr[3]
+				var QId = arr[5]
+				Qualification.push({ ["Id"]: EmpId, Course, DocType, University, Location, Year, QId });
+
+			});
+			var countQ = 0;
+			for (let b = 0; b < Qualification.length; b++) {
+				countQ++;
+				$.ajax({
+					url: "/CommonAjax/ApprovedPersonalQualificationDetailsJson",
+					type: "Get",
+					async: true,
+					data: { EmpId: Qualification[b].Id, Course: Qualification[b].Course, DocType: Qualification[b].DocType, University: Qualification[b].University, Location: Qualification[b].Location, Year: Qualification[b].Year, QId: Qualification[b].QId  },
+					success: function (data) {
+						if (data == 1) {
+							if (countQ == Qualification.length) {
+								SuccessToaster('Approved Successfully');
+								window.location.reload();
+							}
+						}
+						else {
+							failtoaster('can not save.')
+						}
+					},
+					error: function (er) {
+						alert(er);
+					}
+				});
+
+			}
+			var V = [];
+			$('input.selectedVI:checkbox:checked').each(function () {
+			
+				var id = $(this).attr("id");
+				var ChkId = $('#' + id).val();
+				var myArray = ChkId.split('+');
+				var arr = myArray[0].split('_');
+				var DocType = "Voter ID";
+				var EmpId = parseInt(arr[1]);
+				var ColumnUpdate = myArray[1];
+				var UID = myArray[2];
+				var Column = "VoterId";
+				V.push({ ["Id"]: EmpId, ColumnUpdate, DocType, Column, UID});
+
+			});
+			var countV = 0;
+			for (let b = 0; b < V.length; b++) {
+				countV++;
+				$.ajax({
+					url: "/CommonAjax/ApprovedPersonalDetailsJson",
+					type: "Get",
+					async: true,
+					data: { EmpId: V[b].Id, Column: V[b].Column, DocType: V[b].DocType, ColumnUpdate: V[b].ColumnUpdate, UID: V[b].UID },
+					success: function (data) {
+						if (data == 1) {
+							if (countV == V.length) {
+								SuccessToaster('Approved Successfully');
+								window.location.reload();
+							}
+						}
+						else {
+							failtoaster('can not save.')
+						}
+					},
+					error: function (er) {
+						alert(er);
+					}
+				});
+
+			}
+
+			var Pass = [];
+			$('input.selectedPD:checkbox:checked').each(function () {
+				
+				var id = $(this).attr("id");
+				var ChkId = $('#' + id).val();
+				var myArray = ChkId.split('+');
+				var DocType = "Passport";
+				var arr = myArray[0].split('_');
+				var EmpId = parseInt(arr[1]);
+				var Column = arr[0];
+				var ColumnUpdate = myArray[1];
+				var UID = myArray[2];
+				if (ColumnUpdate != "") {
+					Pass.push({ ["Id"]: EmpId, Column, DocType, ColumnUpdate, UID });
+				}
+
+			});
+			 var countPass = 0;
+			for (let b = 0; b < Pass.length; b++) {
+				countPass++;
+				$.ajax({
+					url: "/CommonAjax/ApprovedPersonalDetailsJson",
+					type: "Get",
+					async: true,
+					data: { EmpId: Pass[b].Id, Column: Pass[b].Column, DocType: Pass[b].DocType, ColumnUpdate: Pass[b].ColumnUpdate, UID: Pass[b].UID },
+					success: function (data) {
+						if (data == 1) {
+							if (countPass == Pass.length) {
+								SuccessToaster('Approved Successfully');
+								window.location.reload();
+							}
+						}
+						else {
+							failtoaster('can not save.')
+						}
+					},
+					error: function (er) {
+						alert(er);
+					}
+				});
+
+			}
+			var DIN = [];
+			$('input.selectedDin:checkbox:checked').each(function () {
+
+				var id = $(this).attr("id");
+				var ChkId = $('#' + id).val();
+				var myArray = ChkId.split('+');
+				var DocType = "Director Identification Number";
+				var arr = myArray[0].split('_');
+				var EmpId = parseInt(arr[1]);
+				var Column = arr[0];
+				var ColumnUpdate = myArray[1];
+				var UID = myArray[2];
+				if (ColumnUpdate != "") {
+					DIN.push({ ["Id"]: EmpId, Column, DocType, ColumnUpdate, UID });
+					}
+
+			});
+			var countDin = 0;
+			for (let b = 0; b < DIN.length; b++) {
+				countDin++;
+				$.ajax({
+					url: "/CommonAjax/ApprovedPersonalDetailsJson",
+					type: "Get",
+					async: true,
+					data: { EmpId: DIN[b].Id, Column: DIN[b].Column, DocType: DIN[b].DocType, ColumnUpdate: DIN[b].ColumnUpdate, UID: DIN[b].UID },
+					success: function (data) {
+						if (data == 1) {
+							if (countDin == DIN.length) {
+								SuccessToaster('Approved Successfully');
+								window.location.reload();
+							}
+						}
+						else {
+							failtoaster('can not save.')
+						}
+					},
+					error: function (er) {
+						alert(er);
+					}
+				});
+
+			}
+			var Dl = [];
+			$('input.selectedDln:checkbox:checked').each(function () {
+				
+				var id = $(this).attr("id");
+				var ChkId = $('#' + id).val();
+				var myArray = ChkId.split('+');
+				var DocType = "Driving License";
+				var arr = myArray[0].split('_');
+				var EmpId = parseInt(arr[1]);
+				var Column = arr[0];
+				var ColumnUpdate = myArray[1];
+				var UID = myArray[2];
+				if (ColumnUpdate != "") {
+					Dl.push({ ["Id"]: EmpId, Column, DocType, ColumnUpdate, UID });
+				}
+
+			});
+			var countdl = 0;
+			for (let b = 0; b < Dl.length; b++) {
+				countdl++;
+				$.ajax({
+					url: "/CommonAjax/ApprovedPersonalDetailsJson",
+					type: "Get",
+					async: true,
+					data: { EmpId: Dl[b].Id, Column: Dl[b].Column, DocType: Dl[b].DocType, ColumnUpdate: Dl[b].ColumnUpdate, UID: Dl[b].UID },
+					success: function (data) {
+						if (data == 1) {
+							if (countdl == Dl.length) {
+								SuccessToaster('Approved Successfully');
+								window.location.reload();
+							}
+						}
+						else {
+							failtoaster('can not save.')
+						}
+					},
+					error: function (er) {
+						alert(er);
+					}
+				});
+
+			}
+			var PSDoc = [];
+			$('input.selectedP:checkbox:checked').each(function () {
+			
+				var id = $(this).attr("id");
+				var ChkId = $('#' + id).val();
+				var myArray = ChkId.split('+');
+				var AttachmentID = parseInt(myArray[0]);
+				var MUID = parseInt(myArray[1]);
+				var EMPID = parseInt(myArray[2]);
+				PSDoc.push({ ["Id"]: AttachmentID, MUID, EMPID });
+
+			});
+			var countPSDoc = 0;
+			for (let b = 0; b < PSDoc.length; b++) {
+				countPSDoc++;
+				$.ajax({
+					url: "/CommonAjax/ApprovedPersonalDocDetailsJson",
+					type: "Get",
+					async: true,
+					data: { AttachmentID: PSDoc[b].Id, MUID: PSDoc[b].MUID, EMPID: PSDoc[b].EMPID, DocType:"Passport"},
+					success: function (data) {
+						if (data == 1) {
+							if (countPSDoc == PSDoc.length) {
+								SuccessToaster('Approved Successfully');
+								window.location.reload();
+							}
+						}
+						else {
+							failtoaster('can not save.')
+						}
+					},
+					error: function (er) {
+						alert(er);
+					}
+				});
+
+			}
+			var PanDoc = [];
+			$('input.selectedPan:checkbox:checked').each(function () {
+			
+				var id = $(this).attr("id");
+				var ChkId = $('#' + id).val();
+				var myArray = ChkId.split('+');
+				var AttachmentID = parseInt(myArray[0]);
+				var MUID = parseInt(myArray[1]);
+				var EMPID = parseInt(myArray[2]);
+				PanDoc.push({ ["Id"]: AttachmentID, MUID, EMPID });
+
+			});
+			var countPanDoc = 0;
+			for (let b = 0; b < PanDoc.length; b++) {
+				countPanDoc++;
+				$.ajax({
+					url: "/CommonAjax/ApprovedPersonalDocDetailsJson",
+					type: "Get",
+					async: true,
+					data: { AttachmentID: PanDoc[b].Id, MUID: PanDoc[b].MUID, EMPID: PanDoc[b].EMPID, DocType: "PAN" },
+					success: function (data) {
+						if (data == 1) {
+							if (countPanDoc == PanDoc.length) {
+								SuccessToaster('Approved Successfully');
+								window.location.reload();
+							}
+						}
+						else {
+							failtoaster('can not save.')
+						}
+					},
+					error: function (er) {
+						alert(er);
+					}
+				});
+
+			}
+
+
+				var AdharDoc = [];
+			$('input.selectedA:checkbox:checked').each(function () {
+				
+				var id = $(this).attr("id");
+				var ChkId = $('#' + id).val();
+				var myArray = ChkId.split('+');
+				var AttachmentID = parseInt(myArray[0]);
+				var MUID = parseInt(myArray[1]);
+				var EMPID = parseInt(myArray[2]);
+				AdharDoc.push({ ["Id"]: AttachmentID, MUID, EMPID });
+
+			});
+			var countAdharDoc = 0;
+			for (let b = 0; b < AdharDoc.length; b++) {
+				countAdharDoc++;
+				$.ajax({
+					url: "/CommonAjax/ApprovedPersonalDocDetailsJson",
+					type: "Get",
+					async: true,
+					data: { AttachmentID: AdharDoc[b].Id, MUID: AdharDoc[b].MUID, EMPID: AdharDoc[b].EMPID, DocType: "Aadhaar" },
+					success: function (data) {
+						if (data == 1) {
+							if (countAdharDoc == AdharDoc.length) {
+								SuccessToaster('Approved Successfully');
+								window.location.reload();
+							}
+						}
+						else {
+							failtoaster('can not save.')
+						}
+					},
+					error: function (er) {
+						alert(er);
+					}
+				});
+
+			}
+
+
+			var VDoc = [];
+			$('input.selectedV:checkbox:checked').each(function () {
+		
+				var id = $(this).attr("id");
+				var ChkId = $('#' + id).val();
+				var myArray = ChkId.split('+');
+				var AttachmentID = parseInt(myArray[0]);
+				var MUID = parseInt(myArray[1]);
+				var EMPID = parseInt(myArray[2]);
+				VDoc.push({ ["Id"]: AttachmentID, MUID, EMPID });
+
+			});
+			var countVDoc = 0;
+			for (let b = 0; b < VDoc.length; b++) {
+				countVDoc++;
+				$.ajax({
+					url: "/CommonAjax/ApprovedPersonalDocDetailsJson",
+					type: "Get",
+					async: true,
+					data: { AttachmentID: VDoc[b].Id, MUID: VDoc[b].MUID, EMPID: VDoc[b].EMPID, DocType: "Voter ID" },
+					success: function (data) {
+						if (data == 1) {
+							if (countVDoc == VDoc.length) {
+								SuccessToaster('Approved Successfully');
+								window.location.reload();
+							}
+						}
+						else {
+							failtoaster('can not save.')
+						}
+					},
+					error: function (er) {
+						alert(er);
+					}
+				});
+
+			}
+
+				var DinDoc = [];
+			$('input.selectedD:checkbox:checked').each(function () {
+			
+				var id = $(this).attr("id");
+				var ChkId = $('#' + id).val();
+				var myArray = ChkId.split('+');
+				var AttachmentID = parseInt(myArray[0]);
+				var MUID = parseInt(myArray[1]);
+				var EMPID = parseInt(myArray[2]);
+				DinDoc.push({ ["Id"]: AttachmentID, MUID, EMPID });
+
+			});
+			var countDinDocc = 0;
+			for (let b = 0; b < DinDoc.length; b++) {
+				countDinDocc++;
+				$.ajax({
+					url: "/CommonAjax/ApprovedPersonalDocDetailsJson",
+					type: "Get",
+					async: true,
+					data: { AttachmentID: DinDoc[b].Id, MUID: DinDoc[b].MUID, EMPID: DinDoc[b].EMPID, DocType: "Director Identification Number" },
+					success: function (data) {
+						if (data == 1) {
+							if (countDinDocc == DinDoc.length) {
+								SuccessToaster('Approved Successfully');
+								window.location.reload();
+							}
+						}
+						else {
+							failtoaster('can not save.')
+						}
+					},
+					error: function (er) {
+						alert(er);
+					}
+				});
+
+			}
+
+			var DlDoc = [];
+			$('input.selecteddl:checkbox:checked').each(function () {
+		
+				var id = $(this).attr("id");
+				var ChkId = $('#' + id).val();
+				var myArray = ChkId.split('+');
+				var AttachmentID = parseInt(myArray[0]);
+				var MUID = parseInt(myArray[1]);
+				var EMPID = parseInt(myArray[2]);
+				DlDoc.push({ ["Id"]: AttachmentID, MUID, EMPID });
+
+			});
+			var countDlDocc = 0;
+			for (let b = 0; b < DlDoc.length; b++) {
+				countDlDocc++;
+				$.ajax({
+					url: "/CommonAjax/ApprovedPersonalDocDetailsJson",
+					type: "Get",
+					async: true,
+					data: { AttachmentID: DlDoc[b].Id, MUID: DlDoc[b].MUID, EMPID: DlDoc[b].EMPID, DocType: "Driving License" },
+					success: function (data) {
+						if (data == 1) {
+							if (countDlDocc == DlDoc.length) {
+								SuccessToaster('Approved Successfully');
+								window.location.reload();
+							}
+						}
+						else {
+							failtoaster('can not save.')
+						}
+					},
+					error: function (er) {
+						alert(er);
+					}
+				});
+
+			}
+
+
+
+			var MealandSeat = [];
+			$('input.selectedSeat:checkbox:checked').each(function () {
+				
+				var id = $(this).attr("id");
+				var ChkId = $('#' + id).val();
+				var myArray = ChkId.split('_');
+				var DocType = myArray[0];
+				var Column = myArray[1];
+				var arr = myArray[2].split('+');
+				var EmpId = parseInt(arr[1]);
+				var ColumnUpdate = arr[0];
+				var UID = arr[2];
+				
+				if (ColumnUpdate != "") {
+					MealandSeat.push({ ["Id"]: EmpId, Column, DocType, ColumnUpdate, UID });
+				}
+
+			});
+			var countMS = 0;
+			for (let b = 0; b < MealandSeat.length; b++) {
+				countMS++;
+				$.ajax({
+					url: "/CommonAjax/ApprovedPersonalDetailsJson",
+					type: "Get",
+					async: true,
+					data: { EmpId: MealandSeat[b].Id, Column: MealandSeat[b].Column, DocType: MealandSeat[b].DocType, ColumnUpdate: MealandSeat[b].ColumnUpdate, UID: MealandSeat[b].UID },
+					success: function (data) {
+						if (data == 1) {
+							if (countMS == MealandSeat.length) {
+								SuccessToaster('Approved Successfully');
+								window.location.reload();
+							}
+						}
+						else {
+							failtoaster('can not save.')
+						}
+					},
+					error: function (er) {
+						alert(er);
+					}
+				});
+
+			}
+		}
+		function ModalAdd(obj) {
+			
+			var ID = parseInt($(obj).closest('tr').find("td.hdfempid input[type='hidden']").val());
+			var EmpName = $(obj).closest('tr').find("td.hdfempname input[type='hidden']").val();
+			var EmpCode = $(obj).closest('tr').find("td.hdfempcode input[type='hidden']").val();
+			var MUID = $(obj).closest('tr').find("td.hdfMUID input[type='hidden']").val();
+			var DocType = $(obj).closest('tr').find("td.hdfdoctype input[type='hidden']").val();
+			var fullname = EmpName + " ( " + EmpCode + " )";
+			$("#empName").html(fullname);
+			$("#ae").modal("show");
+			$("#hdfempid").val(ID);
+			$("#hdfid").val(MUID);
+			$("#hdfDocType").val(DocType);
+			showtable(3,0)
+		}
+		function ModalDisplay(obj) {
+			debugger;
+			var ID = parseInt($(obj).closest('tr').find("td.hdfempid input[type='hidden']").val());
+			var EmpName = $(obj).closest('tr').find("td.hdfempname input[type='hidden']").val();
+			var EmpCode = $(obj).closest('tr').find("td.hdfempcode input[type='hidden']").val();
+			var MUID = $(obj).closest('tr').find("td.hdfMUID input[type='hidden']").val();
+			var DocType = $(obj).closest('tr').find("td.hdfdoctype input[type='hidden']").val();
+			var fullname = EmpName + " ( " + EmpCode + " )";
+			$("#empName").html(fullname);
+			$("#ae").modal("show");
+			$("#hdfempid").val(ID);
+			$("#hdfid").val(MUID);
+			$("#hdfDocType").val(DocType);
+			showtable(3,1)
+		}
+		function showtable(tabname, status) {
+		
+			if (tabname == "1") {
+
+
+				ShowLoadingDialog();
+				$.ajax({
+					url: "/Employee/_PendingEmployeeDetails",
+					type: "Get",
+					async: true,
+					data: { src: EncryptQueryStringJSON(@ViewBag.MenuID+"*" + "/Employee/_PendingEmployeeDetails") },
+					success: function (data) {
+					
+						$("#TargetDiv").empty();
+						$("#TargetDiv").html(data);
+						if (status == 0) {
+							$("#myTabApproved").hide();
+							$("#myTab").show();
+						}
+						
+						CloseLoadingDialog();
+
+
+
+					},
+					error: function (er) {
+						alert(er);
+
+					}
+				});
+
+			}
+			else if (tabname == "2") {
+				ShowLoadingDialog();
+					$.ajax({
+					url: "/Employee/_Approvedemployeedetails",
+					type: "Get",
+					async: true,
+						data: { src: EncryptQueryStringJSON(@ViewBag.MenuID+"*" + "/Employee/_Approvedemployeedetails") },
+					success: function (data) {
+							
+						$("#TargetDiv").empty();
+						$("#TargetDiv").html(data);
+						if (status == 1) {
+							$("#myTabApproved").show();
+							$("#myTab").hide();
+							CloseLoadingDialog();
+						}
+						
+
+					
+
+
+
+					},
+					error: function (er) {
+						alert(er);
+
+					}
+				});
+
+
+
+
+			}
+			else if (tabname == "3") {
+				
+				var empId = $("#hdfempid").val();
+				var Id = $("#hdfid").val();
+				var DocType = $("#hdfDocType").val();
+				if (status == 0) {
+					$('#liAtt-tab').removeClass('active')
+					$('#liId-tab').removeClass('active')
+					$('#licontact-tab').removeClass('active')
+					$('#lihome-tab').addClass('active')
+					$('#liprofile-tab').removeClass('active')
+				}
+				else {
+					$('#liAtt-taba').removeClass('active')
+					$('#liId-taba').removeClass('active')
+					$('#licontact-taba').removeClass('active')
+					$('#lihome-taba').addClass('active')
+					$('#liprofile-taba').removeClass('active')
+				}
+
+					$.ajax({
+						url: "/Employee/_BasicInformation",
+					type: "Get",
+					async: true,
+						data: { src: EncryptQueryStringJSON(@ViewBag.MenuID+"*" + "/Employee/_BasicInformation" + "*" + empId + "*" + status + "*" + Id + "*" + DocType) },
+						success: function (data) {
+
+						$("#TargetinnerDiv").empty();
+						$("#TargetinnerDiv").html(data);
+						if (status == 1) {
+							$('#btnapprove').attr('disabled', true);
+							$('#btncancel').attr('disabled', true);
+						}
+						else {
+							$('#btnapprove').removeAttr('disabled', true);
+							$('#btncancel').removeAttr('disabled', true);
+						}
+
+						//DatatableScriptsWithColumnSearch("completed");
+
+
+					},
+					error: function (er) {
+						alert(er);
+
+					}
+				});
+
+			}
+			else if (tabname == "4") {
+				var empId = $("#hdfempid").val();
+				var Id = $("#hdfid").val();
+				var DocType = $("#hdfDocType").val();
+				if (status == 0) {
+					$('#liAtt-tab').removeClass('active')
+					$('#liId-tab').removeClass('active')
+					$('#licontact-tab').removeClass('active')
+					$('#lihome-tab').removeClass('active')
+					$('#liprofile-tab').addClass('active')
+				}
+				else {
+					$('#liAtt-taba').removeClass('active')
+					$('#liId-taba').removeClass('active')
+					$('#licontact-taba').removeClass('active')
+					$('#lihome-taba').removeClass('active')
+					$('#liprofile-taba').addClass('active')
+				}
+
+					$.ajax({
+						url: "/Employee/_PersonalInformation",
+					type: "Get",
+					async: true,
+						data: { src: EncryptQueryStringJSON(@ViewBag.MenuID+"*" + "/Employee/_PersonalInformation" + "*" + empId + "*" + status + "*" + Id + "*" + DocType) },
+						success: function (data) {
+							
+						$("#TargetinnerDiv").empty();
+						$("#TargetinnerDiv").html(data);
+
+						if (status == 1) {
+							$('#btnapprove').attr('disabled', true);
+							$('#btncancel').attr('disabled', true);
+						}
+						else {
+							$('#btnapprove').removeAttr('disabled', true);
+							$('#btncancel').removeAttr('disabled', true);
+						}
+
+
+					},
+					error: function (er) {
+						alert(er);
+
+					}
+				});
+
+			}
+			else if (tabname == "5") {
+				var empId = $("#hdfempid").val();
+				var Id = $("#hdfid").val();
+				var DocType = $("#hdfDocType").val();
+				if (status == 0) {
+					$('#liAtt-tab').removeClass('active')
+					$('#liId-tab').removeClass('active')
+					$('#licontact-tab').addClass('active')
+					$('#lihome-tab').removeClass('active')
+					$('#liprofile-tab').removeClass('active')
+				}
+				else {
+					$('#liAtt-taba').removeClass('active')
+					$('#liId-taba').removeClass('active')
+					$('#licontact-taba').addClass('active')
+					$('#lihome-taba').removeClass('active')
+					$('#liprofile-taba').removeClass('active')
+				}
+
+					$.ajax({
+						url: "/Employee/_GenralInformation",
+					type: "Get",
+					async: true,
+						data: { src: EncryptQueryStringJSON(@ViewBag.MenuID+"*" + "/Employee/_GenralInformation" + "*" + empId + "*" + status + "*" + Id + "*" + DocType) },
+					success: function (data) {
+							
+						$("#TargetinnerDiv").empty();
+						$("#TargetinnerDiv").html(data);
+
+						if (status == 1) {
+							$('#btnapprove').attr('disabled', true);
+							$('#btncancel').attr('disabled', true);
+						}
+						else {
+							$('#btnapprove').removeAttr('disabled', true);
+							$('#btncancel').removeAttr('disabled', true);
+						}
+
+
+					},
+					error: function (er) {
+						alert(er);
+
+					}
+				});
+
+			}
+			else if (tabname == "6") {
+				var empId = $("#hdfempid").val();
+				var Id = $("#hdfid").val();
+				var DocType = $("#hdfDocType").val();
+				if (status == 0) {
+					$('#liAtt-tab').removeClass('active')
+					$('#liId-tab').addClass('active')
+					$('#licontact-tab').removeClass('active')
+					$('#lihome-tab').removeClass('active')
+					$('#liprofile-tab').removeClass('active')
+				}
+				else {
+					$('#liAtt-taba').removeClass('active')
+					$('#liId-taba').addClass('active')
+					$('#licontact-taba').removeClass('active')
+					$('#lihome-taba').removeClass('active')
+					$('#liprofile-taba').removeClass('active')
+				}
+
+					$.ajax({
+						url: "/Employee/_IdInformation",
+					type: "Get",
+					async: true,
+						data: { src: EncryptQueryStringJSON(@ViewBag.MenuID+"*" + "/Employee/_IdInformation" + "*" + empId + "*" + status + "*" + Id + "*" + DocType) },
+					success: function (data) {
+							
+						$("#TargetinnerDiv").empty();
+						$("#TargetinnerDiv").html(data);
+
+						if (status == 1) {
+							$('#btnapprove').attr('disabled', true);
+							$('#btncancel').attr('disabled', true);
+						}
+						else {
+							$('#btnapprove').removeAttr('disabled', true);
+							$('#btncancel').removeAttr('disabled', true);
+						}
+
+
+
+					},
+					error: function (er) {
+						alert(er);
+
+					}
+				});
+
+			}
+			else if (tabname == "7") {
+				var empId = $("#hdfempid").val();
+				var Id = $("#hdfid").val();
+				var DocType = $("#hdfDocType").val();
+				if (status == 0) {
+					$('#liAtt-tab').addClass('active')
+					$('#liId-tab').removeClass('active')
+					$('#licontact-tab').removeClass('active')
+					$('#lihome-tab').removeClass('active')
+					$('#liprofile-tab').removeClass('active')
+				}
+				else {
+					$('#liAtt-taba').addClass('active')
+					$('#liId-taba').removeClass('active')
+					$('#licontact-taba').removeClass('active')
+					$('#lihome-taba').removeClass('active')
+					$('#liprofile-taba').removeClass('active')
+				}
+
+					$.ajax({
+						url: "/Employee/_AttachementInformation",
+					type: "Get",
+					async: true,
+						data: { src: EncryptQueryStringJSON(@ViewBag.MenuID+"*" + "/Employee/_AttachementInformation" + "*" + empId + "*" + status + "*" + Id + "*" + DocType) },
+					success: function (data) {
+							
+						$("#TargetinnerDiv").empty();
+						$("#TargetinnerDiv").html(data);
+
+
+						if (status == 1) {
+							$('#btnapprove').attr('disabled', true);
+							$('#btncancel').attr('disabled', true);
+						}
+						else {
+							$('#btnapprove').removeAttr('disabled', true);
+							$('#btncancel').removeAttr('disabled', true);
+						}
+
+
+					},
+					error: function (er) {
+						alert(er);
+
+					}
+				});
+
+			}
+		}
+		function OnSuccess(obj) {
+
+
+			if (obj.Status) {
+
+				SuccessToaster(obj.SuccessMessage);
+				window.location.reload();
+			}
+			else {
+				CloseLoadingDialog();
+				FailToaster(obj.SuccessMessage);
+
+			}
+		}
+
+
+
+	</script>
+
+
+}

@@ -1,0 +1,41 @@
+﻿
+@model Mitr.Models.Helpdesk.TicketSetting_Assignment
+
+@using (Ajax.BeginForm("_AddTicketSetting_Assignment", "Ticket",
+        new { src = ViewBag.src },
+        new AjaxOptions { HttpMethod = "POST", OnSuccess = "OnTicketAssignmentSuccess" },
+    new { @id = "_AddTicketSettingFrom" })
+    )
+{
+
+    @Html.AntiForgeryToken()
+    @Html.HiddenFor(x => Model.SubCategoryID)
+    <div class="divassignement">
+        <div class="row">
+            <div class="col-sm-3 form-group">
+                <lable>Location Group</lable>
+                @Html.DropDownListFor(model => model.LocationGroupID, new SelectList(ViewBag.LocationGroup, "LocationGroupID", "GroupName", Model.LocationGroupID), "select", new { @class = "form-control applyselect" })
+                @Html.ValidationMessageFor(model => model.LocationGroupID, "", new { @class = "text-danger" })
+            </div>
+            <div class="col-sm-3 form-group">
+                <lable>Primary Assignee</lable>
+                @Html.DropDownListFor(model => model.PrimaryAssignee, new SelectList(ViewBag.EmployeeList, "LoginID", "EMPName", Model.PrimaryAssignee), "select", new { @class = "form-control applyselect" })
+                @Html.ValidationMessageFor(model => model.PrimaryAssignee, "", new { @class = "text-danger" })
+            </div>
+            <div class="col-sm-3 form-group">
+                <lable>Supervisor Name</lable>
+                @Html.DropDownListFor(model => model.Supervisor, new SelectList(ViewBag.EmployeeList, "LoginID", "EMPName", Model.Supervisor), "select", new { @class = "form-control applyselect" })
+                @Html.ValidationMessageFor(model => model.Supervisor, "", new { @class = "text-danger" })
+            </div>
+            <div class="col-sm-3 form-group">
+                <lable>Escalation to</lable>
+                @Html.DropDownListFor(model => model.Escalation, new SelectList(ViewBag.EmployeeList, "LoginID", "EMPName", Model.Escalation), "select", new { @class = "form-control applyselect" })
+                @Html.ValidationMessageFor(model => model.Escalation, "", new { @class = "text-danger" })
+            </div>
+        </div>
+        <div class="row">
+            <button type="submit" class="btn mtr-o-grn btn-l ripplelink pull-right" name="Command" value="Add"><i class="fa fa-paper-plane" aria-hidden="true"></i> Submit</button>
+        </div>
+    </div>
+    
+  }

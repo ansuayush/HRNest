@@ -1,0 +1,194 @@
+﻿@using Mitr.CommonClass;
+@using Mitr.Models;
+@model Mitr.Models.TravelDeskToFinaceCard.TravelDeskToFinance
+<div id="Pending" class="card tab-pane fade show active" role="tabpanel" aria-labelledby="tab-A">
+	<div class="card-header" role="tab" id="heading-A">
+		<h5 class="mb-0">
+			<!-- Note: `data-parent` removed from here -->
+			<a data-toggle="collapse" href="#collapse-A" aria-expanded="true" aria-controls="collapse-A"> <i class="fas fa-ticket-alt"></i> Pending </a>
+		</h5>
+	</div>
+
+	<!-- Note: New place of `data-parent` -->
+	<div id="collapse-A" class="collapse show" data-parent="#content" role="tabpanel" aria-labelledby="heading-A">
+		<!--- -->
+		<div class="card-body p-0">
+			<table id="PendingTable" class="table table-striped tblapproved">
+				<thead>
+					<tr>
+						<th width="20" rowspan="2">SR.No</th>
+						<th rowspan="2" width="100">Request No</th>
+						<th rowspan="2" width="100">Request Date</th>
+						<th rowspan="2" width="120">Traveller's Name</th>
+						<th rowspan="2" width="120"> Project Code</th>
+						<th rowspan="2" width="120">Transaction Date</th>
+						<th rowspan="2" width="120">Mode of Transaction</th>
+						<th rowspan="2" width="120">Travel Desk Name</th>
+						<th rowspan="2" width="150">Share Details</th>
+						<th rowspan="2">Description	</th>
+						<th colspan="2" class="text-center" width="150">Amount 		</th>
+						<th rowspan="2" width="120">Finance Entry <sup class="red-clr">*</sup>	</th>
+						<th rowspan="2" width="100">Finance Entry Date <sup class="red-clr">*</sup>	</th>
+						<th rowspan="2" width="10">
+							<input type="checkbox" id="selectall" class="sltchk chkAll" name="AdvanceRequired" onchange="valueChanged()">
+							<label for="selectall" class="selectall  m-0"></label>
+						</th>
+						<th rowspan="2" width="320">Action</th>
+
+
+					</tr>
+
+					<tr>
+						<th width="100">Payable</th>
+						<th width="70">Refund</th>
+
+					</tr>
+					<
+
+					@{ int Count = 0;}
+					@foreach (var item in Model.listTravelDeskToFinance_Card.Where(x => x.Approved == 0 && x.FinanceAmount == 0))
+					{
+						Count++;
+						<tr>
+							<td class="hdftableid">@Count<input type="hidden" value="@item.TravelDocID" id="hdfTraveldocId_@Count" /></td>
+							<td>TRN-@item.req_no</td>
+							<td>@item.req_Date</td>
+							<td>@item.traveller_name</td>
+							<td>@item.doc_no</td>
+							<td>@item.TransactionDate</td>
+							<td>@item.BookBy</td>
+							<td>@item.TravelDesk</td>
+							<td>@item.CardandBank</td>
+							<td>@item.DocumentType</td>
+							<td class="text-right hdfamount">
+								@string.Format("{0:c}", @item.Amount)
+								<input type="hidden" value="@item.Amount" id="txthdfAmount_@Count" />
+							</td>
+							<td class="text-right hdfRefamount">
+								@string.Format("{0:c}", @item.RefundAmount)
+								<input type="hidden" value="@item.RefundAmount" id="txthdfRefAmount_@Count" />
+							</td>
+							<td><input type="text" id="txtAmount_@Count" class="form-control text-right this" onchange="Amount(this)" value="" placeholder="0"></td>
+							<td><input type="date" id="txtPaidDate_@Count" class="form-control" onchange="PaidDate(this)" value="" placeholder="0"></td>
+							<td class="text-center">
+								<input type="checkbox" id="s_@Count" class="selectedId sltchk" name="select" onchange="valueChanged()">
+								<label for="s_@Count" class="m-0"></label>
+							</td>
+							<td>
+								<a href="@Url.Action("FinancePaymenttoTravelDeskView",new { src = clsApplicationSetting.EncryptFriendly(ViewBag.MenuID+"*"+"/Travel/FinancePaymenttoTravelDeskView*"+item.ReqId+"*"+item.TravelDocID) })" target="_blank"><i class="fas fa-eye"></i>View</a>
+								<span class="line-sp">|</span>
+								<button type="button" value="Confirm" id="btn_@Count" disabled onclick="Confirm(this)" class="fn-bold"><i class="fas fa-check-circle"></i>Confirm</button>
+								<span class="line-sp">|</span>
+								<a href="#" onclick="Cancel(this)" class="rct-clr" data-toggle="modal" data-target="#rjct"><i class="fa fa-ban" aria-hidden="true"></i>Reject</a>
+							</td>
+						</tr>
+					}
+
+
+				</thead>
+			</table>
+
+			<div class="text-center ">
+				<button type="button" data-toggle="modal" data-target="#confirmmsg" class="btn mtr-o-grn hide" type="button"><i class="fas fa-check-circle"></i>Confirm</button>
+
+				<button type="button" class="btn cnl-btn ripplelink  pull-right"><i class="fas fa-times"></i> Close</button>
+			</div>
+		</div>
+		<!--- -->
+	</div>
+</div>
+@section scripts    {
+	@System.Web.Optimization.Scripts.Render("~/bundle/dataTablesjs")
+
+	@System.Web.Optimization.Scripts.Render("~/bundle/unobtrusivejs")
+	@Html.IncludeVersionedJs(Url.Content("~/assets/design/Scripts/AddInit.js"))
+	@Html.IncludeVersionedJs(Url.Content("~/assets/design/Scripts/ToolTip.js"))
+
+}
+<script>
+	function valueChanged() {
+		if ($('.sltchk').is(":checked"))
+			$(".hide").show();
+		else
+			$(".hide").hide();
+	};
+	$('#selectall').click(function () {
+		var someObj = {};
+		someObj.NochkId = [];
+		someObj.ChkId = [];
+		$('.selectedId').prop('checked', this.checked);
+
+		$('input.selectedId:checkbox:checked').each(function () {
+
+			var ChkId = $(this).attr("id");
+			var myArray = ChkId.split('_');
+			var niewid = parseInt(myArray[1]);
+			var Amount = $("#txthdfAmount_" + niewid + "").val();
+			var fillAmount = $("#txtAmount_" + niewid + "").val();
+			var RefundAmount = parseInt($("#txthdfRefAmount_" + niewid + "").val());
+			if (parseInt(fillAmount) > 0) {
+
+			}
+			else {
+				if (RefundAmount > 0) {
+					$("#txtAmount_" + niewid + "").val(RefundAmount);
+				}
+				else {
+					$("#txtAmount_" + niewid + "").val(Amount);
+				}
+
+			}
+
+
+		});
+		$('input[type=checkbox]:not(:checked)').each(function () {
+
+			var id = $(this).attr("id");
+			var myArray = id.split('_');
+			var niewid = parseInt(myArray[1]);
+			if (niewid > 0) {
+				$("#txtAmount_" + niewid + "").val(0);
+			}
+
+		})
+	});
+
+	$('.selectedId').change(function () {
+		$('input.selectedId:checkbox:checked').each(function () {
+			var ChkId = $(this).attr("id");
+			var myArray = ChkId.split('_');
+			var niewid = parseInt(myArray[1]);
+			var Amount = $("#txthdfAmount_" + niewid + "").val();
+			var fillAmount = $("#txtAmount_" + niewid + "").val();
+			var RefundAmount = parseInt($("#txthdfRefAmount_" + niewid + "").val());
+			if (parseInt(fillAmount) > 0) {
+
+			}
+			else {
+				if (RefundAmount > 0) {
+					$("#txtAmount_" + niewid + "").val(RefundAmount);
+				}
+				else {
+					$("#txtAmount_" + niewid + "").val(Amount);
+				}
+			}
+
+
+
+		});
+		$('input[type=checkbox]:not(:checked)').each(function () {
+			var id = $(this).attr("id");
+			var myArray = id.split('_');
+			var niewid = parseInt(myArray[1]);
+			if (niewid > 0) {
+				$("#txtAmount_" + niewid + "").val(0);
+			}
+
+		});
+		var check = ($('.selectedId').filter(":checked").length == $('.selectedId').length);
+		$('#selectall').prop("checked", check);
+
+
+
+	});
+</script>

@@ -1,0 +1,48 @@
+﻿@model IList<SMPR.List>
+@{
+	var Modify = clsApplicationSetting.GetSessionValue("Modify");
+}
+<div class="row">
+
+	<div class="col-sm-12">
+
+		<div class="control-section">
+			@Html.EJS().Grid("Grid").DataSource((List<SMPR.List>)Model).GridLines(Syncfusion.EJ2.Grids.GridLine.Both).Columns(col =>
+	   {
+		   col.Field("SMPRID").Visible(false).Add();
+		   col.Field("RowNum").HeaderText("SNo.").Width("30").Add();
+		   col.Field("DueOn").HeaderText("Due Date").Width("160").Add();
+		   col.Field("DueOn").HeaderText("Due Date").Width("160").Add();
+		   col.Field("MPRName").HeaderText("Name").Width("160").Add();
+		   col.Field("ProjectName").HeaderText("Project").Width("80").Add();
+		   col.Field("StateName").HeaderText("State").Width("80").Add();
+		   col.Field("MonthName").HeaderText("Month").Width("80").Add();
+		   col.HeaderText("Action").TextAlign(Syncfusion.EJ2.Grids.TextAlign.Center).Template("#tmpAction").Width("40").Add();
+
+	   }).AllowPaging().PageSettings(page => page.PageSize(10)).Created("created").Toolbar(new List<string>() { "Search" }).Render()
+
+		</div>
+
+
+
+	</div>
+</div>
+
+
+<script id="tmpAction" type="text/x-template">
+	${if('@Modify' === 'True')}
+	<input type="hidden" name="I" value="${SMPRID}" />
+	<a onclick="BindSMPREdit(this)"><i class="fas fa-edit checkgreen" aria-hidden="true"></i> </a>
+	${/if}
+</script>
+<script>
+    function created() {
+        var grid = document.getElementById("Grid").ej2_instances[0];
+        document.getElementById(grid.element.id + "_searchbar").addEventListener('keyup', () => {
+            grid.search(event.target.value)
+        });
+    }
+</script>
+@Html.IncludeVersionedJs(Url.Content("~/assets/design/Scripts/SyncScripts.js"))
+
+@(Html.EJS().ScriptManager())

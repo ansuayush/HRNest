@@ -1,0 +1,56 @@
+﻿@model  PMS.TrainingTypeMaster.Add
+@{
+    string MenuID = ViewBag.MenuID.ToString();
+}
+
+<div class="mb-100">
+
+    @using (Ajax.BeginForm("AddTrainingType", "PMS",
+            new { src = ViewBag.src },
+            new AjaxOptions { HttpMethod = "POST", OnSuccess = "OnSuccess", OnBegin = "ShowLoadingDialog()", OnFailure = "OnPostFailure()" },
+        new { @id = "AddTrainingTypeForm", @autocomplete = "Off" })
+        )
+    {
+    <div class="inner-main mb-2">
+        <h1 class="heading-one mb-3">Training Type</h1>
+        <div class="row">
+
+            <div class="col-md-3 col-sm-4 form-group">
+                <label>Training Type <sup>*</sup> </label>
+                @Html.TextBoxFor(model => model.TrainingName, new { @class = "form-control", @placeholder = "Enter" })
+                @Html.ValidationMessageFor(model => model.TrainingName, "", new { @class = "text-danger" })
+            </div>
+            <div class="col-md-9 col-sm-4 form-group">
+                <label>Training Description</label>
+
+                @Html.TextAreaFor(model => model.TrainingDesc, new { @class = "form-control", @placeholder = "Enter" })
+                @Html.ValidationMessageFor(model => model.TrainingDesc, "", new { @class = "text-danger" })
+            </div>
+        </div>
+        <div class="col-sm-12 text-center mt-4">
+            <button type="submit" name="Command" value="Add" class="btn mtr-o-grn btn-l ripplelink "> <i class="fas fa-save"></i> Save</button>
+
+            <button type="button" class="btn cnl-btn btn-l ripplelink"><i class="fas fa-times"></i>Close</button>
+
+        </div>
+    </div>
+    }
+</div>
+@section scripts    {
+    @System.Web.Optimization.Scripts.Render("~/bundle/unobtrusivejs")
+    @Html.IncludeVersionedJs(Url.Content("~/assets/design/scripts/AddInit.js"))   
+    <script>       
+      
+        function OnSuccess(obj) {
+            if (obj.Status) {
+                SuccessToaster(obj.SuccessMessage);
+                window.location.href = obj.RedirectURL;
+            }
+            else {
+                CloseLoadingDialog();
+                FailToaster(obj.SuccessMessage);
+
+            }
+        }
+    </script>
+}

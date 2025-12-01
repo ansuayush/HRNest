@@ -1,0 +1,93 @@
+﻿@model  Mitr.Models.UserGrievanceAccident
+
+@using (Ajax.BeginForm("UserGrievanceNotesAdd", "Grievance",
+		new { src = clsApplicationSetting.EncryptQueryString(ViewBag.MenuID + "*" + "/Grievance/UserGrievanceNotesAdd*" + ViewBag.ID + "*" + ViewBag.Subcatid + "*" + ViewBag.Categoryid + "*" + ViewBag.SubcatAssingid) },
+		 new AjaxOptions { HttpMethod = "POST", OnSuccess = "OnSuccess", OnBegin = "ShowLoadingDialog()" },
+			new { @id = "form", enctype = "multipart/form-data" }))
+{
+	@Html.HiddenFor(x => Model.ID)
+
+	<div class="row">
+
+		<div class="col-sm-6 form-group">
+			<label>Choose<sup>*</sup></label>
+			@Html.DropDownListFor(model => model.Choosename, new SelectList(Model.ChooseList, "ID", "Name", Model.Choosename), "select", new { @class = "form-control applyselect", onchange = "BindDropDown(this)", })
+			@Html.ValidationMessageFor(model => model.Choosename, "", new { @class = "text-danger" })
+		</div>
+		<div class="col-sm-6 form-group" id="EscalateToid" style="display:none">
+			<label>Escalate To <i class="fas fa-info-circle" data-toggle="tooltip" data-placement="top" data-original-title="After 20 days  next level escalation"></i><sup>*</sup></label>
+			@Html.DropDownListFor(model => model.Escalateid, new SelectList(Model.EscalateList, "ID", "Name", Model.Escalateid), "select", new { @class = "form-control applyselect" })
+			@Html.ValidationMessageFor(model => model.Escalateid, "", new { @class = "text-danger" })
+		</div>
+		<div class="col-sm-6 form-group" id="DevEscalateNextlevels" style="display:none">
+			<label id="lblForward"> Forward To Next levels <i class="fas fa-info-circle" data-toggle="tooltip" data-placement="top" data-original-title="After 20 days  next level escalation"></i><sup>*</sup></label>
+			@Html.DropDownListFor(model => model.EscalateNextlevelid, new SelectList(Model.EscalateNextlevelsList, "ID", "Name", Model.EscalateNextlevelid), "select", new { @class = "form-control applyselect" })
+			@Html.ValidationMessageFor(model => model.EscalateNextlevelid, "", new { @class = "text-danger" })
+		</div>
+		<div class="col-sm-6 form-group" id="DivCategoryid" style="display:none">
+			<label>Category Name<sup>*</sup></label>
+			@Html.DropDownListFor(model => model.Categoryid, new SelectList(Model.CategoryList, "ID", "Name", Model.Categoryid), "select", new { @class = "form-control applyselect", onchange = "BindDropDownSubcat(this)" })
+			@Html.ValidationMessageFor(model => model.Categoryid, "", new { @class = "text-danger" })
+		</div>
+
+		<div class="col-sm-6 form-group">
+			<label>CCEmployee <sup>*</sup></label>
+			@Html.HiddenFor(x => Model.ToCCMailId)
+			<select class="applyselect" multiple="multiple" id="ddlcc" onchange = "BindDropDownCC(this)">
+				<option>Select CCEmployee</option>
+				@if (ViewBag.EmpList != null)
+				{
+					foreach (var item in ViewBag.EmpList)
+					{
+						if (string.IsNullOrEmpty(Model.ToCCMailId))
+						{
+							<option value="@item.ID">@item.Name</option>
+						}
+						else
+						{
+							<option @(("@" + Model.ToCCMailId.Replace(",", "@") + "@").Contains("@" + item.ID.ToString() + "@") ? "selected" : "") value="@item.ID">@item.Name</option>
+						}
+
+					}
+				}
+			</select>
+		</div>
+	</div>
+
+	<div class="row">
+		<div class="col-sm-6 form-group" id="DivSubcategoryid" style="display:none">
+			<label>Sub Category Name<sup>*</sup></label>
+			@Html.DropDownListFor(model => model.SubCategoryid, new SelectList(Model.SubCategoryList, "ID", "Name", Model.SubCategoryid), "select", new { @class = "form-control applyselect" })
+			@Html.ValidationMessageFor(model => model.SubCategoryid, "", new { @class = "text-danger" })
+		</div>
+		<div class="col-sm-6 form-group" id="DivEmployee" style="display:none">
+			<label>Employee Name<sup>*</sup></label>
+			@Html.DropDownListFor(model => model.EmployeeId, new SelectList(Model.EmployeeList, "ID", "Name", Model.EmployeeId), "select", new { @class = "form-control applyselect" })
+			@Html.ValidationMessageFor(model => model.EmployeeId, "", new { @class = "text-danger" })
+
+		</div>
+	</div>
+	<div class="row">
+		<div class="col-sm-6 form-group">
+			<label>Attachment</label>
+			@Html.TextBoxFor(model => model.UploadFile, new { @class = "form-control", @type = "file" })
+			@Html.ValidationMessageFor(model => model.UploadFile, "", new { @class = "text-danger" })
+		</div>
+		<div class="col-sm-12 form-group">
+			<label id="lblRemarks">Remarks<sup>*</sup></label>
+			@Html.TextAreaFor(model => model.Remarks, new { @class = "form-control h-100", @placeholder = "Enter" })
+			@Html.ValidationMessageFor(model => model.Remarks, "", new { @class = "text-danger" })
+		</div>
+	</div>
+	<div class="col-sm-12 text-center">
+		<button type="button" class="btn cnl-btn ripplelink" data-dismiss="modal"><i class="fas fa-times"></i>Close</button>
+		@if (Model.ID > 0)
+		{
+			<button type="submit" class="btn mtr-g-grn btn-l ripplelink pull-right" name="Command" value="Add"><i class="fa fa-paper-plane" aria-hidden="true"></i> Update</button>
+		}
+		else
+		{
+			<button type="submit" class="btn mtr-o-grn btn-l ripplelink pull-right" name="Command" value="Add"><i class="fa fa-paper-plane" aria-hidden="true"></i> Submit</button>
+		}
+	</div>
+}

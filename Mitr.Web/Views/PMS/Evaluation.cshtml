@@ -1,0 +1,197 @@
+﻿@model	 PMS.Feedback.Add
+
+@{
+    string MenuID = ViewBag.MenuID.ToString();
+   // Model.QuestionsList = Model.QuestionsList.Where(n => n.GivenBy == Convert.ToInt32(clsApplicationSetting.GetSessionValue("EMPID").ToString())).ToList();
+}
+
+@using (Ajax.BeginForm("Evaluation", "PMS",
+		new { src = ViewBag.src },
+		  new AjaxOptions { HttpMethod = "POST", OnSuccess = "BindTarget", OnBegin = "ShowLoadingDialog()" },
+	new { @id = "_EvaluationFrom" })
+	)
+{
+	@Html.HiddenFor(x => Model.FYID)
+	@Html.HiddenFor(x => Model.EMPID)
+	@Html.HiddenFor(x => Model.IsBtnVisible)
+	<div class="col-md-8 mx-auto">
+		<div class="page-ctn inner-main">
+			<div class="row">
+				<div class="col-md-3 text-left pt-2">
+					<strong>Appraisal Period:</strong> @Model.FYName
+				</div>
+				<div class="col-md-7 text-center">
+					<h1 class="heading-one pt-2">@Model.EMPName <!--(@Model.EMPCode)--></h1>
+				</div>
+				<div class="col-md-12 text-center">
+
+					<ul class="list-unstyled mb-2 row emp-ifnotwo ">
+						<li class="col-md-3">
+							<strong>Department</strong><br>
+							@Model.Department
+						</li>
+						<li class="col-md-3">
+							<strong>Designation</strong><br>
+							@Model.DesignationName
+						</li>
+						<li class="col-md-3">
+							<strong>Location</strong><br>
+							@Model.LocationName
+						</li>
+						<li class="col-md-3">
+							<strong>Appraiser Name</strong><br>
+							@Model.HODName <!--(@Model.HODCode)-->
+						</li>
+					</ul>
+				</div>
+				<div class="col-md-12 mt-2 mb-3 text-center">
+
+					<div class="row text-left">
+						<div class="col-sm-12">
+							<div class="table-responsive">
+								<table id="datatable" class="table va-t table-striped table-scroll mt-0 mb-2 ">
+									<thead>
+										<tr>
+											<th class="td-10">S.No</th>
+											<th width="500">Assessment Questions</th>
+											<th width="500">Response </th>
+										</tr>
+									</thead>
+									<tbody>
+
+										@if (Model.QuestionsList != null)
+										{
+											int count = 0;
+											for (int i = 0; i < Model.QuestionsList.Count; i++)
+											{
+												count++;
+												<tr>
+													<td class="text-center">
+														@count
+														@Html.HiddenFor(x => @Model.QuestionsList[i].PMS_QAID)
+														@Html.HiddenFor(x => @Model.QuestionsList[i].Q)
+													</td>
+													<td>
+													@Model.QuestionsList[i].Q
+													</td>
+													<td>
+														@Html.TextAreaFor(x => Model.QuestionsList[i].A, new { @class = "form-control", @placeholder="Enter Comment", onkeypress = "return blockSpecialChar(event)" })
+														@Html.ValidationMessageFor(model => Model.QuestionsList[i].A, "", new { @class = "text-danger" })
+													</td>
+												</tr>
+
+											}
+										}
+									</tbody>
+								</table>
+							</div>
+						</div>
+						
+						<div class="col-md-12 form-group">
+									<h3 class="subheading">Rating, choose one  <sup>*</sup></h3>
+								
+							@Html.HiddenFor(x=>Model.OverAllRating)
+							<ul class="list-unstyled inline-li radio-tile-group">
+			                  <li>
+			                    <div class="input-container">
+			                      <input id="1" onclick="FnRating('1')" @(Model.OverAllRating=="1"?"checked":"")  name="radio1" type="radio" class="radio-button">
+			                      <div class="radio-tile">
+			                      		<i class="fas fa-star"></i>
+			                      		<label for="1" class="radio-tile-label"><strong></strong></label>
+			                      	</div>
+			                    </div>
+			                  </li>
+			                  <li>
+			                  <div class="input-container">
+			                      <input id="2" name="radio1" onclick="FnRating('2')" @(Model.OverAllRating=="2"?"checked":"") type="radio" class="radio-button" >
+			                     <div class="radio-tile">
+			                     <i class="fas fa-star"></i><i class="fas fa-star"></i>
+			                      <label for="2" class="radio-tile-label"><strong> </strong></label>
+			                      </div>
+			                    </div>
+			                  </li>
+			                  <li>
+			                   <div class="input-container">
+			                      <input id="3" name="radio1"  onclick="FnRating('3')" @(Model.OverAllRating=="3"?"checked":"") type="radio" class="radio-button" >
+			                      <div class="radio-tile">
+			                      <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
+			                      		<label for="3" class="radio-tile-label"><strong></strong></label>
+			                      	</div>
+			                    </div>
+			                  </li>
+			                  <li>
+			                   <div class="input-container">
+			                      <input id="4" name="radio1"  onclick="FnRating('4')" @(Model.OverAllRating=="4"?"checked":"") type="radio" class="radio-button">
+			                      <div class="radio-tile">
+			                      <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
+			                      		<label for="4" class="radio-tile-label"><strong></strong></label>
+			                      	</div>
+			                    </div>
+			                  </li>
+
+			                  <li>
+			                    <div class="input-container">
+			                      <input id="5" name="radio1"  onclick="FnRating('5')" @(Model.OverAllRating=="5"?"checked":"") type="radio" class="radio-button">
+			                      <div class="radio-tile">
+			                      <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>	
+			                      <label for="5" class="radio-tile-label"><strong></strong></label>
+			                      </div>
+			                    </div>
+			                  </li>
+			                </ul>
+						</div>
+						<div class="col-sm-12 form-group">
+							<label>Final Assessment <sup>*</sup></label>
+							@Html.TextAreaFor(x => Model.FinalComment, new { @class = "form-control", @placeholder="Enter Comment" })
+							@Html.ValidationMessageFor(model => Model.FinalComment, "", new { @class = "text-danger" })
+						</div>
+						<div class="col-sm-12 text-center">
+							@if (Model.IsBtnVisible)
+							{
+								<button type="submit" name="Command" class="btn mtr-o-grn btn-l ripplelink " value="Save"><i class="fas fa-save"></i>Save</button>
+								<button type="submit" name="Command" class="btn mtr-o-grn btn-l ripplelink " value="Submit"><i class="fas fa-paper-plane"></i>Submit</button>
+							}
+							@Html.CreateAnchor(MenuID, "/PMS/CommentRequests", "Back", "btn cnl-btn btn-l ripplelink", "Click to go back", "fas fa-arrow-left", "")
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+}
+
+@section scripts    {
+	@System.Web.Optimization.Scripts.Render("~/bundle/unobtrusivejs")
+	@Html.IncludeVersionedJs(Url.Content("~/assets/design/Scripts/ToolTip.js"))
+	@System.Web.Optimization.Scripts.Render("~/assets/design/Scripts/AddInit.js")
+
+	<script>
+		function blockSpecialChar(e){
+
+        var k;
+        document.all ? k = e.keyCode : k = e.which;
+		if(k==39){
+		event.preventDefault();
+		}
+
+        }
+		function BindTarget(obj) {
+			CloseLoadingDialog();  
+			
+			if (obj.Status) {
+		      debugger;
+				SuccessToaster(obj.SuccessMessage);
+				window.location.href = obj.RedirectURL;
+				//window.location.reload();
+			}
+			else {
+				FailToaster(obj.SuccessMessage);
+			}
+		}
+		function FnRating(Rating)
+		{
+			$("#OverAllRating").val(Rating);
+		}
+
+	</script>
+}

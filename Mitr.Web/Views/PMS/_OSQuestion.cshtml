@@ -1,0 +1,42 @@
+﻿
+@{
+	var Modify = clsApplicationSetting.GetSessionValue("Modify");
+}
+
+@Html.EJS().Grid("FlatGrid").DataSource((List<PMS.OSQuestion.List>)Model).GridLines(Syncfusion.EJ2.Grids.GridLine.Both).Columns(col =>
+{
+	col.Field("PMS_EID").Visible(false).Add();
+	col.Field("RowNum").HeaderText("S No.").Width("30").Add();
+	col.HeaderText("Priority").TextAlign(Syncfusion.EJ2.Grids.TextAlign.Center).Template("#tmpPriority").Width("30").Add();
+	col.Field("Question").HeaderText("Organisational Standard Question").Width("250").Add();
+	col.Field("QuestionFor").HeaderText("Question For").Width("80").Add();
+
+	col.Field("QApplyDesignation").HeaderText("Designation Applicable").Width("100").Add();
+	col.Field("DesignationNames").HeaderText("Designation").Width("80").Add();
+	col.HeaderText("Action").TextAlign(Syncfusion.EJ2.Grids.TextAlign.Center).Template("#tmpAction").Width("30").Add();
+
+}).AllowPaging().PageSettings(page => page.PageCount(10)).Toolbar(new List<string>() { "Search" }).Render()
+
+
+<script id="tmpPriority" type="text/x-template">
+	${if('@Modify' === 'True')}
+	<input type="hidden" name="I" value="${PMS_EID}" />
+	<input type="hidden" name="N" value="${Question}" />
+	<input type="number" onblur="BindPriority(this)" list="pmsquestion" value="${Priority}" />
+	${else}
+	${Priority}
+	${/if}
+</script>
+<script id="tmpAction" type="text/x-template">
+	${if('@Modify' === 'True')}
+
+	${if(IsActive)}
+	<a title='Click to DeActivate' onclick="BindIsActive(this)" list='pmsquestion' OP='0' class='AIsActive'> <i class='fa fa-check-circle checkgreen' aria-hidden='true'></i></a>
+	${else}
+	<a title='Click to Activate' onclick="BindIsActive(this)" list='pmsquestion' OP='1' class='AIsActive'> <i class='fa fa-times-circle crossred' aria-hidden='true'></i></a>
+	${/if}
+	${/if}
+</script>
+
+@Html.IncludeVersionedJs(Url.Content("~/assets/design/Scripts/SyncScripts.js"))
+@(Html.EJS().ScriptManager())

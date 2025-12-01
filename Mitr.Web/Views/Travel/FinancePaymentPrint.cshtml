@@ -1,0 +1,273 @@
+﻿@model Mitr.Models.ViewTravelRequest
+@{
+	Layout = null;
+	string name = Model.TravelRequest.traveller_name;
+	string[] EmployeeCode = name.Split(new Char[] { ' ', '(', ')', '-', '\n', '\t' });
+	string space = ",";
+	string MenuID = ViewBag.MenuID.ToString();
+	string projectName = "";
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>MITR</title>
+	<meta name="title" content="Mitr: ConsolidateActivityLog" />
+	<meta name="keywords" content="Mitr: ConsolidateActivityLog" />
+	<meta name="description" content="Mitr: ConsolidateActivityLog" />
+	<link href="https://fonts.googleapis.com/css?family=Roboto:300,400,700&display=swap" rel="stylesheet">
+	<link rel="shortcut icon" href="/assets/design/images/favicon.png" type="image/x-icon">
+	<link rel="icon" href="/assets/design/images/favicon.png" type="image/png" sizes="50x50">
+	<link href='/assets/design/css/icons.css?v=1.6' rel='stylesheet' />
+	<link href='/assets/design/css/bootstrap.min.css?v=1.6' rel='stylesheet' />
+	<link href='/assets/design/css/style.css?v=1.6' rel='stylesheet' />
+	<link href='/assets/design/css/custom.css?v=1.6' rel='stylesheet' />
+	<link href='/assets/design/css/responsive.css?v=1.6' rel='stylesheet' />
+	<link href="/assets/design/css/print.css" rel="stylesheet" type="text/css" media="print">
+</head>
+<body class=" header">
+	<div class="print-header">
+		<div class="container">
+			<div class="row">
+				<div class="col-md-12 col-sm-12 mx-auto text-right">
+					<a onclick="window.print()" class="btn mtr-g-grn btn-l ripplelink "> <i class="fa fa-print"></i>Print </a>
+					@*<a href="@Url.Action("PaymentStatusToStaff", new { src = clsApplicationSetting.EncryptQueryString(ViewBag.MenuID.ToString() + "/Travel/PaymentStatusToStaff") })" class="btn cnl-btn ripplelink "> <i class="fas fa-times"></i>Back </a>*@
+					@Html.CreateAnchor(MenuID, "/Travel/PaymentStatusToStaff", "Back", "btn cnl-btn btn-l ripplelink", "Close", "fas fa-arrow-left", "")
+
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="container mt-5 pt-3">
+		<div class="row">
+			<div class="col-sm-12 mx-auto">
+				<div class="inner-main">
+
+
+					<div class="bgbox">
+						<div class="row">
+							<div class="col-sm-2 mb-0 align-self-center">
+								<img src="~/assets/design/images/c3.png" alt="">
+							</div>
+							<div class="col-sm-8 mb-0 text-center align-self-center">
+								<strong class="cntitle">Centre for Catalyzing Change</strong><br>
+								<small class="fn-md">C-27, 2nd Floor Qutab Institutional Area, New Delhi - 110 016</small>
+							</div>
+
+							<div class="col-sm-2 mb-0 align-self-center text-right">
+								<img src="~/assets/design/images/mitr-logo.png" alt="Mitr LogoEW">
+							</div>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col-sm-12 text-center">
+							<h2 class="heading-one mb-0"><u>Employee Details</u></h2>
+						</div>
+						<div class="col-sm-8 mx-auto">
+							<table class="table tdbrd-none">
+								<tr>
+									<td>Employee Name</td>
+									<td>@Model.TravelRequest.traveller_name</td>
+									<td width="200">Supervisor's Name</td>
+									<td>@Model.TravelRequest.ApprovedBy</td>
+								</tr>
+								<tr>
+
+									<td>Travel Request No </td>
+									<td>@Model.TravelRequest.req_no</td>
+
+									<td>Date of Submission</td>
+									<td>@Model.TravelRequest.req_date</td>
+								</tr>
+								<tr>
+									@*<td>@Model.AdvanceTravelRequest.PaidDate</td>*@
+									<td>Date of Approval</td>
+									<td>@Model.TravelRequest.app_date</td>
+									<td>Project Code</td>
+									<td>
+										@*@foreach (var item in Model.ProjectList_Travel)
+											{@item.DocNo@space}*@
+										@Model.TravelRequest.doc_no
+									</td>
+								</tr>
+
+								<tr>
+
+									<td>Purpose of Travel</td>
+									<td colspan="4">@Model.TravelRequest.purpofvisit</td>
+
+								</tr>
+
+
+							</table>
+						</div>
+						<div class="col-sm-12">
+
+							<div class="table-responsive">
+								<table id="tblActivity" class="table scd-tbl-bg table-stripted mb-0 mt-0">
+									<thead>
+										<tr>
+											<th width="10">S.No</th>
+											<th width="100">Date</th>
+											<th width="200">From</th>
+											<th>To</th>
+											<th width="150">Ticket Source</th>
+										</tr>
+									</thead>
+									<tbody>
+										@{ int DetailCount = 0;}
+										@for (int i = 0; i < Model.TravelRequestDetail.Count; i++)
+										{
+											DetailCount++;
+											<tr>
+												<td>@DetailCount</td>
+												<td>@Model.TravelRequestDetail[i].Travel_date </td>
+												<td>@Model.TravelRequestDetail[i].fromCity</td>
+												<td>@Model.TravelRequestDetail[i].toCity</td>
+												<td>@Model.TravelRequestDetail[i].TravelMode</td>
+
+											</tr>
+
+										}
+									</tbody>
+								</table>
+							</div>
+						</div>
+						<div class="col-sm-6 mx-auto">
+							<div class="table-responsive">
+								<table id="tblActivity" class="table scd-tbl-bg table-stripted mb-0 mt-0">
+									<thead>
+										<tr>
+											<th>Summary</th>
+											<th width="100">Amount</th>
+										</tr>
+									</thead>
+									<tbody>
+										<tr>
+											<td>Perdiem</td>
+											<td class="text-right">
+												@string.Format("{0:c}", @Model.AdvanceTravelRequest.PerDiem_Rate)
+												@*@Model.AdvanceTravelRequest.PerDiem_Rate.ToString("0.00")*@
+											</td>
+										</tr>
+										<tr>
+											<td>Hotel</td>
+											<td class="text-right">
+												@string.Format("{0:c}", @Model.AdvanceTravelRequest.Loading_amt)
+
+											</td>
+										</tr>
+										<tr>
+											<td>Transportation</td>
+											<td class="text-right">
+												@string.Format("{0:c}", @Model.AdvanceTravelRequest.localTravel_amt)
+
+											</td>
+										</tr>
+										@if (!string.IsNullOrEmpty(Model.AdvanceTravelRequest.OtherSection))
+										{
+											<tr>
+												<td>@Model.AdvanceTravelRequest.OtherSection</td>
+												<td class="text-right">
+													@string.Format("{0:c}", @Model.AdvanceTravelRequest.OtherAmount)
+
+												</td>
+											</tr>
+										}
+										@if (!string.IsNullOrEmpty(Model.AdvanceTravelRequest.OtherSection1))
+										{
+											<tr>
+												<td>@Model.AdvanceTravelRequest.OtherSection1</td>
+												<td class="text-right">
+													@string.Format("{0:c}", @Model.AdvanceTravelRequest.OtherAmount1)
+												</td>
+											</tr>
+										}
+										<tr class="green-clr lgt-mtr-o-bg fn-bold">
+											<td>Total Amount </td>
+											<td class="text-right">
+												@string.Format("{0:c}", @Model.AdvanceTravelRequest.total_amount)
+
+											</td>
+										</tr>
+										<tr class="green-clr lgt-mtr-o-bg fn-bold">
+											<td>Requested Amount</td>
+											<td class="text-right">
+												@string.Format("{0:c}", @Model.AdvanceTravelRequest.totaladvanceroundoff)
+
+											</td>
+										</tr>
+										<tr class="green-clr lgt-mtr-o-bg fn-bold">
+											<td>Paid Amount</td>
+											<td class="text-right">
+												@string.Format("{0:c}", @Model.AdvanceTravelRequest.Paidamount)
+
+											</td>
+										</tr>
+
+
+									</tbody>
+								</table>
+								<table id="tblActivity" class="table scd-tbl-bg table-stripted mb-0 mt-2">
+									<tr>
+										<td>Paid On</td>
+										@if (Model.AdvanceTravelRequest.approved == 1)
+										{
+											string date = Convert.ToDateTime(Model.AdvanceTravelRequest.PaidDate).ToString("dd/MM/yyyyy");
+											<td>@date</td>
+										}
+
+										<td>Approved By</td>
+										@if (Model.AdvanceTravelRequest.approved == 1)
+										{
+											<td>@Model.AdvanceTravelRequest.AdvanceApprovedby</td>
+										}
+
+									</tr>
+
+								</table>
+							</div>
+						</div>
+						<div class="col-sm-12">
+							<h2 class="heading-one">Bank Detials</h2>
+							<table class="table tdbrd-none">
+								<tbody>
+									<tr>
+										<td width="150">Account No </td>
+										<td>@Model.AdvanceTravelRequest.account_no</td>
+										<td width="150">Bank Name </td>
+										<td>@Model.AdvanceTravelRequest.bank_name</td>
+									</tr>
+									<tr>
+										<td>Branch Name </td>
+										<td>@Model.AdvanceTravelRequest.branch_name</td>
+										<td>Mode of Payment </td>
+										<td>@Model.AdvanceTravelRequest.pay_mode</td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+						@if (!string.IsNullOrEmpty(Model.AdvanceTravelRequest.reason))
+						{
+							<div class="col-md-12 form-group">
+								<hr>
+								<span class="hr-aps"><i class="fas fa-ban"></i>Rejected</span>
+							</div>
+							<div class="col-md-12 form-group">
+								<label>Reason</label>
+								<p>@Model.AdvanceTravelRequest.reason</p>
+							</div>
+						}
+
+						
+
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</body>
+</html>

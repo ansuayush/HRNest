@@ -1,0 +1,126 @@
+﻿@model List<User_Task.Task.List>
+@{
+	var Modify = clsApplicationSetting.GetSessionValue("Modify");
+	string MenuID = "0";
+	if (ViewBag.MenuID != null)
+	{
+		MenuID = ViewBag.MenuID;
+	}
+
+}
+
+
+<div class="inner-main mb-5 pb-0">
+	@Html.Partial("ListHeader_Partial", "Task List")
+
+
+
+	<div class="row">
+		<div class="control-section">
+
+			@Html.EJS().Grid("FlatGrid").DataSource((List<User_Task.Task.List>)Model).GridLines(Syncfusion.EJ2.Grids.GridLine.Both).Columns(col =>
+	   {
+		   col.Field("TaskID").Visible(false).Add();
+		   col.Field("IsActive").Visible(false).Add();
+		   col.Field("DisplayName").Visible(false).Add();
+		   col.Field("StatusColor").Visible(false).Add();
+		   col.Field("CurrentStatusID").Visible(false).Add();
+
+		   col.Field("RowNum").HeaderText("S.No").Width("50").Add();
+		   col.HeaderText("Status").TextAlign(Syncfusion.EJ2.Grids.TextAlign.Center).Template("#tmpAction").Width("80").Add();
+		   col.Field("Priority").HeaderText("Priority").Width("80").Add();
+		   col.Field("Subject").HeaderText("Subject").Width("100").Add();
+		   col.Field("Message").HeaderText("Message").Width("200").Add();
+		   col.Field("Remarks").HeaderText("Remarks").Width("200").Add();
+		   col.Field("AssigenedTo_Names").HeaderText("Assigened To").Width("200").Add();
+		   col.Field("createdby_Name").HeaderText("created by").Width("80").Add();
+	   }).AllowPaging().PageSettings(page => page.PageCount(10)).Toolbar(new List<string>() { "Search" }).Render()
+
+		</div>
+	</div>
+</div>
+
+
+<div class="modal fade pop-dgn" id="ViewModal">
+	<div class="modal-dialog modal-lg">
+		<div class="modal-content">
+			<div class="modal-header blk-gdn-btn">
+				<h4 class="modal-title">
+					<i class="fa fa-plus"></i>Add Task
+				</h4>
+				<div class="close" data-dismiss="modal">&times;</div>
+			</div>
+			<div class="modal-body">
+				<div id="TagetDivAdd"></div>
+			</div>
+		</div>
+	</div>
+</div>
+
+
+<script id="tmpAction" type="text/x-template">
+	<input type="hidden" name="I" value="${TaskID}" />
+	<a class="${DisplayName}" onclick="BindEdit(this)">${DisplayName} </a>
+
+
+</script>
+
+@Html.IncludeVersionedJs(Url.Content("~/assets/design/Scripts/SyncScripts.js"))
+@(Html.EJS().ScriptManager())
+
+
+@section scripts    {
+
+	@System.Web.Optimization.Scripts.Render("~/bundle/unobtrusivejs")
+	@Html.IncludeVersionedJs(Url.Content("~/assets/design/Scripts/AddInit.js"))
+<script>
+
+		function BindEdit(obj) {
+			var I = $(obj).closest("tr").find("input:hidden[name=I]").val();
+			var URL = "/Tools/UserTask_Notes?src=" + EncryptQueryStringJSON(@ViewBag.MenuID+"*" + "/Tools/UserTask_Notes*" + I);
+			ShowLoadingDialog();
+			window.location = URL;
+	}
+
+	 function ListHeaderAdd(ID) {
+			   if (ID == undefined) {
+				   ID = 0;
+			   }
+				$.ajax({
+					url: "/Tools/_AddTask",
+					type: "Get",
+					data: { src: EncryptQueryStringJSON(@ViewBag.MenuID+"*" + "/Tools/_AddTask" + "*" + ID) },
+					success: function (data) {
+						$("#TagetDivAdd").empty();
+						$("#TagetDivAdd").html(data);
+						$("#ViewModal").modal("show");
+						$(".applyselect").select2();
+						var form = $("form")
+							.removeData("validator")
+							.removeData("unobtrusiveValidation");
+						$.validator.unobtrusive.parse(form);
+					},
+					error: function (er) {
+						alert(er);
+
+					}
+				});
+	}
+
+	function OnAddSuccess(obj) {
+		if (obj.Status) {
+			
+			SuccessToaster(obj.SuccessMessage);
+			$("#ViewModal").modal("hide");
+			CloseLoadingDialog();
+			window.location.reload();
+		}
+		else {
+			CloseLoadingDialog()
+			FailToaster(obj.SuccessMessage);
+		}
+
+	}
+
+</script>
+}

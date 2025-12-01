@@ -1,0 +1,164 @@
+.boxeffect:hover:before {transform: scale(600);}
+.rcshrcontentlist {margin:10px 0px 20px;}
+/******************Digital Library***********/
+@media screen and (max-width:1920px){
+		.headingscd {font-size: 30px;}
+
+	/***dl******/
+	.dlsubheading, .uploadheredng h6 {font-size: 16px !important;}
+	.uploadheredng p {font-size: 14px !important;margin-bottom: 16px;}
+	.uloadimg {width: 110px;top: 65px;}
+	.uploadheredng:after {right: -154px;}
+	.dllist, .searchbox .form-group label, .searchbox .form-control {font-size: 14px !important;}
+	.dllist {padding: 10px;}
+	.serbox.searchbox {padding: 40px 30px;}
+	.uploadheredng {padding: 56px 20px;	}
+	.dlsubheading, .uploadheredng h6 {font-size: 20px !important;}
+	.dllist, .searchbox .form-group label, .searchbox .form-control {font-size: 16px !important;}
+	.uploadheredng p {font-size: 16px !important;}	
+	.searchbox .btn, .uploadheredng .btn {padding: 10px 40px !important;font-size: 14px !important;	}
+	
+}
+
+@media screen and (max-width:1680px){
+	/******dl***/
+	.dlsubheading, .uploadheredng h6 {font-size: 16px !important;}
+	.headingscd {font-size: 25px;}
+	.uploadheredng p {font-size: 14px !important;}
+	.dllist, .searchbox .form-group label, .searchbox .form-control {font-size: 14px !important;}
+	.uploadheredng {padding: 63px 20px;}
+}
+@media screen and (max-width:1600px){
+	/*****dl****/
+	.uploadheredng:after {right: -134px;}
+}
+
+
+@media screen and (max-width:1440px){
+	/*****dl****/
+	.uploadheredng:after {right: -161px;}
+	/*****dl*******/	
+	.dllist {padding:8px 10px;	}
+	.serbox.searchbox {padding: 40px 30px;}
+	.uploadheredng {padding: 69px 20px;	}
+	.uloadimg {width: 100px;right: 12px;top: 80px;}
+	.uploadheredng p {margin-bottom: 20px;}
+	.uploadheredng p {font-size: 12px !important;}
+	.uploadheredng:after {right: -168px;}
+	.dllist, .searchbox .form-group label, .searchbox .form-control {font-size: 12px !important;}
+	.dlsubheading, .uploadheredng h6 {font-size: 14px !important;}
+}
+
+
+@media screen and (max-width:1366px){
+	/****dl****/
+	.serbox.searchbox {padding: 20px 30px;}
+	.uloadimg {top: 48px;}
+	.uploadheredng {padding: 39px 20px;}
+	.uploadheredng {padding: 31px 20px;}
+	.searchbox .btn, .uploadheredng .btn {padding: 8px 25px !important;}	
+
+}
+
+
+@media screen and (max-width:1250px){
+	.dlsubheading, .uploadheredng h6 {font-size: 12px !important;}
+	.serbox.searchbox {padding: 43px 30px;}
+	.uploadheredng {padding: 50px 20px;}
+	.uloadimg, .uploadheredng:after{display: none}
+	.uploadheredng .col-sm-8{-ms-flex: 0 0 100%;flex: 0 0 100%;max-width: 100%;	}
+	.searchbox .btn, .uploadheredng .btn {font-size: 11px !important;}
+	.rcshrcontentlist li {padding-right: 10px;margin: 0px 10px 10px 0px;}
+}
+
+
+@media screen and (max-width:767px){
+	.dllisthgt .col-md-6.p-4 {height: auto !important; padding: 20px !important;}
+	.dllistdtl {height: auto !important;}
+	.headingscd {font-size: 16px;}
+	.dlsubheading, .uploadheredng h6 {font-size: 14px !important;}
+	.searchbox, .uploadheredng {height: auto !important;}
+	.uploadheredng .col-sm-8 {margin: 0px !important;}
+	.uploadheredng, .serbox.searchbox{padding: 20px;}
+	.serbox .col-sm-3, .serbox .col-sm-4, .serbox .col-sm-4, .serbox .col-sm-1 {margin: 0px 0px 10px!important;}
+
+}
+
+@media screen and (max-width:575px){
+	.rcshrcontentlist li {padding-right: 0px;margin: 0px 0px 10px;width: 50%;border: 0px;}
+	.serbox .form-control, .serbox .select2-selection__rendered {font-size: 12px !important; padding: 0px !important;}
+	.serbox .btn{margin-top: 10px}
+	}
+
+@media screen and (max-width:450px){
+	.rcshrcontentlist li {width: 100%;border-bottom: 1px solid #dbdbdb; margin-bottom:5px; padding-bottom: 5px;}
+}
+
+
+
+@media screen and (max-device-height: 1080px){
+	/***dl***********/
+	.dllisthgt .col-md-6.p-4{height: 530px;}
+	.dllistdtl {height: 467px;}
+
+}
+
+@media screen and (max-device-height: 1050px){
+	/*****dl*****/
+	.dllisthgt .col-md-6.p-4 {height: 510px;}
+	.dllistdtl {height: 446px;}
+	
+}
+
+@media screen and (max-device-height: 1024px){
+	/******dl*********/
+	.dllisthgt .col-md-6.p-4 {height: 484px;}
+	.dllistdtl {height: 416px;}
+		
+}
+
+@media screen and (max-device-height: 960px){
+	/******dl*********/
+	.dllisthgt .col-md-6.p-4 {height: 420px;}
+	.dllistdtl {height: 334px;}
+}
+
+
+@media screen and (max-device-height: 900px){
+	/*************/
+	.dllisthgt .col-md-6.p-4 {height: 360px;}
+	.dllistdtl {height: 298px;}
+}
+
+
+
+@media screen and (max-device-height: 864px){
+	/*************/
+	.dllisthgt .col-md-6.p-4 {height: 324px;}
+	.dllistdtl {height: 253px;}
+	
+}
+@media screen and (max-device-height: 800px){
+	/****dl**/
+	.searchbox, .uploadheredng {height: 184px !important;}
+	.dllisthgt .col-md-6.p-4 {height: 311px;}
+	.dllistdtl {height: 252px;}
+}
+@media screen and (max-device-height: 768px){
+	/****dl**/
+	.dllisthgt .col-md-6.p-4 {height: 280px;}
+	.dllistdtl {height: 210px;}
+
+	
+}
+@media screen and (max-device-height: 720px){
+	/*****dl****/
+	.dllisthgt .col-md-6.p-4 {height: 232px}
+	.dllistdtl {height: 157px;}
+}
+@media screen and (max-device-height: 600px){
+	.usr-h-scrl .h-260, .teamn-list .h-424 {height: 255px;}
+	.userleft .h-260, .rqt-list.h-166{height: 100px;}
+	.defult-height {min-height: 370px;}
+	.device-hgt-400{height: 240px}
+}

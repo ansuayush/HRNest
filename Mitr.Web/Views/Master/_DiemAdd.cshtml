@@ -1,0 +1,74 @@
+﻿
+@model Mitr.Models.Diem
+
+
+
+@using (Ajax.BeginForm("_DiemAdd", "Master",
+        new { src = ViewBag.src },
+        new AjaxOptions { HttpMethod = "POST", OnSuccess = "OnSuccess" },
+    new { @id = "_DiemAddFrom" })
+    )
+{
+
+    @Html.AntiForgeryToken()
+    @Html.HiddenFor(x => Model.DiemID)
+    <div class="row">
+        <div class="col-lg-6 col-md-6 col-sm-6 form-group">
+            <label>Status <sup>*</sup></label>
+            <ul class="list-unstyled radio-btn">
+
+                <li class="radio">
+                    <input type="radio" id="status" class="form-control" @(string.IsNullOrEmpty(Model.Status) ? "checked" : Model.Status == "Staff" ? "checked" : "") name="@Html.NameFor(x=>x.Status)" value="Staff" />
+                    <label for="status" class="radio-label">Staff</label>
+                </li>
+                <li class="radio">
+                    <input type="radio" id="status" class="form-control" @(Model.Status == "Consultant" ? "checked" : "") name="@Html.NameFor(x=>x.Status)" value="Consultant" />
+                    <label for="status" class="radio-label">Consultant</label>
+                </li>
+            </ul>
+        </div>
+        <div class="col-lg-6 col-md-6 col-sm-6 form-group">
+            <label>Per Diem Rate<sup>*</sup></label>
+            @Html.TextBoxFor(model => model.PerDiemRate, new { @class = "form-control" })
+            @Html.ValidationMessageFor(model => model.PerDiemRate, "", new { @class = "text-danger" })
+        </div>
+
+        <div class="col-lg-6 col-md-6 col-sm-6 form-group">
+            <label>Hotel Rate<sup>*</sup></label>
+            @Html.TextBoxFor(model => model.HotelRate, new { @class = "form-control" })
+            @Html.ValidationMessageFor(model => model.HotelRate, "", new { @class = "text-danger" })
+        </div>
+        <div class="col-lg-6 col-md-6 col-sm-6 form-group">
+            <label>Category<sup>*</sup></label>
+            @{
+                List<SelectListItem> DropDownList = new List<SelectListItem>
+    {
+            new SelectListItem{Text="A",Value="A" },
+            new SelectListItem{Text="B",Value="B" } ,
+            new SelectListItem{Text="C",Value="C" }
+            };
+            }
+            @Html.DropDownListFor(model => model.Category, new SelectList(DropDownList, "Value", "text", Model.Category), "Select", new { @class = "form-control " })
+            @Html.ValidationMessageFor(model => model.Category, "", new { @class = "text-danger" })
+        </div>
+        <div class="col-lg-6 col-md-6 col-sm-6 form-group">
+            <label>Priority<sup>*</sup></label>
+            @Html.TextBoxFor(model => model.Priority, new { @class = "form-control" })
+            @Html.ValidationMessageFor(model => model.Priority, "", new { @class = "text-danger" })
+        </div>
+      
+    </div>
+
+    <div class="row">
+
+        @if (Model.DiemID > 0)
+        {
+            <button type="submit" class="btn mtr-o-grn btn-l ripplelink pull-right" name="Command" value="Add"><i class="fa fa-paper-plane" aria-hidden="true"></i> Update</button>
+        }
+        else
+        {
+            <button type="submit" class="btn mtr-o-grn btn-l ripplelink pull-right" name="Command" value="Add"><i class="fa fa-paper-plane" aria-hidden="true"></i> Submit</button>
+        }
+    </div>
+
+}

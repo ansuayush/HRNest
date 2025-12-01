@@ -1,0 +1,116 @@
+﻿@using System.Data
+@model DataSet
+@if (Model.Tables[0].Rows.Count > 0)
+{
+    <div class="three-sticky device-hgt-400">
+        <table cellspacing="0" class="table table-small-font table-bordered table-striped m-0">
+            <thead>
+                <tr>
+                    <th scope="col">SNo.</th>
+                    @{ string LastValue = "";}
+                    @foreach (DataColumn item in Model.Tables[0].Columns)
+                    {
+                        if (item.ColumnName.ToUpper() != "EMPID")
+                        {
+                            if (item.ColumnName.Contains("#"))
+                            {
+                                if (LastValue != @item.ColumnName.Split('#')[0])
+                                {
+                                    <th scope="col" colspan="2">@item.ColumnName.Split('#')[0]</th>
+                                }
+                                LastValue = @item.ColumnName.Split('#')[0];
+                            }
+                            else if (item.ColumnName.Contains("$"))
+                            {
+                                if (LastValue != @item.ColumnName.Split('$')[0])
+                                {
+                                    <th class="thLeaveBg" scope="col">@item.ColumnName.Split('$')[0]</th>
+                                }
+                                LastValue = @item.ColumnName.Split('$')[0];
+                            }
+                            else
+                            {
+                                <th scope="col">@item</th>
+                            }
+                        }
+                    }
+                </tr>
+                <tr class="sticky-sbhead top">
+                <th></th>
+                <th></th>
+                <th></th>
+                    @foreach (DataColumn item in Model.Tables[0].Columns)
+                    {
+                        if (item.ColumnName.Contains("#"))
+                        {
+                            <th scope="col" rowspan="1">BH</th>
+                            <th scope="col" rowspan="1">WH</th>
+
+                        }
+                    }
+                    <th colspan="16"></th>
+                </tr>
+            </thead>
+            <tbody>
+                @{ int count = 0;}
+                @if (Model.Tables[0].Rows.Count > 0)
+                {
+                    foreach (DataRow dtRow in Model.Tables[0].Rows)
+                    {
+                        count++;
+                <tr id="Tr_@dtRow["EMPID"].ToString()" class="emptr">
+                    <td>
+                        @count
+                        <input type="hidden" name="N" value="@dtRow["EMP Name"].ToString()" />
+                        <input type="hidden" name="E" value="@dtRow["EMPID"].ToString()" />
+                    </td>
+                    @foreach (DataColumn dc in Model.Tables[0].Columns)
+                    {
+                        if (dc.ColumnName.ToUpper() != "EMPID")
+                        {
+                            if (dc.ColumnName.Contains("#"))
+                            {
+                                if (dtRow[dc].ToString().Contains("#"))
+                                {
+                                    <td><strong>@dtRow[dc].ToString().Split('#')[1]</strong></td>
+                                    <td><strong>@dtRow[dc].ToString().Split('#')[0]</strong></td>
+
+                                }
+                                else
+                                {
+                                    <td><strong>@dtRow[dc].ToString()</strong></td>
+                                    <td><strong></strong></td>
+                                }
+                            }
+                            else
+                            {
+                                if (dc.ColumnName.ToUpper() == "EMP NAME")
+                                {
+                                    <td ><a class="anhorEmployeeTimeSheet"><div class="ellipsis fn-bold">@dtRow[dc].ToString()</div></a>
+                                    </td>
+                                }
+                                else
+                                {
+                                    <td><strong>@dtRow[dc].ToString()</strong></td>
+                                }
+                            }
+                        }
+                    }
+                </tr>
+                    }
+                }
+
+            </tbody>
+        </table>
+
+    </div>
+}
+@*else
+{
+    <div class="norecordfound">
+        @Html.Partial("_NoRecordsFound")
+    </div>
+
+}*@
+
+

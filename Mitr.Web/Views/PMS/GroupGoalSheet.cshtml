@@ -1,0 +1,144 @@
+﻿@model PMS
+
+<div class="inner-main pb-0">    
+    <div class="col-sm-5"><h1 class="heading-one ">My Group’s Goal Sheet</h1></div>
+    @using (Ajax.BeginForm("_GroupGoalSheet", "PMS",
+            new { src = clsApplicationSetting.EncryptQueryString(ViewBag.MenuID.ToString() + "*/PMS/_GroupGoalSheet") },
+              new AjaxOptions { HttpMethod = "POST", OnSuccess = "BindTarget", OnBegin = "ShowLoadingDialog()" },
+        new { @id = "_GroupGoalSheetFrom" })
+        )
+    {
+        <div class="row">
+
+            <div class="col-lg-2 col-md-2 col-sm-2 slt-srh form-group">
+                <label class="lbl-abs">Select Year</label>
+                @Html.DropDownListFor(x => Model.FYID, new SelectList(ViewBag.FinYearList, "ID", "Year", Model.FYID), "Select Year",
+        new { @class = "form-control  applyselect ddapplyaction" })
+                @Html.ValidationMessageFor(model => Model.FYID, "", new { @class = "text-danger" })
+            </div>
+            <div style="display:none">
+                <button type="submit" class="btn mtr-g-grn btn-l ripplelink" id="btnSearch" name="Command" value="Search"><i class="fas fa-search"></i>Search</button>
+            </div>
+        </div>
+    }
+
+    <div id="TargetDiv">@Html.Partial("_Loading")</div>
+</div>
+
+
+<div class="modal fade pop-dgn" id="ViewModal">
+	<div class="modal-dialog modal-lg">
+		<div class="modal-content">
+
+			<div class="modal-header blk-gdn-btn">
+				<h4 class="modal-title">
+					<i class="fas fa-user-tie"></i><span id="spnHead">Gaol Sheet</span>
+
+				</h4>
+				<div class="close" data-dismiss="modal">&times;</div>
+			</div>
+			<!-- Modal body -->
+			<div class="modal-body">
+				<div id="TagetDivAdd"></div>
+			</div>
+		</div>
+	</div>
+</div>
+
+@section scripts    {
+	@System.Web.Optimization.Scripts.Render("~/bundle/unobtrusivejs")
+	@Html.IncludeVersionedJs(Url.Content("~/assets/design/Scripts/ToolTip.js"))
+	@System.Web.Optimization.Scripts.Render("~/assets/design/Scripts/AddInit.js")
+
+	<script>
+		$(document).ready(function () {
+			$("#btnSearch").click();
+		});
+
+			function blockSpecialChar(e){
+
+        var k;
+        document.all ? k = e.keyCode : k = e.which;
+		if(k==39){
+		event.preventDefault();
+		}
+
+        }
+		$('.ddapplyaction').bind("change", function () {
+			$("#btnSearch").click();
+		});
+
+
+		function BindTarget(args) {
+			CloseLoadingDialog();
+			$("#TargetDiv").empty();
+			$("#TargetDiv").html(args);
+			$('[data-toggle="tooltip"]').tooltip();
+			$(".applyselect").select2();
+		}
+
+		function ViewGoalSheet(obj) {
+			var I = $(obj).closest("tr").find("input:hidden[name=I]").val();
+			var N = $(obj).closest("tr").find("input:hidden[name=N]").val();
+
+			$("#spnHead").html(N);
+			$.ajax({
+				url: "/PMS/_ViewGroupGoalSheet",
+				type: "Get",
+				data: { src: EncryptQueryStringJSON(@ViewBag.MenuID+"*" + "/PMS/_ViewGroupGoalSheet" + "*" + I) },
+                success: function (data)
+                {
+					$("#TagetDivAdd").empty();
+					$("#TagetDivAdd").html(data);
+					$("#ViewModal").modal("show");
+					$(".applyselect").select2();
+					$('[data-toggle="tooltip"]').tooltip();
+                     var form = $("form")
+                .removeData("validator")
+                .removeData("unobtrusiveValidation");
+					$.validator.unobtrusive.parse(form);
+
+
+					$("#btnResubmit").on("click",  function() {
+  $("#divres").toggle(); /*shows or hides #box*/
+  
+  /*$(this) refers to the targeted element: #toggleMessage*/
+  var text = $(this).text();
+  
+  if (text=="Back") { /*if text inside #toggleMessage is Show...*/
+    document.getElementById("btnResubmit").innerHTML = "<i class='fas fa-share'></i> Resubmit"; /*Change button text to Hide*/
+    $("#btnResubmit").removeClass("cnl-btn")
+    $("#btnResubmit").addClass("mtr-o-grn")
+  }
+  else {
+    document.getElementById("btnResubmit").innerHTML = "<i class='fas fa-long-arrow-alt-left'></i>Back"; /*Change button text to Show*/
+    $("#btnResubmit").addClass("btn cnl-btn")
+    $("#btnResubmit").removeClass("mtr-o-grn")
+  }
+});
+
+				},
+				error: function (er) {
+					alert(er);
+
+				}
+			});
+		}
+
+		function SubmitGroupSheetSuccess(obj) {
+			console.log(obj)
+			if (obj.Status) {
+				CloseLoadingDialog();
+				SuccessToaster(obj.SuccessMessage);
+				$("#ViewModal").modal("hide");
+				$("#btnSearch").click();
+			}
+			else {
+				CloseLoadingDialog()
+				FailToaster(obj.SuccessMessage);
+			}
+
+		}
+	</script>
+
+}

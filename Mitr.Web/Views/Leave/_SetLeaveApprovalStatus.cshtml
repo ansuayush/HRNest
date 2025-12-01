@@ -1,0 +1,193 @@
+﻿@model Mitr.Models.ActionOnLeave
+
+@{
+	long EMPID = 0;
+	long.TryParse(clsApplicationSetting.GetSessionValue("EMPID"), out EMPID);
+}
+@using (Ajax.BeginForm("_SetLeaveApprovalStatus", "Leave",
+			   new { src = clsApplicationSetting.EncryptQueryString(ViewBag.MenuID.ToString() + "*/Leave/_SetLeaveApprovalStatus") },
+			   new AjaxOptions { HttpMethod = "POST", OnSuccess = "ResponseLeaveAppproval" },
+		   new { @id = "SetLeaveApprovalStatus" })
+		   )
+{
+	@Html.HiddenFor(model => Model.LeaveLogID)
+	@Html.HiddenFor(x => Model.HODRemarks)
+	<div class="shadow-box-ftr row">
+
+		@if (Model.RFC > 0)
+		{
+			<div class="col-sm-12">
+
+				<div class="alert alert-light  alert-elevate fade show" role="alert">
+					<div class="alert-icon ">RFC Remarks </div>
+					<div class="alert-text align-self-center">
+						@Model.RFCRemarks
+					</div>
+				</div>
+				<div class="text-center mt-3">
+					@if ((Model.Approved == 1 || Model.Approved == 4 || Model.Approved == 3) && Model.EMPID != EMPID)
+					{
+						<button type="submit" style="cursor:pointer;" name="command" value="10" class=" btn mtr-g-grn " data-toggle="tooltip" data-original-title="Click for RFC Approval" title="Click for RFC Approval"><i class="fas fa-sticky-note"></i>Approved</button>
+					}
+				</div>
+
+			</div>
+		}
+		else
+		{
+	<div class="col-sm-12">
+
+		@if (!string.IsNullOrEmpty(Model.IsValidForEDApproval) && (Model.Approved == 3 || Model.Approved == 0))
+		{
+			if (Model.EMPID != EMPID)
+			{
+				<div class="alert alert-light alert-elevate fade show" role="alert">
+					<div class="alert-icon"><i class="far fa-clock"></i></div>
+					<div class="alert-text align-self-center">@Model.IsValidForEDApproval</div>
+				</div>
+				if (Model.Approved == 3 && Model.isED==false)
+				{
+					<div class="alert alert-light alert-elevate fade show" role="alert">
+						<div class="alert-icon"><i class="far fa-clock"></i></div>
+						<div class="alert-text align-self-center">The leave request has been forwarded for special approval, so no further action is needed</div>
+					</div>
+				}
+			}
+			else
+			{
+				<div class="alert alert-light  alert-elevate fade show" role="alert">
+					<div class="alert-icon"><i class="far fa-clock"></i></div>
+					@*<div class="alert-text align-self-center"><strong> Please take action</strong></div>*@
+					<div class="alert-text align-self-center"><strong>@(Model.EMPID == EMPID?"Leave request pending for Approval": "Please take action")</strong></div>
+				</div>
+			}
+		}
+		else
+		{
+			if (Model.Approved == 0)
+			{
+				<div class="alert alert-light alert-elevate red-clr fade show" role="alert">
+					<div class="alert-icon"><i class="far fa-clock"></i></div>
+					<div class="alert-text align-self-center"><strong>@(Model.EMPID == EMPID ? "Leave request pending for Approval" : "Please take action")</strong></div>
+				</div>
+			}
+			else
+			{
+				<div class="alert alert-light @(Model.Approved == 1 || Model.Approved == 4 ? "green-clr" : "red-clr") alert-elevate fade show" role="alert">
+					<div class="alert-icon"><i class="@(Model.Approved == 1 ? "fa fa-check" : "far fa-clock") " aria-hidden="true"></i></div>
+					@if (Model.EMPID == EMPID)
+					{
+						<div class="alert-text align-self-center">  @(Model.Approved == 1 || Model.Approved == 4 ? "Leave Request Approved" : "Sorry, your leave request has not been approved.")</div>
+					}
+					else
+					{
+						<div class="alert-text align-self-center">  @(Model.Approved == 1 || Model.Approved == 4 ? "Leave Request Approved" : "Leave request cancelled.")</div>
+					}
+
+				</div>
+
+			}
+
+		}
+	</div>
+
+			if (Model.EMPID != EMPID)
+			{
+				<div class="col-sm-9">
+
+					@if (Model.Approved == 0 || Model.Approved == 3)
+					{
+						@Html.TextAreaFor(model => Model.Reason, new { @class = "form-control h-80", Type = "text", @placeholder = "Enter Your Remarks" })
+						@Html.ValidationMessageFor(model => Model.Reason, "", new { @class = "text-danger" })
+					}
+					else if (Model.Approved == 3 && Model.IsValidForEDApproval == "ED and HOD is Same")
+					{
+						if (!string.IsNullOrEmpty(Model.HODRemarks))
+						{
+							<div class="alert alert-light  alert-elevate fade show" role="alert">
+								<div class="alert-icon">Supervisor Remarks </div>
+								<div class="alert-text align-self-center">
+									@Model.HODRemarks
+								</div>
+							</div>
+						}
+
+						@Html.TextAreaFor(model => Model.Reason, new { @class = "form-control ", Type = "text", @placeholder = "Enter Your Remarks" })
+						@Html.ValidationMessageFor(model => Model.Reason, "", new { @class = "text-danger" })
+					}
+					else
+					{
+						if (!string.IsNullOrEmpty(Model.HODRemarks))
+						{
+							<div class="alert alert-light  alert-elevate fade show" role="alert">
+								<div class="alert-icon">Supervisor Remarks </div>
+								<div class="alert-text align-self-center">
+									@Model.HODRemarks
+								</div>
+							</div>
+						}
+						if (!string.IsNullOrEmpty(Model.EDRemarks))
+						{
+							<div class="alert alert-light  alert-elevate fade show" role="alert">
+								<div class="alert-icon">Special Approval Remarks </div>
+								<div class="alert-text align-self-center">
+									@Model.EDRemarks
+								</div>
+							</div>
+						}
+					}
+				</div>
+				<div class="col-sm-3 text-left align-self-center">
+					@if (Model.Approved == 0)
+					{
+						if (!string.IsNullOrEmpty(Model.IsValidForEDApproval))
+						{
+							<button type="submit" style="cursor:pointer;" name="command" value="3" class="btn-b" data-toggle="tooltip" data-original-title="Recommend for special approval" title="Recommend for special approval"><i class="fas fa-share"></i></button>
+						}
+						else
+						{
+							<button type="submit" style="cursor:pointer;" name="command" value="1" data-toggle="tooltip" data-original-title="Click here for approve" class="btn-a" title="Click here for approve"><i class="fa fa-check" aria-hidden="true"></i></button>
+
+						}
+						<button type="submit" style="cursor:pointer;" name="command" value="2" class="btn-p" data-toggle="tooltip" data-original-title="Click here for reject" title="Click here for reject"><i class="fas fa-ban"></i></button>
+					}
+					else if (Model.Approved == 3 && (Model.IsValidForEDApproval == "ED and HOD is Same" || Model.isED))
+					{
+						<button type="submit" style="cursor:pointer;" name="command" value="4" class="btn-a" title="Click here for approve" data-toggle="tooltip" data-original-title="Click here for approve"><i class="fa fa-check" aria-hidden="true"></i></button>
+						<button type="submit" style="cursor:pointer;" name="command" value="5" class="btn-p" title="Click here for reject" data-toggle="tooltip" data-original-title="Click here for reject"><i class="fas fa-ban"></i></button>
+					}
+				</div>
+			}
+			else
+			{
+				if (!string.IsNullOrEmpty(Model.HODRemarks))
+				{
+					<div class="col-sm-12">
+						<div class="alert alert-light  alert-elevate fade show" role="alert">
+							<div class="alert-icon">Supervisor Remarks </div>
+							<div class="alert-text">
+								@Model.HODRemarks
+
+							</div>
+						</div>
+					</div>
+				}
+				if (!string.IsNullOrEmpty(Model.EDRemarks))
+				{
+					<div class="col-sm-12">
+
+						<div class="alert alert-light  alert-elevate fade show" role="alert">
+							<div class="alert-icon">Special Approval Remarks </div>
+							<div class="alert-text">
+								@Model.EDRemarks
+							</div>
+						</div>
+					</div>
+				}
+			}
+		}
+	</div>
+}
+
+
+

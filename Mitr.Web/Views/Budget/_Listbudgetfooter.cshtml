@@ -1,0 +1,9 @@
+﻿<div class="ftr-btn">
+
+	<button type="submit" class="btn mtr-o-grn " name="Command" value="Add"><i class="fas fa-save"></i>Save</button>
+	<button type="submit" class="btn mtr-o-grn " name="Command" value="Add"><i class="fas fa-paper-plane"></i>Submit</button>
+	<button type="submit" class="btn mtr-o-grn " name="Command" value="Add"><i class="fas fa-paper-plane"></i>Next<i class="fas fa-angle-double-right m-0"></i></button>
+	@*<a href="enter-sub-activity.html" class="btn blk-gdn-btn" name="Command" value="Add" data-toggle="tooltip" title="Enter Subactivity and Map Outcome">Next <i class="fas fa-angle-double-right m-0"></i></a>*@
+
+	<button type="button" class="btn cnl-btn" onclick="ShowLoadingDialog();window.location='@Url.Action("CreateBudget", new { src = clsApplicationSetting.EncryptQueryString(ViewBag.MenuID.ToString() + "*/Budget/CreateBudget*0")  })';"><i class="fas fa-times"></i> Close</button>
+</div>

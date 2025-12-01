@@ -1,0 +1,1058 @@
+﻿@model PMS.CMCAppraisal.Add
+@{
+	string MenuID = ViewBag.MenuID.ToString();
+	try
+	{
+		Model.QALEmp = Model.QAL.Where(n => n.Doctype == "self").ToList();
+		Model.QALTeam = Model.QAL.Where(n => n.Doctype == "team").ToList();
+	}
+	catch { }
+}
+@if (!Model.Status)
+{
+	<div class="row warning-center">
+		<div class="col-md-6 mx-auto">
+			<div class="f-modal-alert">
+				<i class="fas fa-comments"></i>
+				<h2>@Model.StatusMessage</h2>
+			</div>
+		</div>
+	</div>
+}
+else
+{
+
+	using (Ajax.BeginForm("SetCMCAppraisal", "PMS",
+				new { src = clsApplicationSetting.EncryptQueryString(ViewBag.MenuID.ToString() + "*/PMS/SetCMCAppraisal") },
+			  new AjaxOptions { HttpMethod = "POST", OnSuccess = "GroupAppraisalSuccess", OnBegin = "ShowLoadingDialog()" },
+		new { @id = "_SetGroupAppraisalFrom", enctype = "multipart/form-data" })
+		)
+	{
+		@Html.ValidationSummary(true)
+		@Html.HiddenFor(x => Model.FYID)
+		@Html.HiddenFor(x => Model.Approved)
+		@Html.HiddenFor(x => Model.PMS_AID)
+		@Html.HiddenFor(x => Model.EMPID)
+		@Html.HiddenFor(x => Model.IsBtnVisible)
+		<div class="row">
+			<div class="col-md-8 mx-auto">
+
+				<div class="inner-main">
+					<div class=" table-currency mt-0">
+
+						<div class="row">
+							<div class="col-md-10 text-center">
+								<h1 class="heading-one pt-2">@Model.EMPName (@Model.EMPCode)</h1>
+							</div>
+
+							<div class="col-md-2 text-left">
+								<strong>Status</strong><br><b class="@(Model.Approved==7?"green-clr":"red-clr")">@Model.ApproveStatus</b>
+							</div>
+							<div class="col-md-12 mt-2 mb-2 text-center">
+								<div class="emp-ifno mb-3" id="toggle">
+									<ul class="list-unstyled ">
+										<li>
+											<strong>Designation</strong><br>
+											@Model.DesignationName
+										</li>
+										<li>
+											<strong>Department </strong><br>
+											@Model.Department
+										</li>
+
+										<li>
+											<strong>Location </strong><br>
+											@Model.LocationName
+										</li>
+										<li>
+											<strong>Year</strong><br>
+											@Model.FYName
+										</li>
+
+									</ul>
+								</div>
+								<div class="emp-ifno brd-top-0 mb-3" id="toggle">
+									<ul class="list-unstyled ">
+										<li>
+											<strong>Appraiser: </strong><br>
+											@Model.AppraiserName
+										</li>
+										<li>
+											<strong>Additional Reviewer:  </strong><br>
+											@Model.CommentorsName
+										</li>
+
+									</ul>
+
+
+								</div>
+							</div>
+						</div>
+
+						<div class="radio-bg tab-radio">
+							<ul class="list-unstyled inline-li">
+								<li>
+									<div class="radio-button">
+										<input id="yes" name="radio1" type="radio" class="ChkComments" value="Work" checked="checked">
+										<label for="yes" class="radio-label"><strong>Appraisal</strong></label>
+									</div>
+								</li>
+								<li>
+									<div class="radio-button">
+										<input id="no" name="radio1" type="radio" class="ChkComments" value="Feedback">
+										<label for="no" class="radio-label"><strong>Feedback</strong></label>
+									</div>
+								</li>
+							</ul>
+						</div>
+
+						<section id="Section1" class="row">
+
+							<div class="col-sm-12 text-right align-self-center">
+								<a class="btn mtr-g-grn bbtn mtr-g-grn btn-l ripplelink" id="btnFillAppraisal" data-toggle="modal" data-target="#achievement">
+									<i class="fas fa-plus"></i>View
+								</a>
+							</div>
+							<div class="table-responsive col-sm-12">
+								<table id="tableKPA" class="table tv-top table-scroll mb-3 act-table table-striped">
+									<thead>
+										<tr>
+											<th class="w-10">S.No</th>
+											<th width="150">KPA</th>
+											<th width="150">Key Performance Indicator</th>
+											<th width="150">Achievement</th>
+											<th width="30">UOM</th>
+											<th class="text-right" width="30">Weightage</th>
+											<th class="text-right" width="30">Target</th>
+
+											<th class="text-right " width="50">Appraiser’s score</th>
+										</tr>
+									</thead>
+									<tbody>
+										@if (Model.KPAL.Count > 0)
+										{
+											int KPCount = 0;
+											decimal TotalWeight = 0;
+											foreach (var item in Model.KPAL)
+											{
+												KPCount++;
+												decimal sum = 0;
+												decimal.TryParse(item.KPA_Weight, out sum);
+												TotalWeight += sum;
+												<tr>
+													<td>@KPCount</td>
+													<td>@item.KPA_Area </td>
+													<td>@item.KPA_PIndicator </td>
+													<td>@item.Self_Achievement</td>
+													<td>@item.UOM_Name</td>
+													<td class="text-right">@item.KPA_Weight</td>
+													<td class="text-right">@item.kPA_Target</td>
+													<td class="text-right">@item.HOD_Score</td>
+												</tr>
+											}
+
+
+											<tr>
+												<td colspan="4" class="text-right"><strong>Total</strong></td>
+												<td class="text-right">
+
+													<strong> @TotalWeight</strong>
+
+												</td>
+												<td></td>
+												<td></td>
+												<td></td>
+											</tr>
+										}
+									</tbody>
+								</table>
+							</div>
+							<div class="col-md-12 form-group">
+								<hr><span class="hr-aps"><i class="fas fa-user"></i>Employee </span>
+							</div>
+							<div class="col-md-12">
+
+								<table class="table tv-top table-scroll act-table mb-3  table-striped">
+									<thead>
+										<tr>
+											<th class="td-10">S.No</th>
+											<th class="w-200">Additional Questions</th>
+											<th class="w-200">Employee's Response</th>
+											<th class="w-200">Appraiser's Response</th>
+										</tr>
+									</thead>
+									<tbody>
+										@if (Model.QALEmp.Count > 0)
+										{
+											int Qcount = 0;
+
+											for (int i = 0; i < Model.QALEmp.Count; i++)
+											{
+												Qcount++;
+
+												<tr>
+													<td>
+														@Qcount
+														@Html.HiddenFor(model => model.QALEmp[i].PMS_QAID)
+														@Html.HiddenFor(model => model.QALEmp[i].Question)
+													</td>
+													<td>
+														@Model.QALEmp[i].Question
+													</td>
+													<td>
+														@Model.QALEmp[i].Answer
+													</td>
+													<td>
+														@{
+															try
+															{
+																var Answer = Model.QALTeam.Where(n => n.Question == Model.QALEmp[i].Question).Select(x => x.Answer).FirstOrDefault();
+																@Answer
+															}
+															catch { }
+
+														}
+
+													</td>
+
+
+
+												</tr>
+											}
+										}
+									</tbody>
+								</table>
+
+							</div>
+							@if (Model.AttachmentsL.Count > 0)
+							{
+								<div class="col-md-12 ">
+									<h3 class="subheading">Attachment</h3>
+								</div>
+								<div class="col-md-12">
+									<table id="tableAttachment" class="table table-scroll mb-2 act-table table-striped">
+										<thead>
+											<tr>
+												<th class="td-10">S.NO</th>
+												<th width="250">Attachment Type</th>
+												<th width="300">Attachment</th>
+												<th>Description</th>
+
+											</tr>
+										</thead>
+										<tbody>
+											@{
+												int AttachCount = 0;
+											}
+											@for (int i = 0; i < Model.AttachmentsL.Count; i++)
+											{
+												AttachCount++;
+												<tr>
+													<td>
+														<label id="span_@AttachCount" name="span_@AttachCount">@AttachCount </label>
+														@Html.HiddenFor(model => model.AttachmentsL[i].AttachmentID)
+														@Html.HiddenFor(model => model.AttachmentsL[i].Descrip)
+													</td>
+													<td>
+														@Model.AttachmentsL[i].FileName
+													</td>
+													<td>
+														@Html.ShowAttachment(Model.AttachmentsL[i].AttachmentID.ToString(), "achor-link")
+
+													</td>
+													<td>
+														@Model.AttachmentsL[i].Descrip
+													</td>
+												</tr>
+											}
+										</tbody>
+									</table>
+								</div>
+							}
+							@if (Model.TrainingL.Count > 0)
+							{
+								<div class="col-md-12">
+									<h3 class="subheading">Training Desired</h3>
+								</div>
+
+
+								<div class="col-md-12  form-group">
+									<table id="tblTraining" class="table table-scroll mb-2 act-table table-striped">
+										<thead>
+											<tr>
+												<th class="td-10">S.NO</th>
+												<th class="w-100">Training Type</th>
+												<th>Remarks</th>
+												<th class="w-100">Status</th>
+											</tr>
+										</thead>
+										<tbody>
+											@if (Model.TrainingL.Count > 0)
+											{
+												int TCount = 0;
+												for (int i = 0; i < Model.TrainingL.Count; i++)
+												{
+													TCount++;
+
+													<tr>
+														<td>
+															<label id="span_@TCount" name="span_@TCount">@TCount </label>
+															@Html.HiddenFor(model => model.TrainingL[i].PMS_ADID)
+															@Html.HiddenFor(model => model.TrainingL[i].TrainingType, new { @class = "hdnTrainingType" })
+															@Html.HiddenFor(model => model.TrainingL[i].TrainingTypeID)
+															@Html.HiddenFor(model => model.TrainingL[i].TrainingRemarks)
+															<input type="hidden" name="I" value="@Model.TrainingL[i].PMS_ADID" />
+															<input type="hidden" name="N" value="@Model.TrainingL[i].TrainingType" />
+
+
+														</td>
+														<td>
+															@Model.TrainingL[i].TrainingType
+														</td>
+
+														<td>
+
+															@Model.TrainingL[i].TrainingRemarks
+														</td>
+														<td>
+															@if (Model.TrainingL[i].isdeleted == 1)
+															{
+																<strong class="red-clr">Rejected</strong>
+															}
+															else
+															{
+																<strong class="green-clr">Approved</strong>
+															}
+
+														</td>
+													</tr>
+
+
+
+												}
+											}
+
+										</tbody>
+									</table>
+								</div>
+
+							}
+
+							@if (Model.CommentsL.Count > 0)
+							{
+
+								for (int i = 0; i < Model.CommentsL.Count; i++)
+								{
+									if (Model.CommentsL[i].TableName == "Self Comment 1")
+									{
+										<div class="col-md-12">
+											<h3 class="subheading">
+												Anything else  you want to share with your Appraiser
+											</h3>
+										</div>
+										<div class="col-sm-12 form-group">
+											@Model.CommentsL[i].Comment
+											@Html.HiddenFor(model => model.CommentsL[i].Comment)
+										</div>
+									}
+									else if (Model.CommentsL[i].TableName == "Self Comment 2")
+									{
+										<div class="col-md-12">
+											<h3 class="subheading">
+												Final Response
+											</h3>
+										</div>
+										<div class="col-sm-12 form-group">
+											@Model.CommentsL[i].Comment
+											@Html.HiddenFor(model => model.CommentsL[i].Comment)
+										</div>
+									}
+
+								}
+							}
+							<div class="col-sm-12 form-group">
+								<hr>
+								<span class="hr-aps"><i class="fas fa-hand-holding-usd"></i>Appraiser </span>
+							</div>
+							<div class="col-md-12">
+
+								<table class="table tv-top act-table mb-3  table-striped">
+									<thead>
+										<tr>
+											<th width="10">S.No</th>
+											<th width="220">Additional Questions</th>
+											<th width="200">Response<sup class="red-clr">*</sup> </th>
+										</tr>
+									</thead>
+									<tbody>
+										@{
+											Model.QALTeam = Model.QAL.Where(n => n.Doctype == "team" && (n.QuestionFor == "Appraiser,Commenter" || n.QuestionFor == "Appraiser")).ToList();
+										}
+										@if (Model.QALTeam.Count > 0)
+										{
+											int Qcount = 0;
+
+											for (int i = 0; i < Model.QALTeam.Count; i++)
+											{
+												Qcount++;
+
+												<tr>
+													<td class="text-center">
+														@Qcount
+														@Html.HiddenFor(model => model.QALTeam[i].PMS_QAID)
+														@Html.HiddenFor(model => model.QALTeam[i].Question)
+													</td>
+													<td>
+														@Model.QALTeam[i].Question
+													</td>
+													<td>
+														@Model.QALTeam[i].Answer
+													</td>
+												</tr>
+											}
+										}
+									</tbody>
+								</table>
+
+							</div>
+							<div class="col-md-4 form-group">
+								<label>Recommendation, if any</label>
+								<p>	@Model.TeamRecommendation</p>
+							</div>
+
+							<div class="col-sm-4 form-group">
+								<label>Final Score</label>
+								<div class="input-group w-100">
+									<p>	@Model.Team_Score</p>
+									<div class="input-group-prepend"> <span class="input-group-text" id="basic-addon1">100</span> </div>
+								</div>
+							</div>
+							<div class="col-md-2 form-group">
+								<label>System Score</label>
+								<p><strong>@Model.SystemScore</strong></p>
+							</div>
+							@if (Model.CommentsL.Count > 0)
+							{
+
+								for (int i = 0; i < Model.CommentsL.Count; i++)
+								{
+									if (Model.CommentsL[i].TableName == "Team Comment 1")
+									{
+										<div class="col-md-12">
+											<h3 class="subheading mb-0">
+												Assessment
+											</h3>
+										</div>
+										<div class="col-sm-12 form-group">
+											@Model.CommentsL[i].Comment
+											@Html.HiddenFor(model => model.CommentsL[i].Comment)
+										</div>
+									}
+									else if (Model.CommentsL[i].TableName == "Team Comment 2")
+									{
+										<div class="col-md-12">
+											<h3 class="subheading">
+												Final Assessment
+											</h3>
+										</div>
+										<div class="col-sm-12 form-group">
+											@Model.CommentsL[i].Comment
+											@Html.HiddenFor(model => model.CommentsL[i].Comment)
+										</div>
+									}
+								}
+							}
+							<div class="col-sm-12 form-group">
+								<hr>
+								<span class="hr-aps"><i class="fas fa-user-check"></i>Confirmer </span>
+							</div>
+							@if (!string.IsNullOrEmpty(Model.Group_Comment))
+							{
+
+
+						<div class="col-sm-4 form-group">
+							<label>State your agreement on final asessment</label>
+							@if (Model.Group_Score == 0)
+							{
+								<p>Yes</p>
+							}
+							else
+							{
+								<p>No</p>
+							}
+
+
+						</div>
+								<div class="col-sm-2 form-group">
+									<label>Recommended Score</label>
+									<div class="input-group w-100">
+										@Html.TextBoxFor(model => model.Group_Score, new { @class = "form-control width-ato", @readonly = "true" })
+										<div class="input-group-prepend"> <span class="input-group-text" id="basic-addon1">100</span> </div>
+									</div>
+								</div>
+								<div class="col-sm-12 form-group">
+									<h3 class="subheading">
+										Confirmer's Overall Comment
+									</h3>
+									@Html.TextAreaFor(model => model.Group_Comment, new { @class = "form-control", @readonly = "true" })
+								</div>
+							}
+							else
+							{
+								<div class="col-sm-4 form-group">
+									<label>Are you agreeing with the appraisal</label>
+									<p>Yes</p>
+								</div>
+							}
+
+							<div class="col-sm-12 form-group">
+								<hr>
+								<span class="hr-aps"><i class="fas fa-flag"></i>Final Authority </span>
+							</div>
+
+							@if (Model.IsBtnVisible)
+							{
+								<div class="col-sm-12 form-group ">
+									<label>Are you agreeing with the appraisal</label>
+									<ul class="list-unstyled inline-li mt-1 ">
+										<li>
+											<div class="radio-button">
+
+												@Html.RadioButtonFor(model => model.chkAgreeWithAppraisal, "Yes", new { id = "admin", @class = "ChkAWA" })
+												@Html.Label("admin", "Yes", new { @class = "radio-label" })
+											</div>
+										</li>
+										<li>
+											<div class="radio-button">
+												@Html.RadioButtonFor(model => model.chkAgreeWithAppraisal, "No", new { id = "employee", @class = "ChkAWA" })
+												@Html.Label("employee", "No", new { @class = "radio-label" })
+											</div>
+										</li>
+									</ul>
+									@Html.ValidationMessageFor(model => model.chkAgreeWithAppraisal, "", new { @class = "text-danger" })
+								</div>
+
+								<div class="col-sm-12 form-group" id="divAWA" style="display:none">
+									<label>Recommendation / Any comments</label>
+									@Html.TextAreaFor(model => model.CMC_Comment, new { @class = "form-control", @placeholder = "Enter" })
+									@Html.ValidationMessageFor(model => model.CMC_Comment, "", new { @class = "text-danger" })
+								</div>
+
+								<div class="col-sm-2 form-group">
+									<label>Suggested Increment </label>
+									<div class="input-group w-100">
+										@Html.TextBoxFor(model => model.CMC_Increment, new { @class = "form-control" })
+
+										<div class="input-group-prepend"> <span class="input-group-text" id="basic-addon1">%</span> </div>
+									</div>
+									@Html.ValidationMessageFor(model => model.CMC_Increment, "", new { @class = "text-danger" })
+								</div>
+								<div class="col-sm-3 form-group">
+									<label>Overall Score</label>
+									<div class="input-group w-100">
+										@Html.TextBoxFor(model => model.CMC_Score, new { @class = "form-control" })
+
+										<div class="input-group-prepend"> <span class="input-group-text" id="basic-addon1">%</span> </div>
+									</div>
+									@Html.ValidationMessageFor(model => model.CMC_Score, "", new { @class = "text-danger" })
+								</div>
+
+								<div class="col-md-12 form-group">
+									@Html.CheckBoxFor(x => x.chkConsiderFeedback, new { @class = "srcheck" })
+									@Html.LabelFor(x => x.chkConsiderFeedback)
+									@Html.ValidationMessageFor(model => model.chkConsiderFeedback, "", new { @class = "text-danger" })
+
+								</div>
+
+
+								@*<button type="submit" name="Command" value="Resubmit" class="btn blk-gdn-btn btn-l ripplelink Btnsubmit "><i class="fas fa-eye"></i>Resubmit</button>*@
+
+							}
+							else
+							{
+								<div class="col-sm-12">
+									@if (!string.IsNullOrEmpty(Model.CMC_Comment))
+									{
+
+										if (!string.IsNullOrEmpty(Model.CMC_Comment))
+										{
+											<div class="col-sm-6">
+												<label>Recommendation / Any comments</label>
+												<p>@Model.CMC_Comment</p>
+											</div>
+										}
+
+									}
+									else
+									{
+										<p>Agreed with the appraisal</p>
+									}
+								</div>
+								<div class="col-sm-2 form-group">
+									<label>Suggested Increment</label>
+									<div class="input-group">
+										<p>@Model.CMC_Increment</p>
+										<div class="input-group-prepend"> <span class="input-group-text" id="basic-addon1">%</span> </div>
+									</div>
+								</div>
+								<div class="col-sm-2 form-group">
+									<label>Overall Score</label>
+									<div class="input-group">
+										<p>@Model.CMC_Score</p>
+										<div class="input-group-prepend"> <span class="input-group-text" id="basic-addon1">%</span> </div>
+									</div>
+								</div>
+							}
+							<div class="col-sm-12 text-center form-group">
+								@if (Model.IsBtnVisible)
+								{
+									<button type="submit" name="Command" value="Approved" class="btn mtr-g-grn btn-l ripplelink Btnsubmit "><i class="fas fa-check"></i>Approved</button>
+								}
+								@{ string URL = "*/PMS/CMCAppraisalList" + (Model.IsBtnVisible ? "*Pending" : "*Processed");}
+								@*@Html.CreateAnchor(MenuID, "/PMS/CMCAppraisalList", "Back", "btn cnl-btn btn-l ripplelink", "", "fas fa-arrow-left", "")*@
+								<a class="btn cnl-btn btn-l ripplelink" onclick="ShowLoadingDialog();window.location='@Url.Action("CMCAppraisalList", "PMS", new { src = clsApplicationSetting.EncryptQueryString(MenuID.ToString() + URL ) })';"><i class="fas fa-arrow-left"></i>Back</a>
+							</div>
+
+
+						</section>
+
+						<section id="Section2" style="display:none">
+
+							@if (Model.QAL != null)
+							{
+								<div id="accordion" class="myaccordion accordion-dgn">
+									<div class="card p-0">
+										@{int Index = 0;}
+										@foreach (var item in Model.QAL.Select(x => x.Question).Distinct())
+										{
+											Index++;
+											<div class="card-header p-0" id="heading_@Index">
+												<h2>
+													<button type="button" class="d-flex align-items-center justify-content-between btn btn-link collapsed" data-toggle="collapse" data-target="#Col_@Index" aria-expanded="false" aria-controls="collapseOne">
+														@item
+
+													</button>
+												</h2>
+											</div>
+
+											<div id="Col_@Index" class="collapse" aria-labelledby="heading__@Index" data-parent="#accordion">
+												<div class="card-body p-0">
+													<table class="table table-striped mt-0 mb-0 ">
+
+														<tbody>
+															@foreach (var sssitem in Model.QAL.Where(x => x.Question == item).ToList())
+															{
+																<tr>
+																	@if (sssitem.Doctype.ToLower() == "self")
+																	{
+																		<td class="w-150">
+																			<strong> @sssitem.EMPName</strong>
+																			<i class="fas fa-info-circle td-info" data-toggle="tooltip" data-placement="right" data-original-title="Employee"></i>
+																		</td>
+																		<td>@sssitem.Answer</td>
+																	}
+																	else if (sssitem.Doctype.ToLower() == "team")
+																	{
+																		<td class="w-150">
+																			<strong> @sssitem.EMPName</strong>
+																			<i class="fas fa-info-circle td-info" data-toggle="tooltip" data-placement="right" data-original-title="Appraiser"></i>
+																		</td>
+
+																		<td>@sssitem.Answer</td>
+
+																	}
+																	else if (sssitem.Doctype.ToLower() == "commenter")
+																	{
+																		<td>
+																			<strong>@sssitem.EMPName</strong>
+																			<i class="fas fa-info-circle td-info" data-toggle="tooltip" data-placement="right" data-original-title="Additional Reviewer"></i>
+																		</td>
+																		<td>@sssitem.Answer</td>
+																	}
+
+																</tr>
+															}
+
+														</tbody>
+													</table>
+												</div>
+											</div>
+										}
+
+
+										<div class="card-header p-0" id="heading_OAC">
+											<h2>
+												<button type="button" class="d-flex align-items-center justify-content-between btn btn-link collapsed" data-toggle="collapse" data-target="#Col_OAC" aria-expanded="false" aria-controls="collapseOAC">
+													Overall Comment
+
+												</button>
+											</h2>
+										</div>
+
+										<div id="Col_OAC" class="collapse" aria-labelledby="heading_OAC" data-parent="#accordion">
+											<div class="card-body p-0">
+												<table class="table table-striped mt-0 mb-0 ">
+
+													<tbody>
+														@foreach (var sssitem in Model.QAL.Where(x => !string.IsNullOrEmpty(x.FinalComment)).Select(x => x.GivenBy).Distinct())
+														{
+															<tr>
+																<td>
+																	<strong>Commentor</strong>
+																	<i class="fas fa-info-circle td-info" data-toggle="tooltip" data-placement="right" data-original-title="@Model.QAL.Where(x => x.GivenBy==sssitem).Select(x=>x.EMPdetails).FirstOrDefault()"></i>
+																</td>
+																<td>@Model.QAL.Where(x => x.GivenBy == sssitem).Select(x => x.FinalComment).FirstOrDefault()</td>
+															</tr>
+														}
+
+													</tbody>
+												</table>
+											</div>
+										</div>
+
+									</div>
+
+								</div>
+
+								<div class="col-md-12">
+									<h3 class="subheading">
+										Rating
+									</h3>
+
+								</div>
+								int RatingCount = 0; string EmpnameStr = "";
+								foreach (var Rating in Model.QAL.Where(n => n.FinalRating != "").Select(x => x.FinalRating).Distinct())
+								{
+									RatingCount = RatingCount + 1;
+									EmpnameStr = "";
+									<div class="col-sm-6 form-group">
+										@foreach (var Empname in Model.QAL.Where(n => n.FinalRating == Rating).Select(x => x.EMPName).Distinct())
+										{
+											EmpnameStr = EmpnameStr + (EmpnameStr != "" ? ", " : "") + Empname;
+
+										}
+										@EmpnameStr
+									</div>
+									<div class="col-sm-6 form-group">
+										@try
+										{
+											<ul class="list-unstyled inline-li radio-tile-group">
+												<li>
+													<div class="input-container">
+														<input id="@RatingCount 1" @(Rating == "1" ? "checked" : "") name="radio2 @RatingCount" disabled type="radio" class="radio-button">
+														<div class="radio-tile">
+															<i class="fas fa-star"></i>
+															<label for="@RatingCount 1" class="radio-tile-label"><strong></strong></label>
+														</div>
+													</div>
+												</li>
+												<li>
+													<div class="input-container">
+														<input id="@RatingCount 2" name="radio2 @RatingCount" @(Rating == "2" ? "checked" : "") disabled type="radio" class="radio-button">
+														<div class="radio-tile">
+															<i class="fas fa-star"></i><i class="fas fa-star"></i>
+															<label for="@RatingCount 2" class="radio-tile-label"><strong></strong></label>
+														</div>
+													</div>
+												</li>
+												<li>
+													<div class="input-container">
+														<input id="@RatingCount 3" name="radio2 @RatingCount" @(Rating == "3" ? "checked" : "") disabled type="radio" class="radio-button">
+														<div class="radio-tile">
+															<i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
+															<label for="@RatingCount 3" class="radio-tile-label"><strong></strong></label>
+														</div>
+													</div>
+												</li>
+												<li>
+													<div class="input-container">
+														<input id="@RatingCount 4" name="radio2 @RatingCount" @(Rating == "4" ? "checked" : "") disabled type="radio" class="radio-button">
+														<div class="radio-tile">
+															<i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
+															<label for="@RatingCount 4" class="radio-tile-label"><strong></strong></label>
+														</div>
+													</div>
+												</li>
+												<li>
+													<div class="input-container">
+														<input id="@RatingCount 5" name="radio2 @RatingCount" @(Rating == "5" ? "checked" : "") disabled type="radio" class="radio-button">
+														<div class="radio-tile">
+															<i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
+															<label for="@RatingCount 5" class="radio-tile-label"><strong></strong></label>
+														</div>
+													</div>
+												</li>
+											</ul>
+										}
+										catch { }
+
+									</div>
+								}
+							}
+						</section>
+					</div>
+
+
+					<div id="achievement" class="modal fade" role="dialog">
+						<div class="modal-dialog modal-xl">
+
+							<!-- Modal content-->
+							<div class="modal-content">
+								<div class="modal-body vert-tab p-0">
+									<div class="row">
+										<div class="col-md-3">
+											<ul class="nav nav-tabs  vrt-tab-leftside m-0 p-0" id="myTab" role="tablist">
+												@if (Model.KPAL.Count > 0)
+												{
+													int AKPCount = 0;
+													foreach (var item in Model.KPAL)
+													{
+														AKPCount++;
+														<li class="nav-item">
+															<a class="nav-link @(AKPCount == 1 ? "active" : "")" id="home-tab" data-toggle="tab" href="#tab_@(item.PMS_ADID)" role="tab" aria-controls="home" aria-selected="true">
+																<h2>
+																	<div class="blockellipsis">	@item.KPA_Area </div>
+																	<!--<small> @item.KPA_PIndicator</small>-->
+																</h2>
+
+															</a>
+														</li>
+													}
+												}
+											</ul>
+										</div>
+										<div class="col-md-9">
+											<button type="button" class="clse-rgt" data-dismiss="modal">×</button>
+											<div class="vrt-tab-rightside">
+												<div class="tab-content" id="myTabContent">
+													@if (Model.KPAL.Count > 0)
+													{
+														int MKPACount = 0;
+														decimal AchScrore = 0;
+														for (int i = 0; i < Model.KPAL.Count; i++)
+														{
+															MKPACount++;
+															@Html.HiddenFor(model => model.KPAL[i].KPAID)
+															@Html.HiddenFor(model => model.KPAL[i].UOMID)
+															@Html.HiddenFor(model => model.KPAL[i].kPA_Target)
+															@Html.HiddenFor(model => model.KPAL[i].KPA_Area)
+															@Html.HiddenFor(model => model.KPAL[i].KPA_AutoRating)
+															@Html.HiddenFor(model => model.KPAL[i].KPA_IncType)
+															@Html.HiddenFor(model => model.KPAL[i].GoalSheetID)
+															@Html.HiddenFor(model => model.KPAL[i].GoalSheet_DetID)
+															@Html.HiddenFor(model => model.KPAL[i].KPA_PIndicator)
+															@Html.HiddenFor(model => model.KPAL[i].KPA_Weight)
+															@Html.HiddenFor(model => model.KPAL[i].PMS_ADID)
+															@Html.HiddenFor(model => model.KPAL[i].PMS_AID)
+															@Html.HiddenFor(model => model.KPAL[i].KPA_IsMonitoring)
+															@Html.HiddenFor(model => model.KPAL[i].KPA_IsMandatory)
+															@Html.HiddenFor(model => model.KPAL[i].UOM_Name)
+															@Html.HiddenFor(model => model.KPAL[i].Self_Achievement)
+															@Html.HiddenFor(model => model.KPAL[i].Self_Comment)
+															try
+															{
+																decimal Self_Achievement = 0, kPA_Target = 0;
+
+																//decimal.TryParse(Model.KPAL[i].Self_Achievement, out Self_Achievement);
+																decimal.TryParse(Model.KPAL[i].KPA_TargetAchieved, out Self_Achievement);
+																decimal.TryParse(Model.KPAL[i].kPA_Target, out kPA_Target);
+																if (Model.KPAL[i].KPA_AutoRating != "No" && Convert.ToInt32(Model.KPAL[i].kPA_Target) > 0)
+																{
+																	if (Model.KPAL[i].KPA_IncType.ToLower() == "postive")
+																	{
+																		AchScrore = (Self_Achievement / kPA_Target) * 100;
+																	}
+																	else
+																	{
+																		//AchScrore = (kPA_Target - (Self_Achievement - kPA_Target)) / kPA_Target * 100;
+																		AchScrore = (Self_Achievement / kPA_Target) * 100;
+																	}
+																}
+																else
+																{
+																	AchScrore = 0;
+																}
+															}
+															catch (Exception ex)
+															{
+
+															}
+															<div class="tab-pane fade show @(MKPACount == 1 ? "active" : "")" id="tab_@Model.KPAL[i].PMS_ADID" role="tabpanel" aria-labelledby="home-tab">
+																<div class="row">
+																	<div class="col-sm-12 form-group">
+																		<label>Key Performance Area</label>
+																		<p>@Model.KPAL[i].KPA_Area </p>
+																	</div>
+																	<div class="col-sm-12 form-group">
+																		<label>Key Performance Indicator</label>
+																		<p>@Model.KPAL[i].KPA_PIndicator </p>
+																	</div>
+																	<div class="col-sm-12 form-group">
+																		<label>Self_Achievement</label>
+																		<p>@Model.KPAL[i].Self_Achievement</p>
+																	</div>
+																	<div class="col-sm-3 form-group">
+																		<label>Unit of Measurement </label>
+																		<p>@Model.KPAL[i].UOM_Name</p>
+																	</div>
+																	<div class="col-sm-3 form-group">
+																		<label>Target Numbers</label>
+																		<p>@Model.KPAL[i].kPA_Target</p>
+																	</div>
+																	<div class="col-sm-3 form-group">
+																		<label>Weightage</label>
+																		<p>@Model.KPAL[i].KPA_Weight</p>
+																	</div>
+
+
+																	@*<div class="col-sm-3 form-group">
+																			<label>Achievement Score  </label>
+																			<p> @Decimal.Round(AchScrore)</p>
+																		</div>*@
+																	<div class="col-sm-3 form-group">
+																		<label>Achievement Score <i class="fas fa-info-circle" data-toggle="tooltip" data-original-title="System Generated  @Decimal.Round(AchScrore) %"></i> </label>
+																		@*<p> @Decimal.Round(AchScrore)</p>*@
+																		<p>@Model.KPAL[i].KPA_TargetAchieved</p>
+																	</div>
+																	<div class="col-sm-3 form-group">
+																		<label>Self_Comment</label>
+																		<p>@Model.KPAL[i].Self_Comment</p>
+																	</div>
+
+
+																	<div class="col-md-12 form-group">
+																		<hr>
+																		<span class="hr-aps"><i class="fas fa-hand-holding-usd"></i> Appraiser </span>
+																	</div>
+																	<div class="col-sm-10 form-group">
+																		<label>Appraiser’s Comment</label>
+																		<p>@Model.KPAL[i].HOD_Comment</p>
+
+																	</div>
+
+																	<div class="col-sm-2 align-self-center form-group">
+																		<label>Appraiser’s score</label>
+																		<div class="input-group">
+																			<p>@Model.KPAL[i].HOD_Score</p>
+																			<div class="input-group-prepend">
+																				<span class="input-group-text" id="basic-addon1">100</span>
+																			</div>
+																		</div>
+																	</div>
+
+																	<div class="col-sm-12 text-right">
+																		@if (MKPACount > 1)
+																		{
+																			<a class="btn blk-gdn-btn btnPrevious"><i class="fas fa-angle-double-left"></i> Previous</a>
+																		}
+																		@if (MKPACount != Model.KPAL.Count)
+																		{
+																			<a class="btn blk-gdn-btn btnNext">Next <i class="fas fa-angle-double-right m-0"></i></a>
+																		}
+																	</div>
+																</div>
+															</div>
+														}
+
+													}
+
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+
+
+				</div>
+			</div>
+		</div>
+	}
+}
+
+@section scripts    {
+	@System.Web.Optimization.Scripts.Render("~/bundle/unobtrusivejs")
+	@Html.IncludeVersionedJs(Url.Content("~/assets/design/Scripts/ToolTip.js"))
+	<script>
+
+		// extend jquery range validator to work for required checkboxes
+		var defaultRangeValidator = $.validator.methods.range;
+		$.validator.methods.range = function (value, element, param) {
+			if (element.type === 'checkbox') {
+				// if it's a checkbox return true if it is checked
+				return element.checked;
+			} else {
+				// otherwise run the default validation function
+				return defaultRangeValidator.call(this, value, element, param);
+			}
+		}
+		function GroupAppraisalSuccess(obj) {
+
+			if (obj.Status) {
+
+				SuccessToaster(obj.SuccessMessage);
+				window.location = obj.RedirectURL;
+			}
+			else {
+				CloseLoadingDialog();
+				FailToaster(obj.SuccessMessage);
+			}
+
+		}
+		$(".ChkAWA").on('change', function (e) {
+			e.preventDefault();
+			var checkAll = $(this).val();
+			if (checkAll === "Yes") {
+				$("#divAWA").hide();
+			}
+			else {
+				$("#divAWA").show();
+			}
+
+		});
+
+		//$(".Btnsubmit").on('click', function (e) {
+		//	return IsCFeed();
+		//});
+
+		//function IsCFeed() {
+		//	var ret = false;
+		//	if (!$(".ChkAWA").is(":checked")) {
+		//		FailToaster("please check Are you agreeing with the appraisal");
+		//	}
+		//	else if (!$("#chkFeedback").is(":checked")) {
+		//		FailToaster("please check I have considered the Feedback");
+		//	} else {
+
+		//		ret = true;
+		//	}
+		//	return ret
+		//}
+
+
+		$(".ChkComments").on('change', function (e) {
+			var checkAll = $(this).val();
+			if (checkAll === "Work") {
+				$("#Section1").show();
+				$("#Section2").hide();
+			}
+			else {
+				$("#Section1").hide();
+				$("#Section2").show();
+			}
+
+		});
+		$('.btnNext').click(function () {
+			$('.nav-tabs .active').parent().next('li').find('a').trigger('click');
+			$('.nav-tabs .active').parent().prev('li').find('a').addClass("prvactive");
+
+		});
+
+		$('.btnPrevious').click(function () {
+			$('.nav-tabs .active').parent().prev('li').find('a').trigger('click');
+		});
+
+	</script>
+}

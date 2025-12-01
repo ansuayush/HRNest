@@ -1,0 +1,200 @@
+﻿@model List<MPRReports.List>
+
+
+
+<div class="inner-main mb-5 pb-0">
+    <h1 class="heading-one">
+        Achievement vs Target <span class="hdbtn">
+            <button id="btnExport" onclick="fnExcelReport()" class="btn mtr-g-grn btn-l ripplelink "><i class="fas fa-download"></i>Export to xls<span class="ink animate" style="height: 116px; width: 116px; left: -14px; top: -47px;"></span></button>
+        </span>
+    </h1>
+    @if (Model != null)
+    {
+        <div class="row mt-4 wtwo-575 text-clr">
+            <div class="col-sm-12">
+                <div class="table-responsive">
+                    <table class="table mt-0" id="theTable">
+                        <thead>
+                            <tr>
+                                <th rowspan="2" class="w-200"></th>
+                                @foreach (var ProjectName in Model.Select(x => x.ProjectName).Distinct())
+                                {
+                                    <th colspan="6" class="text-center w-100">@ProjectName</th>
+                                }
+
+
+                            </tr>
+                            <tr class="text-center">
+                                @foreach (var ProjectName in Model.Select(x => x.ProjectName).Distinct())
+                                {
+                                    <th colspan="3" class="w-100">Target    </th>
+                                    <th colspan="3" class="w-100">Achieved    </th>
+                                }
+
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var ProjectName in Model.Select(x => x.ProjectName).Distinct())
+                            {
+                                foreach (var SecName in Model.Where(x => x.ProjectName == ProjectName).Select(x => x.SecName).Distinct())
+                                {
+                                    <tr>
+                                        <td><strong>@SecName</strong></td>
+                                    </tr>
+                                    foreach (var SubSecName in Model.Where(x => x.ProjectName == ProjectName && x.SecName == SecName).Select(x => x.SubSecName).Distinct())
+                                    {
+                                        <tr>
+                                            <td><strong>@SubSecName</strong></td>
+                                            @{
+
+                                                var HeaderModal = Model.Where(x => x.ProjectName == ProjectName && x.SecName == SecName && x.SubSecName == SubSecName).ToList();
+                                                var MyHeaderModal = HeaderModal.GroupBy(x => x.SubSecName)
+                                                         .Select(x => new
+                                                         {
+                                                             SubSecName = x.Key,
+                                                             NoOfCol = x.Select(ex => ex.NoOfCol).FirstOrDefault(),
+                                                             ColText1 = x.Select(ex => ex.ColText1).FirstOrDefault(),
+                                                             ColText2 = x.Select(ex => ex.ColText2).FirstOrDefault(),
+                                                             ColText3 = x.Select(ex => ex.ColText3).FirstOrDefault(),
+                                                         })
+                                                         .ToList();
+
+                                            }
+                                            @foreach (var Main in MyHeaderModal)
+                                            {
+                                                switch (Main.NoOfCol)
+                                                {
+                                                    case 1:
+                                                        <td class="text-center"> <strong>@Main.ColText1</strong></td>
+                                                        <td class="text-center"> <strong></strong></td>
+                                                        <td class="text-center"> <strong></strong></td>
+                                                        break;
+                                                    case 2:
+                                                        <td class="text-center"> <strong>@Main.ColText1</strong></td>
+                                                        <td class="text-center"> <strong>@Main.ColText2</strong></td>
+                                                        <td class="text-center"> <strong></strong></td>
+                                                        break;
+                                                    case 3:
+                                                        <td class="text-center"> <strong>@Main.ColText1</strong></td>
+                                                        <td class="text-center"> <strong>@Main.ColText2</strong></td>
+                                                        <td class="text-center"> <strong>@Main.ColText3</strong></td>
+                                                        break;
+                                                    default:
+                                                        break;
+                                                }
+                                                switch (Main.NoOfCol)
+                                                {
+                                                    case 1:
+                                                        <td class="text-center"> <strong>@Main.ColText1</strong></td>
+                                                        <td class="text-center"> <strong></strong></td>
+                                                        <td class="text-center"> <strong></strong></td>
+                                                        break;
+                                                    case 2:
+                                                        <td class="text-center"> <strong>@Main.ColText1</strong></td>
+                                                        <td class="text-center"> <strong>@Main.ColText2</strong></td>
+                                                        <td class="text-center"> <strong></strong></td>
+                                                        break;
+                                                    case 3:
+                                                        <td class="text-center"> <strong>@Main.ColText1</strong></td>
+                                                        <td class="text-center"> <strong>@Main.ColText2</strong></td>
+                                                        <td class="text-center"> <strong>@Main.ColText3</strong></td>
+                                                        break;
+                                                    default:
+                                                        break;
+                                                }
+                                            }
+                                        </tr>
+                                        int Count = 0;
+                                        foreach (var IndicatorName in Model.Where(x => x.ProjectName == ProjectName && x.SecName == SecName && x.SubSecName == SubSecName).Select(x => x.IndicatorName).Distinct())
+                                        {
+                                            Count++;
+                                            <tr>
+                                                <td><strong>@Count. @IndicatorName</strong></td>
+                                                @{
+                                                    var ValueModal = Model.Where(x => x.ProjectName == ProjectName && x.SecName == SecName && x.SubSecName == SubSecName && x.IndicatorName == IndicatorName).ToList();
+
+                                                    string ColVal1 = "", ColVal2 = "", ColVal3 = "";
+                                                    int NoOfCol = 0;
+
+                                                    foreach (var item in ValueModal)
+                                                    {
+
+                                                    }
+
+                                                }
+                                                @foreach (var Full in ValueModal)
+                                                {
+                                                    if (Full.Doctype == "Target")
+                                                    {
+                                                        switch (Full.NoOfCol)
+                                                        {
+                                                            case 1:
+
+                                                                <td class="text-center"> <strong>@Full.ColVal1</strong></td>
+                                                                <td class="text-center"> <strong>-</strong></td>
+                                                                <td class="text-center"> <strong>-</strong></td>
+
+                                                                break;
+                                                            case 2:
+
+                                                                <td class="text-center"> <strong>@Full.ColVal1</strong></td>
+                                                                <td class="text-center"> <strong>@Full.ColVal2</strong></td>
+                                                                <td class="text-center"> <strong>-</strong></td>
+
+                                                                break;
+                                                            case 3:
+
+                                                                <td class="text-center"> <strong>@Full.ColVal1</strong></td>
+                                                                <td class="text-center"> <strong>@Full.ColVal2</strong></td>
+                                                                <td class="text-center"> <strong>@Full.ColVal3</strong></td>
+
+                                                                break;
+                                                            default:
+                                                                break;
+                                                        }
+                                                    }
+                                                    if (Full.Doctype == "Achieved")
+                                                    {
+
+                                                        switch (Full.NoOfCol)
+                                                        {
+                                                            case 1:
+
+                                                                <td class="text-center"> <strong>@Full.ColVal1</strong></td>
+                                                                <td class="text-center"> <strong>-</strong></td>
+                                                                <td class="text-center"> <strong>-</strong></td>
+
+                                                                break;
+                                                            case 2:
+
+                                                                <td class="text-center"> <strong>@Full.ColVal1</strong></td>
+                                                                <td class="text-center"> <strong>@Full.ColVal2</strong></td>
+                                                                <td class="text-center"> <strong>-</strong></td>
+
+                                                                break;
+                                                            case 3:
+
+                                                                <td class="text-center"> <strong>@Full.ColVal1</strong></td>
+                                                                <td class="text-center"> <strong>@Full.ColVal2</strong></td>
+                                                                <td class="text-center"> <strong>@Full.ColVal3</strong></td>
+
+                                                                break;
+                                                            default:
+                                                                break;
+                                                        }
+                                                    }
+
+                                                }
+                                            </tr>
+                                        }
+                                    }
+                                }
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+

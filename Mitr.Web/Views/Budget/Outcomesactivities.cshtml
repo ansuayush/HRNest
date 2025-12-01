@@ -1,0 +1,533 @@
+﻿@model Mitr.Models.BudgetMaster.OutcomesActivities
+@{
+	ViewBag.Title = "Outcomesactivities";
+	Layout = "~/Views/Shared/_Layout.cshtml";
+	//string stdate = ViewBag.stDte.ToString();
+	//string EDdate = ViewBag.endDte.ToString();
+	//Model.StartDate = Model.StartDate == null ? stdate : Model.StartDate;
+	//Model.EndDate = Model.EndDate == null ? EDdate : Model.EndDate;
+
+
+}
+
+
+
+<div class="empmenu navsky">
+	<a class="logo" href="">Outcomes & Activities</a>
+	<input id="nav" type="checkbox">
+	<label for="nav"></label>
+	<nav>
+		<ul class="navbar-scd list-unstyled ">
+			@if (ViewBag.menulock == "Edit")
+			{
+				<li class="active"> <a href="@Url.Action("Outcomesactivities", new { src = clsApplicationSetting.EncryptQueryString(ViewBag.MenuID+"*"+"/Budget/Outcomesactivities*"+Model.BudgetId+"*"+Model.ProjectId+"*"+"Edit"+"*") })"> <span class="btn btn-default btn-circle">1</span> Outcomes & <span class="d-block">Activities</span> </a> </li>
+				<li> <a href="@Url.Action("Entersubactivity", new { src = clsApplicationSetting.EncryptQueryString(ViewBag.MenuID.ToString() + "*/Budget/Entersubactivity*0"+Model.BudgetId+"*"+"Edit"+"*")  })"> <span class="btn btn-default btn-circle">2</span>Enter Sub-Activity & <span class="d-block">Map Outcome</span> </a> </li>
+				<li> <a href="@Url.Action("TentativeperiodofBudget", new { src = clsApplicationSetting.EncryptQueryString(ViewBag.MenuID.ToString() + "*/Budget/TentativeperiodofBudget*0"+Model.BudgetId+"*"+"Edit"+"*")  })"> <span class="btn btn-default btn-circle">2</span>Tentative Period of  <span class="d-block">Budget</span> </a> </li>
+			}
+			else
+			{
+				<li class="active"> <a href="#"> <span class="btn btn-default btn-circle">1</span> Outcomes & <span class="d-block">Activities</span> </a> </li>
+				<li> <a href="#"> <span class="btn btn-default btn-circle">2</span>Enter Sub-Activity & <span class="d-block">Map Outcome</span> </a> </li>
+				<li> <a href="#"> <span class="btn btn-default btn-circle">2</span>Tentative Period of  <span class="d-block">Budget</span> </a> </li>
+			}
+
+
+		</ul>
+	</nav>
+</div>
+<!--- -->
+@using (Ajax.BeginForm("Outcomesactivities", "Budget", new { src = ViewBag.src }, new AjaxOptions { HttpMethod = "POST", OnSuccess = "OnSuccess", OnBegin = "ShowLoadingDialog()" }, new { @id = "Outcomesactivities" }))
+{
+	@Html.HiddenFor(model => model.BudgetId)
+	@Html.HiddenFor(model => model.ProjectId)
+	<div class="mb-100">
+		<div class="inner-main bgt-height">
+			<div class="row">
+				<!---->
+				<div class="col-sm-12 ">
+					<h1 class="headingtwo"><i class="fas fa-rupee-sign"></i>Tentative Period of Budget</h1>
+				</div>
+				@*@Html.ValidationSummary(false, "", new { @class = "text-danger" })*@
+				@if (Model.ProjectId > 0)
+				{
+					<div class="col-md-3 col-sm-4 form-group">
+						<label>Donar Name</label>
+						<p>@ViewBag.DonarName</p>
+					</div>
+
+					<div class="col-md-3 col-sm-4 form-group">
+						<label>Project Name</label>
+						<p>@ViewBag.proj (@ViewBag.doc)</p>
+					</div>
+					<div class="col-md-2 wf-575 col-sm-4 form-group">
+						<label>Start Date</label>
+						<p>@ViewBag.startdate</p>
+						@*@Html.TextBox("DateBoxone", String.Format("{0:dd/MM/yyyy}", Model.StartDate), new { @class = "form-control", @readonly = "readonly" })*@
+						@Html.HiddenFor(model => model.StartDate)
+						@*@Html.TextBoxFor(model => model.StartDate, new { @class = "form-control", @readonly = "readonly" })*@
+						@*@Html.ValidationMessageFor(model => model.StartDate, "", new { @class = "text-danger" })*@
+
+					</div>
+					<div class="col-md-2 col-sm-4 wf-575 form-group">
+						<label>End Date</label>
+						<p>@ViewBag.enddate</p>
+
+						@*@Html.TextBox("DateBoxtwo", String.Format("{0:dd/MM/yyyy}", enddate), new { @class = "form-control", @readonly = "readonly" })*@
+						@Html.HiddenFor(model => model.EndDate)
+						@*@Html.TextBoxFor(model => model.EndDate, new { @class = "form-control", @readonly = "readonly" })*@
+
+						@*@Html.ValidationMessageFor(model => model.EndDate, "", new { @class = "text-danger" })*@
+
+					</div>
+				}
+				else
+				{
+					<div class="col-md-3 wf-575 col-sm-4 form-group">
+						<label>Start Date</label>
+						@Html.TextBoxFor(model => model.StartDate, new { @class = "form-control", @type = "date" })
+						@Html.ValidationMessageFor(model => model.StartDate, "", new { @class = "text-danger" })
+
+					</div>
+					<div class="col-md-3 col-sm-4 wf-575 form-group">
+						<label>End Date</label>
+						@Html.TextBoxFor(model => model.EndDate, new { @class = "form-control", @type = "date" })
+						@Html.ValidationMessageFor(model => model.EndDate, "", new { @class = "text-danger" })
+
+					</div>
+				}
+
+
+				<div class="col-sm-12 form-group">
+					<hr>
+					<span class="hr-aps lgt-text font-sm"><i class="fas fa-file-alt"></i>Outcome</span>
+				</div>
+				<div class="col-md-3 col-sm-3 wf-575 form-group hw-575">
+					<label>Define Outcome</label>
+					<input type="text" placeholder="Enter" id="txtoutcome" name="" class="form-control">
+				</div>
+				<div class="col-md-3 col-sm-3 wf-575 form-group align-self-end text-left">
+					<button type="button" class="btn green-clr m-0" id="btnrow"> <i class="fas fa-plus"></i> Add </button>
+				</div>
+
+				<div class="col-sm-8">
+					<table class="table mt-0" id="tblProjectsOutcome">
+						<thead>
+							<tr>
+								<th width="33">S.No</th>
+								<th>Outcome</th>
+								<th width="20"></th>
+							</tr>
+						</thead>
+						<tbody>
+							@{ int procount = 0;}
+							@if (Model.ListOutcomeDetails != null)
+							{
+								for (int i = 0; i < Model.ListOutcomeDetails.Count; i++)
+								{
+									procount++;
+									<tr>
+										<td class="hfNewId">
+											<label id="span_@procount" name="span_@procount">@procount </label>
+											@Html.HiddenFor(modal => Model.ListOutcomeDetails[i].Id)
+										</td>
+										<td>@Html.TextBoxFor(model => model.ListOutcomeDetails[i].Outcome, new { @class = "form-control", @readonly = "readonly" })</td>
+
+										<td class="text-center"><a onclick="DeleteRowoutcome(this)" data-original-title="Remove" aria-describedby="tooltip594398" data-toggle="tooltip"><i class="fas fa-window-close m-0 red-clr"></i></a></td>
+									</tr>
+								}
+							}
+
+						</tbody>
+					</table>
+				</div>
+
+				<div class="col-sm-12 form-group">
+					<hr>
+					<span class="hr-aps lgt-text font-sm"><i class="fas fa-list-alt"></i>Activity</span>
+				</div>
+				<div class="col-md-3 col-sm-3 wf-575 form-group hw-575">
+					<label>Define Activity</label>
+					<input type="text" placeholder="Enter" id="txtActivity" name="" class="form-control">
+				</div>
+				<div class="col-md-3 col-sm-3 wf-575 form-group align-self-end text-left">
+					<button type="button" class="btn green-clr m-0" id="btnrowactivity"> <i class="fas fa-plus"></i> Add </button>
+				</div>
+
+				<div class="col-sm-8">
+					<table class="table mt-0" id="tblProjectsActivity">
+						<thead>
+							<tr>
+								<th width="33">S.No</th>
+								<th>Activity</th>
+								<th width="20"></th>
+							</tr>
+
+						</thead>
+
+						<tbody>
+							@{ int procountnew = 0;}
+							@if (Model.ListActivitydetails != null)
+							{
+								for (int i = 0; i < Model.ListActivitydetails.Count; i++)
+								{
+									procountnew++;
+									<tr>
+										<td class="hfactNewId">
+											<label id="span_@procountnew" name="span_@procountnew">@procountnew </label>
+											@Html.HiddenFor(modal => Model.ListActivitydetails[i].Id)
+										</td>
+										<td>@Html.TextBoxFor(model => model.ListActivitydetails[i].Activity, new { @class = "form-control", @readonly = "readonly" })</td>
+
+										<td class="text-center"><a onclick="DeleteRowactivity(this)" data-original-title="Remove" aria-describedby="tooltip594398" data-toggle="tooltip"><i class="fas fa-window-close m-0 red-clr"></i></a></td>
+									</tr>
+								}
+							}
+
+						</tbody>
+					</table>
+				</div>
+
+				<!---->
+			</div>
+		</div>
+
+	</div><div class="ftr-btn">
+
+	@Html.HiddenFor(modal => modal.isdeleted)
+	@if (Model.isdeleted == 0)
+	{
+
+		<button type="submit" class="btn mtr-o-grn " name="Command" value="Submit"><i class="fas fa-save"></i>Submit</button>
+		if (ViewBag.menulock == "New")
+		{
+			<button type="submit" class="btn mtr-o-grn " name="Command" value="Next">Next <i class="fas fa-angle-double-right m-0"></i></button>
+
+
+		}
+		else
+		{
+			<button type="submit" class="btn mtr-o-grn " name="Command" value="Next">Next <i class="fas fa-angle-double-right m-0"></i></button>
+			@*<a href="@Url.Action("Entersubactivity", new { src = clsApplicationSetting.EncryptQueryString(ViewBag.MenuID.ToString() + "*/Budget/Entersubactivity*0"+Model.BudgetId+"*"+"Edit"+"*")  })" class="btn blk-gdn-btn" name="Command" value="" data-toggle="tooltip" title="" data-original-title="Enter Subactivity and Map Outcome">Next <i class="fas fa-angle-double-right m-0"></i></a>*@
+		}
+	}
+	else
+	{
+		<button type="submit" class="btn mtr-o-grn " name="Command" value="Add"><i class="fas fa-save"></i>Save</button>
+		if (ViewBag.menulock == "New")
+		{
+			<button type="submit" class="btn mtr-o-grn " name="Command" value="Next">Next <i class="fas fa-angle-double-right m-0"></i></button>
+
+
+		}
+		else
+		{
+			<button type="submit" class="btn mtr-o-grn " name="Command" value="Next">Next <i class="fas fa-angle-double-right m-0"></i></button>
+			@*<a href="@Url.Action("Entersubactivity", new { src = clsApplicationSetting.EncryptQueryString(ViewBag.MenuID.ToString() + "*/Budget/Entersubactivity*0"+Model.BudgetId+"*"+"Edit"+"*")  })" class="btn blk-gdn-btn" name="Command" value="" data-toggle="tooltip" title="" data-original-title="Enter Subactivity and Map Outcome">Next <i class="fas fa-angle-double-right m-0"></i></a>*@
+		}
+	}
+
+
+	<button type="button" class="btn cnl-btn" onclick="ShowLoadingDialog();window.location='@Url.Action("CreateBudget", new { src = clsApplicationSetting.EncryptQueryString(ViewBag.MenuID.ToString() + "*/Budget/CreateBudget*0")  })';"><i class="fas fa-times"></i> Close</button>
+</div>
+	@*@Html.Partial("_Listbudgetfooter")*@
+}
+@section scripts    {
+
+
+	@System.Web.Optimization.Scripts.Render("~/bundle/dataTablesjs")
+	@System.Web.Optimization.Scripts.Render("~/bundle/unobtrusivejs")
+	@Html.IncludeVersionedJs(Url.Content("~/assets/design/Scripts/AddInit.js"))
+	@Html.IncludeVersionedJs(Url.Content("~/assets/design/Scripts/ToolTip.js"))
+	@Html.IncludeVersionedJs(Url.Content("~/assets/design/scripts/CustomValidate.js"))
+
+	<script>
+
+
+		$("#btnrow").click(function () {
+			$(".notifyjs-wrapper").click();
+			var CombinationExist = true;
+			var txtoutcome = $("#txtoutcome").val();
+			var InnerHTML = "";
+			if (txtoutcome == "") {
+				$.notify($("#txtoutcome"), "Hey, you missed this field!", "error");
+				$("#txtoutcome").focus();
+				CombinationExist = false;
+			}
+
+			if (CombinationExist == true) {
+
+				var Count = parseInt($('#tblProjectsOutcome').find("tbody tr").length);
+				InnerHTML += "<tr>";
+				InnerHTML += "<td><label id='span_" + Count + "'  name='span_" + Count + "'>" + (Count + 1) + "</label>";
+				InnerHTML += "<input type='hidden' id=\"ListOutcomeDetails" + Count + "__Outcome\" name=\"ListOutcomeDetails[" + Count + "].Outcome\" value='" + txtoutcome + "' class = 'hfOutcome' /></td>";
+				InnerHTML += "<td><input type='Text'  class = 'form-control' id=\"ListOutcomeDetails" + Count + "__Outcome\" name=\"ListOutcomeDetails[" + Count + "].Outcome\" value='" + txtoutcome + "' /></td>";
+				InnerHTML += "<td class='text-center'><a onclick='DeleteRowoutcome(this)' data-original-title='Remove' aria-describedby='tooltip594398' data-toggle='tooltip' ><i class='fas fa-window-close m-0 red-clr'></i></a></td > ";
+				InnerHTML += "</tr>";
+				$('#tblProjectsOutcome').append(InnerHTML);
+				$('[data-toggle="tooltip"]').tooltip();
+				$("#txtoutcome").val("");
+
+			}
+			else {
+
+			}
+		});
+
+		$("#btnrowactivity").click(function () {
+			$(".notifyjs-wrapper").click();
+			var CombinationExist = true;
+			var txtActivity = $("#txtActivity").val();
+			var InnerHTML = "";
+			if (txtActivity == "") {
+				$.notify($("#txtActivity"), "Hey, you missed this field!", "error");
+				$("#txtActivity").focus();
+				CombinationExist = false;
+			}
+
+			if (CombinationExist == true) {
+				var Count = parseInt($('#tblProjectsActivity').find("tbody tr").length);
+				InnerHTML += "<tr>";
+				InnerHTML += "<td><label id='span_" + Count + "'  Name='span_" + Count + "'>" + (Count + 1) + "</label>";
+				InnerHTML += "<input type='hidden' id=\"ListActivitydetails" + Count + "__Activity\" name=\"ListActivitydetails[" + Count + "].Activity\" value='" + txtActivity + "' class = 'hfActivity' />";
+				InnerHTML += "<td><input type='Text'  class = 'form-control' id=\"ListActivitydetails" + Count + "__Activity\" name=\"ListActivitydetails[" + Count + "].Activity\" value='" + txtActivity + "' /></td>";
+				InnerHTML += "<td class='text-center'><a onclick='DeleteRowactivity(this)' data-original-title='Remove' aria-describedby='tooltip594398' data-toggle='tooltip' ><i class='fas fa-window-close m-0 red-clr'></i></a></td > ";
+				InnerHTML += "</tr>";
+				$('#tblProjectsActivity').append(InnerHTML);
+				$('[data-toggle="tooltip"]').tooltip();
+				$("#txtActivity").val("");
+
+			}
+			else {
+
+			}
+		});
+
+		function DeleteRowoutcome(obj) {
+			
+			var count = 0;
+			var ID = parseInt($(obj).closest('tr').find("td.hfNewId input[type='hidden']").val());
+			var TotalRowCount = $('#tblProjectsOutcome').find("tbody tr").length;
+			var srno = TotalRowCount;
+			if (isNaN(ID)) {
+
+				ConfirmMsgBox("Are you sure want to delete", '', function () {
+					$(obj).closest('tr').remove();
+					$("#tblProjectsOutcome TBODY TR").each(function (i) {
+						srno = srno - 1;
+						$(this).closest("tr").find("label").each(function () {
+							$(this).attr({
+								'id': function (_, id) { var arr = id.split('_'); return id.replace(arr[1], i); },
+							});
+							$(this).html(i + 1)
+						});
+
+						$(this).closest("tr").find("input").each(function () {
+							$(this).attr({
+								'id': function (_, id) { return id.replace('_' + (parseInt(i) + 1) + '_', '_' + i + '_'); },
+								'name': function (_, name) { return name.replace('[' + (parseInt(i) + 1) + ']', '[' + i + ']'); },
+							});
+						});
+						$(this).closest("tr").find("select").each(function () {
+							$(this).attr({
+								'id': function (_, id) { return id.replace('_' + (parseInt(i) + 1) + '_', '_' + i + '_'); },
+								'name': function (_, name) { return name.replace('[' + (parseInt(i) + 1) + ']', '[' + i + ']'); },
+							});
+						});
+						$(this).closest("tr").find("label").each(function () {
+
+							if ($(this).attr("data-valmsg-for")) {
+								$(this).attr({
+									'data-valmsg-for': function (_, name) { return name.replace('[' + (parseInt(i) + 1) + ']', '[' + i + ']'); },
+								});
+							}
+							if ($(this).attr("for")) {
+								$(this).attr({
+									'for': function (_, id) { return id.replace('_' + (parseInt(i) + 1) + '_', '_' + i + '_'); },
+								});
+							}
+						});
+					});
+
+				})
+
+
+			}
+			else {
+				ConfirmMsgBox("Are you sure want to delete", '', function () {
+					$(obj).closest('tr').remove();
+					$("#tblProjectsOutcome TBODY TR").each(function (i) {
+						srno = srno - 1;
+						$(this).closest("tr").find("label").each(function () {
+							$(this).attr({
+								'id': function (_, id) { var arr = id.split('_'); return id.replace(arr[1], i); },
+							});
+							$(this).html(i + 1)
+						});
+
+						$(this).closest("tr").find("input").each(function () {
+							$(this).attr({
+								'id': function (_, id) { return id.replace('_' + (parseInt(i) + 1) + '_', '_' + i + '_'); },
+								'name': function (_, name) { return name.replace('[' + (parseInt(i) + 1) + ']', '[' + i + ']'); },
+							});
+						});
+						$(this).closest("tr").find("select").each(function () {
+							$(this).attr({
+								'id': function (_, id) { return id.replace('_' + (parseInt(i) + 1) + '_', '_' + i + '_'); },
+								'name': function (_, name) { return name.replace('[' + (parseInt(i) + 1) + ']', '[' + i + ']'); },
+							});
+						});
+						$(this).closest("tr").find("label").each(function () {
+
+							if ($(this).attr("data-valmsg-for")) {
+								$(this).attr({
+									'data-valmsg-for': function (_, name) { return name.replace('[' + (parseInt(i) + 1) + ']', '[' + i + ']'); },
+								});
+							}
+							if ($(this).attr("for")) {
+								$(this).attr({
+									'for': function (_, id) { return id.replace('_' + (parseInt(i) + 1) + '_', '_' + i + '_'); },
+								});
+							}
+						});
+					});
+					var dataObject = JSON.stringify({
+						'ID': ID,
+						'Doctype': 'BudgetOutcomeDet',
+					});
+					var data = $.parseJSON($.ajax({
+						url: '/CommonAjax/DelRecord_CommonJson',
+						type: "post",
+						data: dataObject,
+						contentType: 'application/json',
+						async: false
+					}).responseText);
+					return data;
+				});
+			}
+		}
+
+		function DeleteRowactivity(obj) {
+			var count = 0;
+			var ID = parseInt($(obj).closest('tr').find("td.hfactNewId input[type='hidden']").val());
+			var TotalRowCount = $('#tblProjectsActivity').find("tbody tr").length;
+			var srno = TotalRowCount;
+			if (isNaN(ID)) {
+				ConfirmMsgBox("Are you sure want to delete", '', function () {
+					$(obj).closest('tr').remove();
+					$("#tblProjectsActivity TBODY TR").each(function (i) {
+						srno = srno - 1;
+						$(this).closest("tr").find("label").each(function () {
+							$(this).attr({
+								'id': function (_, id) { var arr = id.split('_'); return id.replace(arr[1], i); },
+							});
+							$(this).html(i + 1)
+						});
+
+						$(this).closest("tr").find("input").each(function () {
+							$(this).attr({
+								'id': function (_, id) { return id.replace('_' + (parseInt(i) + 1) + '_', '_' + i + '_'); },
+								'name': function (_, name) { return name.replace('[' + (parseInt(i) + 1) + ']', '[' + i + ']'); },
+							});
+						});
+						$(this).closest("tr").find("select").each(function () {
+							$(this).attr({
+								'id': function (_, id) { return id.replace('_' + (parseInt(i) + 1) + '_', '_' + i + '_'); },
+								'name': function (_, name) { return name.replace('[' + (parseInt(i) + 1) + ']', '[' + i + ']'); },
+							});
+						});
+						$(this).closest("tr").find("label").each(function () {
+
+							if ($(this).attr("data-valmsg-for")) {
+								$(this).attr({
+									'data-valmsg-for': function (_, name) { return name.replace('[' + (parseInt(i) + 1) + ']', '[' + i + ']'); },
+								});
+							}
+							if ($(this).attr("for")) {
+								$(this).attr({
+									'for': function (_, id) { return id.replace('_' + (parseInt(i) + 1) + '_', '_' + i + '_'); },
+								});
+							}
+						});
+					});
+
+				})
+
+
+			}
+
+			else {
+
+				ConfirmMsgBox("Are you sure want to delete", '', function () {
+					$(obj).closest('tr').remove();
+					$("#tblProjectsActivity TBODY TR").each(function (i) {
+						
+						srno = srno - 1;
+						$(this).closest("tr").find("label").each(function () {
+							$(this).attr({
+								'id': function (_, id) { var arr = id.split('_'); return id.replace(arr[1], i); },
+							});
+							$(this).html(i + 1)
+						});
+
+						$(this).closest("tr").find("input").each(function () {
+							$(this).attr({
+								'id': function (_, id) { return id.replace('_' + (parseInt(i) + 1) + '_', '_' + i + '_'); },
+								'name': function (_, name) { return name.replace('[' + (parseInt(i) + 1) + ']', '[' + i + ']'); },
+							});
+						});
+						$(this).closest("tr").find("select").each(function () {
+							$(this).attr({
+								'id': function (_, id) { return id.replace('_' + (parseInt(i) + 1) + '_', '_' + i + '_'); },
+								'name': function (_, name) { return name.replace('[' + (parseInt(i) + 1) + ']', '[' + i + ']'); },
+							});
+						});
+						$(this).closest("tr").find("label").each(function () {
+							if ($(this).attr("data-valmsg-for")) {
+								$(this).attr({
+									'data-valmsg-for': function (_, name) { return name.replace('[' + (parseInt(i) + 1) + ']', '[' + i + ']'); },
+								});
+							}
+							if ($(this).attr("for")) {
+								$(this).attr({
+									'for': function (_, id) { return id.replace('_' + (parseInt(i) + 1) + '_', '_' + i + '_'); },
+								});
+							}
+						});
+					});
+					var dataObject = JSON.stringify({
+						'ID': ID,
+						'Doctype': 'BudgetActivityDet',
+					});
+					var data = $.parseJSON($.ajax({
+						url: '/CommonAjax/DelRecord_CommonJson',
+						type: "post",
+						data: dataObject,
+						contentType: 'application/json',
+						async: false
+					}).responseText);
+					return data;
+
+				});
+
+
+			}
+		}
+
+		function OnSuccess(obj) {
+		
+			if (obj.Status) {
+				
+				SuccessToaster(obj.SuccessMessage);
+				window.location.href = obj.RedirectURL
+
+			}
+			else {
+				CloseLoadingDialog();
+				FailToaster(obj.SuccessMessage);
+
+			}
+
+
+		}
+	</script>
+}

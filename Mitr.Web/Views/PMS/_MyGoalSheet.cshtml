@@ -1,0 +1,221 @@
+﻿@model PMS.GoalSheet.MySheet
+@{
+	bool IsEdit = false;
+	if ((Model.Isdeleted != 0 || Model.Approved == 2))
+	{
+		IsEdit = true;
+	}
+}
+@if (Model.Confirmer == 0)
+{
+	<div class="row">
+		<div class="col-md-12 mb-3">
+			<div class="successmgs-dgn text-center">
+				<i class="fas fa-users green-clr msgicon"></i>
+
+				Confirmer is not set please contact to HR
+
+			</div>
+		</div>
+	</div>
+}
+else if ((string.IsNullOrEmpty(Model.GoalSheetStart) || string.IsNullOrEmpty(Model.GoalSheetEnd)) || (Model.GoalSheetStart == "" || Model.GoalSheetEnd == ""))
+{
+	<div class="row">
+		<div class="col-md-12">
+			<div class="successmgs-dgn text-center">
+				<i class="far fa-clock green-clr msgicon"></i>
+				Start and End Date of entry is not set
+			</div>
+		</div>
+	</div>
+}
+else if (Convert.ToDateTime(Model.GoalSheetStart).Date > DateTime.Now.Date && Convert.ToDateTime(Model.GoalSheetEnd).Date < DateTime.Now.Date)
+{
+	<div class="row">
+		<div class="col-md-12">
+			<h2>Entry will open between @Model.GoalSheetStart and @Model.GoalSheetEnd</h2>
+		</div>
+	</div>
+}
+
+else if (Convert.ToDateTime(Model.GoalSheetStart).Date < DateTime.Now.Date && Convert.ToDateTime(Model.GoalSheetEnd).Date < DateTime.Now.Date && Model.Approved==0)
+{
+	<div class="row">
+		<div class="col-md-12">
+			<h2>Entry will open between @Model.GoalSheetStart and @Model.GoalSheetEnd</h2>
+		</div>
+	</div>
+}
+else
+{
+	using (Ajax.BeginForm("SubmitGoalSheet", "PMS",
+			new { src = clsApplicationSetting.EncryptQueryString(ViewBag.MenuID.ToString() + "*/PMS/SubmitGoalSheet") },
+			new AjaxOptions { HttpMethod = "POST", OnSuccess = "SubmitGoalSheetSuccess" },
+		new { @id = "SubmitGoalSheetFrom" })
+		)
+	{
+
+		@Html.AntiForgeryToken()
+
+		@Html.HiddenFor(x => Model.FYID)
+		@Html.HiddenFor(x => Model.Approved)
+
+
+		<div class="row">
+			<div class="col-sm-2 form-group">
+				<label>My Designation</label>
+				<p>@Model.DesignationName</p>
+			</div>
+			<div class="col-sm-2 form-group">
+				<label>Appraiser</label>
+				<p>@Model.HODName</p>
+			</div>
+			<div class="col-sm-2 form-group">
+				<label>Confirmer</label>
+				<p>@Model.ConfirmerName</p>
+			</div>
+			<div class="col-sm-2 form-group">
+				<label>Status</label>
+				<p class="green-clr"><strong>@Model.Status</strong></p>
+			</div>
+		</div>
+
+		<div class="row d-flex">
+			<div class="col-sm-4 align-self-center"><strong>Goals to Achieve</strong></div>
+			@if (IsEdit)
+			{
+				<div class="col-sm-8 text-right">
+					<a class="btn mtr-g-grn btn-l ripplelink btnAdd "><i class="fas fa-plus"></i>Add Goals</a>
+				</div>
+			}
+
+		</div>
+
+
+
+
+
+
+
+		if (Model.GoalSheetDet != null)
+		{
+			<div class="table-responsive">
+				<table class="table table-bordered tv-top table-scroll mb-3 dt-responsive nowrap tbltick new_width" id="tableGoalSheetDet">
+					<thead>
+						<tr>
+							<th width="10">SNo.</th>
+							<th width="350">Key Performance Area</th>
+							<th width="350">Key Performance Indicator</th>
+							<th width="50">UOM</th>
+							<th width="50">Target</th>
+							@if (IsEdit)
+							{
+								<th width="40">Action</th>
+							}
+						</tr>
+					</thead>
+					<tbody>
+						@{ int count = 0;}
+						@for (int i = 0; i < Model.GoalSheetDet.Count; i++)
+						{
+							count++;
+							<tr>
+								<td class="hfNewId">
+									<label id="span_@count" name="span_@count">@count </label>
+
+									@Html.HiddenFor(x => x.GoalSheetDet[i].PMS_GSDID)
+								</td>
+								<td>@Model.GoalSheetDet[i].Area</td>
+								<td>
+									<p class="wb-spc-rgt">@Model.GoalSheetDet[i].PIndicator</p>
+
+									<i class="fas fa-info-circle td-info" data-toggle="tooltip" data-placement="top" data-original-title="@Model.GoalSheetDet[i].DetRemarks"></i>
+
+								</td>
+								<td>@Model.GoalSheetDet[i].UOMName</td>
+								<td class="text-right">@Model.GoalSheetDet[i].Target</td>
+								@if (IsEdit)
+								{
+									<td>
+										<input type="hidden" name="I" value="@Model.GoalSheetDet[i].PMS_GSDID" />
+
+										<a class="btnAdd"><i class="fa fa-edit mtr-o-clr"></i>Edit</a>
+										<a onclick="DeleteAttachmentRow(this)" data-original-title="Remove" aria-describedby="tooltip594398" data-toggle="tooltip"><i class="fa fa-trash-alt red-clr"></i></a>
+
+
+									</td>
+								}
+							</tr>
+
+						}
+					</tbody>
+				</table>
+			</div>
+		}
+
+		<div class="col-sm-8 mx-auto form-group">
+			<div class="row">
+				<div class="col-sm-12">
+					@if (Model.CommentList.Count > 0)
+					{<div class="row">
+							<div class="col-md-12 form-group">
+								<h3 class="subheading"> Resubmission Comment</h3>
+								<table id="datatable" class="table  table-bordered table-scroll nowrap tbltick mb-0 new_width dataTable" role="grid" aria-describedby="datatable_info">
+									<tbody>
+										<tr>
+											<th class="tw-100">Date</th>
+											<th width="200">Comment By</th>
+											<th width="200">Name</th>
+											<th>Comment</th>
+
+										</tr>
+										@foreach (var item in Model.CommentList)
+										{
+											<tr>
+												<td>@item.createdat</td>
+												<td>
+													@item.Doctype
+												</td>
+
+												<td>@item.Name</td>
+												<td>
+													@item.Comment
+												</td>
+											</tr>
+
+										}
+									</tbody>
+								</table>
+							</div>
+
+						</div>
+					}
+
+
+				</div>
+				<div class="col-sm-12 mx-auto form-group">
+					<h3 class="subheading">Overall Comment @*<span class="required"> *</span>*@ </h3>
+					@if (IsEdit)
+					{
+
+						@Html.TextAreaFor(model => model.Comment, new { @class = "form-control", @placeholder = "Enter Remarks", onkeypress = "return blockSpecialChar(event)" })
+						@Html.ValidationMessageFor(model => model.Comment, "", new { @class = "text-danger" })
+					}
+					else
+					{
+						<p>@Model.Comment</p>
+					}
+				</div>
+			</div>
+		</div>
+
+		if (IsEdit)
+		{
+			<div class="col-sm-12 text-center mt-3">
+				<button type="submit" name="Command" value="Save" class="btn mtr-o-grn btn-l ripplelink "> <i class="fas fa-save"></i>Save </button>
+				<button type="submit" name="Command" value="Submit" class="btn mtr-o-grn btn-l ripplelink "> <i class="fa fa-paper-plane" aria-hidden="true"></i> Submit </button>
+			</div>
+		}
+	}
+}

@@ -1,0 +1,57 @@
+﻿@model IList<Mitr.Models.Attachments>
+@{
+    bool VisibleDelete = false;
+    bool.TryParse(ViewBag.VisibleDelete, out VisibleDelete);
+    string FileName = "";
+    if (!string.IsNullOrEmpty(ViewBag.ViewFileName))
+    {
+        FileName = ViewBag.ViewFileName;
+    }
+}
+<div id="DivAttachmentList">
+
+    <div class="table-responsive">
+        <table class="table mt-0" id="tbltraveldoc">
+            <thead>
+                <tr>
+                    <th class="w-38">S.No</th>
+                    <th>Certificate Name</th>
+                    <th>Attachment</th>
+                    @if (VisibleDelete)
+                    {
+                        <th></th>
+                    }
+
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model != null)
+                {
+                    int couint = 0;
+                    foreach (Mitr.Models.Attachments item in Model)
+                    {
+                        couint++;
+                        <tr>
+                            <td>@couint</td>
+                            <td>
+                                @item.Description
+                                <input type="hidden" name="TDID" value="@item.AttachmentID" />
+                            </td>
+                            <td><a target="_blank" href="@Url.Action("DownloadFile","Image",new {item.AttachmentID,item.ContentType,FileName=(FileName+"-"+item.FileName)})"><strong class="green-clr"><i class="fas fa-paperclip"></i>@item.FileName</strong></a></td>
+                            @if (VisibleDelete)
+                            {
+                                <td class="text-center">
+                                    <a class="deletedoc"><i class="fas fa-trash-alt red-clr"></i></a>
+                                </td>
+                            }
+
+                        </tr>
+                    }
+                }
+
+            </tbody>
+        </table>
+    </div>
+</div>
+
+

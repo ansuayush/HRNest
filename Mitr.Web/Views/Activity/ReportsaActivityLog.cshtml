@@ -1,0 +1,41 @@
+﻿@section style{
+    @System.Web.Optimization.Styles.Render("~/bundle/dataTablecss")
+}
+<link href="~/assets/design/css/printtimesheet.css" media="print" rel="stylesheet" />
+
+<div class="right_col" role="main">
+    <div class="inner-main">
+        @Html.Partial("HeaderMsg_Partial")
+        <h1 class="heading-one">Reports Activity Log</h1>
+
+        <div class="tab-main">
+            <div class="row text-clr">
+                <div class="col-md-2 form-group">
+                    <label> Month</label>
+                    @{ string dt = Convert.ToDateTime(ViewBag.Date).ToString("yyyy-MM");}
+                    <input type="month" id="txtMonth" name="txtMonth" class="form-control" value="@dt" />
+                </div>
+                <div class="col-md-2 form-group">
+                    <label> Report </label>
+                    <select id="ddlReport" name="ddlReport"  class="form-control">
+                        <option value="Time Sheet">Time Sheet</option>
+                    </select>
+                </div>
+                <div class="col-md-8 pt-13">
+                    <button type="submit" style="display:none" class="btn mtr-g-grn btn-l ripplelink btnsubmit" name="Command" value="Submit"><i class="fas fa-save"></i>Submit</button>
+                    <button type="button" id="btnCollate" class="btn mtr-g-grn btn-l ripplelink" name="Command" value="Collate"><i class="fas fa-search"></i>Collate</button>
+                    <button type="button" class="btn mtr-g-grn btn-l ripplelink btncheckStatus"><i class="fas fa-receipt"></i>Check Status</button>
+                    <button type="button" id="BtnProcess" class="btn mtr-g-grn btn-l ripplelink " name="Command" value="Process"><i class="fas fa-copy"></i>Process</button>
+
+                </div>
+
+            </div>
+        </div>
+
+       
+
+    </div>
+
+
+
+</div>

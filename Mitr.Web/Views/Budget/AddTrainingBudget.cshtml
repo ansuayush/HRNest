@@ -1,0 +1,304 @@
+﻿
+@{
+	ViewBag.Title = "AddTrainingBudget";
+	Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="inner-main mb-5">
+	<div class="row">
+		<div class="col-sm-4">
+			<h1 class="heading-one mb-3">Add Training</h1>
+		</div>
+		<div class="col-sm-8 "><div class="hdbtn mb-2"><a href="" data-toggle="modal" onclick="AddNewTraining()" data-target="#tb" class="btn mtr-g-grn btn-l ripplelink btnAdd "><i class="fas fa-plus"></i>Add</a></div> </div>
+
+		<div class="col-sm-3 col-md-3 col-lg-2 wh-575 form-group">
+			<label>Activity  </label>
+			<select class="form-control dpselect">
+				<option>Select</option>
+				<option>Activity  1</option>
+				<option>Activity  2</option>
+			</select>
+
+		</div>
+
+		<div class="col-sm-3 col-md-3 col-lg-2 wh-575 form-group">
+			<label>Sub Activity   </label>
+			<select class="form-control dpselect">
+				<option>Select</option>
+				<option>SubAct1.1: master trainers</option>
+				<option>SubAct1.2: Doctors</option>
+				<option>SubAct1.3: Nurses</option>
+				<option>SubAct1.4: Sub Activity 1.4</option>
+				<option>SubAct1.5: Sub Activity 1.5</option>
+			</select>
+
+		</div>
+		<div class="col-sm-3 col-md-3 col-lg-2 wh-575 form-group">
+			<label>Training Type    </label>
+			<select class="form-control dpselect">
+				<option>Select</option>
+				<option>Training Type 1</option>
+				<option>Training Type 2</option>
+			</select>
+		</div>
+		<div class="col-sm-3 col-md-3 col-lg-2 wh-575 form-group">
+			<label>Training Name    </label>
+			<select class="form-control dpselect">
+				<option>Select</option>
+				<option>Training Name 1</option>
+				<option>Training Name 2</option>
+			</select>
+		</div>
+
+		<div class="col-sm-12 col-md-12 col-lg-2 rgt-md align-self-center">
+			<a href="" class="btn mtr-g-grn btn-l " onclick="AddTraining()" data-toggle="modal" data-target="#viewdetail"><i class="fas fa-plus"></i>Add </a>
+		</div>
+		<div class="col-sm-12 text-right align-self-end form-group">
+			<strong>Project Total Cost (INR) <span class="green-clr"> <i class="fas fa-rupee-sign ml-1"></i>1,22,49,901</span></strong>
+		</div>
+	</div>
+	<div class="table-responsive">
+		<table class="table mt-0">
+			<thead>
+				<tr>
+					<th rowspan="3">Activity</th>
+					<th class="w-150" rowspan="3">Sub Activity</th>
+					<th class="w-150" rowspan="3">Training Type</th>
+					<th class="w-150" rowspan="3">Training Name</th>
+					<th class="text-center" colspan="5">2020-21 </th>
+					<th class="text-center" colspan="5">2021-22</th>
+					<th class=" text-center" colspan="6">2022-23</th>
+					<th rowspan="3">Total</th>
+					<th rowspan="3"></th>
+				</tr>
+				<tr>
+					<th class="tw-80 text-center" colspan="2">Oct-Mar <span class="d-block">(Upto March)</span></th>
+					<th class="tw-80 text-center" rowspan="2">FY1 Total</th>
+					<th class="tw-80 text-center" colspan="2">Apr-Sept<span class="d-block">(After March)</span></th>
+					<th class="tw-80 text-center" colspan="2">Oct-Mar<span class="d-block"> (Upto March)</span></th>
+					<th class="tw-80 text-center" rowspan="2">FY2 Total</th>
+					<th class="tw-80 text-center" colspan="2">Apr-Sept <span class="d-block">(After March)</span> </th>
+					<th class="tw-80 text-center" colspan="2">Oct-Mar <span class="d-block">(Upto March)</span> </th>
+					<th class="tw-80 text-center" rowspan="2">FY3 Total</th>
+					<th class="tw-80 text-center" colspan="2">Apr-Sept<span class="d-block"> (After March)</span> </th>
+					<th class="tw-80 text-center" rowspan="2">FY4 Total</th>
+				</tr>
+				<tr>
+					<th>Count</th>
+					<th>Amount</th>
+					<th>Count</th>
+					<th>Amount</th>
+					<th>Count</th>
+					<th>Amount</th>
+					<th>Count</th>
+					<th>Amount</th>
+					<th>Count</th>
+					<th>Amount</th>
+					<th>Count</th>
+					<th>Amount</th>
+
+				</tr>
+			</thead>
+			<tbody>
+				<tr>
+					<td>Activity 1</td>
+					<td>SubAct1.1: Master Trainers</td>
+					<td>Residential Training (Metro)</td>
+					<td>Training Name 1</td>
+					<td class="text-right"><input type="number" value="1" class="form-control text-center"></td>
+					<td class="text-right">88,500</td>
+					<td class="text-right">88,500</td>
+					<td class="text-right"><input type="number" value="1" class="form-control text-center"></td>
+					<td class="text-right">97,350</td>
+					<td class="text-right"><input type="number" value="1" class="form-control text-center"></td>
+					<td class="text-right">97,350</td>
+					<td class="text-right">1,94,700</td>
+					<td class="text-right"><input type="number" value="1" class="form-control text-center"></td>
+					<td class="text-right">1,07,085	</td>
+					<td class="text-right"><input type="number" value="1" class="form-control text-center"></td>
+					<td class="text-right">1,07,085	</td>
+					<td class="text-right">2,14,170   </td>
+					<td class="text-right"><input type="number" value="1" class="form-control text-center"></td>
+					<td class="text-right">1,07,085	</td>
+					<td class="text-right">3,21,255</td>
+					<td class="text-right"><strong>3,21,257</strong> </td>
+					<td class="text-center"><a href="" data-toggle="modal" data-target="#viewdetail"><i class="fas fa-edit m-0 green-clr" data-toggle="tooltip" title="" data-original-title="Edit"></i></a></td>
+				</tr>
+
+				<tr>
+					<td>Activity 2</td>
+					<td>SubAct1.1: Master Trainers</td>
+					<td>Residential Training (Metro)</td>
+					<td>Training Name 1</td>
+					<td class="text-right"><input type="number" value="1" class="form-control text-center"></td>
+					<td class="text-right">88,500</td>
+					<td class="text-right">88,500</td>
+					<td class="text-right"><input type="number" value="1" class="form-control text-center"></td>
+					<td class="text-right">97,350</td>
+					<td class="text-right"><input type="number" value="1" class="form-control text-center"></td>
+					<td class="text-right">97,350</td>
+					<td class="text-right">1,94,700</td>
+					<td class="text-right"><input type="number" value="1" class="form-control text-center"></td>
+					<td class="text-right">1,07,085 </td>
+					<td class="text-right"><input type="number" value="1" class="form-control text-center"></td>
+					<td class="text-right">1,07,085 </td>
+					<td class="text-right">2,14,170   </td>
+					<td class="text-right"><input type="number" value="1" class="form-control text-center"></td>
+					<td class="text-right">1,07,085 </td>
+					<td class="text-right">3,21,255</td>
+					<td class="text-right"><strong>3,21,257</strong> </td>
+					<td class="text-center"><a href="" data-toggle="modal" data-target="#viewdetail"><i class="fas fa-edit m-0 green-clr" data-toggle="tooltip" title="" data-original-title="Edit"></i></a></td>
+				</tr>
+
+				<tr>
+					<td>Activity 3</td>
+					<td>SubAct1.1: Master Trainers</td>
+					<td>Residential Training (Metro)</td>
+					<td>Training Name 1</td>
+					<td class="text-right"><input type="number" value="1" class="form-control text-center"></td>
+					<td class="text-right">88,500</td>
+					<td class="text-right">88,500</td>
+					<td class="text-right"><input type="number" value="1" class="form-control text-center"></td>
+					<td class="text-right">97,350</td>
+					<td class="text-right"><input type="number" value="1" class="form-control text-center"></td>
+					<td class="text-right">97,350</td>
+					<td class="text-right">1,94,700</td>
+					<td class="text-right"><input type="number" value="1" class="form-control text-center"></td>
+					<td class="text-right">1,07,085 </td>
+					<td class="text-right"><input type="number" value="1" class="form-control text-center"></td>
+					<td class="text-right">1,07,085 </td>
+					<td class="text-right">2,14,170   </td>
+					<td class="text-right"><input type="number" value="1" class="form-control text-center"></td>
+					<td class="text-right">1,07,085 </td>
+					<td class="text-right">3,21,255</td>
+					<td class="text-right"><strong>3,21,257</strong> </td>
+					<td class="text-center"><a href="" data-toggle="modal" data-target="#viewdetail"><i class="fas fa-edit m-0 green-clr" data-toggle="tooltip" title="" data-original-title="Edit"></i></a></td>
+				</tr>
+
+				<tr>
+					<td>Activity 4</td>
+					<td>SubAct1.1: Master Trainers</td>
+					<td>Residential Training (Metro)</td>
+					<td>Training Name 1</td>
+					<td class="text-right"><input type="number" value="1" class="form-control text-center"></td>
+					<td class="text-right">88,500</td>
+					<td class="text-right">88,500</td>
+					<td class="text-right"><input type="number" value="1" class="form-control text-center"></td>
+					<td class="text-right">97,350</td>
+					<td class="text-right"><input type="number" value="1" class="form-control text-center"></td>
+					<td class="text-right">97,350</td>
+					<td class="text-right">1,94,700</td>
+					<td class="text-right"><input type="number" value="1" class="form-control text-center"></td>
+					<td class="text-right">1,07,085 </td>
+					<td class="text-right"><input type="number" value="1" class="form-control text-center"></td>
+					<td class="text-right">1,07,085 </td>
+					<td class="text-right">2,14,170   </td>
+					<td class="text-right"><input type="number" value="1" class="form-control text-center"></td>
+					<td class="text-right">1,07,085 </td>
+					<td class="text-right">3,21,255</td>
+					<td class="text-right"><strong>3,21,257</strong> </td>
+					<td class="text-center"><a href="" data-toggle="modal" data-target="#viewdetail"><i class="fas fa-edit m-0 green-clr" data-toggle="tooltip" title="" data-original-title="Edit"></i></a></td>
+				</tr>
+
+			</tbody>
+		</table>
+	</div>
+
+	<div class="mt-3 text-center">
+		<button type="submit" class="btn mtr-o-grn " name="Command" value="Add"><i class="fas fa-save"></i>Save</button>
+		<button type="submit" class="btn mtr-o-grn " name="Command" value="Add"><i class="fas fa-paper-plane"></i>Submit</button>
+		<button type="button" class="btn cnl-btn"><i class="fas fa-times"></i> Close</button>
+	</div>
+</div>
+<div class="modal fade" id="tb">
+	<div class="modal-dialog modal-lg">
+		<div class="modal-content">
+			<!-- Modal Header -->
+			<div class="modal-header">
+				<h4 class="modal-title">Add New</h4>
+				<button type="button" class="close" data-dismiss="modal">×</button>
+			</div>
+			<div class="modal-body">
+				<div id="TagetDivAddTraining"></div>
+			</div>
+		</div>
+	</div>
+</div>
+<div class="modal fade" id="tb">
+	<div class="modal-dialog modal-lg">
+		<div class="modal-content">
+			<!-- Modal Header -->
+			<div class="modal-header">
+				<h4 class="modal-title">Add New</h4>
+				<button type="button" class="close" data-dismiss="modal">×</button>
+			</div>
+			<div class="modal-body">
+				<div id="TagetDivAddNewTraining"></div>
+			</div>
+		</div>
+	</div>
+</div>
+@section scripts    {
+	@System.Web.Optimization.Scripts.Render("~/bundle/dataTablesjs")
+	@System.Web.Optimization.Scripts.Render("~/bundle/unobtrusivejs")
+	@Html.IncludeVersionedJs(Url.Content("~/assets/design/Scripts/AddInit.js"))
+	@Html.IncludeVersionedJs(Url.Content("~/assets/design/Scripts/ToolTip.js"))
+	<script type="text/javascript">
+		$(document).ready(function () {
+			$(".applyselect").select2();
+		});
+		function AddTraining() {
+				var empid = "1";
+			$.ajax({
+				url: "/Budget/_AddTraining",
+				type: "Get",
+				async: true,
+				data: { src: EncryptQueryStringJSON(@ViewBag.MenuID+"*" + "/Budget/_AddTraining" + "*" + empid) },
+				success: function (data) {
+					$("#TagetDivAddTraining").empty();
+					$("#TagetDivAddTraining").html(data);
+
+
+				},
+				error: function (er) {
+					alert(er);
+
+				}
+			});
+	}
+
+		function AddNewTraining() {
+				var empid = "1";
+			$.ajax({
+				url: "/Budget/_AddNewTraining",
+				type: "Get",
+				async: true,
+				data: { src: EncryptQueryStringJSON(@ViewBag.MenuID+"*" + "/Budget/_AddNewTraining" + "*" + empid) },
+				success: function (data) {
+					$("#TagetDivAddNewTraining").empty();
+					$("#TagetDivAddNewTraining").html(data);
+
+
+				},
+				error: function (er) {
+					alert(er);
+
+				}
+			});
+	}
+
+		function OnSuccess(obj) {
+			if (obj.Status) {
+				SuccessToaster(obj.SuccessMessage);
+				window.location.href = obj.RedirectURL
+
+			}
+			else {
+				CloseLoadingDialog();
+				FailToaster(obj.SuccessMessage);
+
+			}
+		}
+	</script>
+
+}

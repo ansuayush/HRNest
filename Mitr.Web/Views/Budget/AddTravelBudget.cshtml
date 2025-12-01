@@ -1,0 +1,235 @@
+﻿@model Mitr.Models.BudgetMaster.AddTravelBudget
+@{
+	ViewBag.Title = "AddTravelBudget";
+	Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@using (Ajax.BeginForm("AddTravelBudget", "Budget",
+		  new { src = clsApplicationSetting.EncryptQueryString(ViewBag.MenuID.ToString() + "*/Budget/AddTravelBudget") },
+		 new AjaxOptions { HttpMethod = "POST", OnSuccess = "OnSuccess", OnFailure = "OnPostFailure()" },
+	new { @id = "AddTravelBudget", @autocomplete = "Off" })
+	)
+{
+
+	if (Model.TravelYear > 0)
+	{
+		@Html.HiddenFor(model => model.TravelYear, new { @id = "hdfyear" })
+	}
+	else
+	{
+		@Html.HiddenFor(model => model.TravelYear, new { @id = "hdfyear" })
+	}
+
+
+
+	@Html.HiddenFor(model => model.Id, new { @id = "HdfTravelId" })
+	<div class="inner-main mb-5">
+		<div class="row">
+			<div class="col-sm-4">
+				<h1 class="heading-one mb-3">Add Travel Budget</h1>
+			</div>
+			@Html.Partial("HeaderMsg_Partial")
+		</div>
+		<div class="row">
+			<div class="col-sm-2 wf-575 form-group">
+				<label>Travel Year</label>
+				@Html.DropDownListFor(model => model.TravelYear, new SelectList(@ViewBag.TravelYear, "FinYearID", "Year"), "Select", new { @class = "form-control applyselect", @id = "ddlyear" })
+				@Html.ValidationMessageFor(model => model.TravelYear, "", new { @class = "text-danger" })
+
+			</div>
+			<div class="col-sm-2 wf-575 form-group">
+				<label>Travel Type</label>
+				@Html.TextBoxFor(model => model.TravelType, new { @class = "form-control", @id = "txtTravelType" })
+				@Html.ValidationMessageFor(model => model.TravelType, "", new { @class = "text-danger" })
+			</div>
+			<div class="col-sm-2 wf-575 form-group">
+				<label>Air Fare</label>
+				@Html.TextBoxFor(model => model.AirFare, new { @class = "form-control", @onkeypress = "return isNumberKey(event,this)", @id = "txtAirFare" })
+				@Html.ValidationMessageFor(model => model.AirFare, "", new { @class = "text-danger" })
+
+			</div>
+			<div class="col-sm-2 wf-575 form-group">
+				<label>Per Diem</label>
+				@Html.TextBoxFor(model => model.PerDiem, new { @class = "form-control", @onkeypress = "return isNumberKey(event,this)", @id = "txtPerDiem" })
+				@Html.ValidationMessageFor(model => model.PerDiem, "", new { @class = "text-danger" })
+
+			</div>
+
+			<div class="col-sm-2 wf-575 form-group">
+				<label>Hotel</label>
+				@Html.TextBoxFor(model => model.Hotel, new { @class = "form-control", @onkeypress = "return isNumberKey(event,this)", @id = "txtHotel" })
+				@Html.ValidationMessageFor(model => model.Hotel, "", new { @class = "text-danger" })
+			</div>
+
+			<div class="col-sm-2 wf-575 form-group">
+				<label>Local Travel</label>
+				@Html.TextBoxFor(model => model.LocalTravel, new { @class = "form-control", @onkeypress = "return isNumberKey(event,this)", @id = "txtLocalTravel" })
+				@Html.ValidationMessageFor(model => model.LocalTravel, "", new { @class = "text-danger" })
+
+			</div>
+
+			<div class="col-sm-12 text-right form-group align-self-center">
+				<button class="btn mtr-g-grn m-0" id="btnSearch" type="submit"><i class="fas fa-plus"></i>Add</button>
+			</div>
+
+			<div class="col-sm-12">
+				<div class="table-responsive">
+					<div id="TargetDiv">
+
+					</div>
+
+
+				</div>
+			</div>
+
+		</div>
+		<div class="mt-3 text-center">
+			<button type="submit" class="btn mtr-o-grn " name="Command" onclick="ShowLoadingDialog();window.location='@Url.Action("TravelBudgetMaster", new { src = clsApplicationSetting.EncryptQueryString(ViewBag.MenuID.ToString() + "*/Budget/TravelBudgetMaster*0")  })';" value="Add"><i class="fas fa-save"></i>Save</button>
+			<button type="button" class="btn cnl-btn" onclick="ShowLoadingDialog();window.location='@Url.Action("TravelBudgetMaster", new { src = clsApplicationSetting.EncryptQueryString(ViewBag.MenuID.ToString() + "*/Budget/TravelBudgetMaster*0")  })';"><i class="fas fa-times"></i> Close</button>
+		</div>
+	</div>
+
+}
+@section scripts    {
+
+	@System.Web.Optimization.Scripts.Render("~/bundle/unobtrusivejs")
+	@Html.IncludeVersionedJs(Url.Content("~/assets/design/Scripts/ToolTip.js"))
+	@Html.IncludeVersionedJs(Url.Content("~/assets/design/Scripts/SyncScripts.js"))
+	@*@Html.IncludeVersionedJs(Url.Content("~/assets/design/js/jquery-3.4.1.min.js"))*@
+	@Html.IncludeVersionedJs(Url.Content("~/assets/design/scripts/CustomValidate.js"))
+
+
+	<script type="text/javascript">
+
+        $(document).ready(function () {
+         
+            $('#txtTravelType').val("");
+            //$('#txtAirFare').val("");
+            //$('#txtPerDiem').val("");
+            //$('#txtHotel').val("");
+            //$('#txtLocalTravel').val("");
+         //   $('#hdfyear').val("")
+            $("#ddlyear").attr("disabled", false);
+
+            if ($('#hdfyear').val() != "0") {
+                $("#ddlyear").attr("disabled", "disabled");
+                $("#ddlyear").val(@ViewBag.SetTravelYear);
+                var Id=@ViewBag.SetTravelYear;
+                var UrlId = '@ViewBag.Seturl';
+               FillProspectData(Id, UrlId);
+
+            }
+            else {
+
+                $("#ddlyear").change(function () {
+                    var ddlyear = $("#ddlyear").val();
+                    if (ddlyear != "Select") {
+                        $("#hdfyear").val(ddlyear);
+                          var UrlId = '@ViewBag.Seturl';
+                        FillProspectData(ddlyear, UrlId);
+                    }
+
+                });
+            }
+
+
+        });
+
+        function OnSuccess(obj) {
+            if (obj.Status) {
+                SuccessToaster(obj.SuccessMessage);
+                $('#txtTravelType').val("");
+                $('#txtAirFare').val("");
+                $('#txtPerDiem').val("");
+                $('#txtHotel').val("");
+                $('#txtLocalTravel').val("");
+                $("#ddlyear").attr("disabled", "disabled");
+               
+                FillProspectData(obj.ID, obj.AdditionalMessage);
+
+            }
+            else {
+                CloseLoadingDialog();
+                FailToaster(obj.SuccessMessage);
+
+            }
+        }
+
+
+        function FillProspectData(obj, objsrc) {
+            var hdfYear = obj;
+            var src = objsrc;
+            if (hdfYear > 0) {
+                $.ajax({
+                    url: "/Budget/_ListTravelBudgetList",
+                    type: "Get",
+                    async: true,
+                    data: { src: src, TravelYear: hdfYear },
+                    success: function (data) {
+                        $("#TargetDiv").empty();
+                        $("#TargetDiv").html(data);
+                        $("#hdfyear").val(hdfYear);
+
+
+                    },
+                    error: function (er) {
+                        alert(er);
+
+                    }
+                });
+            }
+        }
+        function chkedit(obj) {
+
+            var id = parseInt($(obj).closest('tr').find("td.hdfbudgetid input[type='hidden']").val());
+            var year_id = parseInt($(obj).closest('tr').find("td.hdfbudgetYrid input[type='hidden']").val());
+            var travel = $(obj).closest('tr').find('td.travelType').text();
+            var AirFare = parseFloat($(obj).closest('tr').find('td.airFare').text());
+            var PerDiem = parseFloat($(obj).closest('tr').find('td.perDiem').text());
+            var Hotel = parseFloat($(obj).closest('tr').find('td.hotel').text());
+            var LocalTravel = parseFloat($(obj).closest('tr').find('td.localTravel').text());
+            $('#HdfTravelId').val(id);
+            $('#txtTravelType').val(travel);
+            $('#txtAirFare').val(AirFare);
+            $('#txtPerDiem').val(PerDiem);
+            $('#txtHotel').val(Hotel);
+            $('#txtLocalTravel').val(LocalTravel);
+        }
+        function DelRecord_Prospect(obj) {
+            var Response = 0;
+            var ID = parseInt($(obj).closest('tr').find("td.hdfbudgetid input[type='hidden']").val());
+
+            ConfirmMsgBox("Are you sure,you want to delete", '', function () {
+                if (ID) {
+                    var data = DelRecord_Common(ID, 'TravelBudget');
+                    if (data.Status) {
+                        Response = 1;
+                        FailToaster(data.SuccessMessage);
+                        $(obj).closest('tr').remove();
+                    }
+                    else {
+                        FailToaster(data.SuccessMessage);
+
+                    }
+                }
+            })
+        }
+
+        function DelRecord_Common(ID, Doctype) {
+            if (ID != 0) {
+                var dataObject = JSON.stringify({
+                    'ID': ID,
+                    'Doctype': Doctype
+                });
+                var data = $.parseJSON($.ajax({
+                    url: '/CommonAjax/DelRecord_CommonJson',
+                    type: "post",
+                    data: dataObject,
+                    contentType: 'application/json',
+                    async: false
+                }).responseText);
+                return data;
+            }
+        }
+	</script>
+
+}

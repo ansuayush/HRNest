@@ -1,0 +1,44 @@
+﻿@model  Project.Attachment.Document.Add
+
+@using (Ajax.BeginForm("_AddProjectAttachment", "Projects",
+               new { src = ViewBag.src },
+               new AjaxOptions { HttpMethod = "POST", OnSuccess = "OnSuccess", OnBegin = "ShowLoadingDialog()", OnFailure = "OnPostFailure()" },
+           new { @id = "AddProjectAttachmentFrom", @autocomplete = "Off", @enctype = "multipart/form-data" })
+           )
+{
+
+    <div class="row mb-3">
+        <div class="col-md-2 col-sm-3 form-group hw-575">
+            <label>Document Type </label>
+
+
+            @{
+                List<SelectListItem> AModeOfTransport = new List<SelectListItem>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 {
+                    new SelectListItem { Text = "Select", Value = "" },
+                    new SelectListItem { Text = "Agreement", Value = "Agreement" },
+                    new SelectListItem { Text = "Reporting Templates Narrative", Value = "Reporting Templates Narrative" },
+                    new SelectListItem { Text = "Reporting Templates Financial", Value = "Reporting Templates Financial" },
+                    new SelectListItem { Text = "Other Reports", Value = "Other Reports" }
+                                                };
+            }
+
+            @Html.DropDownListFor(model => Model.DocumentType, new SelectList(AModeOfTransport, "Value", "text", Model.DocumentType), new { @class = "form-control applyselect" })
+            @Html.ValidationMessageFor(model => Model.DocumentType, "", new { @class = "text-danger" })
+        </div>
+        <div class="col-md-4 col-sm-3 form-group hw-575">
+            <label>Description </label>
+            @Html.TextAreaFor(model => Model.Description, new { @class = "form-control" })
+            @Html.ValidationMessageFor(model => Model.Description, "", new { @class = "text-danger" })
+        </div>
+        <div class="col-md-2 col-sm-3 form-group hw-575">
+            <label>Upload </label>
+            @Html.TextBoxFor(model => Model.upload, new { @class = "form-control", @type = "file" })
+            @Html.ValidationMessageFor(model => Model.upload, "", new { @class = "text-danger" })
+        </div>
+        <div class="col-md-3 col-sm-3 form-group align-self-end text-left">
+            <button type="submit" name="command" value="Save" class="btn mtr-g-grn m-0 m-0 ripplelink mb-2 mt-0"> <i class="fas fa-plus"></i> Add Row </button>
+        </div>
+    </div>
+}
+

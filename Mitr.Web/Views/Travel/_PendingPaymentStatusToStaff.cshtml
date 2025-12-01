@@ -1,0 +1,92 @@
+﻿@model Mitr.Models.AdvancePaymentUser
+@section style{
+	@System.Web.Optimization.Styles.Render("~/bundle/dataTablecss")
+}
+<div id="pending" class="card tab-pane fade show   active" role="tabpanel" aria-labelledby="tab-A">
+	<div class="card-header" role="tab" id="heading-A">
+		<h5 class="mb-0"> <a data-toggle="collapse" href="#collapse-A" aria-expanded="true" aria-controls="collapse-A">Pending <i class="fas fa-clock"></i></a> </h5>
+	</div>
+	<div id="collapse-A" class="collapse show" data-parent="#content" role="tabpanel" aria-labelledby="heading-A">
+		<div class="table-responsive">
+			<table id="PendingTable" class="table table-striped table-bordered dt-responsive nowrap tbltick  tblapproved" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
+				<thead>
+					<tr>
+						<th width="10">S.No</th>
+						<th width="80">Request No</th>
+						<th width="90">Request Date</th>
+						<th width="240">Traveller's Name</th>
+						<th width="200">Project Code</th>
+						<th width="200">Stage</th>
+						<th width="100">Amount</th>
+						<th width="100">Paid Amount<sup class="red-clr">*</sup></th>
+						<th width="100">Paid Date<sup class="red-clr">*</sup></th>
+						<th width="240">Action</th>
+					</tr>
+					<tr class="searchbar">
+						<th class="searchhide">S No.</th>
+						<th></th>
+						<th class="searchhide">Request Date</th>
+						<th></th>
+						<th></th>
+						<th> </th>
+						<th class="searchhide">Amount</th>
+						<th class="searchhide">Paid Amount</th>
+						<th class="searchhide">Paid Date</th>
+						<th class="searchhide">Action</th>
+					</tr>
+				</thead>
+				<tbody>
+					@{ int ProjectCount = 0;}
+					@foreach (var item in Model.listfinancePayment_Staffs.Where(x => x.approved == 0 && x.approvedammount == 0))
+					{
+						ProjectCount++;
+						<tr>
+							<td class="hdftableid">@ProjectCount<input type="hidden" value="@item.TravelConfirmId" /></td>
+							<td class="hdftablestage">TRN-@item.req_no<input type="hidden" value="@item.Stage" /></td>
+							<td>@item.req_Date</td>
+							<td>@item.travller_name</td>
+							<td>@item.doc_no</td>
+							<td>@item.Stage</td>
+							<td class="text-right hdfadvanceamount">
+								@string.Format("{0:c}", @item.totaladvanceroundoff)
+
+								<input type="hidden" value="@item.totaladvanceroundoff" />
+							</td>
+							<td><input type="text" id="txtAmount_@ProjectCount" class="form-control text-right this" onchange="Amount(this)" value="" placeholder="0"></td>
+							<td><input type="date" id="txtPaidDate_@ProjectCount" class="form-control" onchange="PaidDate(this)" value="" placeholder="0"></td>
+							<td>
+								@if (item.Stage == "Travel Expence")
+								{
+									<a href="@Url.Action("TravelExpensePaymentPrint",new { src = clsApplicationSetting.EncryptFriendly(ViewBag.MenuID+"*"+"/Travel/TravelExpensePaymentPrint*"+item.req_no+"*"+"TravelExpense") })" target="_blank"><i class="fas fa-eye"></i>View</a><span class="line-sp">|</span>
+								}
+								else
+								{
+									<a href="@Url.Action("FinancePaymentPrint",new { src = clsApplicationSetting.EncryptFriendly(ViewBag.MenuID+"*"+"/Travel/FinancePaymentPrint*"+item.req_no+"") })" target="_blank"><i class="fas fa-eye"></i>View</a><span class="line-sp">|</span>
+								}
+
+								<button type="button" value="Confirm" id="btn_@ProjectCount" disabled onclick="Confirm(this)" class="fn-bold"><i class="fas fa-check-circle"></i>Confirm</button>
+
+								<span class="line-sp">|</span>
+								<a href="#" onclick="Cancel(this)" class="rct-clr" data-toggle="modal" data-target="#rjct"><i class="fa fa-ban" aria-hidden="true"></i>Reject</a>
+							</td>
+
+						</tr>
+					}
+
+
+
+				</tbody>
+			</table>
+		</div>
+	</div>
+</div>
+
+
+@section scripts    {
+	@System.Web.Optimization.Scripts.Render("~/bundle/dataTablesjs")
+
+	@System.Web.Optimization.Scripts.Render("~/bundle/unobtrusivejs")
+	@Html.IncludeVersionedJs(Url.Content("~/assets/design/Scripts/AddInit.js"))
+	@Html.IncludeVersionedJs(Url.Content("~/assets/design/Scripts/ToolTip.js"))
+	
+}

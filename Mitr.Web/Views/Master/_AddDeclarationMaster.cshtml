@@ -1,0 +1,227 @@
+﻿@model Mitr.Models.DeclarationMaster
+@using (Ajax.BeginForm("_AddDeclarationMaster", "Master",
+		new { src = clsApplicationSetting.EncryptQueryString(ViewBag.MenuID + "*" + "/Master/_AddDeclarationMaster*" + ViewBag.ID) },
+		 new AjaxOptions { HttpMethod = "POST", OnSuccess = "OnSuccess", OnBegin = "ShowLoadingDialog()" },
+			new { @id = "AddDeclarationMaster", enctype = "multipart/form-data" })
+	)
+{
+
+
+	<div class="row">
+		<div class="col-sm-4 form-group">
+			<label>Declaration Name <sup>*</sup></label>
+			@Html.TextBoxFor(model => model.Declarationname, new { @class = "form-control" })
+			@Html.ValidationMessageFor(model => model.Declarationname, "", new { @class = "text-danger" })
+		</div>
+		@{
+			List<SelectListItem> Frequency = new List<SelectListItem>
+{
+												new SelectListItem{Text="Select",Value="" },
+												new SelectListItem{Text="Monthly",Value="Monthly" },
+												  new SelectListItem{Text="Quarterly",Value="Quarterly" },
+												  new SelectListItem{Text="Half Yearly",Value="Half Yearly" },
+													new SelectListItem{Text="Yearly",Value="Yearly" },
+													  new SelectListItem{Text="One Time",Value="One Time" }
+														
+																
+								};
+		}
+	<div class="col-sm-4 form-group">
+		<label>Frequency <sup>*</sup></label>
+		@Html.DropDownListFor(model => model.Frequency, new SelectList(Frequency, "Value", "text", Model.Frequency), new { @class = "form-control applyselect " })
+		@Html.ValidationMessageFor(model => model.Frequency, "", new { @class = "text-danger" })
+	</div>
+
+		<div class="col-sm-4 form-group">
+			<label>Due Date <sup>*</sup></label>
+			@Html.TextBoxFor(model => model.DueDate, new { @class = "form-control", @type = "date" })
+			@Html.ValidationMessageFor(model => model.DueDate, "", new { @class = "text-danger" })
+
+		</div>
+		@{
+			List<SelectListItem> Onboarding = new List<SelectListItem>
+{
+												new SelectListItem{Text="Select",Value="" },
+													new SelectListItem{Text="Yes",Value="Yes" },
+													new SelectListItem{Text="No",Value="No" }
+
+
+								};
+		}
+	<div class="col-sm-4 form-group">
+		<label>At Onboarding <sup>*</sup></label>
+		@Html.DropDownListFor(model => model.AtOnboarding, new SelectList(Onboarding, "Value", "text", Model.Frequency), new { @class = "form-control applyselect " })
+		@Html.ValidationMessageFor(model => model.AtOnboarding, "", new { @class = "text-danger" })
+	</div>
+
+	<div class="col-sm-4 form-group">
+		@Html.HiddenFor(x => Model.EmployeeType)
+		<label>Employee Type <sup>*</sup></label>
+		<select class="applyselect" multiple="multiple" id="ddlemp">
+			<option>Select Employee</option>
+			@if (ViewBag.emplist != null)
+			{
+				
+				foreach (var item in ViewBag.emplist)
+				{
+					if (string.IsNullOrEmpty(Model.EmployeeType))
+					{
+						<option value="@item.Id">@item.Name</option>
+					}
+					else
+					{
+						<option @(("@" + Model.EmployeeType.Replace(",", "@") + "@").Contains("@" + item.Id.ToString() + "@") ? "selected" : "") value="@item.Id">@item.Name</option>
+					}
+				}
+			}
+
+
+
+
+		</select>
+		@Html.ValidationMessageFor(model => model.EmployeeType, "", new { @class = "text-danger" })
+		@*@Html.DropDownListFor(model => model.EmployeeType, new SelectList(@ViewBag.emplist, "ID", "Name"), "select", new { @class = "form-control applyselect" })>*@
+	</div>
+
+		<div class="col-sm-4 form-group">
+			<label>Attachment</label>
+			@Html.TextBoxFor(model => model.UploadAttachment, new { @class = "form-control", @type = "file" })
+			@Html.ValidationMessageFor(model => model.UploadAttachment, "", new { @class = "text-danger" })
+			@Html.HiddenFor(model => model.AttachmentId)
+			@Html.HiddenFor(model => model.Id)
+		</div>
+		<div class="col-sm-12 form-group">
+			<label>Content</label>
+			@Html.TextAreaFor(model => model.Content, new { @class = "form-control", @height = "500" })
+			<div class="mt-2">
+				@Html.HiddenFor(modal => modal.Requiredremarksfield)
+				<input type="checkbox" class="newwidth ChkFixed" id="ChkFixed" name="ChkFixed" @(Model.Requiredremarksfield == 0 || Model.Requiredremarksfield == null ? "" : "checked") />
+				<label for="ChkFixed" class="mb-0">Do you required remarks field.</label>
+
+			</div>
+			<div class="mt-2">
+				@Html.HiddenFor(modal => modal.RequiredinhardCopy)
+				<input type="checkbox" class="newwidth ChkReimb" id="ChkReimb" name="ChkReimb" @(Model.RequiredinhardCopy == 0 || Model.RequiredinhardCopy == null ? "" : "checked") />
+				<label for="ChkReimb" class="mb-0"> Is it required in hard Copy.</label>
+
+
+			</div>
+		</div>
+
+		<div class="col-sm-12 form-group">
+			<label>Remark</label>
+			@Html.TextAreaFor(x => Model.Remark, new { @class = "form-control" })
+		</div>
+
+		<div class="col-sm-12 text-center ">
+			@if (Model.Id > 0)
+			{
+				<button type="submit" class="btn mtr-g-grn" type="button"><i class="fa fa-edit" aria-hidden="true"></i>Update</button>
+			}
+			else
+			{
+				<button type="submit" class="btn mtr-g-grn" type="button"><i class="fa fa-edit" aria-hidden="true"></i>Save</button>
+			}
+
+			<button type="button" data-dismiss="modal" class="btn cnl-btn"><i class="fas fa-times"></i>Close</button>
+		</div>
+	
+
+
+	</div>
+
+
+	@*<div class="row">
+
+			@if (Model.Id > 0)
+			{
+				<button type="submit" class="btn mtr-o-grn btn-l ripplelink pull-right" name="Command" value="Add"><i class="fa fa-paper-plane" aria-hidden="true"></i> Update</button>
+			}
+			else
+			{
+				<button type="submit" class="btn mtr-o-grn btn-l ripplelink pull-right" name="Command" value="Add"><i class="fa fa-paper-plane" aria-hidden="true"></i> Submit</button>
+			}
+		</div>*@
+
+}
+
+
+<script>
+		$(document).ready(function () {
+			$(".ChkFixed").change(function () {
+				debugger;
+				$('.ChkReimb').prop('checked', false);
+				if ($(this).is(":checked")) {
+					$("#Requiredremarksfield").val(1);
+					$("#RequiredinhardCopy").val(0);
+				}
+				else {
+					$("#Requiredremarksfield").val(0);
+				}
+			});
+			$(".ChkReimb").change(function () {
+				debugger;
+				$('.ChkFixed').prop('checked', false);
+				if ($(this).is(":checked")) {
+					$("#Requiredremarksfield").val(0);
+					$("#RequiredinhardCopy").val(1);
+				}
+				else {
+					$("#RequiredinhardCopy").val(0);
+				}
+			});
+
+			$('#ddlemp').change(function () {
+				GetddlempValue()
+			});
+			function GetddlempValue() {
+				var ddloc = $("#ddlemp").val();
+				if (ddloc == "") {
+					$("#EmployeeType").val("");
+				}
+				else {
+					$("#EmployeeType").val(ddloc);
+				}
+
+			}
+
+		});
+
+
+
+
+
+
+
+
+
+		@*$("#JobID").change(function () {
+			var JobId = $("#JobID").val();
+			//var ProjectdetId = $("#ProjectDetailID").val();
+			//ShowLoadingDialog();
+			//var url = "/Recruit/Initiate?src=" + EncryptQueryStringJSON(MenuID + "*" + "/Recruit/Initiate" + "*" + ProjectdetId + "*" + JobId);
+			//window.location.href = url;
+			//CloseLoadingDialog();
+			$.ajax({
+				url: "/CommonAjax/GetJobTypeFill",
+				type: "Get",
+				async: true,
+				data: { JobId: JobId },
+				success: function (data) {
+					YourEditor.setData(data[0].Description);
+					YourEditorql.setData(data[0].QualificationDet);
+					$("#Experience").val(data[0].Experience);
+					$("#Job_SubTitle").val(data[0].Title);
+					$('#SkillsID [value=' + parseInt(data[0].Skills) + ']').attr('selected', 'true').trigger("change");
+
+					CloseLoadingDialog();
+				},
+				error: function (er) {
+					CloseLoadingDialog();
+				}
+			});
+		});*@
+
+
+</script>
+

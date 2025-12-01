@@ -1,0 +1,435 @@
+﻿@model Employee.AttachmentsNew
+<div class="tab-pane fade show active" id="ath" role="tabpanel" aria-labelledby="contact-tab">
+
+	<table class="table td-border-none th-bg-none   m-0">
+		<thead>
+			<tr>
+				<th width="350"></th>
+				@if (ViewBag.status == 1)
+				{
+
+					<th class="lgt-clr">OLD</th>
+
+				}
+				else
+				{
+					<th width="250" class="lgt-clr">OLD</th>
+					<th class="lgt-clr">NEW</th>
+				}
+				<th width="10" class="text-center"></th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr>
+				<td colspan="3">
+					<h2 class="headingtwo">
+						<i class="fas fa-id-card"></i>Voter ID
+					</h2>
+				</td>
+				<td>
+					@if (ViewBag.status == 0)
+					{
+						<input class="cbx-select-group selectallV" id="selectallV" type="checkbox" value="i6" />
+						<label class="m-0" for="selectallV" data-toggle="tooltip" title="Select All"></label>
+					}
+
+				</td>
+			</tr>
+			<tr>
+				<td>Attachment	</td>
+				@if (ViewBag.status == 0)
+				{
+
+
+					<td>
+						<figure class="image is-48x48 hovericon">
+							@if (ViewBag.VoterId != "")
+							{
+								<a href="@ViewBag.VoterId ">
+									<i class="fas fa-download"></i>
+								</a>
+							}
+							else
+							{
+								<a href="# ">
+									<i class="fas fa-download"></i>
+								</a>
+							}
+
+						</figure>
+					</td>
+				}
+
+
+				<td class="fn-bold">
+					<figure class="image is-48x48 hovericon">
+						<a href="@Model.AttachementVoter.AttachmentURL">
+							<i class="fas fa-download"></i>
+						</a>
+						<label>@Model.AttachementVoter.filename</label>
+					</figure>
+				</td>
+				<td class="text-center">
+					@if (@Model.AttachementVoter.HRVAttachmentID == 0)
+					{
+						<input class="cbx-group-i6 selectedV" disabled id="cbx-group-i6-529" type="checkbox" value="@Model.AttachementVoter.ID+@Model.AttachementVoter.MUID+@Model.EMPId" />
+						<label class="m-0 ipbdr-none" for="cbx-group-i6-529"></label>
+					}
+					else
+					{
+						<input class="cbx-group-i6 selectedV" disabled checked id="cbx-group-i6-529" type="checkbox" value="@Model.AttachementVoter.ID+@Model.AttachementVoter.MUID+@Model.EMPId" />
+						<label class="m-0 ipbdr-none" for="cbx-group-i6-529"></label>
+					}
+
+				</td>
+			</tr>
+			<tr>
+				<td colspan="3"><h2 class="headingtwo"><i class="fas fa-id-card"></i>Passport</h2></td>
+				<td>
+					@if (ViewBag.status == 0)
+					{
+						<input class="cbx-select-group selectallP" id="selectallP" type="checkbox" value="i7" />
+						<label class="m-0" for="selectallP" data-toggle="tooltip" title="Select All"></label>
+					}
+
+				</td>
+			</tr>
+			<tr>
+				<td>Attachment</td>
+				@if (ViewBag.status == 0)
+				{
+
+
+					<td>
+						<figure class="image is-48x48 hovericon">
+							@if (ViewBag.Passport != "")
+							{
+								<a href="@ViewBag.Passport">
+									<i class="fas fa-download"></i>
+								</a>
+							}
+							else
+							{
+								<a href="#">
+									<i class="fas fa-download"></i>
+								</a>
+							}
+						</figure>
+					</td>
+				}
+
+				<td class="fn-bold">
+					<figure class="image is-48x48 hovericon">
+						<a href="@Model.AttachementPassport.AttachmentURL">
+							<i class="fas fa-download"></i>
+						</a>
+						<label>@Model.AttachementPassport.filename</label>
+					</figure>
+				</td>
+				<td class="text-center">
+					@if (@Model.AttachementPassport.HRVAttachmentID == 0)
+					{
+						<input class="cbx-group-i7 selectedP" disabled id="cbx-group-i7-530" type="checkbox" value="@Model.AttachementPassport.ID+@Model.AttachementPassport.MUID+@Model.EMPId" />
+						<label class="m-0 ipbdr-none" for="cbx-group-i7-530"></label>
+					}
+					else
+					{
+						<input class="cbx-group-i7 selectedP" checked disabled id="cbx-group-i7-530" type="checkbox" value="@Model.AttachementPassport.ID+@Model.AttachementPassport.MUID+@Model.EMPId" />
+						<label class="m-0 ipbdr-none" for="cbx-group-i7-530"></label>
+					}
+
+				</td>
+			</tr>
+			<tr>
+				<td colspan="3"><h2 class="headingtwo"><i class="fas fa-id-card"></i>Director Identification Number</h2></td>
+				<td>
+					@if (ViewBag.status == 0)
+					{
+						<input class="cbx-select-group selectallD" id="selectallD" type="checkbox" value="i7" />
+						<label class="m-0" for="selectallD" data-toggle="tooltip" title="Select All"></label>
+					}
+
+				</td>
+			</tr>
+			<tr>
+				<td>Attachment</td>
+				@if (ViewBag.status == 0)
+				{
+
+
+					<td>
+						<figure class="image is-48x48 hovericon">
+							@if (ViewBag.Din != "")
+							{
+								<a href="@ViewBag.Din">
+									<i class="fas fa-download"></i>
+								</a>
+							}
+							else
+							{
+								<a href="#">
+									<i class="fas fa-download"></i>
+								</a>
+							}
+
+						</figure>
+					</td>
+				}
+
+				<td class="fn-bold">
+					<figure class="image is-48x48 hovericon">
+						<a href="@Model.AttachementDin.AttachmentURL">
+							<i class="fas fa-download"></i>
+						</a>
+						<label>@Model.AttachementDin.filename</label>
+					</figure>
+				</td>
+				<td class="text-center">
+					@if (@Model.AttachementDin.HRVAttachmentID == 0)
+					{
+						<input class="cbx-group-i7 selectedD" disabled id="cbx-group-i7-531" type="checkbox" value="@Model.AttachementDin.ID+@Model.AttachementDin.MUID+@Model.EMPId" />
+						<label class="m-0 ipbdr-none" for="cbx-group-i7-531"></label>
+					}
+					else
+					{
+						<input class="cbx-group-i7 selectedD" checked disabled id="cbx-group-i7-531" type="checkbox" value="@Model.AttachementDin.ID+@Model.AttachementDin.MUID+@Model.EMPId" />
+						<label class="m-0 ipbdr-none" for="cbx-group-i7-531"></label>
+					}
+
+				</td>
+			</tr>
+			<tr>
+				<td colspan="3"><h2 class="headingtwo"><i class="fas fa-id-card"></i>Driving License</h2></td>
+				<td>
+					@if (ViewBag.status == 0)
+					{
+						<input class="cbx-select-group selectallDL" id="selectallDL" type="checkbox" value="i7" />
+						<label class="m-0" for="selectallDL" data-toggle="tooltip" title="Select All"></label>
+					}
+
+				</td>
+			</tr>
+			<tr>
+				<td>Attachment</td>
+				@if (ViewBag.status == 0)
+				{
+
+
+					<td>
+						<figure class="image is-48x48 hovericon">
+							@if (ViewBag.Dl != "")
+							{
+								<a href="@ViewBag.Dl">
+									<i class="fas fa-download"></i>
+								</a>
+							}
+							else
+							{
+								<a href="#">
+									<i class="fas fa-download"></i>
+								</a>
+							}
+
+						</figure>
+					</td>
+				}
+
+				<td class="fn-bold">
+					<figure class="image is-48x48 hovericon">
+						<a href="@Model.AttachementDl.AttachmentURL">
+							<i class="fas fa-download"></i>
+						</a>
+						<label>@Model.AttachementDl.filename</label>
+					</figure>
+				</td>
+				<td class="text-center">
+					@if (@Model.AttachementDl.HRVAttachmentID == 0)
+					{
+
+						<input class="cbx-group-i7 selecteddl" disabled id="cbx-group-i7-53" type="checkbox" value="@Model.AttachementDl.ID+@Model.AttachementDl.MUID+@Model.EMPId" />
+						<label class="m-0 ipbdr-none" for="cbx-group-i7-53"></label>
+					}
+					else
+					{
+
+						<input class="cbx-group-i7 selecteddl" checked disabled id="cbx-group-i7-53" type="checkbox" value="@Model.AttachementDl.ID+@Model.AttachementDl.MUID+@Model.EMPId" />
+						<label class="m-0 ipbdr-none" for="cbx-group-i7-53"></label>
+					}
+				</td>
+
+
+
+			</tr>
+
+			<tr>
+				<td colspan="3">
+					<h2 class="headingtwo">
+						<i class="fas fa-id-card"></i>Adhar ID
+					</h2>
+				</td>
+				<td>
+					@if (ViewBag.status == 0)
+					{
+						<input class="cbx-select-group selectallA" id="selectallA" type="checkbox" value="i6" />
+						<label class="m-0" for="selectallA" data-toggle="tooltip" title="Select All"></label>
+					}
+
+				</td>
+			</tr>
+			<tr>
+				<td>Attachment	</td>
+				@if (ViewBag.status == 0)
+				{
+
+
+					<td>
+						<figure class="image is-48x48 hovericon">
+							@if (ViewBag.AdharId != "")
+							{
+								<a href="@ViewBag.AdharId ">
+									<i class="fas fa-download"></i>
+								</a>
+							}
+							else
+							{
+								<a href="# ">
+									<i class="fas fa-download"></i>
+								</a>
+							}
+
+						</figure>
+					</td>
+				}
+
+
+				<td class="fn-bold">
+					<figure class="image is-48x48 hovericon">
+						<a href="@Model.AttachementAdhar.AttachmentURL">
+							<i class="fas fa-download"></i>
+						</a>
+						<label>@Model.AttachementAdhar.filename</label>
+					</figure>
+				</td>
+				<td class="text-center">
+					@if (@Model.AttachementAdhar.HRVAttachmentID == 0)
+					{
+						<input class="cbx-group-i6 selectedA" disabled id="cbx-group-i6-530" type="checkbox" value="@Model.AttachementAdhar.ID+@Model.AttachementAdhar.MUID+@Model.EMPId" />
+						<label class="m-0 ipbdr-none" for="cbx-group-i6-529"></label>
+					}
+					else
+					{
+						<input class="cbx-group-i6 selectedA" disabled checked id="cbx-group-i6-530" type="checkbox" value="@Model.AttachementAdhar.ID+@Model.AttachementAdhar.MUID+@Model.EMPId" />
+						<label class="m-0 ipbdr-none" for="cbx-group-i6-529"></label>
+					}
+
+				</td>
+			</tr>
+
+			<tr>
+				<td colspan="3">
+					<h2 class="headingtwo">
+						<i class="fas fa-id-card"></i>Pan ID
+					</h2>
+				</td>
+				<td>
+					@if (ViewBag.status == 0)
+					{
+						<input class="cbx-select-group selectallPan" id="selectallPan" type="checkbox" value="i6" />
+						<label class="m-0" for="selectallPan" data-toggle="tooltip" title="Select All"></label>
+					}
+
+				</td>
+			</tr>
+			<tr>
+				<td>Attachment	</td>
+				@if (ViewBag.status == 0)
+				{
+
+
+					<td>
+						<figure class="image is-48x48 hovericon">
+							@if (ViewBag.PanId != "")
+							{
+								<a href="@ViewBag.PanId ">
+									<i class="fas fa-download"></i>
+								</a>
+							}
+							else
+							{
+								<a href="# ">
+									<i class="fas fa-download"></i>
+								</a>
+							}
+
+						</figure>
+					</td>
+				}
+
+
+				<td class="fn-bold">
+					<figure class="image is-48x48 hovericon">
+						<a href="@Model.AttachementPan.AttachmentURL">
+							<i class="fas fa-download"></i>
+						</a>
+						<label>@Model.AttachementPan.filename</label>
+					</figure>
+				</td>
+				<td class="text-center">
+					@if (@Model.AttachementPan.HRVAttachmentID == 0)
+					{
+						<input class="cbx-group-i6 selectedPan" disabled id="cbx-group-i6-531" type="checkbox" value="@Model.AttachementPan.ID+@Model.AttachementPan.MUID+@Model.EMPId" />
+						<label class="m-0 ipbdr-none" for="cbx-group-i6-529"></label>
+					}
+					else
+					{
+						<input class="cbx-group-i6 selectedPan" disabled checked id="cbx-group-i6-531" type="checkbox" value="@Model.AttachementPan.ID+@Model.AttachementPan.MUID+@Model.EMPId" />
+						<label class="m-0 ipbdr-none" for="cbx-group-i6-529"></label>
+					}
+
+				</td>
+			</tr>
+
+		</tbody>
+	</table>
+
+</div>
+<script>
+
+		$('#selectallPan').click(function () {
+		var someObj = {};
+		someObj.NochkId = [];
+		someObj.ChkId = [];
+		$('.selectedPan').prop('checked', this.checked);
+	});
+
+		$('#selectallA').click(function () {
+		var someObj = {};
+		someObj.NochkId = [];
+		someObj.ChkId = [];
+		$('.selectedA').prop('checked', this.checked);
+	});
+	$('#selectallV').click(function () {
+		var someObj = {};
+		someObj.NochkId = [];
+		someObj.ChkId = [];
+		$('.selectedV').prop('checked', this.checked);
+	});
+	$('#selectallP').click(function () {
+		var someObj = {};
+		someObj.NochkId = [];
+		someObj.ChkId = [];
+		$('.selectedP').prop('checked', this.checked);
+	});
+	$('#selectallD').click(function () {
+		var someObj = {};
+		someObj.NochkId = [];
+		someObj.ChkId = [];
+		$('.selectedD').prop('checked', this.checked);
+	});
+	$('#selectallDL').click(function () {
+		var someObj = {};
+		someObj.NochkId = [];
+		someObj.ChkId = [];
+		$('.selecteddl').prop('checked', this.checked);
+	});
+</script>

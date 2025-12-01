@@ -1,0 +1,261 @@
+﻿@model MPRReports.Header
+
+<div class="inner-main mb-5 pb-0">
+    <h1 class="heading-one ">MPR Dashboard</h1>
+
+    @using (Ajax.BeginForm("_MPRNewReports", "MPR",
+            new { src = clsApplicationSetting.EncryptQueryString(ViewBag.MenuID.ToString() + "*/MPR/_MPRNewReports") },
+              new AjaxOptions { HttpMethod = "POST", OnSuccess = "BindTarget", OnBegin = "ShowLoadingDialog()" },
+        new { @id = "_MPRNewReportsFrom" })
+        )
+    {
+        <div class="row">
+
+            <div class="col-lg-2 col-md-2 col-sm-2 slt-dgn  form-group">
+                <label class="lbl-abs">Report</label>
+                @{
+                    List<SelectListItem> RptLis = new List<SelectListItem>
+                                    {
+                        new SelectListItem{Value="",Text="Select" },
+                        //new SelectListItem{Value="1",Text="Achievement vs Org Target" },
+                        //new SelectListItem{Value="2",Text="Achievement vs Target" },
+                        new SelectListItem{Value="3",Text="State-Project Achievement View" },
+                        new SelectListItem{Value="4",Text="Project-State Achievement View" },
+                         new SelectListItem{Value="5",Text="Month Wise Achievement View" }
+                    };
+
+                    List<SelectListItem> lstYear = new List<SelectListItem>
+                                    {
+                        new SelectListItem{Value="",Text="Select" },
+                        new SelectListItem{Value="2019",Text="2019" },
+                        new SelectListItem{Value="2020",Text="2020" },
+                        new SelectListItem{Value="2021",Text="2021" },
+                        new SelectListItem{Value="2022",Text="2022" },
+                    };
+                }
+                @Html.DropDownListFor(model => model.ReportName, new SelectList(RptLis, "Value", "text", Model.ReportName), new { @onchange = "Changeview(this)", @class = "form-control applyselect" })
+                @Html.ValidationMessageFor(model => model.ReportName, "", new { @class = "text-danger" })
+
+            </div>
+            @*<div class="col-lg-2 col-md-2 col-sm-2  form-group DYears" style="display:none">
+            <label class="lbl-abs">Year</label>
+            @Html.DropDownListFor(model => model.Year, new SelectList(lstYear, "Value", "text", Model.Year), new { @class = "form-control applyselect" })
+            @Html.ValidationMessageFor(model => model.Year, "", new { @class = "text-danger" })
+        </div>*@
+            <div class="col-lg-2 col-md-2 col-sm-2  form-group DDates" style="display:none">
+                <label class="lbl-abs">Start Month</label>
+                @Html.TextBoxFor(model => model.StartDate, new { @class = "form-control actdate ddapplyaction", @type = "month" })
+                @Html.ValidationMessageFor(model => model.StartDate, "", new { @class = "text-danger" })
+            </div>
+            <div class="col-lg-2 col-md-2 col-sm-2  form-group DDates2" style="display:none">
+                <label class="lbl-abs">End Month</label>
+                @Html.TextBoxFor(model => model.EndDate, new { @class = "form-control actdate ddapplyaction", @type = "month" })
+                @Html.ValidationMessageFor(model => model.EndDate, "", new { @class = "text-danger" })
+            </div>
+            <div class="col-lg-2 col-md-2 col-sm-2 slt-dgn  form-group DMPR" style="display:none">
+                <label class="lbl-abs">MPR Name</label>
+                @Html.DropDownListFor(x => Model.MPRID, new SelectList(Model.MPRDataList, "MPRID", "MPRName", Model.MPRID), "Select MPR",
+        new { @class = "form-control  applyselect", @multiple = "true" })
+                @Html.ValidationMessageFor(model => Model.ProjectID, "", new { @class = "text-danger" })
+            </div>
+
+            <div class="col-lg-2 col-md-2 col-sm-2 slt-dgn  form-group DProject" style="display:none">
+                <label class="lbl-abs">Project</label>
+                @Html.DropDownListFor(x => Model.ProjectID, new SelectList(Model.ProjectList, "ProjectID", "ProjectName", Model.ProjectID), "Select Project",
+        new { @class = "form-control  applyselect", @multiple = "true" })
+                @Html.ValidationMessageFor(model => Model.ProjectID, "", new { @class = "text-danger" })
+            </div>
+            <div class="col-lg-2 col-md-2 col-sm-2 slt-dgn  form-group DState" style="display:none">
+                <label class="lbl-abs">State</label>
+                @Html.DropDownListFor(x => Model.StateID, new SelectList(Model.StateList, "StateID", "StateName", Model.StateID), "Select State",
+        new { @class = "form-control  applyselect", @multiple = "true" })
+                @Html.ValidationMessageFor(model => Model.StateID, "", new { @class = "text-danger" })
+            </div>
+            <div class="col-lg-2 col-md-2 col-sm-2 slt-dgn  form-group DSection" style="display:none">
+                <label class="lbl-abs">Section</label>
+                @Html.DropDownListFor(x => Model.SectionID, new SelectList(Model.SectionList, "SectionID", "SectionName", Model.SectionID), "Select Section",
+        new { @class = "form-control  applyselect", onchange = "BindDropDownData(this)", @multiple = "true" })
+                @Html.ValidationMessageFor(model => Model.SectionID, "", new { @class = "text-danger" })
+            </div>
+            <div class="col-lg-2 col-md-2 col-sm-2 slt-dgn  form-group DSubSection" style="display:none">
+                <label class="lbl-abs">Sub Section</label>
+                <select id="MPRSubSID" name="MPRSubSID" class="form-control  applyselect" multiple>
+                </select>
+
+            </div>
+            <div class="col-lg-2 col-md-2 col-sm-2 slt-dgn  form-group DInActiveRecords" style="display:none">
+                <label class="lbl-abs">Include Inactive Records</label>
+                <div style="float:left; padding-left:10px;padding-top:10px;">
+                    @Html.RadioButtonFor(model => model.IsInActiveRecords, "true", new { id = "Yes" })
+                    @Html.Label("Yes", "Yes")
+                </div>
+               
+                <div style="float: left; padding-left: 10px; padding-top:10px;">
+                    @Html.RadioButtonFor(model => model.IsInActiveRecords, "false", new { id = "No" })
+                    @Html.Label("No", "No")
+                </div>
+
+
+            </div>
+
+            <div class="align-self-center">
+                <button type="submit" class="btn mtr-g-grn btn-l ripplelink" id="btnSearch" name="Command" value="Search"><i class="fas fa-search"></i>Search</button>
+                <button type="button" class="btn mtr-g-grn btn-l ripplelink" id="btnExportAll" value="Search"><i class="fas fa-file-excel"></i>Export</button>
+
+            </div>
+        </div>
+    }
+
+    <div id="TargetDiv"></div>
+</div>
+
+
+@section scripts    {
+    @System.Web.Optimization.Scripts.Render("~/bundle/unobtrusivejs")
+    @Html.IncludeVersionedJs(Url.Content("~/assets/design/Scripts/ToolTip.js"))
+    @Html.IncludeVersionedJs(Url.Content("~/assets/design/scripts/AddInit.js"))
+    @Html.IncludeVersionedJs(Url.Content("~/assets/tableToExcel.js"))
+    <script>
+        
+        $(document).ready(function () {
+            document.getElementById('Yes').checked = true;
+        });
+        $("#btnExportAll").click(function (e) {
+            exportReportToExcelAll()
+        });
+        function exportReportToExcelAll() {
+            let table = document.getElementsByTagName("table"); // you can use document.getElementById('tableId') as well by providing id to the table tag
+            TableToExcel.convert(table[0], { // html code may contain multiple tables so here we are refering to 1st table tag
+                name: `MPR_Report.xlsx`, // fileName you could use any name
+                sheet: {
+                    name: 'Sheet 1' // sheetName
+                }
+            });
+        }
+        
+        function BindDropDownData(obj)
+        {
+           
+            var selectedID = "";
+            $(obj).find("option:selected").each(function () {
+       
+                if (selectedID != "") {
+                    selectedID += "," + this.value
+                }
+                else {
+                    selectedID += this.value
+                }
+            });
+            $.ajax({
+                async: false,
+                type: "GET",
+                url: '/CommonAjax/GetDropDownLevelData',
+                data: { id: selectedID },
+                dataType: "json", 
+                success: function (response) {
+                   
+                    if (response)
+                    {
+                        ShowLoadingDialog();
+                        $("#MPRSubSID").empty();
+                        $(response).each(function ()
+                        {
+                            $("#MPRSubSID").append($("<option />").val(this.MPRSubSID).text(this.SubSecName));
+                            $("#MPRSubSID").select2();
+                        });                     
+                        CloseLoadingDialog();
+                    }
+                },
+                error:
+                    function (data) {
+                       
+                        alert("Error: " + data);
+                      
+                       
+                    }
+            });
+        }
+        function Changeview(obj) {
+            $("#TargetDiv").empty();
+            var a = $(obj).find('option:selected').val();
+            if (a == 1)
+            {
+                $(".DDates").show();
+                $(".DProject").hide();
+                $(".DState").hide();
+                $(".DSection").show();
+                $(".DYears").hide();
+                $(".DMPR").hide();
+
+
+            }
+            else if (a == 2) {
+                $(".DDates").show();
+                $(".DProject").show();
+                $(".DMPR").show();
+                $(".DState").hide();
+                $(".DSection").show();
+                $(".DYears").hide();
+            }
+            else if (a == 3 || a == 4 || a == 5)
+            {
+                $(".DDates").show();
+                $(".DDates2").show();
+                
+                $(".DProject").show();
+                $(".DMPR").show();
+                $(".DState").show();
+                $(".DSection").show();
+                $(".DSubSection").show();
+                $(".DInActiveRecords").show();
+                
+                $(".DYears").show();
+            }
+            else {
+                $(".DDates").hide();
+                $(".DMPR").hide();
+                $(".DProject").hide();
+                $(".DState").hide();
+                $(".DSection").hide();
+                $(".DYears").show();
+
+            }
+        }
+
+        function BindTarget(obj) {
+            CloseLoadingDialog()
+            $("#TargetDiv").empty();
+            $("#TargetDiv").html(obj);
+        }
+
+    </script>
+
+    <script type="text/javascript">
+        function fnExcelReport() {
+            var table = document.getElementById('theTable'); // id of table
+            var tableHTML = table.outerHTML;
+            var fileName = 'achievement.xls';
+
+            var msie = window.navigator.userAgent.indexOf("MSIE ");
+
+            // If Internet Explorer
+            if (msie > 0 || !!navigator.userAgent.match(/Trident.*rv\:11\./)) {
+                dummyFrame.document.open('txt/html', 'replace');
+                dummyFrame.document.write(tableHTML);
+                dummyFrame.document.close();
+                dummyFrame.focus();
+                return dummyFrame.document.execCommand('SaveAs', true, fileName);
+            }
+            //other browsers
+            else {
+                var a = document.createElement('a');
+                tableHTML = tableHTML.replace(/  /g, '').replace(/ /g, '%20'); // replaces spaces
+                a.href = 'data:application/vnd.ms-excel,' + tableHTML;
+                a.setAttribute('download', fileName);
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+            }
+        }
+    </script>
+}

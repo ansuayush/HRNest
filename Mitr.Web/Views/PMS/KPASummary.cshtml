@@ -1,0 +1,51 @@
+﻿
+@{
+	var Modify = clsApplicationSetting.GetSessionValue("Modify");
+	string MenuID = ViewBag.MenuID;
+}
+<div class="inner-main mb-5 p-3 pb-0">
+<div class="row">
+	<div class="col-sm-5"><h1 class="heading-one ">Key Performance Area List</h1></div>
+	<div class="col-sm-7 text-right">
+		@Html.CreateAnchor(MenuID,"/PMS/KPAList","KPA List", "btn mtr-g-grn btn-l ripplelink","Go to List", "fa fa-plus","_self")
+	</div>
+
+
+	<div class="col-sm-12">
+
+		<div class="control-section">
+			@Html.EJS().Grid("Grid").DataSource((List<PMS.KPA.KPASummary>)Model).GridLines(Syncfusion.EJ2.Grids.GridLine.Both).Columns(col =>
+	   {
+		   col.Field("PMS_KPAID").Visible(false).Add();
+		   col.Field("FYID").Visible(false).Add();
+		   col.Field("RowNum").HeaderText("SNo.").Width("30").Add();
+		   col.Field("FYName").HeaderText("Name").Width("160").Add();
+		   col.Field("TotalKPA").HeaderText("Total KPA").Width("160").Add();
+		   col.Field("TActiveKPA").HeaderText("Total actived KPA").Width("160").Add();
+		   col.HeaderText("Action").TextAlign(Syncfusion.EJ2.Grids.TextAlign.Center).Template("#tmpAction").Width("40").Add();
+
+	   }).AllowPaging().PageSettings(page => page.PageSize(10)).Toolbar(new List<string>() { "Search" }).Render()
+
+		</div>
+	</div>
+</div>
+</div>
+
+<script id="tmpAction" type="text/x-template">
+	${if('@Modify' === 'True')}
+	<input type="hidden" name="I" value="${FYID}" />
+	<input type="hidden" name="N" value="${FYName}" />
+
+	<a onclick="BindEdit(this)"><i class="fas fa-edit " aria-hidden="true"></i> </a>
+	${/if}
+</script>
+<script>
+	function ListAdd(ID) {
+		ShowLoadingDialog();
+		var src = EncryptQueryStringJSON(@MenuID + "*" + "/PMS/KPAList*" + ID);
+		window.location = "/PMS/KPAList?src=" + src;
+	}
+</script>
+@Html.IncludeVersionedJs(Url.Content("~/assets/design/Scripts/SyncScripts.js"))
+
+@(Html.EJS().ScriptManager())

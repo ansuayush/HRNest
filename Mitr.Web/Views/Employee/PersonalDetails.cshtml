@@ -1,0 +1,785 @@
+﻿@model Employee.PersonalDetails
+@{
+	string MenuID = ViewBag.MenuID.ToString();
+}
+@Html.Partial("_EmployeeHeader")
+
+
+
+<div class="mb-100">
+
+	@using (Ajax.BeginForm("PersonalDetails", "Employee",
+			new { src = ViewBag.src },
+			new AjaxOptions { HttpMethod = "POST", OnSuccess = "OnSuccess", OnBegin = "ShowLoadingDialog()", OnFailure = "OnPostFailure()" },
+		new { @id = "PersonalDetailsFrom", @autocomplete = "Off" })
+		)
+	{
+		<div class="inner-main mb-3">
+			<div class="row">
+				<div class="col-md-3 col-sm-6 form-group">
+					<label>Father's Name <sup>*</sup></label>
+					@Html.TextBoxFor(model => model.father_name, new { @class = "form-control", @placeholder = "Father Name" })
+					@Html.ValidationMessageFor(model => model.father_name, "", new { @class = "text-danger" })
+				</div>
+				<div class="col-md-3 col-sm-6 form-group">
+					<label>Mother's Name </label>
+					@Html.TextBoxFor(model => model.mother_name, new { @class = "form-control", @placeholder = "Mother Name" })
+					@Html.ValidationMessageFor(model => model.mother_name, "", new { @class = "text-danger" })
+				</div>
+				<div class="col-md-3 col-sm-6 form-group">
+					<label>Gender <sup>*</sup></label>
+					@Html.EnumDropDownListFor(model => model.gender, "Select", htmlAttributes: new { @class = "form-control applyselect" })
+					@Html.ValidationMessageFor(model => model.gender, "", new { @class = "text-danger" })
+
+				</div>
+				<div class="col-md-3 col-sm-6 form-group">
+					<label>Date of Birth <sup>*</sup></label>
+					@Html.TextBoxFor(model => model.dob, new { @class = "form-control", @type = "date" })
+					@Html.ValidationMessageFor(model => model.dob, "", new { @class = "text-danger" })
+				</div>
+				<div class="col-md-3 col-sm-6 form-group">
+					<label>Marital Status <sup>*</sup></label>
+					@Html.EnumDropDownListFor(model => model.marital_status, "Select", htmlAttributes: new { @class = "form-control applyselect" })
+					@Html.ValidationMessageFor(model => model.marital_status, "", new { @class = "text-danger" })
+				</div>
+
+				<div class="col-md-3 col-sm-9 form-group">
+					<label>Spouse's Name </label>
+					<input type="text" @(Model.marital_status.ToString() == "Married" ? "" : "readonly") id="@Html.IdFor(x=>x.SpouseName)" name="@Html.IdFor(x=>x.SpouseName)" value="@Model.SpouseName" />
+					@Html.ValidationMessageFor(model => model.SpouseName, "", new { @class = "text-danger" })
+				</div>
+				<div class="col-sm-3 form-group">
+					<label>Partner's Name </label>
+					<input type="text" @(Model.marital_status.ToString() == "Partner" ? "" : "readonly") id="@Html.IdFor(x=>x.PartnerName)" name="@Html.IdFor(x=>x.PartnerName)" value="@Model.PartnerName" />
+					@Html.ValidationMessageFor(model => model.PartnerName, "", new { @class = "text-danger" })
+				</div>
+				<div class="col-sm-3 form-group">
+					<label>Nominee Name <sup>*</sup></label>
+					@Html.TextBoxFor(model => model.NomineeName, new { @class = "form-control" })
+					@Html.ValidationMessageFor(model => model.NomineeName, "", new { @class = "text-danger" })
+				</div>
+				<div class="col-sm-3 form-group">
+					<label>Nominee Relationship <sup>*</sup></label>
+					@Html.TextBoxFor(model => model.NomineeRelation, new { @class = "form-control" })
+					@Html.ValidationMessageFor(model => model.NomineeRelation, "", new { @class = "text-danger" })
+				</div>
+				<div class="col-sm-3 form-group">
+					<label>@((Model.children ?? 0) <= 1 ? "No. of Child": "No. of Childrens") </label>
+					@Html.TextBoxFor(model => model.children, new { @class = "form-control ", @onblur = "changeChildCaption(this)" })
+					@Html.ValidationMessageFor(model => model.children, "", new { @class = "text-danger" })
+				</div>
+
+				<div class="col-md-3 col-sm-6 form-group hw-575">
+					<label>Nationality <sup>*</sup></label>
+					@Html.EnumDropDownListFor(model => model.nationality, "Select", htmlAttributes: new { @class = "form-control applyselect" })
+					@Html.ValidationMessageFor(model => model.nationality, "", new { @class = "text-danger" })
+				</div>
+
+
+				<div class="col-md-3 col-sm-6 form-group hw-575">
+					<label>Country @*@Model.nationality.ToString()*@</label>
+					<select class="applyselect form-control" @(Model.nationality.ToString() == "Foreigner" ? "" : "readonly") id="@Html.IdFor(x=>x.CountryID)" name="@Html.IdFor(x=>x.CountryID)">
+						@if (Model.CountryList != null)
+						{
+							<option value="">Select</option>
+							foreach (var item in Model.CountryList)
+							{
+								<option @(Model.CountryID == @item.ID ? "selected" : "") value="@item.ID">@item.Name</option>
+							}
+						}
+					</select>
+					@Html.ValidationMessageFor(model => model.CountryID, "", new { @class = "text-danger" })
+				</div>
+				<div class="col-md-3 col-sm-6 form-group hw-575">
+					<label>Details of Work Permit/Visa</label>
+					<input type="text" @(Model.nationality.ToString() == "Foreigner" ? "" : "readonly") id="@Html.IdFor(x=>x.VisaPermit_WorkDetail)" name="@Html.IdFor(x=>x.VisaPermit_WorkDetail)" value="@Model.VisaPermit_WorkDetail" class="form-control Foreigners" />
+					@Html.ValidationMessageFor(model => model.VisaPermit_WorkDetail, "", new { @class = "text-danger" })
+				</div>
+				<div class="col-md-3 col-sm-6 form-group">
+					<label>Visa Validity Date</label>
+					<input type="date" @(Model.nationality.ToString() == "Foreigner" ? "" : "readonly") id="@Html.IdFor(x=>x.VisaValidity_Date)" name="@Html.IdFor(x=>x.VisaValidity_Date)" value="@Model.VisaValidity_Date" class="form-control Foreigners" />
+					@Html.ValidationMessageFor(model => model.VisaValidity_Date, "", new { @class = "text-danger" })
+				</div>
+				<div class="col-md-3 col-sm-12 form-group">
+					<label>Social Security Number/ TIN of Country of origin</label>
+					<input type="text" @(Model.nationality.ToString() == "Foreigner" ? "" : "readonly") id="@Html.IdFor(x=>x.SSN_TIN)" name="@Html.IdFor(x=>x.SSN_TIN)" value="@Model.SSN_TIN" class="form-control Foreigners" />
+					@Html.ValidationMessageFor(model => model.SSN_TIN, "", new { @class = "text-danger" })
+				</div>
+				<div class="col-md-3 col-sm-12 form-group">
+					<label>Any Other Details</label>
+					<input type="text" @(Model.nationality.ToString() == "Foreigner" ? "" : "readonly") id="@Html.IdFor(x=>x.Visa_OtherDetails)" name="@Html.IdFor(x=>x.Visa_OtherDetails)" value="@Model.Visa_OtherDetails" class="form-control Foreigners" />
+					@Html.ValidationMessageFor(model => model.Visa_OtherDetails, "", new { @class = "text-danger" })
+				</div>
+
+
+
+				<div class="col-sm-12 form-group">
+					<hr>
+					<span class="hr-aps lgt-text font-sm">Local Address</span>
+				</div>
+
+				<div class="col-sm-6">
+					<div class="row">
+						<div class="col-sm-12 form-group">
+							@Html.HiddenFor(model => Model.LocalAddress.ID)
+							<label>Address Line 1 @Html.Raw((Model.ResidentialStatus == "Resident" ? "<sup>*</sup>" : ""))</label>
+							@Html.TextAreaFor(model => model.LocalAddress.lane1, new { @class = "form-control" })
+							@Html.ValidationMessageFor(model => model.LocalAddress.lane1, "", new { @class = "text-danger" })
+						</div>
+
+						<div class="col-lg-3 col-md-6 form-group hw-575">
+							<label>PIN </label>
+							@Html.TextBoxFor(model => model.LocalAddress.zip_code, new { @class = "form-control" })
+							@Html.ValidationMessageFor(model => model.LocalAddress.zip_code, "", new { @class = "text-danger" })
+						</div>
+
+						<div class="col-lg-3 col-md-6 form-group hw-575">
+							<label>Country </label>
+							@Html.DropDownListFor(n => n.LocalAddress.CountryID, new SelectList(Model.CountryList, "ID", "Name", Model.LocalAddress.CountryID), "Select",
+							  new { @class = "form-control  applyselect", onchange = "BindDropDown(this,'State_Local')" })
+							@Html.ValidationMessageFor(model => model.LocalAddress.CountryID, "", new { @class = "text-danger" })
+						</div>
+						<div class="col-lg-3 col-md-6 form-group hw-575">
+							<label>State </label>
+							<input type="hidden" id="hdnLocalStateID" value="@Model.LocalAddress.StateID" />
+							@Html.DropDownListFor(n => n.LocalAddress.StateID, new SelectList(Model.StateList, "ID", "Name", Model.LocalAddress.StateID), "Select",
+							 new { @class = "form-control  applyselect", onchange = "BindDropDown(this,'City_Local')" })
+							@Html.ValidationMessageFor(model => model.LocalAddress.StateID, "", new { @class = "text-danger" })
+						</div>
+						<div class="col-lg-3 col-md-6 form-group hw-575">
+							<label>City </label>
+							<input type="hidden" id="hdnLocalCityID" value="@Model.LocalAddress.CityID" />
+							@Html.DropDownListFor(n => n.LocalAddress.CityID, new SelectList(Model.CityList, "ID", "Name", Model.LocalAddress.CityID), "Select",
+							new { @class = "form-control  applyselect" })
+							@Html.ValidationMessageFor(model => model.LocalAddress.CityID, "", new { @class = "text-danger" })
+						</div>
+
+
+
+					</div>
+				</div>
+
+				<div class="col-sm-6">
+					<div class="row">
+						<div class="col-sm-12 form-group">
+							<label>Address Line 2</label>
+							@Html.TextAreaFor(model => model.LocalAddress.lane2, new { @class = "form-control" })
+							@Html.ValidationMessageFor(model => model.LocalAddress.lane2, "", new { @class = "text-danger" })
+						</div>
+
+						<div class="col-lg-3 col-md-6 form-group hw-575">
+							<label>Mobile <sup>*</sup></label>
+							@Html.TextBoxFor(model => model.LocalAddress.phone_no, new { @class = "form-control" })
+							@Html.ValidationMessageFor(model => model.LocalAddress.phone_no, "", new { @class = "text-danger" })
+						</div>
+
+					</div>
+				</div>
+
+				<div class="col-sm-12">
+					<ul class="list-unstyled inlin-list mt-2">
+						<li>
+							<input type="checkbox" id="ChkCopySame" name="1" data-trigger="hidden_fields_one" class="trigger">
+							<label for="ChkCopySame"> Same for Permanent</label>
+						</li>
+					</ul>
+				</div>
+				<div class="col-sm-12 form-group">
+					<hr>
+					<span class="hr-aps lgt-text font-sm">Permanent Address</span>
+				</div>
+
+				<div class="col-sm-6">
+					<div class="row">
+						<div class="col-sm-12 form-group">
+							<label>Address Line 1 </label>
+							@Html.HiddenFor(model => Model.PermanentAddress.ID)
+							@Html.TextAreaFor(model => model.PermanentAddress.lane1, new { @class = "form-control" })
+							@Html.ValidationMessageFor(model => model.PermanentAddress.lane1, "", new { @class = "text-danger" })
+						</div>
+
+						<div class="col-lg-3 col-md-6 form-group hw-575">
+							<label>PIN </label>
+							@Html.TextBoxFor(model => model.PermanentAddress.zip_code, new { @class = "form-control" })
+							@Html.ValidationMessageFor(model => model.PermanentAddress.zip_code, "", new { @class = "text-danger" })
+						</div>
+
+						<div class="col-lg-3 col-md-6 form-group hw-575">
+							<label>Country </label>
+							@Html.DropDownListFor(n => n.PermanentAddress.CountryID, new SelectList(Model.CountryList, "ID", "Name", Model.PermanentAddress.CountryID), "Select",
+							  new { @class = "form-control  applyselect", onchange = "BindDropDown(this,'State_Permanent')" })
+							@Html.ValidationMessageFor(model => model.PermanentAddress.CountryID, "", new { @class = "text-danger" })
+						</div>
+						<div class="col-lg-3 col-md-6 form-group hw-575">
+							<label>State </label>
+							<input type="hidden" id="hdnPermanentStateID" value="@Model.PermanentAddress.StateID" />
+							@Html.DropDownListFor(n => n.PermanentAddress.StateID, new SelectList(Model.StateList, "ID", "Name", Model.PermanentAddress.StateID), "Select",
+							 new { @class = "form-control  applyselect", onchange = "BindDropDown(this,'City_Permanent')" })
+							@Html.ValidationMessageFor(model => model.PermanentAddress.StateID, "", new { @class = "text-danger" })
+						</div>
+						<div class="col-lg-3 col-md-6 form-group hw-575">
+							<label>City </label>
+							<input type="hidden" id="hdnPermanentCityID" value="@Model.PermanentAddress.CityID" />
+							@Html.DropDownListFor(n => n.PermanentAddress.CityID, new SelectList(Model.CityList, "ID", "Name", Model.PermanentAddress.CityID), "Select",
+							new { @class = "form-control  applyselect" })
+							@Html.ValidationMessageFor(model => model.PermanentAddress.CityID, "", new { @class = "text-danger" })
+						</div>
+
+
+					</div>
+				</div>
+
+				<div class="col-sm-6">
+					<div class="row">
+						<div class="col-sm-12 form-group">
+							<label>Address Line 2</label>
+							@Html.TextAreaFor(model => model.PermanentAddress.lane2, new { @class = "form-control" })
+							@Html.ValidationMessageFor(model => model.PermanentAddress.lane2, "", new { @class = "text-danger" })
+						</div>
+
+						<div class="col-lg-3 col-md-6 form-group hw-575">
+							<label>Mobile <sup>*</sup></label>
+							@Html.TextBoxFor(model => model.PermanentAddress.Alt_No, new { @class = "form-control" })
+							@Html.ValidationMessageFor(model => model.PermanentAddress.Alt_No, "", new { @class = "text-danger" })
+						</div>
+					</div>
+				</div>
+
+
+			</div>
+		</div>
+		<!---->
+		<div class="inner-main mb-2">
+			<h2 class="headingtwo"><i class="fas fa-university"></i>References</h2>
+			<div class="row">
+				<div class="col-sm-12 form-group">
+					<label class="mb-2"> <small class="lgt-text">Please list three professional references not related to you, with full name, email address, phone number, and relationship. If you don’t have three professional references, then list personal, unrelated references. </small></label>
+				</div>
+				<div class="col-md-10">
+					<table id="TableReferencesList" class="table table-stripted mb-0 mt-0">
+						<thead>
+							<tr>
+								<th class="w-50">S.No.</th>
+								<th>Name </th>
+								<th class="w-200">Email ID</th>
+								<th class="w-200">Mobile Number</th>
+								<th class="w-200">Relationship</th>
+								<th></th>
+							</tr>
+						</thead>
+						<tbody>
+							@if (Model.ReferencesList != null)
+							{
+								int Rcount = 0;
+								for (int i = 0; i < Model.ReferencesList.Count; i++)
+								{
+									Rcount++;
+									<tr>
+										<td>
+											@Html.HiddenFor(model => Model.ReferencesList[i].REFID, new { @class = "hdnID" })
+											<label id="span_@Rcount" name="span_@Rcount">@Rcount </label>
+										</td>
+										<td>
+											@Html.TextBoxFor(model => Model.ReferencesList[i].Name, new { @class = "form-control" })
+											@Html.ValidationMessageFor(model => Model.ReferencesList[i].Name, "", new { @class = "text-danger" })
+										</td>
+										<td>
+											@Html.TextBoxFor(model => Model.ReferencesList[i].EmailID, new { @class = "form-control" })
+											@Html.ValidationMessageFor(model => Model.ReferencesList[i].EmailID, "", new { @class = "text-danger" })
+										</td>
+
+										<td>
+											@Html.TextBoxFor(model => Model.ReferencesList[i].Mobile, new { @class = "form-control" })
+											@Html.ValidationMessageFor(model => Model.ReferencesList[i].Mobile, "", new { @class = "text-danger" })
+										</td>
+										<td>
+											@Html.TextBoxFor(model => Model.ReferencesList[i].Relationship, new { @class = "form-control" })
+											@Html.ValidationMessageFor(model => Model.ReferencesList[i].Relationship, "", new { @class = "text-danger" })
+										</td>
+										<td>
+											@if (Rcount > 4)
+											{
+												<a onclick="DeleteRow(this)" class="remove"><i class="fas fa-window-close red-clr" aria-hidden="true"></i></a>
+											}
+											else
+											{
+												<a class="disabled"><i class="fas fa-window-close" aria-hidden="true"></i></a>
+											}
+										</td>
+									</tr>
+								}
+							}
+						</tbody>
+					</table>
+					<div class="text-right mt-2">
+						<a class="green-clr" onclick="AddNewRow(this)"><strong><i class="fas fa-plus"></i>Add</strong></a>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div class="inner-main mb-3">
+			<h2 class="headingtwo"><i class="fas fa-briefcase-medical"></i>Medical Details</h2>
+			<div class="row">
+				<div class="col-sm-3 form-group hw-575">
+					<label>Special Ability <sup>*</sup></label>
+					@Html.EnumDropDownListFor(model => model.SpecialAbility, "Select", htmlAttributes: new { @class = "form-control applyselect" })
+					@Html.ValidationMessageFor(model => model.SpecialAbility, "", new { @class = "text-danger" })
+				</div>
+				<div class="col-sm-9 form-group">
+					<label>Any special medical condition that C3 must be aware of </label>
+					<textarea id="@Html.IdFor(x=>x.AnyMedicalCondition)" name="@Html.IdFor(x=>x.AnyMedicalCondition)" @(Model.SpecialAbility.ToString() == "Yes" ? "" : "readonly") class="form-control">@Model.AnyMedicalCondition</textarea>
+
+					@Html.ValidationMessageFor(model => model.AnyMedicalCondition, "", new { @class = "text-danger" })
+				</div>
+				<div class="col-md-6 col-sm-12 form-group ">
+					<label>Hospital /Physician's Name</label>
+					@Html.TextBoxFor(model => model.PhysicianName, new { @class = "form-control" })
+					@Html.ValidationMessageFor(model => model.PhysicianName, "", new { @class = "text-danger" })
+				</div>
+				<div class="col-md-3 col-sm-4 form-group hw-575">
+					<label>Phone Number</label>
+					@Html.TextBoxFor(model => model.PhysicianNumber, new { @class = "form-control" })
+					@Html.ValidationMessageFor(model => model.PhysicianNumber, "", new { @class = "text-danger" })
+				</div>
+				<div class="col-md-3 col-sm-4 form-group hw-575">
+					<label>Alternative Mobile Number(s)</label>
+					@Html.TextBoxFor(model => model.PhysicianAlternate_No, new { @class = "form-control" })
+					@Html.ValidationMessageFor(model => model.PhysicianAlternate_No, "", new { @class = "text-danger" })
+				</div>
+				<div class="col-md-3 col-sm-4 form-group">
+					<label>Blood Group <sup>*</sup></label>
+					@Html.EnumDropDownListFor(model => model.BloodGroup, "Select", htmlAttributes: new { @class = "form-control applyselect" })
+					@Html.ValidationMessageFor(model => model.BloodGroup, "", new { @class = "text-danger" })
+				</div>
+				<div class="col-md-3 col-sm-4 form-group">
+					<label>Emergency Contact Name <sup>*</sup></label>
+					@Html.TextBoxFor(model => model.emergContact_Name, new { @class = "form-control" })
+					@Html.ValidationMessageFor(model => model.emergContact_Name, "", new { @class = "text-danger" })
+				</div>
+				<div class="col-md-3 col-sm-4 form-group">
+					<label>Emergency Contact Number <sup>*</sup></label>
+					@Html.TextBoxFor(model => model.emergContact_no, new { @class = "form-control" })
+					@Html.ValidationMessageFor(model => model.emergContact_no, "", new { @class = "text-danger" })
+				</div>
+
+				<div class="col-md-3 col-sm-4 form-group">
+					<label>Emergency Contact Relationship <sup>*</sup></label>
+					@Html.TextBoxFor(model => model.emergContact_Relation, new { @class = "form-control" })
+					@Html.ValidationMessageFor(model => model.emergContact_Relation, "", new { @class = "text-danger" })
+				</div>
+
+
+			</div>
+		</div>
+
+		<div class="inner-main mb-5">
+			<h2 class="headingtwo"><i class="fas fa-graduation-cap"></i>Educational and Professional Qualifications</h2>
+			<div class="row">
+
+				<div class="col-md-9 col-sm-12 form-group">
+					<table id="TableQualificationList" class="table table-striped m-0">
+						<thead>
+							<tr>
+								<th class="w-50">S.No.</th>
+								<th class="w-150">Name of the Course</th>
+								<th>Name of the Collage/University</th>
+								<th class="w-100">Location</th>
+								<th class="w-100">Years Attended</th>
+								<th class="w-33 text-center"></th>
+							</tr>
+						</thead>
+						<tbody>
+							@if (Model.QualificationList != null)
+							{
+								int QCount = 0;
+								for (int i = 0; i < Model.QualificationList.Count; i++)
+								{
+									QCount++;
+									<tr>
+										<td>
+											@Html.HiddenFor(model => Model.QualificationList[i].QID, new { @class = "hdnID" })
+											<label id="span_@QCount" name="span_@QCount">@QCount </label>
+										</td>
+										<td>
+											@Html.TextBoxFor(model => Model.QualificationList[i].Course, new { @class = "form-control" })
+											@Html.ValidationMessageFor(model => Model.QualificationList[i].Course, "", new { @class = "text-danger" })
+										</td>
+										<td>
+											@Html.TextBoxFor(model => Model.QualificationList[i].University, new { @class = "form-control" })
+											@Html.ValidationMessageFor(model => Model.QualificationList[i].University, "", new { @class = "text-danger" })
+										</td>
+										<td>
+											@Html.TextBoxFor(model => Model.QualificationList[i].Location, new { @class = "form-control" })
+											@Html.ValidationMessageFor(model => Model.QualificationList[i].Location, "", new { @class = "text-danger" })
+										</td>
+
+										<td>
+											@Html.TextBoxFor(model => Model.QualificationList[i].Year, new { @class = "form-control" })
+											@Html.ValidationMessageFor(model => Model.QualificationList[i].Year, "", new { @class = "text-danger" })
+										</td>
+										<td>
+											@if (QCount > 1)
+											{
+												<a onclick="DeleteRow(this)" class="remove"><i class="fas fa-window-close red-clr" aria-hidden="true"></i></a>
+											}
+											else
+											{
+												<a class="disabled"><i class="fas fa-window-close" aria-hidden="true"></i></a>
+											}
+										</td>
+									</tr>
+								}
+							}
+
+						</tbody>
+					</table>
+					<div class="text-right mt-2">
+						<a class="green-clr" onclick="AddNewRow(this)"><strong><i class="fas fa-plus"></i>Add</strong></a>
+					</div>
+
+				</div>
+
+				<!---->
+			</div>
+		</div>
+
+
+
+		<div class="ftr-btn">
+
+            <div class="container-fluid">
+				<div class="row">
+                    <div class="col-sm-4 text-right mb-0 align-self-center">
+                            <strong><strong>Employee Name: @Model.emp_name (@Model.emp_code)</strong></strong>
+                    </div>
+                    <div class="col-sm-8 text-right mb-0">
+							<button type="submit" class="btn mtr-o-grn" name="Command" value="Add"><i class="fas fa-paper-plane"></i>Submit</button>
+							@*@Html.CreateAnchor(MenuID, "/Employee/PersonalDetails*" + Model.id, "Previous", "btn blk-gdn-btn", "Click to go back", "fas fa-angle-double-left m-0", "")
+							@Html.CreateAnchor(MenuID, "/Employee/GeneralInfo?src=" + Model.id, "Next", "btn blk-gdn-btn", "Click to Next", "fas fa-angle-double-right m-0", "")*@
+							<a data-toggle="tooltip" data-original-title="Click to go back" target="" class="btn blk-gdn-btn" href="/Employee/RegistrationDetails?src=@(clsApplicationSetting.EncryptQueryString(ViewBag.MenuID + "*/Employee/RegistrationDetails*" +Model.id))"><i class="fas fa-angle-double-left " aria-hidden="true"></i>Previous</a>
+							<a data-toggle="tooltip" data-original-title="Click to Next" target="" class="btn blk-gdn-btn" href="/Employee/GeneralInfo?src=@(clsApplicationSetting.EncryptQueryString(ViewBag.MenuID + "*/Employee/GeneralInfo*" +Model.id))">Next <i class="fas fa-angle-double-right m-0" aria-hidden="true"></i></a>
+					</div>
+				</div>
+			</div>
+		</div>
+	}
+</div>
+@section scripts    {
+	@System.Web.Optimization.Scripts.Render("~/bundle/unobtrusivejs")
+	@Html.IncludeVersionedJs(Url.Content("~/assets/design/scripts/AddInit.js"))
+	<script>
+
+        $(document).ready(function () {
+            var LCountryID = $("#LocalAddress_CountryID").find('option:selected').val();
+            var PCountryID = $("#PermanentAddress_CountryID").find('option:selected').val();
+            if (LCountryID) {
+                BindDropDown($("#LocalAddress_CountryID"), 'State_Local');
+                $("#LocalAddress_StateID").val($("#hdnLocalStateID").val()).trigger('change');
+
+            }
+            if (PCountryID) {
+                BindDropDown($("#PermanentAddress_CountryID"), 'State_Permanent');
+
+            }
+
+            $("#LocalAddress_StateID").val($("#hdnLocalStateID").val()).trigger('change');
+            $("#PermanentAddress_StateID").val($("#hdnPermanentStateID").val()).trigger('change');
+
+            $("#LocalAddress_CityID").val($("#hdnLocalCityID").val()).trigger('change');
+            $("#PermanentAddress_CityID").val($("#hdnPermanentCityID").val()).trigger('change');
+
+
+        });
+
+        $('#ChkCopySame').change(function () {
+            CopyDetails(this)
+        });
+        function CopyDetails(obj) {
+            var checkAll = $(obj).is(":checked");
+            if (checkAll) {
+                $("#PermanentAddress_lane1").val($("#LocalAddress_lane1").val());
+                $("#PermanentAddress_lane2").val($("#LocalAddress_lane2").val());
+                $("#PermanentAddress_zip_code").val($("#LocalAddress_zip_code").val());
+				$("#PermanentAddress_phone_no").val($("#LocalAddress_phone_no").val());
+
+                $("#PermanentAddress_CountryID").val($("#LocalAddress_CountryID").val()).trigger('change');
+
+                BindDropDown($("#PermanentAddress_CountryID"), 'StatePermanent');
+                $("#PermanentAddress_StateID").val($("#LocalAddress_StateID").val()).trigger('change');
+
+                BindDropDown($("#PermanentAddress_StateID"), 'CityPermanent');
+                $("#PermanentAddress_CityID").val($("#LocalAddress_CityID").val()).trigger('change');
+
+
+            } else {
+                $("#PermanentAddress_lane1").val('');
+                $("#PermanentAddress_lane2").val('');
+                $("#PermanentAddress_zip_code").val('');
+                $("#PermanentAddress_CountryID").val('').trigger('change');
+                $("#PermanentAddress_StateID").val('').trigger('change');
+                $("#PermanentAddress_CityID").val('').trigger('change');
+				$("#PermanentAddress_phone_no").val('');
+            }
+        }
+
+        function OnSuccess(obj) {
+            if (obj.Status) {
+                SuccessToaster(obj.SuccessMessage);
+                window.location.href = obj.RedirectURL;
+            }
+            else {
+                CloseLoadingDialog();
+                FailToaster(obj.SuccessMessage);
+
+            }
+        }
+
+
+        function BindDropDown(obj, Value) {
+            var SendValue = Value;
+            if (SendValue.indexOf('_') != -1) {
+                SendValue = SendValue.split('_')[0];
+            }
+            var selectedID = $(obj).find("option:selected").val();
+            var data = GetDropDownData(selectedID, SendValue);
+            if (data) {
+                ShowLoadingDialog();
+                if (Value == "State_Local") {
+                    $("#LocalAddress_StateID").empty();
+                    $("#LocalAddress_StateID").append($("<option />").val("").text("Select"));
+                    $("#LocalAddress_CityID").empty();
+                    $("#LocalAddress_CityID").append($("<option  />").val("").text("Select"));
+                    $(data).each(function () {
+                        $("#LocalAddress_StateID").append($("<option />").val(this.ID).text(this.Name));
+                        $("#LocalAddress_StateID").select2();
+                    });
+                }
+                else if (Value == "City_Local") {
+                    $("#LocalAddress_CityID").empty();
+                    $("#LocalAddress_CityID").append($("<option />").val("").text("Select"));
+                    $(data).each(function () {
+                        $("#LocalAddress_CityID").append($("<option />").val(this.ID).text(this.Name));
+                        $("#LocalAddress_CityID").select2();
+                    });
+                }
+                else if (Value == "State_Permanent") {
+                    $("#PermanentAddress_StateID").empty();
+                    $("#PermanentAddress_StateID").append($("<option     />").val("").text("Select"));
+                    $("#PermanentAddress_CityID").empty();
+                    $("#PermanentAddress_CityID").append($("<option     />").val("").text("Select"));
+                    $(data).each(function () {
+                        $("#PermanentAddress_StateID").append($("<option />").val(this.ID).text(this.Name));
+                        $("#PermanentAddress_StateID").select2();
+                    });
+                }
+                else if (Value == "City_Permanent") {
+                    $("#PermanentAddress_CityID").empty();
+                    $("#PermanentAddress_CityID").append($("<option     />").val("").text("Select"));
+                    $(data).each(function () {
+                        $("#PermanentAddress_CityID").append($("<option />").val(this.ID).text(this.Name));
+                        $("#PermanentAddress_CityID").select2();
+                    });
+                }
+            } else {
+                if (Value == "State_Local") {
+                    $("#LocalAddress_StateID").empty();
+                    $("#LocalAddress_StateID").append($("<option     />").val("").text("Select"));
+                    $("#LocalAddress_CityID").empty();
+                    $("#LocalAddress_CityID").append($("<option     />").val("").text("Select"));
+                }
+                else if (Value == "State_Permanent") {
+                    $("#PermanentAddress_StateID").empty();
+                    $("#PermanentAddress_StateID").append($("<option     />").val("").text("Select"));
+                    $("#PermanentAddress_CityID").empty();
+                    $("#PermanentAddress_CityID").append($("<option     />").val("").text("Select"));
+                }
+            }
+            CloseLoadingDialog();
+        }
+
+
+        function AddNewRow(obj) {
+            var Table = $(obj).parent("div").parent('div').find('table');
+            var TableID = $(Table).attr('ID');
+            var LastTRCount = parseInt($('#' + TableID + '').find("tbody tr").length) - 1;
+            var $tableBody = $('#' + TableID + '').find("tbody"),
+                $trLast = $tableBody.find("tr:last"),
+                $trNew = $trLast.clone();
+            $trNew.find("td:last").html('<a onclick="DeleteRow(this)" class="remove"><i class="fas fa-window-close red-clr" aria-hidden="true"></i></a>')
+            $trNew.find("label").each(function () {
+                $(this).attr({
+                    'id': function (_, id) { var arr = id.split('_'); return id.replace(arr[1], LastTRCount + 1); },
+                });
+                $(this).html(parseInt($('#' + TableID + '').find("tbody tr").length) + 1)
+            });
+
+            $trNew.find("input").each(function (i) {
+                $(this).attr({
+                    'id': function (_, name) { return name.replace('_' + LastTRCount + '_', '_' + (parseInt(LastTRCount) + 1) + '_'); },
+                    'name': function (_, name) { return name.replace('[' + LastTRCount + ']', '[' + (parseInt(LastTRCount) + 1) + ']'); },
+                });
+                $(this).val('')
+            });
+
+            $trNew.find("span").each(function (i) {
+                if ($(this).attr("data-valmsg-for")) {
+                    $(this).attr({
+                        'data-valmsg-for': function (_, name) { return name.replace('[' + LastTRCount + ']', '[' + (parseInt(LastTRCount) + 1) + ']'); }
+                    });
+                }
+                if ($(this).attr("for")) {
+                    $(this).attr({
+                        'for': function (_, name) { return name.replace('_' + LastTRCount + '_', '_' + (parseInt(LastTRCount) + 1) + '_'); }
+                    });
+                }
+            });
+
+            $trLast.after($trNew);
+            var form = $("#PersonalDetailsFrom").closest("form");
+            form.removeData('validator');
+            form.removeData('unobtrusiveValidation');
+            $.validator.unobtrusive.parse(form);
+        }
+
+
+        function DeleteRow(obj) {
+            var Response = 0;
+            var ID = $(obj).closest('tr').find('.hdnID').val();
+            var Table = $(obj).closest('table');
+            var TableID = $(Table).attr('ID');
+            var Doctype = "";
+
+
+            ConfirmMsgBox("Are you sure want to delete", '', function () {
+
+                if (TableID == "TableReferencesList") {
+                    Doctype = "EMPReferences";
+                }
+                else if (TableID == "TableQualificationList") {
+                    Doctype = "EMPQualifications";
+                }
+                if (ID) {
+                    var data = DelRecord_Common(ID, Doctype);
+                    if (data.Status) {
+                        Response = 1;
+                    }
+                    else {
+                        FailToaster(data.SuccessMessage);
+
+                    }
+                }
+                if (Response == 1 || !ID) {
+                    var TotalRowCount = $('#' + TableID + '').find("tbody tr").length;
+
+                    $(obj).closest('tr').remove();
+                    $('#' + TableID + ' TBODY TR').each(function (i) {
+                        $(this).closest("tr").find("label").each(function () {
+                            $(this).attr({
+                                'id': function (_, id) { var arr = id.split('_'); return id.replace(arr[1], i); },
+                            });
+                            $(this).html(i + 1)
+                        });
+
+
+                        $(this).closest("tr").find("input").each(function () {
+                            $(this).attr({
+                                'id': function (_, id) { return id.replace('_' + (parseInt(i) + 1) + '_', '_' + i + '_'); },
+                                'name': function (_, name) { return name.replace('[' + (parseInt(i) + 1) + ']', '[' + i + ']'); },
+                            });
+                        });
+
+                        $(this).closest("tr").find("span").each(function () {
+                            if ($(this).attr("data-valmsg-for")) {
+                                $(this).attr({
+                                    'data-valmsg-for': function (_, name) { return name.replace('[' + (parseInt(i) + 1) + ']', '[' + i + ']'); },
+                                });
+                            }
+                            if ($(this).attr("for")) {
+                                $(this).attr({
+                                    'for': function (_, id) { return id.replace('_' + (parseInt(i) + 1) + '_', '_' + i + '_'); },
+                                });
+                            }
+                        });
+                    });
+                    var form = $("#PersonalDetailsFrom").closest("form");
+                    form.removeData('validator');
+                    form.removeData('unobtrusiveValidation');
+                    $.validator.unobtrusive.parse(form);
+
+
+                }
+            })
+        }
+
+
+        $('#marital_status').change(function () {
+            var val = $("#marital_status").find("option:selected").val();
+            $("#PartnerName").prop('readonly', true);
+            $("#SpouseName").prop('readonly', true);
+            $("#PartnerName").val('');
+            $("#SpouseName").val('');
+            if (val == 1) {
+                $("#SpouseName").prop('readonly', false);
+                $("#PartnerName").val('');
+
+            }
+            else if (val == 2) {
+                $("#PartnerName").prop('readonly', false);
+                $("#SpouseName").val('');
+            }
+        });
+
+
+        $('#nationality').change(function () {
+            var val = $("#nationality").find("option:selected").val();
+            if (val == 1) {
+                $(".Foreigners").prop('readonly', false);
+                $("#CountryID").prop('disabled', false);
+            } else {
+
+                $("#CountryID").val('').trigger('change');
+                $(".Foreigners").val('');
+
+                $(".Foreigners").prop('readonly', true);
+                $("#CountryID").prop('disabled', true);
+            }
+		});
+        function changeChildCaption(obj) {
+            var a = Number($(obj).val());
+            if (a <= 1)
+            {
+                $(obj).closest('div').find('label').text('No. of Child');
+
+            }
+            else
+            {
+                $(obj).closest('div').find('label').text("No. of Childrens");
+            }
+        }
+
+        $(document).ready(function () {
+            var ResidentialStatus = '@Model.ResidentialStatus';
+            if (ResidentialStatus == "Resident") {
+                $('#LocalAddress_lane1').rules('add', {
+                    required: true,
+                    messages: {
+                        required: "Hey! You missed this field."
+                    }
+                });
+            }
+
+
+        });
+
+        $('#SpecialAbility').change(function () {
+            if ($(this).val() == 1) {
+                $("#AnyMedicalCondition").prop('readonly', false);
+            } else {
+                $("#AnyMedicalCondition").prop('readonly', true);
+                $("#AnyMedicalCondition").val('');
+            }
+		});
+		
+	</script>
+}

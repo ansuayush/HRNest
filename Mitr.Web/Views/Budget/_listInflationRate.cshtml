@@ -1,0 +1,46 @@
+﻿@model Mitr.Models.BudgetMaster.AddInflationRate
+<table class="table">
+    <thead>
+        <tr>
+            <th>Ledger</th>
+            <th class="w-80">Inflation Rate</th>
+        </tr>
+    </thead>
+    <tbody>
+        @{
+            string MenuID = "0";
+            if (ViewBag.MenuID != null)
+            {
+                MenuID = ViewBag.MenuID;
+            }
+
+
+
+        }
+
+        @if (Model.InflationList.Count > 0)
+        {
+
+            for (int i = 0; i < Model.InflationList.Count; i++)
+            {
+
+                <tr>
+                    <td>
+                        <strong>
+                            @Model.InflationList[i].Ledger
+                            @Html.HiddenFor(model => model.InflationList[i].LedgerId)
+                        </strong>
+                    </td>
+
+                    <td>
+                        @Html.TextBoxFor(model => model.InflationList[i].InflationRate, new { @class = "form-control text-right", @onkeypress = "return isNumberKey(event,this)" })
+                        @Html.HiddenFor(model => model.InflationList[i].Id)
+                    </td>
+                </tr>
+            }
+
+        }
+    </tbody>
+</table>
+@Html.IncludeVersionedJs(Url.Content("~/assets/design/Scripts/SyncScripts.js"))
+@Html.IncludeVersionedJs(Url.Content("~/assets/design/scripts/CustomValidate.js"))

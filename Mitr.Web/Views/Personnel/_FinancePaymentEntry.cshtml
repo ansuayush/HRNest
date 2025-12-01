@@ -1,0 +1,221 @@
+﻿@using System.Data
+@model IList<Personnels.FinancePaymentList>
+
+@{
+	string MenuID = "0";
+	if (ViewBag.MenuID != null)
+	{
+		MenuID = ViewBag.MenuID;
+	}
+}
+
+@using (Ajax.BeginForm("_FinancePaymentEntry", "Activity",
+		new { src = clsApplicationSetting.EncryptQueryString(ViewBag.MenuID.ToString() + "*/Activity/_FinancePaymentEntry") },
+		new AjaxOptions { HttpMethod = "POST", OnSuccess = "OnSuccessAction", OnFailure = "OnSuccessCOAction" },
+	new { @id = "_FinancePaymentEntryFrom" })
+	)
+{
+
+	@Html.AntiForgeryToken()
+	<div class="x_content table-currency mt-0">
+		<div class="table-responsive">
+			<table id="tableApprove" class="table table-striped table-bordered dt-responsive nowrap tbltick new_width" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
+				<thead>
+					<tr>
+						<th width="10">S.no.</th>
+						<th width="80">Request No</th>
+						<th width="80">Request Date</th>
+						<th width="80">Employee Code</th>
+						<th>Employee Name</th>
+						<th>Component Name</th>
+						<th width="100">Claim Amount</th>
+						<th width="100">Balance Amount</th>
+						<th width="110">View</th>
+						@if (ViewBag.Approve == 0 || ViewBag.Approve == 1)
+						{
+							<th width="120" class="text-center">Action</th>
+						}
+					</tr>
+					<tr class="searchbar">
+						<th class="searchhide"> </th>
+						<th></th>
+						<th></th>
+						<th></th>
+						<th></th>
+						<th></th>
+						<th></th>
+						<th></th>
+						<th></th>
+						@if (ViewBag.Approve == 0 || ViewBag.Approve == 1)
+						{
+							<th class="searchhide"> </th>
+						}
+
+					</tr>
+				</thead>
+				<tbody>
+					@{ int Count = 0;}
+					@for (int i = 0; i < Model.Count; i++)
+					{
+						Count++;
+						<tr>
+							<td>
+								@Count
+								@Html.HiddenFor(x => Model[i].ClaimId)
+								<input type="hidden" name="C" value="@Model[i].FYId,@Model[i].HeadId,@Model[i].ClaimId" />
+								<input type="hidden" name="A" value="@Model[i].FYId,@Model[i].EmpId,@Model[i].HeadId,@Model[i].ClaimId,1" />
+								<input type="hidden" name="R" value="@Model[i].FYId,@Model[i].EmpId,@Model[i].HeadId,@Model[i].ClaimId,2" />
+							</td>
+							<td> @Model[i].RequestNo</td>
+							<td> @(Convert.ToDateTime(Model[i].RequestDate).ToString("dd/MM/yyyy"))</td>
+							<td> @Model[i].EmpCode</td>
+							<td> @Model[i].EmpName</td>
+							<td> @Model[i].HeadName</td>
+							<td class="text-right"> @Model[i].ClaimAmt.ToString("#,##0")</td>
+							<td class="text-right"> @Model[i].BalanceAmt.ToString("#,##0")</td>
+							<td>
+								<a class=" anchorpopup" data-toggle="tooltip" data-original-title="Claim Request Details"><i class="fas fa-exclamation-circle"></i>Claim Request Details</a>
+							</td>
+							@if (ViewBag.Approve == 0)
+							{
+								<td>
+									<a class=" btnApprove green-clr"><i class="fas fa-check"></i>Approved</a>
+									<span class="line-sp">|</span><a class=" btnReject rct-clr"><i class="fa fa-ban" aria-hidden="true"></i>Reject</a>
+								</td>
+							}
+							@if (ViewBag.Approve == 1)
+							{
+								<td>
+									<a class=" btnPrint"><i class="fas fa-eye"></i>View & Print</a>
+								</td>
+							}
+						</tr>
+					}
+				</tbody>
+			</table>
+		</div>
+	</div>
+}
+
+<div class="modal fade pop-dgn " id="loadvoucher">
+	<div class="modal-dialog modal-xl">
+		<div class="modal-content">
+			<div class="modal-header blk-gdn-btn">
+				<h4 class="modal-title"> View Claim Voucher </h4>
+				<div class="close" data-dismiss="modal">&times;</div>
+			</div>
+			<div id="LoadVoucerDiv"></div>
+		</div>
+	</div>
+</div>
+
+<div class="modal fade print pop-dgn " id="printvoucher">
+	<div class="modal-dialog modal-xl">
+		@if (ViewBag.Approve == 1)
+		{
+			<div class="modal-content p-3">
+				<div class="bgbox">
+					<div class="row">
+						<div class="col-sm-2 mb-0 align-self-center">
+							<img src="https://mitr2.c3india.org/assets/design/images/c3.png" alt="">
+						</div>
+						<div class="col-sm-8 mb-0 text-center align-self-center">
+							<strong class="cntitle">Centre for Catalyzing Change</strong><br>
+							<small class="fn-md">C-27, 2nd Floor Qutab Institutional Area, New Delhi - 110 016</small>
+						</div>
+
+						<div class="col-sm-2 mb-0 align-self-center text-right">
+							<img src="https://mitr2.c3india.org/assets/design/images/mitr-logo.png" alt="">
+						</div>
+					</div>
+				</div>
+				<div id="printVoucerDiv"></div>
+			</div>
+		}
+		else
+		{
+			<div class="modal-content">
+				<div class="modal-header blk-gdn-btn">
+					<h4 class="modal-title"> View Claim Voucher </h4>
+					<div class="close" data-dismiss="modal">&times;</div>
+				</div>
+				<div id="printVoucerDiv"></div>
+			</div>
+		}
+	</div>
+</div>
+
+<script>
+	$('.btnApprove').on('click', function (e) {
+		var ViewId = $(this).closest("tr").find("input:hidden[name=A]").val();
+		FinanceVoucher(ViewId);
+	});
+
+	$('.btnReject').on('click', function (e) {
+		var ViewId = $(this).closest("tr").find("input:hidden[name=R]").val();
+		FinanceVoucher(ViewId);
+	});
+
+	$('.btnPrint').on('click', function (e) {
+		var ViewId = $(this).closest("tr").find("input:hidden[name=A]").val();
+		FinanceVoucher(ViewId);
+	});
+
+	function FinanceVoucher(ID) {
+		var ID = ID;
+        var MenuID = Number('@MenuID');
+		$.ajax({
+			url: "/Personnel/_FinanceViewVoucher",
+			type: "Get",
+			data: {
+				src: EncryptQueryStringJSON(MenuID + "*" + "/Personnel/_FinanceViewVoucher" + "*" + ID)
+			},
+			success: function (data) {
+				$("#printVoucerDiv").html(data)
+				$("#printvoucher").modal('show');
+				var form = $("form")
+					.removeData("validator")
+					.removeData("unobtrusiveValidation");
+				$.validator.unobtrusive.parse(form);
+			}
+		});
+	}
+
+	$('.anchorpopup').on('click', function (e) {
+		e.preventDefault();
+		e.stopPropagation();
+		var ClaimId = $(this).closest("tr").find("input:hidden[name=C]").val();
+		ClaimDetails(ClaimId);
+	});
+
+	function ClaimDetails(ID) {
+		var ID = ID;
+		var MenuID = Number('@MenuID');
+		$.ajax({
+			url: "/Personnel/ReimbAddVoucher",
+			type: "Get",
+			data: {
+				src: EncryptQueryStringJSON(MenuID + "*" + "/Personnel/ReimbAddVoucher" + "*" + ID)
+			},
+			success: function (data) {
+				$("#LoadVoucerDiv").html(data)
+				$("#loadvoucher").modal('show');
+				var form = $("form")
+					.removeData("validator")
+					.removeData("unobtrusiveValidation");
+				$.validator.unobtrusive.parse(form);
+			}
+		});
+	}
+
+	function OnSuccess(obj) {
+		if (obj.Status) {
+			window.location.reload();
+			SuccessToaster(obj.SuccessMessage);
+		}
+		else {
+			CloseLoadingDialog();
+			FailToaster(obj.SuccessMessage);
+		}
+	}
+</script>

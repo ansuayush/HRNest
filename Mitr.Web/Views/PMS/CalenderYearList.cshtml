@@ -1,0 +1,106 @@
+﻿@model IList<PMS.CalenderYear.List>
+
+@{
+	var Modify = clsApplicationSetting.GetSessionValue("Modify");
+}
+<div class="inner-main pb-0">
+	@Html.Partial("ListHeader_Partial", "Appraisal Period")
+
+
+	@Html.EJS().Grid("Grid").DataSource((List<PMS.CalenderYear.List>)Model).GridLines(Syncfusion.EJ2.Grids.GridLine.Both).Columns(col =>
+	   {
+		   col.Field("ID").Visible(false).Add();
+		   col.Field("RowNum").HeaderText("SNo.").Width("30").Add();
+		   col.Field("year").HeaderText("Appraisal Period").Width("600").Add();
+		   col.Field("from_date").HeaderText("Start Date").Width("50").Add();
+		   col.Field("to_date").HeaderText("End Date").Width("50").Add();
+		   col.HeaderText("Action").TextAlign(Syncfusion.EJ2.Grids.TextAlign.Center).Template("#tmpAction").Width("30").Add();
+
+	   }).AllowPaging().PageSettings(page => page.PageSize(10)).Toolbar(new List<string>() { "Search" }).Render()
+
+</div>
+<script id="tmpAction" type="text/x-template">
+	<input type="hidden" name="I" value="${ID}" />
+	<a onclick="BindEdit(this)"><i class="fas fa-edit checkgreen" aria-hidden="true"></i> </a>
+
+</script>
+
+@Html.IncludeVersionedJs(Url.Content("~/assets/design/Scripts/SyncScripts.js"))
+@(Html.EJS().ScriptManager())
+
+<div class="modal fade pop-dgn" id="ViewModal">
+	<div class="modal-dialog modal-md">
+		<div class="modal-content">
+
+			<div class="modal-header blk-gdn-btn">
+				<h4 class="modal-title"><i class="fa fa-plus"></i>Add Appraisal Year</h4>
+				<div class="close" data-dismiss="modal">&times;</div>
+			</div>
+			<!-- Modal body -->
+			<div class="modal-body">
+				<div id="TagetDivAdd"></div>
+			</div>
+		</div>
+	</div>
+</div>
+
+
+@section scripts    {
+
+
+	@System.Web.Optimization.Scripts.Render("~/bundle/unobtrusivejs")
+	@Html.IncludeVersionedJs(Url.Content("~/assets/design/Scripts/ToolTip.js"))
+	@System.Web.Optimization.Scripts.Render("~/assets/design/Scripts/AddInit.js")
+
+	<script>
+
+		function ListAdd(ID) {
+			ListHeaderAdd(ID)
+		}
+		function ListHeaderAdd(CMSID) {
+        if (CMSID == undefined)
+        {
+            CMSID = 0;
+			}
+		
+			$.ajax({
+				url: "/PMS/_CalenderYearAdd",
+				type: "Get",
+				data: { src: EncryptQueryStringJSON(@ViewBag.MenuID+"*" + "/PMS/_CalenderYearAdd" + "*" + CMSID) },
+                success: function (data)
+                {
+					$("#TagetDivAdd").empty();
+					$("#TagetDivAdd").html(data);
+					$("#ViewModal").modal("show");
+					$(".applyselect").select2();
+                     var form = $("form")
+                .removeData("validator")
+                .removeData("unobtrusiveValidation");
+                    $.validator.unobtrusive.parse(form);
+
+				},
+				error: function (er) {
+					alert(er);
+
+				}
+			});
+            }
+
+		function OnFYSuccess(obj)
+    {
+			if (obj.Status) {
+				SuccessToaster(obj.SuccessMessage);
+				$("#ViewModal").modal("hide");
+				window.location.reload();
+        }
+		else {
+			CloseLoadingDialog()
+			FailToaster(obj.SuccessMessage);
+        }
+
+		}
+
+
+	</script>
+
+}

@@ -1,0 +1,83 @@
+﻿@using System.Data
+@model DataSet
+
+<div class="x_content table-currency">
+    <div class="table-responsive">
+        <table id="tableApprove" class="table table-striped table-bordered dt-responsive nowrap tbltick new_width" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
+            <thead>
+                <tr>
+                    <th>S.no.</th>
+                    <th>Membership</th>
+                    <th>Membership No</th>
+                    <th>Member Name</th>
+                    <th>Title </th>
+                    <th>Father's Name	</th>
+                    <th>Residential Address	</th>
+                    <th>Email	</th>
+                    <th>Mobile</th>
+                    <th>PAN</th>
+                    <th>Ward/circle where assessed to tax	</th>
+                    <th>Source of Income/Nature of Business	</th>
+                    <th>Name of current employer and designation	</th>
+                    <th>Date of Joining	</th>
+                    <th>Date of Renewal	</th>
+                    <th>Leaving Date(General Body)	</th>
+                    <th>Leaving Date(Governing Body)</th>
+                </tr>
+                <tr class="searchbar">
+                    <th class="searchhide"></th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @{ int Count = 0;}
+                @if (Model != null)
+                {
+                    foreach (DataRow item in Model.Tables[0].Rows)
+                    {
+                        Count++;
+                        <tr>
+                            <td>@Count</td>
+
+                            <td> @item["membership_type"]</td>
+                            <td> @item["memship_no"]</td>
+                            <td> @item["member_name"]</td>
+                            <td> @item["title"]</td>
+                            <td> @item["father_name"]</td>
+                            <td> @item["address"]</td>
+                            <td> @item["email"]</td>
+                            <td> @item["mobile"]</td>
+                            <td> @item["panno"]</td> 
+                            <td> @item["ward_accessed"]</td>
+                            <td> @item["source_income"]</td>
+                            <td> @item["currentdet_emp"]</td>
+                            <td> @(Convert.ToDateTime(item["doj"]).Year == 1899 ? "-" : Convert.ToDateTime(item["doj"]).ToString("dd-MMM-yyyy")) </td>
+                            <td> @(Convert.ToDateTime(item["renewal_date"]).Year == 1899 ? "-" : Convert.ToDateTime(item["renewal_date"]).ToString("dd-MMM-yyyy")) </td>
+                            <td> @(Convert.ToDateTime(item["Leaving_Date"]).Year == 1899 ? "-" : Convert.ToDateTime(item["Leaving_Date"]).ToString("dd-MMM-yyyy")) </td>
+                            <td> @(Convert.ToDateTime(item["dolgg"]).Year == 1899 ? "-" : Convert.ToDateTime(item["dolgg"]).ToString("dd-MMM-yyyy")) </td>
+                            <td></td>
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+

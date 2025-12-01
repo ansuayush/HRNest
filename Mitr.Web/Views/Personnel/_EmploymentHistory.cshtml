@@ -1,0 +1,268 @@
+﻿@model  SalaryStructure.EmployeeSalary.Add
+@{
+    string MenuID = ViewBag.MenuID.ToString();
+    bool ButtonEnabled = Model.CurrentRecord >= Model.TotalRecordsCount ? true : false;
+
+}
+
+<div class="row">
+
+    <div class="col-sm-9 form-group">
+        <label>Employee Name</label>
+        @if (Model.id != 0)
+        {
+            <input type="text" placeholder="enter" value="@Model.emp_name" disabled="">
+            @Html.HiddenFor(x => Model.Empid)
+        }
+        @*else
+            {
+                @Html.DropDownListFor(n => n.Empid, new SelectList(Model.lstEmp, "ID", "Name", Model.Empid), "Select", new { @class = "form-control  applyselect", OnChange = "ShowEmpDetail()" })
+                @Html.ValidationMessageFor(model => model.Empid, "", new { @class = "text-danger" })
+            }*@
+    </div>
+    <div class="col-sm-3 form-group">
+        <label>Employee Code </label>
+        <input type="text" placeholder="enter" value="@Model.emp_code" disabled="">
+    </div>
+    <div class="col-sm-3 form-group">
+        <label>Designation </label>
+        <input type="text" placeholder="enter" value="@Model.Designation" disabled="">
+    </div>
+
+    <div class="col-sm-3 form-group">
+        <label>Location </label>
+        <input type="text" placeholder="enter" value="@Model.Location" disabled="">
+    </div>
+    <div class="col-sm-3 form-group">
+        <label>Grade </label>
+        @Html.DropDownListFor(n => n.Gradeid, new SelectList(Model.lstGrade, "ID", "Name", Model.Gradeid), "Select", new { @class = "form-control  applyselect", @OnChange = "FillRank(this)", @disabled = "disabled" })
+        @Html.ValidationMessageFor(model => model.Gradeid, "", new { @class = "text-danger" })
+    </div>
+    <div class="col-sm-3 form-group">
+        <label>Role/Rank </label>
+        @Html.TextBoxFor(model => model.Role, new { @class = "form-control", @placeholder = "Role", @disabled = "" })
+    </div>
+    <div class="col-sm-3 form-group">
+        <label>Category </label>
+        <input type="text" placeholder="enter" value="@Model.EmploymentTerm" disabled="">
+    </div>
+    <div class="col-sm-3 form-group">
+        <label>Sub Category </label>
+        <input type="text" placeholder="enter" value="@Model.Subcategory" disabled="">
+    </div>
+
+    <div class="col-sm-3 form-group">
+        <label>Steps </label>
+        <input type="number" placeholder="" value="" disabled="">
+    </div>
+
+    <div class="col-sm-3 form-group">
+        <label>Specify Hours </label>
+        @Html.TextBoxFor(model => model.WorkingHours, new { @class = "form-control", @placeholder = "Specify Hours", @Type = "Number", @Readonly = "" })
+        @Html.ValidationMessageFor(model => model.WorkingHours, "", new { @class = "text-danger" })
+    </div>
+</div>
+
+<div class="col-sm-12 mt-2">
+    <div class=" form-group">
+        <hr>
+        <span class="hr-aps lgt-text font-sm">Salary Structure</span>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-sm-12 form-group">
+        @{
+            var SalryStructureList = Model.lstSalryStructure.GroupBy(x => x.Componentid)
+                        .Select(x => new
+                        {
+                            REC_AppID = x.Key,
+                            Component = x.Select(ex => ex.Component).FirstOrDefault(),
+                            Empid = x.Select(ex => ex.Empid).FirstOrDefault(),
+                            Componentid = x.Select(ex => ex.Componentid).FirstOrDefault()
+                        })
+                        .ToList();
+        }
+        <div class="col-sm-12 form-group">
+            <br />
+            <table width="50%">
+                @{ string colorcode = string.Empty;}
+                @for (int i = 0; i < SalryStructureList.Count; i++)
+                {
+                    <tr class="prc-tbltr" style="background-color:@colorcode">
+                        <td>
+                            @if ((SalryStructureList[i].Component == "Effective Date") || (SalryStructureList[i].Component == "Hourly Rate") || (SalryStructureList[i].Component == "Annual Salary") || (SalryStructureList[i].Component == "Salary") || (SalryStructureList[i].Component == "Total CTC") || (SalryStructureList[i].Component == "Benifits") || (SalryStructureList[i].Component == "Total Benifits"))
+                            {
+                                if ((SalryStructureList[i].Component == "Hourly Rate") || (SalryStructureList[i].Component == "Total Benifits"))
+                                {
+                                    <strong style="color:#ff6a00">@SalryStructureList[i].Component</strong>
+                                    colorcode = "#ddd";
+                                }
+                                else if ((SalryStructureList[i].Component == "Salary") || (SalryStructureList[i].Component == "Benifits"))
+                                {
+                                    <strong style="color:#f8af17;">@SalryStructureList[i].Component </strong>
+                                }
+                                else if ((SalryStructureList[i].Component == "Effective Date"))
+                                {
+                                    <strong style="color:#ff6a00;">@SalryStructureList[i].Component </strong>
+                                }
+                                else if ((SalryStructureList[i].Component == "Annual Salary") || (SalryStructureList[i].Component == "Total CTC"))
+                                {
+                                    <strong style="color: #0fe92b;">@SalryStructureList[i].Component </strong>
+                                }
+                                else
+                                { <strong>@SalryStructureList[i].Component</strong>}
+                        }
+                        else
+                        {
+                            @SalryStructureList[i].Component
+
+
+                        }
+
+                        </td>
+                        @for (int j = 0; j < Model.lstSalryStructure.Count; j++)
+                        {
+                            if (Model.lstSalryStructure.Where(n => n.Empid == SalryStructureList[i].Empid && n.Componentid == SalryStructureList[i].Componentid).ToList().Count > 0)
+                            {
+                                var list = Model.lstSalryStructure.Where(n => n.Empid == SalryStructureList[i].Empid && n.Componentid == SalryStructureList[i].Componentid).FirstOrDefault();
+                                if ((Model.lstSalryStructure[j].Componentid == list.Componentid) && (SalryStructureList[i].Empid == list.Empid))
+                                {
+                                    <td class=" text-right" width="100">
+
+                                        @*<strong>  @(string.Format("{0:#,0}", Convert.ToDecimal(Model.lstSalryStructure[j].Amount))) </strong>*@
+                                        @if (list.Componentid != -3 && list.Componentid != -6 && list.Componentid != 0)
+                                        {
+                                            if ((SalryStructureList[i].Component == "Hourly Rate"))
+                                            {
+                                                <strong style="color:#ff6a00;"> @Convert.ToDouble(Model.lstSalryStructure[j].Amount).ToString("#,##0.00") </strong>
+                                            }
+                                            else if ((SalryStructureList[i].Component == "Total Benifits"))
+                                            {
+                                                <strong style="color:#ff6a00;"> @Convert.ToDouble(Model.lstSalryStructure[j].Amount).ToString("#,##0") </strong>
+                                            }
+                                            else if ((SalryStructureList[i].Component == "Annual Salary") || (SalryStructureList[i].Component == "Total CTC"))
+                                            {
+                                                <strong style="color:#0fe92b;"> @Convert.ToDouble(Model.lstSalryStructure[j].Amount).ToString("#,##0") </strong>
+                                            }
+
+                                            else
+                                            { @Convert.ToDouble(Model.lstSalryStructure[j].Amount).ToString("#,##0")
+                                            }
+                                        }
+                                        else
+                                        {
+                                            if ((SalryStructureList[i].Component == "Effective Date"))
+                                            {
+                                            <strong style="color:#ff6a00;">@Model.lstSalryStructure[j].EffectiveDate</strong>
+                                            }
+                                            
+                                        }
+                                    </td>
+                                }
+                            }
+
+                        }
+                    </tr>
+                }
+            </table>
+        </div>
+
+
+
+
+        @*<tr class="green-clr lgt-mtr-o-bg">
+                    <td><strong>Total CTC</strong></td>
+                    <td class="text-right"><strong><span id="txtCTC"> @(string.Format("{0:#,0}", Convert.ToDecimal(CTC))) </span></strong> </td>
+                </tr>
+                <tr class="lgt-mtr-o-bg">
+                    <td><strong>No. of Hours</strong> </td>
+                    <td class="text-right"><strong>@WorkingHours</strong> </td>
+                </tr>
+                <tr class="lgt-mtr-o-bg">
+                    <td><strong>Hourly Rate</strong></td>
+                    @{
+                        Model.WorkingHours = WorkingHours;
+                        Model.CTC = CTC.ToString();
+                    }
+                    @Html.HiddenFor(x => Model.TotalHours)
+                    @Html.HiddenFor(x => Model.CTC, new { @class = "CTC" })
+                    @Html.HiddenFor(x => Model.HourlyRate)
+                    <td class="text-right"><strong> @Model.HourlyRate</strong></td>
+                </tr>
+            </table> *@
+    </div>
+</div>
+
+@section scripts    {
+    @System.Web.Optimization.Scripts.Render("~/bundle/unobtrusivejs")
+    @Html.IncludeVersionedJs(Url.Content("~/assets/design/scripts/AddInit.js"))
+    <script>
+        $(document).ready(function () {
+            var Id = $("#id").val();
+            ListSalaryStructure(Id)
+        });
+
+
+
+        function OnSuccess(obj) {
+            if (obj.Status) {
+                SuccessToaster(obj.SuccessMessage);
+                if (obj.AdditionalMessage == "Draft") {
+                    window.location.reload();
+                }
+                else {
+                    window.location.href = obj.RedirectURL;
+                }
+
+            }
+            else {
+                CloseLoadingDialog();
+                FailToaster(obj.SuccessMessage);
+
+            }
+        }
+
+        $('#ddRoleIDs').change(function () {
+            GetRolesValue()
+        });
+        function GetRolesValue() {
+            var ddRoleIDs = $("#ddRoleIDs").val();
+            $("#UserDetails_RoleIDs").val(ddRoleIDs);
+        }
+
+
+        function FillRank(obj) {
+            var ID = $(obj).find('option:selected').val();
+            if (ID != "") {
+                var data = GetGenerateValues(ID, "SS_GRADE_ROLE");
+                if (data.Status) {
+                    $("#Role").val(data.SuccessMessage);
+                }
+            }
+        }
+
+        function FillDays(obj) {
+            var ID = $(obj).find('option:selected').val();
+            if (ID != "") {
+                var data = GetGenerateValues(ID, "SS_SUBCATEGORY_DAYS");
+                if (data.Status) {
+                    $("#Days").val(data.SuccessMessage);
+                    $("#WorkingHours").val(data.ID);
+                }
+            }
+        }
+        function FnCalculateCTC() {
+            var CTC = "0";
+            $('#tblSalaryStructure  TBODY TR').each(function (i) {
+                $(this).closest("tr").find(".Amount").each(function () {
+                    CTC = parseFloat(CTC) + parseFloat($(this).val());
+                    $(".CTC").val(CTC);
+                    $("#txtCTC").html(CTC);
+                });
+            });
+        }
+
+
+    </script>
+}

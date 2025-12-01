@@ -1,0 +1,391 @@
+﻿
+@{
+	ViewBag.Title = "HRScreenOnboard";
+	Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+<div class="container-fluid text-clr">
+	<!-- Start -->
+	<div class="inner-main defult-height pb-0">
+				<h1 class="heading-one ">Confirmed Candidates</h1>
+				<div class="table-responsive">
+					<div id="hrTable"></div>
+				</div>		
+	</div>
+	<!----End start-->
+</div>
+<input type="hidden" id="hdnCanId" />
+<input type="hidden" id="hdnSourceCode" />
+<div class="modal fade confirmmsg" id="confirmmsg">
+	<div class="modal-dialog modal-md ">
+		<div class="modal-content">
+			<!-- Modal Header -->
+			<div class="swal-icon swal-icon--warning">
+				<span class="swal-icon--warning__body">
+					<span class="swal-icon--warning__dot"></span>
+				</span>
+			</div>
+
+			<div class="modal-body ">
+				<div class="swal-title text-center">Do you want to link with consultant database ?</div>
+			</div>
+			<div class="modal-footer">
+				<button type="button" onclick="RedirectToOffer();" data-dismiss="modal" data-toggle="modal" class="btn cnl-btn hidemodalno">No</button>
+				<button type="button" onclick="ChangeStatus();" class="btn mtr-o-grn hidemodal">Yes</button>
+
+			</div>
+
+		</div>
+
+
+
+	</div>
+
+</div>
+<button type="button" style="display:none;" data-toggle="modal" data-target="#confirmmsg" id="btnMulti" class="btn green-clr  m-0"><i class="fas fa-plus"></i>ModelMulti</button>
+
+<script>
+	$('.hidemodal').click(function () {
+		$('.confirmmsg').modal('hide');
+
+	});
+
+</script>
+
+<style>
+	
+
+	#nav a {
+		color: #4CAF50;
+		font-size: 20px;
+		margin-top: 22px;
+		font-weight: 600;
+	}
+
+	a:hover, a:visited, a:link, a:active {
+		text-decoration: none!important;
+	}
+</style>
+<script>
+
+	//$(document).ready(function () {
+	//	$('#tblOnboardUsers').after('<div id="nav"></div>');
+	//	var rowsShown = 5;
+	//	var rowsTotal = $('#tblOnboardUsers tbody tr.view').length;
+	//	var numPages = rowsTotal / rowsShown;
+	//	for (i = 0; i < numPages; i++) {
+	//		var pageNum = i + 1;
+	//		$('#nav').append('<a href="#" rel="' + i + '">' + pageNum + '</a> ');
+	//	}
+	//	$('#tblOnboardUsers tbody tr').hide();
+	//	$('#tblOnboardUsers tbody tr').slice(0, rowsShown).show();
+	//	$('#nav a:first').addClass('active');
+	//	$('#nav a').bind('click', function () {
+	//		$('#nav a').removeClass('active');
+	//		$(this).addClass('active');
+	//		var currPage = $(this).attr('rel');
+	//		var startItem = currPage * rowsShown;
+	//		var endItem = startItem + rowsShown;
+	//		$('#tblOnboardUsers tbody tr').css('opacity', '0.0').hide().slice(startItem, endItem).
+	//			css('display', 'table-row').animate({ opacity: 1 }, 300);
+	//	});
+	//});
+</script>
+<script type="text/javascript">
+	$(function () {
+		$(".fold-table tr.view").on("click", function () {
+			$(this).toggleClass("open").next(".fold").toggleClass("open");
+		});
+	});
+</script>
+
+<script>
+	//var MenuID = Number(129);
+
+	//wow = new WOW();
+	//wow.init();
+
+
+	function SuccessToaster(Message) {
+		$("#toastMsg").html(Message);
+		$("#toasticon i").addClass("fas fa-check green-clr ");
+		var x = document.getElementById("toast")
+		x.className = "show";
+		setTimeout(function () { x.className = x.className.replace("show", ""); }, 4000);
+	}
+
+	function FailToaster(Message) {
+		$("#toastMsg").html(Message);
+		$("#toasticon i").addClass("fas fa-exclamation-triangle red-clr");
+		var x = document.getElementById("toast")
+		x.className = "show toaster-warning";
+		setTimeout(function () { x.className = x.className.replace("show toaster-warning", ""); }, 4000);
+	}
+
+
+	function ValidateFile(FileName) {
+
+		var result = false;
+		if (document.getElementById(FileName).files[0].name.toUpperCase().match(/\.(PDF|DOCX|TXT|XLS|XLSX)$/)) {
+
+			var filesize = 3145728;
+			var sizeinbytes = document.getElementById(FileName).files[0].size;
+			if (filesize >= sizeinbytes) {
+				result = true;
+			}
+			else {
+				FailToaster("File size should be less than 3 MB");
+				document.getElementById(FileName).value = '';
+				result = false;
+
+			}
+			return result;
+		}
+		else {
+			FailToaster("Invalid file type , please select valid file again");
+			document.getElementById(FileName).value = '';
+			return result;
+		}
+
+	}
+
+	function ValidateImage(FileName) {
+
+		var result = false;
+		if (document.getElementById(FileName).files[0].name.toUpperCase().match(/\.(JPG|JPEG|PNG|PDF)$/)) {
+
+			var filesize = 2097152;
+			var sizeinbytes = document.getElementById(FileName).files[0].size;
+			if (filesize >= sizeinbytes) {
+				result = true;
+			}
+			else {
+				FailToaster("Image should be less than 2 MB");
+
+				document.getElementById(FileName).value = '';
+				result = false;
+
+			}
+			return result;
+		}
+		else {
+			FailToaster("Invalid Image type , please select valid Image");
+			document.getElementById(FileName).value = '';
+			return result;
+		}
+
+	}
+</script>
+<script>
+	// JavaScript Document
+	$(function () {
+		$('#js-nav-toggle').click(function (e) {
+			e.preventDefault();
+			$("html").toggleClass("is-sideopen");
+			$("#js-nav-toggle").toggleClass("is-active");
+		});
+
+		var $content = $('.l-contents');
+		var $header = $('.l-header');
+
+
+		$content.click(function () {
+			$("html").removeClass("is-sideopen");
+		});
+
+
+		$header.click(function () {
+			$("html").removeClass("is-sideopen");
+		});
+
+
+	});
+
+
+	$(function () {
+
+		var $dropdown = $('.js-dropdown');
+		var $content = $('.l-contents');
+		var $toggle = $('#js-nav-toggle');
+
+
+		$('.js-dropdown-menu').hide();
+		$dropdown.click(function () {
+			$('i').removeClass('is-rotate');
+			$('.js-dropdown-menu').slideUp(200);
+			if ($('+.js-dropdown-menu', this).css('display') == 'none') {
+				$('i', this).addClass('is-rotate');
+				$('+.js-dropdown-menu', this).slideDown(200);
+			}
+		});
+
+
+		$content.click(function () {
+			$('i').removeClass('is-rotate');
+			$('.js-dropdown-menu').slideUp(200);
+			if ($('+.js-dropdown-menu', this).css('display') == 'none') {
+				$('i', this).addClass('is-rotate');
+				$('+.js-dropdown-menu', this).slideDown(200);
+			}
+		});
+
+
+		$toggle.click(function () {
+			$('i').removeClass('is-rotate');
+			$('.js-dropdown-menu').slideUp(200);
+			if ($('+.js-dropdown-menu', this).css('display') == 'none') {
+				$('i', this).addClass('is-rotate');
+				$('+.js-dropdown-menu', this).slideDown(200);
+			}
+		});
+
+	});
+
+	$(function () {
+		$('.is-ac-close').hide();
+		$(".is-ac-click").on("click", function () {
+			if ($(this).children('i').is('.fa-angle-right')) {
+				$(this).children('i')
+					.removeClass('fa-angle-right')
+					.addClass('fa-angle-down');
+			} else {
+				$(this).children('i')
+					.removeClass('fa-angle-down')
+					.addClass('fa-angle-right');
+			}
+			$(this).next().slideToggle(200);
+		});
+
+		$('.is-ac-close').hide();
+		$(".is-ac-bar").on("click", function () {
+
+			if ($(this).find('i').is('.fa-caret-down')) {
+
+				$(this).find('i')
+					.removeClass()
+					.addClass('fa fa-caret-up');
+			} else {
+				$(this).find('i')
+					.removeClass()
+					.addClass('fa fa-caret-down');
+			}
+			$(this).next().slideToggle(200);
+		});
+	});
+
+
+
+
+	//---------------------------------------------------
+	// ▼　tab
+	//---------------------------------------------------
+	$(function () {
+		var rwdTab = $('.c-tab'),
+			switchPoint = 768,
+			fadeSpeed = 300,
+			slideSpeed = 300;
+
+		var tabBtn = rwdTab.children('.c-tab-panel').children('.c-tab-heading'),
+			contentsArea = rwdTab.children('.c-tab-panel').children('.c-tab-body');
+
+		tabBtn.on('click', function () {
+			if (!$(this).hasClass('c-tab-active')) {
+				tabBtn.removeClass('c-tab-active');
+				$(this).addClass('c-tab-active');
+
+				if (window.innerWidth > switchPoint) {
+					contentsArea.fadeOut(fadeSpeed);
+					$(this).next().fadeIn(fadeSpeed);
+				} else {
+					contentsArea.slideUp(slideSpeed);
+					$(this).next().slideDown(slideSpeed);
+				}
+			}
+		});
+
+		tabBtn.first().click();
+	});
+
+
+
+</script>
+<!-- required -->
+<script type="text/javascript">
+	jQuery(document).ready(function ($) {
+		jQuery('.stellarnav').stellarNav({
+			theme: 'dark',
+			breakpoint: 960,
+			position: 'right',
+
+		});
+		$('.notifyjs-corner').empty();
+	});
+</script>
+<!-- required -->
+<script>
+	$("document").ready(function () {
+
+		$('.dropdown-menu').on('click', function (e) {
+			if ($(this).hasClass('dropdown-menu-form')) {
+				e.stopPropagation();
+			}
+		});
+	});
+
+
+</script>
+<script>
+
+	var links = document.querySelectorAll('.ripplelink');
+
+	for (var i = 0, len = links.length; i < len; i++) {
+		links[i].addEventListener('click', function (e) {
+			var targetEl = e.target;
+			var inkEl = targetEl.querySelector('.ink');
+
+			if (inkEl) {
+				inkEl.classList.remove('animate');
+			}
+			else {
+				inkEl = document.createElement('span');
+				inkEl.classList.add('ink');
+				inkEl.style.width = inkEl.style.height = Math.max(targetEl.offsetWidth, targetEl.offsetHeight) + 'px';
+				targetEl.appendChild(inkEl);
+			}
+
+			inkEl.style.left = (e.offsetX - inkEl.offsetWidth / 2) + 'px';
+			inkEl.style.top = (e.offsetY - inkEl.offsetHeight / 2) + 'px';
+			inkEl.classList.add('animate');
+		}, false);
+	}
+</script>
+<script type="text/javascript">
+	$(window).scroll(function () {
+		if ($(this).scrollTop() > 250) {
+			$('.header').addClass("sticky");
+		}
+		else {
+			$('.header').removeClass("sticky");
+		}
+	});
+
+
+</script>
+<noscript>
+	<p class="NojavaScript">Javascripts is disabled</a></p>
+</noscript>
+
+
+</div>
+@section scripts    {
+	<script src="~/Areas/Onboarding/DevScript/HROnboarding.js"></script>
+	<script type="text/javascript">
+		$(function () {
+			$(".fold-table tr.view").on("click", function () {
+				$(this).toggleClass("open").next(".fold").toggleClass("open");
+			});
+		});
+	</script>
+
+}

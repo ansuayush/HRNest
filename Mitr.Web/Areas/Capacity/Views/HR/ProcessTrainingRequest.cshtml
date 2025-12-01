@@ -1,0 +1,1372 @@
+﻿
+@{
+	ViewBag.Title = "_AddTrainingRequest";
+	Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<input type="hidden" id="hdnLoggedInUser" />
+
+<!-- Start -->
+@*<div class="l-contents">
+	<div class="container-fluid">*@
+
+
+<!-- Start -->
+<div class="inner-main mb-5 p-3 pb-0">
+	<h1 class="heading-one mb-3">New Training Request</h1>
+
+	<div class="row">
+		<div class="col-sm-8 ">
+			<div class="row">
+				<div class="col-md-4 form-group">
+					<label>Req. No</label>
+					<p id="lblReqNo"></p>
+					<input id="hddReqID" type="hidden" />
+				</div>
+				<div class="col-md-4 form-group">
+					<label>Req. Date</label>
+					<p id="lblReqDate"></p>
+				</div>
+				<div class="col-md-4 form-group">
+					<label>Req.By</label>
+					<p id="lblReqBy"></p>
+				</div>
+				<div class="col-sm-12  form-group">
+					<div class="table-responsive">
+						<table class="table mt-0">
+							<thead>
+								<tr>
+									<th width="33">S.No</th>
+									<th width="200">Training Type</th>
+									<th width="200">Training Name</th>
+									<th width="100">Training Mode</th>
+									<th width="300" ><span id="spLocationAndLink">Location</span></th>
+								</tr>
+							</thead>
+							<tbody id="tblSelectTrainingCalendarList">
+							</tbody>
+						</table>
+					</div>
+
+				</div>
+				<div class="col-sm-12 form-group text-right">
+					<button type="button" class="btn green-clr ripplelink " data-toggle="modal" data-target="#modelTrainingCalendar" fdprocessedid="3bqnv"><i class="fas fa-plus"></i> Training Calendar</button>
+				</div>
+				<div class="col-sm-12 form-group">
+					<hr>
+					<span class="hr-aps lgt-text font-sm">
+						Training Calendar
+					</span>
+				</div>
+				<div class="col-md-12 form-group">
+					<label>Training Description </label>
+					<textarea id="txtTrainingDescritpion" class="form-control" placeholder="Enter"></textarea>
+				</div>
+				<div class="col-sm-12 form-group">
+					<hr>
+					<span class="hr-aps lgt-text font-sm">Mentor List</span>
+				</div>
+				<div class="col-md-6 form-group">
+					<div class="row">
+						<div class="col-md-12 form-group">
+							<label>Mentor Type <sup>*</sup></label>
+							<select id="ddlMentorType" onchange="HideErrorMessage(this); ChangeMentorType()" class="form-control dpselect select2-hidden-accessible Mandatorypld" tabindex="-1" aria-hidden="true">
+							</select>
+							<span id="spddlMentorType" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+						</div>
+						<div class="col-sm-12 form-group" id="divExternal" style="display:none">
+							<div class="row">
+								<div class="col-md-6 col-sm-6">
+									<label>Mentor name</label>
+									<input id="txtExternalMentorName" type="text" class="form-control " placeholder="Enter Title" value="" onchange="HideErrorMessage(this)">
+									<span id="sptxtExternalMentorName" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+								</div>
+								<div class="col-md-6 col-sm-6">
+									<label>Email</label>
+									<input id="txtExternalMentorEmail" type="text" class="form-control " placeholder="Enter Title" value="" onchange="HideErrorMessage(this)">
+									<span id="sptxtExternalMentorEmail" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+								</div>
+							</div>
+						</div>
+
+						<div class="col-sm-12 form-group" id="divInternal" style="display: none">
+							<div class="row">
+								<div class="col-md-6 col-sm-6">
+									<label>Mentor name<sup>*</sup></label>
+									<select id="ddlMentorName" onchange="HideErrorMessage(this); ChangeMentorName();" class="form-control dpselect select2-hidden-accessible " tabindex="-1" aria-hidden="true">
+									</select>
+									<span id="spddlMentorName" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+								</div>
+								<div id="divInternalEmployeeEmailID" class="col-md-6 col-sm-6">
+									<label>Email</label>
+									<input id="txtInternalEmployeeEmailID" type="text" class="form-control" onchange="HideErrorMessage(this)" placeholder="Enter Title" value="">
+									<span id="sptxtInternalEmployeeEmailID" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+								</div>
+
+							</div>
+						</div>
+						<div class="col-sm-12 text-center mt-2" id="divAddRow">
+							<a href="" id="btnAddRow" data-toggle="modal" onclick="AddMentorList();" class="btn mtr-g-grn btn-l ripplelink btnAdd "><i class="fas fa-plus"></i>Add </a>
+						</div>
+						<div class="col-sm-12 text-center mt-2" id="divEditRow" style="display:none;">
+							<a href="" id="btnEditRow" data-toggle="modal" onclick="EditRow();" class="btn mtr-g-grn btn-l ripplelink btnAdd "><i class="fas fa-plus"></i>Update Row </a>
+						</div>
+					</div>
+				</div>
+
+				<div class="col-md-6 form-group">
+					<strong class="green-clr">Add Mentor (<span id="spAddedMentorCount"></span>)</strong>
+					<div class="table-responsive">
+						<table class="table mt-0">
+							<thead>
+								<tr>
+									<th width="33">S.No</th>
+									<th width="200">Mentor Type</th>
+									<th width="200">Name</th>
+									<th width="100">Email</th>
+									<th width="100">Action</th>
+								</tr>
+							</thead>
+							<tbody id="tblMentorList">
+							</tbody>
+						</table>
+					</div>
+				</div>
+				<div class="col-sm-12 form-group">
+					<hr>
+					<span class="hr-aps lgt-text font-sm"> Attendance List</span>
+				</div>
+				<div class="col-sm-12 form-group text-right">
+					<button type="button" class="btn green-clr ripplelink " data-toggle="modal" onclick="DisplayAttendeesModal();" fdprocessedid="b6lcu9"><i class="fas fa-plus"></i> Add Attendees</button>
+				</div>
+				<div class="col-sm-12 from-group">
+					<div class="table-responsive">
+						<div id="tblAddAttendeesList"></div>
+					</div>
+				</div>
+
+				<div class="col-sm-12 form-group">
+					<hr>
+					<span class="hr-aps lgt-text font-sm">Training Schedule</span>
+				</div>
+
+				<div class="col-md-4 form-group">
+					<label>From Date <sup>*</sup></label>
+					<input type="text" autocomplete="off" onchange="HideErrorMessage(this);OnChangeFromDate();" class="form-control datepicker MandatoryPicker" placeholder="Enter" id="txtFromDate">
+					<span id="sptxtFromDate" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+				</div>
+
+				<div class="col-md-4 form-group">
+					<label>To Date <sup>*</sup></label>
+					<input type="text" autocomplete="off" onchange="HideErrorMessage(this); ChangeTodate();" class="form-control datepicker MandatoryPicker" placeholder="Enter" id="txtToDate">
+					<span id="sptxtToDate" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+				</div>
+				<div class="col-sm-12"></div>
+				<div class="col-md-4 form-group">
+					<label>From Time <sup>*</sup></label>
+					<input type="time" autocomplete="off" onchange="HideErrorMessage(this)" class="time MandatoryPicker" placeholder="Enter" id="txtFromTime">
+					<span id="sptxtFromTime" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+				</div>
+
+				<div class="col-md-4 form-group">
+					<label>To Time <sup>*</sup></label>
+					<input type="time" autocomplete="off" onchange="HideErrorMessage(this);" class="time MandatoryPicker" placeholder="Enter" id="txtToTime">
+					<span id="sptxtToTime" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+				</div>
+				<div class="col-sm-12 mb-2">
+					<ul class="list-unstyled inlin-list">
+						<li>
+							<input type="checkbox" id="chkSupervisorsAssessment" onclick="ClickSupervisorsAssessment();" class="sltchk" name="chkSupervisorsAssessment">
+							<label for="chkSupervisorsAssessment"> Supervisor's Assessment</label>
+						</li>
+					</ul>
+				</div>
+
+				<div class="col-sm-12 form-group">
+					<hr>
+					<span class="hr-aps lgt-text font-sm">Attachment</span>
+				</div>
+
+				<div class="col-md-3 form-group">
+					<label>Attachment Type</label>
+					<select class="form-control dpselect select2-hidden-accessible MandatoryAttachmentType" onchange="HideErrorMessage(this)" id="ddlAttachmentType" tabindex="-1" aria-hidden="true">
+					</select>
+					<span id="spddlAttachmentType" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+				</div>
+
+				<div class="col-md-3 form-group">
+					<label>Attachment</label>
+					<input type="file" placeholder="Enter" class="form-control" id="fileAttachmentScopeofwork" onchange="UploadAttachmentFileScope();">
+					<input type="hidden" id="hdnfileAttachmentScopeActualName" />
+					<input type="hidden" id="hdnfileAttachmentScopeNewName" />
+					<input type="hidden" id="hdnfileAttachmentScopeFileUrl" />
+				</div>
+
+				<div class="col-md-4 form-group">
+					<label>Attachment</label>
+					<textarea class="form-control maxSize[200] MandatoryAttachmentRemark" onchange="HideErrorMessage(this)" placeholder="Enter" id="txtAttachmentRemark"></textarea>
+					<span id="sptxtAttachmentRemark" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+				</div>
+				<div class="col-sm-2 form-group align-self-end">
+					<button type="button" class="btn green-clr ripplelink " onclick="AddAttachments();" fdprocessedid="189s9s"><i class="fas fa-plus"></i> Add Row</button>
+				</div>
+
+				<div class="col-sm-12 form-group ">
+					<div class="table-responsive">
+						<table class="table">
+							<thead>
+								<tr>
+									<th width="33">S.No</th>
+									<th class="w-100">Attachment Type </th>
+									<th class="w-100">Attachment</th>
+									<th class="w-100">Remark</th>
+									<th class="w-100">Action</th>
+									<th class="w-100" style="display: none">NewName</th>
+									<th class="w-100" style="display: none">FileUrl</th>
+								</tr>
+							</thead>
+							<tbody id="tblAttachmentsList">
+							</tbody>
+						</table>
+					</div>
+				</div>
+				<div class="col-md-4 form-group">
+					<label>Date of Assessment<sup id="suptxtDateOfAssessment"></sup></label>
+					<input type="text" autocomplete="off" class="form-control datepicker " onchange="HideErrorMessage(this)" placeholder="Enter" id="txtDateOfAssessment">
+					<span id="sptxtDateOfAssessment" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+				</div>
+
+				<div class="col-sm-12 form-group">
+					<hr>
+					<span class="hr-aps lgt-text font-sm">Give Instruction</span>
+				</div>
+				<div class="col-sm-6 form-group">
+					<label>Instructions for Team</label>
+					<textarea id="txtInstructionsForTeam" class="form-control h-100 maxSize[1200]" placeholder="Enter "></textarea>
+				</div>
+				<div class="col-sm-6 form-group">
+					<label>Instructions for Supervisors </label>
+					<textarea id="txtInstructionsForSupervisors" class="form-control h-100 maxSize[1200]" placeholder="Enter "></textarea>
+				</div>
+
+				<div class="text-center col-md-12 mt-2">
+					@*<button type="submit" class="btn mtr-o-grn" name="Command" value="Add" fdprocessedid="ttz0mb" onclick="SaveHRRequest();"><i class="fas fa-save"></i>Save</button>*@
+					<button type="submit" id="btnUpdate" class="btn mtr-o-grn" name="Command" value="Add" fdprocessedid="hp6kwn" onclick=" ShowandCloseLoader();SubmitHRRequest();"><i class="fas fa-paper-plane"></i>Update</button>
+					<button type="button" id="btnCancel" class="btn cnl-btn" fdprocessedid="7zdf1" onclick="CancleHRRequest();"><i class="fas fa-times"></i> Cancel</button>
+				</div>
+
+			</div>
+
+		</div>
+	</div>
+
+</div>
+@*</div>
+	</div>*@
+@section scripts    {
+	@System.Web.Optimization.Scripts.Render("~/bundle/unobtrusivejs")
+	@System.Web.Optimization.Scripts.Render("~/bundle/dataTablesjs")
+	<script src="~/assets/design/Scripts/AddInit.js?v=@clsApplicationSetting.GetWebConfigValue("Version")"></script>
+
+	<script src="~/Areas/Capacity/DevScript/ProcessTrainingRequest.js"></script>
+	<script>
+		var IPAddress = '@ViewBag.IPAddress';
+		var IsEDUser = '@ViewBag.IsED';
+        var loggedinUserid = '@ViewBag.UserId';
+		var loggedinUserName = '@ViewBag.UserName';
+		var UserGrade = '@ViewBag.Grade';
+        var IsPM = '@ViewBag.IsPM';
+		var requestFroTraining = '@ViewBag.Id';
+		var ReqID = '@ViewBag.ID';
+		var EMPID = '@ViewBag.EmpID';
+	</script>
+	<script>
+		function DisplayAttendeesModal() {
+			LoadMasterDropdown('ddlEmployeeAttendeesList', {
+				ParentId: 0,
+				masterTableType: 0,
+				isMasterTableType: false,
+				isManualTable: true,
+				manualTable: 12,
+				manualTableId: 0
+			}, 'Select', false);
+			$('#modalAddAttendees').modal('show');
+		}
+	</script>
+}
+<script>
+	var dataTrainingRequest = [];
+	var dataTrainingRequestCalendar = [];
+	var dataRequestMentors = []
+	var dataRequestAttachment = []
+	var dataRequestAttendees = []
+	$(document).ready(function () {
+		GetTrainingRequest();
+	})
+	function GetTrainingRequest() {
+		CommonAjaxMethod(virtualPath + 'HRRequest/GetProcessTrainingRequest', { id: '@ViewBag.ID', inputData: 1 }, 'GET', function (response) {
+			 dataTrainingRequest = response.data.data.Table;
+			 dataTrainingRequestCalendar = response.data.data.Table1;
+			 dataRequestMentors = response.data.data.Table2;
+			 dataRequestAttachment = response.data.data.Table3;
+			dataRequestAttendees = response.data.data.Table4;
+			if (dataTrainingRequest != undefined) {
+				if (dataTrainingRequest.length > 0) {
+					TrainingTypeID = response.data.data.Table[0].TypeOfTraining;
+					TrainingName = response.data.data.Table[0].NameOfTraining;
+					$('#hddReqID').val(response.data.data.Table[0].ReqID);
+					document.getElementById('lblReqNo').innerHTML = response.data.data.Table[0].ReqNo;
+					document.getElementById('lblReqDate').innerHTML = ChangeDateFormatToddMMYYY(response.data.data.Table[0].ReqDate)
+					document.getElementById('lblReqBy').innerHTML = response.data.data.Table[0].RequestedByName;
+
+					$('#txtFromDate').val(ChangeDateFormatToddMMYYY(response.data.data.Table[0].FromDate));
+					$('#txtToDate').val(ChangeDateFormatToddMMYYY(response.data.data.Table[0].ToDate));
+					$('#txtInstructionsForTeam').val(response.data.data.Table[0].InstructionsForTeam);
+					$('#txtInstructionsForSupervisors').val(response.data.data.Table[0].InstructionsForSupervisors);
+					$('#txtDateOfAssessment').val(ChangeDateFormatToddMMYYY(response.data.data.Table[0].DateOfAssessment));
+					if (response.data.data.Table[0].FromTime != "" && response.data.data.Table[0].FromTime != null) {
+						var actualFromTime = response.data.data.Table[0].FromTime.split(' ')[0];
+						//if (actualFromTime.length == 5) {
+						actualFromTime = convertTo24HourFormat(response.data.data.Table[0].FromTime);// "0" + actualFromTime;
+						//}
+						$('#txtFromTime').val(actualFromTime);
+					}
+					else {
+						$('#txtFromTime').val('');
+					}
+					if (response.data.data.Table[0].ToTime != "" && response.data.data.Table[0].ToTime != null) {
+						var actualToTime = response.data.data.Table[0].ToTime.split(' ')[0];
+						//if (actualToTime.length == 5) {
+						actualToTime = convertTo24HourFormat(response.data.data.Table[0].ToTime);// "0" + actualToTime;
+						//}
+						$('#txtToTime').val(actualToTime);
+					}
+					else {
+						$('#txtToTime').val('');
+					}
+
+					if (response.data.data.Table[0].SupervisorAssessment == true) {
+						document.getElementById('chkSupervisorsAssessment').checked = true;
+					}
+					else {
+						document.getElementById('chkSupervisorsAssessment').checked = false;
+					}
+					$('#txtTrainingDescritpion').val(response.data.data.Table[0].TrainingDescription);
+				}
+			}
+			if (dataTrainingRequestCalendar != undefined) {
+				if (dataTrainingRequestCalendar.length > 0) {
+					$('#tblSelectTrainingCalendarList').html('');
+					var newtbblData1 = '<table class="table mt-2 " >' +
+						' <thead>' +
+						' <tr>' +
+						' <th width="33">S.No</th>' +
+						' <th width="150">Training Type</th>' +
+						' <th width="150">Training Name</th>' +
+						' <th width="150" >Training Mode</th>' +
+						' <th ></th>' +
+						' </tr>' +
+						' </thead>';
+					var html1 = "</table>";
+					var tableData = "";
+					var i = 0;
+					var trainingModeType
+					for (i; i < dataTrainingRequestCalendar.length; i++) {
+						if (dataTrainingRequestCalendar[i].TrainingMode == 145) {
+							document.getElementById('spLocationAndLink').innerText = 'Location';
+						}
+						if (dataTrainingRequestCalendar[i].TrainingMode == 143) {
+							document.getElementById('spLocationAndLink').innerText = 'Link';
+						}
+						trainingModeType = dataTrainingRequestCalendar[i].TrainingMode;// == "145" ? "Physical" : "Virtual";
+						//if (dataTrainingRequestCalendar[i].TrainingMode == 143) {
+						//	var newtbblData = "<tr><td>" + parseInt(i + 1) + "</td><td>" + dataTrainingRequestCalendar[i].TrainingType + "</td><td>" + dataTrainingRequestCalendar[i].TrainingName + "</td><td><select onchange=\"ChangedTrainingMode(this," + i + ")\" id=\"ddlTrainingMode_" + i + "\" class=\"form-control dpselect \" tabindex=\"-1\" aria-hidden=\"true\"></select></td><td><a href='#'target='_blank' id='txtlocation_" + parseInt(i + 1) + "'>" + trainingCalandarArray[i].Location + "</a></td><td style='display: none'>" + dataTrainingRequestCalendar[i].TrainingTypeID + "</td></tr>";
+						//}
+						//else {
+						//	var newtbblData = "<tr><td>" + parseInt(i + 1) + "</td><td>" + dataTrainingRequestCalendar[i].TrainingType + "</td><td>" + dataTrainingRequestCalendar[i].TrainingName + "</td><td><select onchange=\"ChangedTrainingMode(this," + i + ")\" id=\"ddlTrainingMode_" + i + "\" class=\"form-control dpselect \" tabindex=\"-1\" aria-hidden=\"true\"></select></td><td><input type='text' id='txtlocation_" + parseInt(i + 1) + "' value='" + dataTrainingRequestCalendar[i].Location + "'></input></td><td style='display: none'>" + dataTrainingRequestCalendar[i].TrainingTypeID + "</td></tr>";
+						//}
+						var newtbblData = "<tr><td>" + parseInt(i + 1) + "</td><td>" + dataTrainingRequestCalendar[i].TrainingType + "</td><td>" + dataTrainingRequestCalendar[i].TrainingName + "</td><td><select onchange=\"ChangedTrainingMode(this," + i + ")\" id=\"ddlTrainingMode_" + i + "\" class=\"form-control dpselect \" tabindex=\"-1\" aria-hidden=\"true\"></select></td><td><input type='text' id='txtlocation_" + parseInt(i + 1) + "' value='" + dataTrainingRequestCalendar[i].Location + "'></input></td><td style='display: none'>" + dataTrainingRequestCalendar[i].TrainingTypeID + "</td></tr>";
+						var allstring = newtbblData;
+						tableData += allstring;
+					}
+					$('#tblSelectTrainingCalendarList').html(tableData);
+
+					LoadMasterDropdown('ddlTrainingMode_0', {
+						ParentId: 0,
+						masterTableType: 0,
+						isMasterTableType: false,
+						isManualTable: true,
+						manualTable: 27,
+						manualTableId: 0
+					}, 'Select', false);
+
+
+					$('#ddlTrainingMode_0').val(trainingModeType)
+				}
+			}
+			if (dataRequestMentors != undefined) {
+				if (dataRequestMentors.length > 0) {
+					$('#tblMentorList').html('');
+					var newtbblData1 = '<table class="table mt-2 " style="width:100%">' +
+						' <thead>' +
+						' <tr>' +
+						' <th width="33">S.No</th>' +
+						' <th width="10" style="display:none">Mentor Type</th>' +
+						' <th width="100">Mentor Type</th>' +
+						' <th width="150">Name</th>' +
+						' <th width="150" >Email</th>' +
+						' <th width="60" style="display:none">Action</th>' +
+						' </tr>' +
+						' </thead>';
+					var html1 = "</table>";
+					var tableData = "";
+					var i = 0;
+					for (i; i < dataRequestMentors.length; i++) {
+						var newtbblData = "<tr><td>" + parseInt(i + 1) + "</td><td style='display: none'>" + dataRequestMentors[i].MentorType + "</td><td>" + dataRequestMentors[i].MentorTypeName + "</td><td>" + dataRequestMentors[i].MentorName + "</td><td>" + dataRequestMentors[i].Email + " </td><td> <a  title='Click to Remove' onclick='EditMentorsRows(this," + dataRequestMentors[i].RowNum + ")' class=\"red-clr\"><i class=\"fas fa-edit m-0\"></i></a><span> | </span><a  title='Click to Remove' onclick='DeleteMentorsRows(this," + dataRequestMentors[i].RowNum + ")' class=\"red-clr\"><i class=\"fas fa-trash-alt\"></i></a></td></tr>";
+						var allstring = newtbblData;
+						tableData += allstring;
+					}
+					$('#tblMentorList').html(tableData);
+					if (dataRequestMentors.length > 0) {
+						document.getElementById('spAddedMentorCount').innerText = dataRequestMentors.length;
+					}
+					else {
+						document.getElementById('spAddedMentorCount').innerText = '';
+					}
+				}
+			}
+			if (dataRequestAttendees != undefined) {
+				if (dataRequestAttendees.length > 0) {
+					$('#tblAddAttendeesList').html('');
+					var AttendeesListHeader = '<table class="table table-striped table-bordered dt-responsive nowrap tbltick new_width dataTable no-footer " >' +
+						' <thead>' +
+						' <tr>' +
+						' <th width="33">S.No</th>' +
+						' <th width="150">Attendees Names</th>' +
+						' <th width="150">Attendees Type</th>' +
+						' <th width="150" >Request Source</th>' +
+						' <th width="150">Request Number</th>' +
+						' <th width="150" style="display:none">Attendees TypeID</th>' +
+						' <th width="150">Status</th>' +
+						' <th width="150" style="display:none">EmployeeID</th>' +
+						' <th width="150" style="display:none">ReqNo</th>' +
+						' </tr>' +
+						' </thead>';
+					var AttendeesListFooter = "</table>";
+
+					var AttendeesListData = "";
+					for (let i = 0; i < dataRequestAttendees.length; i++) {
+						var AttendeesTypeName = dataRequestAttendees[i].AttendeesType == 148 ? 'Mandatory' : 'Optional'
+						var RequestName = dataRequestAttendees[i].RequestName == null ? '' : dataRequestAttendees[i].RequestName;
+						if (dataRequestAttendees[i].RequestName == "NA") {
+							if (dataRequestAttendees[i].Status == "Rejected") {
+								var AttendeesListRow = "<tr><td>" + parseInt(i + 1) + "</td><td>" + dataRequestAttendees[i].AttendeesNames + "</td><td>" + AttendeesTypeName + "</td><td>" + dataRequestAttendees[i].RequestSource + " </td><td>" + RequestName + " </td><td style='display: none'>" + dataRequestAttendees[i].AttendeesType + "</td><td><i class='fas fa-info-circle td-info' data-toggle='tooltip' data-placement='right' title='" + dataRequestAttendees[i].RejectionReason + "' data-original-title='" + dataRequestAttendees[i].RejectionReason + "'></i>" + dataRequestAttendees[i].Status + "</td><td style='display: none'>" + dataRequestAttendees[i].AttendEmployeeID + "</td><td style='display: none'>" + dataRequestAttendees[i].ReqNo + "</td></tr>";
+							}
+							else {
+								var AttendeesListRow = "<tr><td>" + parseInt(i + 1) + "</td><td>" + dataRequestAttendees[i].AttendeesNames + "</td><td>" + AttendeesTypeName + "</td><td>" + dataRequestAttendees[i].RequestSource + " </td><td>" + RequestName + " </td><td style='display: none'>" + dataRequestAttendees[i].AttendeesType + "</td><td>" + dataRequestAttendees[i].Status + "</td><td style='display: none'>" + dataRequestAttendees[i].AttendEmployeeID + "</td><td style='display: none'>" + dataRequestAttendees[i].ReqNo + "</td></tr>";
+							}
+
+						}
+						else {
+							if (dataRequestAttendees[i].Status == "Rejected") {
+								var AttendeesListRow = "<tr><td>" + parseInt(i + 1) + "</td><td>" + dataRequestAttendees[i].AttendeesNames + "</td><td>" + AttendeesTypeName + "</td><td>" + dataRequestAttendees[i].RequestSource + " </td><td><a href='#' data-toggle='modal' data-target='#RequestDetailsModal' onclick=\"ViewRequestDetails('" + dataRequestAttendees[i].RequestName + "')\"><i class='fas fa - eye'></i>" + RequestName + " </td><td style='display: none'>" + dataRequestAttendees[i].AttendeesType + "</td><td><i class='fas fa-info-circle td-info' data-toggle='tooltip' data-placement='right' title='" + dataRequestAttendees[i].RejectionReason + "' data-original-title='" + dataRequestAttendees[i].RejectionReason + "'></i>" + dataRequestAttendees[i].Status + "</td><td style='display: none'>" + dataRequestAttendees[i].AttendEmployeeID + "</td><td style='display: none'>" + dataRequestAttendees[i].ReqNo + "</td></tr>";
+							}
+							else {
+								var AttendeesListRow = "<tr><td>" + parseInt(i + 1) + "</td><td>" + dataRequestAttendees[i].AttendeesNames + "</td><td>" + AttendeesTypeName + "</td><td>" + dataRequestAttendees[i].RequestSource + " </td><td><a href='#' data-toggle='modal' data-target='#RequestDetailsModal' onclick=\"ViewRequestDetails('" + dataRequestAttendees[i].RequestName + "')\"><i class='fas fa - eye'></i>" + RequestName + " </td><td style='display: none'>" + dataRequestAttendees[i].AttendeesType + "</td><td>" + dataRequestAttendees[i].Status + "</td><td style='display: none'>" + dataRequestAttendees[i].AttendEmployeeID + "</td><td style='display: none'>" + dataRequestAttendees[i].ReqNo + "</td></tr>";
+							}
+
+						}
+						var allstring = AttendeesListRow;
+						AttendeesListData += allstring;
+					}
+					$('#tblAddAttendeesList').html(AttendeesListHeader + AttendeesListData + AttendeesListFooter);
+				}
+			}
+			if (dataRequestAttachment != undefined) {
+				if (dataRequestAttachment.length > 0) {
+					$('#tblAttachmentsList').html('');
+					var newtbblData1 = '<table class="table mt-2 " >' +
+						' <thead>' +
+						' <tr>' +
+						' <th width="33">S.No</th>' +
+						' <th width="150">Attachment Type</th>' +
+						' <th width="150">Attachment</th>' +
+						' <th width="150" >Remark</th>' +
+						' <th width="100" style="display:none">Action</th>' +
+						' <th width="100" style="display:none">NewName</th>' +
+						' <th width="100" style="display:none">FileUrl</th>' +
+						' </tr>' +
+						' </thead>';
+					var html1 = "</table>";
+					var tableData = "";
+					var i = 0;
+					for (i; i < dataRequestAttachment.length; i++) {
+						dataRequestAttachment[i].Remark = dataRequestAttachment[i].Remark == null ? '' : dataRequestAttachment[i].Remark;
+						var newtbblData = "<tr><td>" + parseInt(i + 1) + "</td><td style='display: none'>" + dataRequestAttachment[i].AttachmentType + "</td><td>" + dataRequestAttachment[i].AttachmentTypeName + "</td><td><a target='_blank' href=" + dataRequestAttachment[i].AttachmentUrl + ">" + dataRequestAttachment[i].AttachmentActualName + "</a></td><td>" + dataRequestAttachment[i].Remark + " </td><td> <a  title='Click to Remove' onclick='DeleteDocArrayRows(this," + dataRequestAttachment[i].RowNum + ")' class=\"red-clr\"><i class=\"fas fa-trash-alt\"></i></a></td><td style=\"display: none\">" + dataRequestAttachment[i].AttachmentNewName + "</td><td style=\"display: none\">" + dataRequestAttachment[i].AttachmentUrl + "</td></tr>";
+						var allstring = newtbblData;
+						tableData += allstring;
+					}
+					$('#tblAttachmentsList').html(tableData);
+				}
+			}
+		});
+	}
+	function CancleHRRequest() {
+		//$("#ViewAppModal").modal('hide');
+		window.location.href = virtualPath + 'HR/TrainingRequest?id=' + 1;
+	}
+	function onTimeChange(inputEle) {
+		var timeSplit = inputEle.value.split(':'),
+			hours,
+			minutes,
+			meridian;
+		hours = timeSplit[0];
+		minutes = timeSplit[1];
+		if (hours > 12) {
+			meridian = 'PM';
+			hours -= 12;
+		} else if (hours < 12) {
+			meridian = 'AM';
+			if (hours == 0) {
+				hours = 12;
+			}
+		} else {
+			meridian = 'PM';
+		}
+		return hours + ':' + minutes + ' ' + meridian;
+	}
+</script>
+<!----- add slot ---->
+<!-- TASK Modal -->
+<!-- The Modal -->
+<div class="modal" id="adma">
+	<div class="modal-dialog modal-lg">
+		<div class="modal-content">
+			<!-- Modal Header -->
+			<div class="modal-header blk-gdn-btn">
+				<h4 class="modal-title">
+					<i class="fas fa-plus"></i> Add Mandatory Attendees
+				</h4>
+				<div class="close" data-dismiss="modal">×</div>
+			</div>
+			<!-- Modal body -->
+			<div class="modal-body p-0">
+				<div class="clickproject">
+					<div class="adproject-side">
+						<p><strong>Employee List (25)</strong></p>
+						<input type="text" placeholder="Search poject" name="">
+						<ul class="bin project-list addproject">
+
+							<li id="item1" class="item">Aakash Kumar Singh	</li>
+							<li id="item2" class="item">Abhay Kumar	</li>
+							<li id="item3" class="item">Abhisek Ranjan Nayak	</li>
+							<li id="item4" class="item">Abhishek Kumar	</li>
+							<li id="item5" class="item">Aditya Narayan Panda	</li>
+							<li id="item6" class="item">Aditya Raj	</li>
+							<li id="item7" class="item">Ahasan</li>
+							<li id="item8" class="item">Ajay Kumar	</li>
+							<li id="item9" class="item">Aakash Kumar Singh	</li>
+							<li id="item10" class="item">Ajay Kumar Singh		</li>
+							<li id="item11" class="item">Badri Bhushan		</li>
+							<li id="item12" class="item">Basanta Kumar Behera	</li>
+							<li id="item13" class="item">Bibhuti Bhusan Pradhan	</li>
+							<li id="item14" class="item">Bijendra Ray	</li>
+							<li id="item15" class="item">Bikash Das	</li>
+							<li id="item16" class="item">Bishwanath Singh	</li>
+							<li id="item17" class="item">Churaman Lal Dewangan		</li>
+							<li id="item18" class="item">Dalgovind Tanty	</li>
+							<li id="item19" class="item">Durga Shankar Naik		</li>
+							<li id="item20" class="item">Gloria Topno	</li>
+							<li id="item21" class="item">Jagriti Kumari		</li>
+							<li id="item22" class="item">Jagadish Chandra Behera	</li>
+							<li id="item23" class="item">Mary Dulari Topno	</li>
+							<li id="item24" class="item">Neelam Birua	</li>
+						</ul>
+					</div>
+					<div class="select-side">
+
+						<!-- Destination bin title bold -->
+
+						<p><strong>Select</strong></p>
+
+						<!-- Destination bin -->
+						<input type="text" placeholder="Search poject" name="">
+						<ul class="bin project-remove">
+						</ul>
+					</div>
+				</div>
+
+			</div>
+
+			<!-- Modal footer -->
+			<div class="text-center m-0">
+				<div class="row">
+					<div class="col-sm-12 text-center mt-3">
+						<button type="button" class="btn mtr-g-grn" data-dismiss="modal" name="Command" data-toggle="modal" data-target="#admaemplye" value="Add">
+							<i class="fas fa-plus"></i>Add Employee
+						</button>
+
+						<button type="button" class="btn mtr-o-grn btn-l ripplelink savema" data-dismiss="modal" name="Command" value="Add">
+							<i class="fas fa-save"></i>Save
+						</button>
+						<button type="button" class="btn cnl-btn ripplelink" data-dismiss="modal"><i class="fas fa-times"></i>Close</button>
+					</div>
+				</div>
+			</div>
+
+		</div>
+	</div>
+</div>
+<!-- The Modal -->
+<div class="modal" id="admaemplye">
+	<div class="modal-dialog modal-md">
+		<div class="modal-content">
+
+			<!-- Modal Header -->
+			<div class="modal-header blk-gdn-btn">
+				<h4 class="modal-title">
+					<i class="fas fa-user-tie"></i> Add Employee
+				</h4>
+				<div class="close" data-dismiss="modal">×</div>
+			</div>
+
+			<!-- Modal body -->
+			<div class="modal-body p-0">
+
+				<div class="clickproject">
+					<input type="text" placeholder="Search poject" name="">
+					<ul class="list-unstyled checkboxemplist p-2 scroll">
+
+						<li>
+							<input type="checkbox" id="emplist" class="trigger">
+							<label for="emplist" class="m-0"> Aakash Kumar Singh</label>
+						</li>
+						<li>
+							<input type="checkbox" id="emplist1" class="trigger">
+							<label for="emplist1" class="m-0"> Bishwanath Singh	</label>
+						</li>
+						<li>
+							<input type="checkbox" id="emplist2" class="trigger">
+							<label for="emplist2" class="m-0"> Churaman Lal Dewangan	</label>
+						</li>
+						<li>
+							<input type="checkbox" id="emplist3" class="trigger">
+							<label for="emplist3" class="m-0"> Dalgovind Tanty	</label>
+						</li>
+						<li>
+							<input type="checkbox" id="emplist4" class="trigger">
+							<label for="emplist4" class="m-0"> Girdhari Lal Patel	</label>
+						</li>
+						<li>
+							<input type="checkbox" id="emplist5" class="trigger">
+							<label for="emplist5" class="m-0"> Gloria Topno	</label>
+						</li>
+						<li>
+							<input type="checkbox" id="emplist6" class="trigger">
+							<label for="emplist6" class="m-0"> Gloria Topno	</label>
+						</li>
+						<li>
+							<input type="checkbox" id="emplist7" class="trigger">
+							<label for="emplist7" class="m-0"> Gloria Topno	</label>
+						</li>
+						<li>
+							<input type="checkbox" id="emplist8" class="trigger">
+							<label for="emplist8" class="m-0"> Gloria Topno	</label>
+						</li>
+						<li>
+							<input type="checkbox" id="emplist9" class="trigger">
+							<label for="emplist9" class="m-0"> Gloria Topno	</label>
+						</li>
+						<li>
+							<input type="checkbox" id="emplist10" class="trigger">
+							<label for="emplist10" class="m-0"> Gloria Topno	</label>
+						</li>
+						<li>
+							<input type="checkbox" id="emplist11" class="trigger">
+							<label for="emplist11" class="m-0"> Gloria Topno	</label>
+						</li>
+					</ul>
+
+
+				</div>
+
+
+			</div>
+
+			<!-- Modal footer -->
+			<div class="text-center m-0">
+				<div class="row">
+					<div class="col-sm-12 text-center mt-0">
+						<button type="button" class="btn mtr-g-grn savema" data-dismiss="modal" name="Command" data-toggle="modal" data-target="#admaemplye" value="Add">
+							<i class="fas fa-plus"></i>Add
+						</button>
+
+						<button type="button" class="btn cnl-btn btn-l ripplelink " id="" data-dismiss="modal" data-toggle="modal" data-target="#adma" name="Command" value="Add">
+							<i class="fas fa-arrow-left"></i>Back
+						</button>
+						<button type="button" class="btn cnl-btn ripplelink" data-dismiss="modal"><i class="fas fa-times"></i>Close</button>
+					</div>
+				</div>
+			</div>
+
+		</div>
+	</div>
+</div>
+<!-- The Modal -->
+<div class="modal" id="ifa">
+	<div class="modal-dialog modal-md">
+		<div class="modal-content ">
+
+			<!-- Modal Header -->
+			<div class="modal-header">
+				<h4 class="modal-title">instruction for Attendees</h4>
+				<button type="button" class="close" data-dismiss="modal">&times;</button>
+			</div>
+
+			<!-- Modal body -->
+			<div class="modal-body">
+				<div class="row">
+					<div class="col-sm-12 form-group">
+						<label>Reason</label>
+						<textarea class="form-control h-100" placeholder="Enter Reason"></textarea>
+					</div>
+				</div>
+				<!-- Modal footer -->
+				<div class="p-0 text-center ">
+					<button type="button" class="btn cnl-btn ripplelink" data-dismiss="modal"><i class="fas fa-times"></i>Close</button>
+					<button type="button" data-toggle="modal" data-target="#mailer2" class="btn mtr-o-grn btn-l "><i class="fas fa-paper-plane"></i>Submit</button>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div class="modal fade pop-dgn" id="RequestDetailsModal" style="padding-right: 8px;" aria-modal="true">
+	<div class="modal-dialog mdl-lg">
+		<div class="modal-content">
+
+			<!-- Modal Header -->
+			<div class="modal-header blk-gdn-btn">
+				<h4 class="modal-title"><label id="lblRequestNumber1"></label></h4>
+				<div class="close" data-dismiss="modal">×</div>
+			</div>
+
+			<!-- Modal body -->
+			<div class="modal-body p-2">
+				<div class="row">
+					<div class="col-md-4 col-sm-4  form-group">
+						<label>Req.No</label>
+						<p id="lblRequestNumber2"></p>
+					</div>
+					<div class="col-md-4 col-sm-4  form-group">
+						<label>Req. Date</label>
+						<p id="lblRequestDate"></p>
+					</div>
+					<div class="col-md-4 col-sm-4  form-group">
+						<label>Requestor</label>
+						<p id="lblRequestName"></p>
+					</div>
+
+					<div class="col-md-4 col-md-4 form-group">
+						<label>Training Type</label>
+						<p id="lblRequestTrainingType"></p>
+					</div>
+
+					<div class="col-md-4 col-md-4 form-group">
+						<label>Training Name</label>
+						<p id="lblRequestTrainingName">Training Name</p>
+					</div>
+
+					<div class="col-md-12 form-group">
+						<label>Request Description</label>
+						<p id="lblRequestDescription"></p>
+					</div>
+
+					<div class="col-md-4 col-md-4 form-group">
+						<label>Requested for</label>
+						<p id="lblRequestedFor"></p>
+					</div>
+					<div class="text-center col-md-12 mt-2">
+						<button type="button" id="btnRequestDetailsModalCancle" class="btn cnl-btn" data-dismiss="modal"><i class="fas fa-times"></i> Cancel</button>
+					</div>
+
+				</div>
+
+			</div>
+		</div>
+	</div>
+</div>
+<div class="modal fade pop-dgn" id="modalAddAttendees">
+	<div class="modal-dialog mdl-md">
+		<div class="modal-content">
+
+			<!-- Modal Header -->
+			<div class="modal-header blk-gdn-btn">
+				<h4 class="modal-title"><i class="fas fa-plus"></i> Add Attendees </h4>
+				<div class="close" data-dismiss="modal">&times;</div>
+			</div>
+
+			<!-- Modal body -->
+			<div class="modal-body p-2">
+				<div class="row">
+					<div class="col-md-12 form-group">
+						<label>Name </label>
+						<select class="form-control dpselect" id="ddlEmployeeAttendeesList" multiple="multiple">
+						</select>
+					</div>
+					<div class="col-md-6 form-group">
+						<label>Attendees Type </label>
+						<select class="form-control dpselect" id="ddlAttendeesType">
+						</select>
+					</div>
+					<div class="col-sm-12  text-center mt-2">
+						<button type="button" class="btn cnl-btn ripplelink  pull-right" data-dismiss="modal"><i class="fas fa-times"></i> Close</button>
+						<button type="button" class="btn mtr-o-grn" data-dismiss="modal" onclick="AddTrainingAttendeesList();"><i class="fas fa-save" aria-hidden="true"></i> Save</button>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<!----- add slot ---->
+<!-- TASK Modal -->
+<div class="modal fade pop-dgn" id="modelTrainingCalendar">
+	<div class="modal-dialog mdl-lg">
+		<div class="modal-content">
+
+			<!-- Modal Header -->
+			<div class="modal-header blk-gdn-btn">
+				<h4 class="modal-title">Training Calendar </h4>
+				<div class="close" data-dismiss="modal">&times;</div>
+			</div>
+
+			<!-- Modal body -->
+			<div class="modal-body p-2">
+				<div class="row">
+					<div class="col-md-12 form-group">
+						<div class="table-responsive">
+							<div id="tblTrainingCalendar">
+
+							</div>
+							@*<table class="table mt-2" i>
+									<thead>
+										<tr>
+											<th width="25"></th>
+											<th width="33">S.No </th>
+											<th>Training Type	</th>
+											<th>Training Name	</th>
+											<th width="100">Training Mode</th>
+											<th></th>
+										</tr>
+									</thead>
+									<tbody>
+										<tr>
+											<td>
+												<div class="radio-button">
+													<input id="yes1" name="radio" type="radio">
+													<label for="yes1" class="radio-label mb-0"></label>
+												</div>
+											</td>
+											<td>1</td>
+											<td>Training Type 1	</td>
+											<td>Training Name 1	</td>
+
+											<td>Physical</td>
+											<td>Delhi</td>
+										</tr>
+										<tr>
+											<td>
+												<div class="radio-button">
+													<input id="yes2" name="radio" type="radio">
+													<label for="yes2" class="radio-label mb-0"></label>
+												</div>
+											</td>
+											<td>2</td>
+											<td>Training Type 1	</td>
+											<td>Training Name 1	</td>
+											<td>Virtual</td>
+											<td>https://mitr2.sahajapps.com</td>
+										</tr>
+									</tbody>
+								</table>*@
+
+						</div>
+
+						<div class="col-sm-12  text-center mt-2">
+							<button type="button" class="btn cnl-btn ripplelink  pull-right" data-dismiss="modal"><i class="fas fa-times"></i> Close</button>
+							<button type="button" class="btn mtr-o-grn" data-dismiss="modal" onclick="GetTrainingCalandar();"><i class="fas fa-save" aria-hidden="true"></i> Save</button>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<!-- TASK Modal -->
+<div class="modal fade pop-dgn" id="tg">
+	<div class="modal-dialog mdl-lg">
+		<div class="modal-content">
+
+			<!-- Modal Header -->
+			<div class="modal-header blk-gdn-btn">
+				<h4 class="modal-title">Req 101</h4>
+				<div class="close" data-dismiss="modal">&times;</div>
+			</div>
+
+			<!-- Modal body -->
+			<div class="modal-body p-2">
+				<div class="row">
+					<div class="col-md-4 col-sm-4  form-group">
+						<label>Req.No</label>
+						<p>Req 101</p>
+					</div>
+					<div class="col-md-4 col-sm-4  form-group">
+						<label>Req. Date</label>
+						<p>15/5/2012</p>
+					</div>
+					<div class="col-md-4 col-sm-4  form-group">
+						<label>Requestor</label>
+						<p>Deepak</p>
+					</div>
+
+					<div class="col-md-4 col-md-4 form-group">
+						<label>Training Type</label>
+						<p>Training Type 1</p>
+					</div>
+
+					<div class="col-md-4 col-md-4 form-group">
+						<label>Training Name</label>
+						<p>Training Name</p>
+					</div>
+
+					<div class="col-md-12 form-group">
+						<label>Request Description</label>
+						<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis eget auctor diam.</p>
+					</div>
+
+					<div class="col-md-4 col-md-4 form-group">
+						<label>Requested for</label>
+						<p>Self</p>
+					</div>
+
+
+
+					<div class="text-center col-md-12 mt-2">
+						<button type="button" class="btn cnl-btn" data-dismiss="modal"><i class="fas fa-times"></i> Cancel</button>
+					</div>
+
+				</div>
+
+			</div>
+
+
+
+		</div>
+	</div>
+</div>
+</div>
+
+
+<script>
+	function registerClickHandler() {
+		$('.remove').click(function () {
+			$(this).parent().remove();
+			$(this).parent().remove().tooltip('disable');
+			$("[data-toggle='tooltip']").tooltip('hide');
+		});
+	}
+
+	registerClickHandler();
+</script>
+<script>
+	$(document).ready(
+		$('.savema').click(function () {
+			$(".addma").addClass('hide');
+			$(".empshowlsit").addClass('show');
+			$(".empshowlsit").removeClass('hide');
+		})
+	);
+</script>
+<script>
+	$(function () {
+		$("#datepicker").datepicker({
+			autoclose: true,
+			todayHighlight: true
+		}).datepicker('update', new Date());
+	});
+
+</script>
+<script>
+	// JavaScript Document
+	$(function () {
+		$('#js-nav-toggle').click(function (e) {
+			e.preventDefault();
+			$("html").toggleClass("is-sideopen");
+			$("#js-nav-toggle").toggleClass("is-active");
+		});
+
+		var $content = $('.l-contents');
+		var $header = $('.l-header');
+
+
+		$content.click(function () {
+			$("html").removeClass("is-sideopen");
+		});
+
+
+		$header.click(function () {
+			$("html").removeClass("is-sideopen");
+		});
+
+
+	});
+
+
+	$(function () {
+
+		var $dropdown = $('.js-dropdown');
+		var $content = $('.l-contents');
+		var $toggle = $('#js-nav-toggle');
+
+
+		$('.js-dropdown-menu').hide();
+		$dropdown.click(function () {
+			$('i').removeClass('is-rotate');
+			$('.js-dropdown-menu').slideUp(200);
+			if ($('+.js-dropdown-menu', this).css('display') == 'none') {
+				$('i', this).addClass('is-rotate');
+				$('+.js-dropdown-menu', this).slideDown(200);
+			}
+		});
+
+
+		$content.click(function () {
+			$('i').removeClass('is-rotate');
+			$('.js-dropdown-menu').slideUp(200);
+			if ($('+.js-dropdown-menu', this).css('display') == 'none') {
+				$('i', this).addClass('is-rotate');
+				$('+.js-dropdown-menu', this).slideDown(200);
+			}
+		});
+
+
+		$toggle.click(function () {
+			$('i').removeClass('is-rotate');
+			$('.js-dropdown-menu').slideUp(200);
+			if ($('+.js-dropdown-menu', this).css('display') == 'none') {
+				$('i', this).addClass('is-rotate');
+				$('+.js-dropdown-menu', this).slideDown(200);
+			}
+		});
+
+	});
+
+	$(function () {
+		$('.is-ac-close').hide();
+		$(".is-ac-click").on("click", function () {
+			if ($(this).children('i').is('.fa-angle-right')) {
+				$(this).children('i')
+					.removeClass('fa-angle-right')
+					.addClass('fa-angle-down');
+			} else {
+				$(this).children('i')
+					.removeClass('fa-angle-down')
+					.addClass('fa-angle-right');
+			}
+			$(this).next().slideToggle(200);
+		});
+
+		$('.is-ac-close').hide();
+		$(".is-ac-bar").on("click", function () {
+
+			if ($(this).find('i').is('.fa-caret-down')) {
+
+				$(this).find('i')
+					.removeClass()
+					.addClass('fa fa-caret-up');
+			} else {
+				$(this).find('i')
+					.removeClass()
+					.addClass('fa fa-caret-down');
+			}
+			$(this).next().slideToggle(200);
+		});
+	});
+
+
+
+
+	//---------------------------------------------------
+	// ▼　tab
+	//---------------------------------------------------
+	$(function () {
+		var rwdTab = $('.c-tab'),
+			switchPoint = 768,
+			fadeSpeed = 300,
+			slideSpeed = 300;
+
+		var tabBtn = rwdTab.children('.c-tab-panel').children('.c-tab-heading'),
+			contentsArea = rwdTab.children('.c-tab-panel').children('.c-tab-body');
+
+		tabBtn.on('click', function () {
+			if (!$(this).hasClass('c-tab-active')) {
+				tabBtn.removeClass('c-tab-active');
+				$(this).addClass('c-tab-active');
+
+				if (window.innerWidth > switchPoint) {
+					contentsArea.fadeOut(fadeSpeed);
+					$(this).next().fadeIn(fadeSpeed);
+				} else {
+					contentsArea.slideUp(slideSpeed);
+					$(this).next().slideDown(slideSpeed);
+				}
+			}
+		});
+
+		tabBtn.first().click();
+	});
+
+
+
+</script>
+<!-- required -->
+
+
+<script type="text/javascript">
+	jQuery(document).ready(function ($) {
+		jQuery('.stellarnav').stellarNav({
+			theme: 'dark',
+			breakpoint: 960,
+			position: 'right',
+
+		});
+	});
+</script>
+<!-- required -->
+<script>
+	$("document").ready(function () {
+
+		$('.dropdown-menu').on('click', function (e) {
+			if ($(this).hasClass('dropdown-menu-form')) {
+				e.stopPropagation();
+			}
+		});
+	});
+
+
+</script>
+<script>
+
+	var links = document.querySelectorAll('.ripplelink');
+
+	for (var i = 0, len = links.length; i < len; i++) {
+		links[i].addEventListener('click', function (e) {
+			var targetEl = e.target;
+			var inkEl = targetEl.querySelector('.ink');
+
+			if (inkEl) {
+				inkEl.classList.remove('animate');
+			}
+			else {
+				inkEl = document.createElement('span');
+				inkEl.classList.add('ink');
+				inkEl.style.width = inkEl.style.height = Math.max(targetEl.offsetWidth, targetEl.offsetHeight) + 'px';
+				targetEl.appendChild(inkEl);
+			}
+
+			inkEl.style.left = (e.offsetX - inkEl.offsetWidth / 2) + 'px';
+			inkEl.style.top = (e.offsetY - inkEl.offsetHeight / 2) + 'px';
+			inkEl.classList.add('animate');
+		}, false);
+	}
+</script>
+<script type="text/javascript">
+	$(document).ready(function () {
+		$(".dpselect").select2();
+
+	});
+</script>
+<script type="text/javascript">
+	$(window).scroll(function () {
+		if ($(this).scrollTop() > 50) {
+			$('.scrolltop:hidden').stop(true, true).fadeIn();
+		} else {
+			$('.scrolltop').stop(true, true).fadeOut();
+		}
+	});
+	$(function () { $(".scroll-btm").click(function () { $("html,body").animate({ scrollTop: $(".thetop").offset().top }, ""); return false }) })
+</script>
+@*<script>
+		$(document).ready(function () {
+			$('[data-toggle="tooltip"]').tooltip();
+		});
+
+		$(function () {
+			$('#finselector').change(function () {
+				$('.finyear').hide();
+				$('#' + $(this).val()).show();
+			});
+		});
+
+	</script>*@
+<script type="text/javascript">
+	function formChoice(x) {
+		if (x == 0) {
+			$('#field1').css('display', 'block');
+			$('#field2').css('display', 'none');
+		} else {
+			$('#field1').css('display', 'none');
+			$('#field2').css('display', 'block');
+		}
+	}
+
+</script>
+
+<script type="text/javascript">
+	$('#membertype ').on('change', function () {
+		$('#internal').css('display', 'none');
+		if ($(this).val() === 'internal') {
+			$('#internal').css('display', 'block');
+		}
+
+		$('#external').css('display', 'none');
+		if ($(this).val() === 'external') {
+			$('#external').css('display', 'block');
+		}
+	});
+
+</script>
+<script type="text/javascript">
+	$('#at').on('change', function () {
+		$('#td').css('display', 'none');
+		if ($(this).val() === 'td') {
+			$('#td').css('display', 'block');
+		}
+	});
+
+</script>
+<script type="text/javascript">
+	$(function () {
+		$(".fold-table tr.view").on("click", function () {
+			$(this).toggleClass("open").next(".fold").toggleClass("open");
+		});
+	});
+</script>
+
+<script type="text/javascript">
+	$('#mt ').on('change', function () {
+		$('#me').css('display', 'none');
+		if ($(this).val() === 'me') {
+			$('#me').css('display', 'block');
+		}
+
+		$('#mi').css('display', 'none');
+		if ($(this).val() === 'mi') {
+			$('#mi').css('display', 'block');
+		}
+	});
+
+</script>
+<script type="text/javascript">
+	//Retrieve two groups of elements, items and bins
+	var items = document.getElementsByClassName('item');
+	var bins = document.getElementsByClassName('bin');
+
+
+	//Register event listeners for click event on the items
+	for (var i = 0; i < items.length; i++) {
+		items[i].addEventListener("click", sortItem);
+	}
+
+	// Prevent image dragging, so as to not suggest that items are draggable
+	for (var i = 0; i < items.length; i++) {
+		items[i].ondragstart = function () { return false; };
+	}
+
+	function sortItem(e) {
+
+		//Stores referrence to clicked element
+		var clickedEl = document.getElementById(this.id);
+
+		// Crummy way of sorting
+		if (clickedEl.parentNode == bins[0]) {
+			moveItemToBin(clickedEl, 1);
+		} else {
+			moveItemToBin(clickedEl, 0);
+		}
+	}
+
+
+	function moveItemToBin(item, binref) {
+
+		// Get the first position.
+		var first = item.getBoundingClientRect();
+
+		// Now set the element to the last position.
+		bins[binref].appendChild(item);
+
+		// Read again.
+		var last = item.getBoundingClientRect();
+
+		// Invert.
+		var inverty = first.top - last.top;
+		var invertx = first.left - last.left;
+
+
+		// Go from the inverted position to last.
+		// Note that .animate doesn't work on Safari! Use alternative!
+		var player = item.animate([
+			{ transform: 'translateY(' + inverty + 'px) translateX(' + invertx + 'px)' },
+			{ transform: 'translateY(0) translateX(0)' }
+		], {
+			// Move 1px per millisecond
+			duration: Math.sqrt(inverty ** 2 + invertx ** 2) * 2,
+			easing: 'cubic-bezier(0.72, 0, 0.12, 1)',
+		});
+
+		// Cleanup
+		item.classList.remove("moving");
+
+	}
+</script>
+<script>
+	$(document).ready(function () {
+		$("select").change(function () {
+			$(this).find("option:selected").each(function () {
+				if ($(this).attr("value") == "Virtual") {
+					$(".box").not(".Virtual").hide();
+					$(".Virtual").show();
+				}
+				else if ($(this).attr("value") == "Physical") {
+					$(".box").not(".Physical").hide();
+					$(".Physical").show();
+				}
+
+				else {
+					$(".box").hide();
+				}
+			});
+		}).change();
+	});
+</script>
+
+
+<script>
+
+	$('#trainingmode').on('change', function () {
+		$('.Physical').css('display', 'none');
+		$('.Virtual').css('display', 'none');
+		if ($(this).val() === 'Physical') {
+			$('.Physical').css('display', 'block');
+		}
+
+		if ($(this).val() === 'Virtual') {
+			$('.Virtual').css('display', 'block');
+		}
+	});
+
+
+
+</script>
+
+

@@ -1,0 +1,47 @@
+﻿@model IList<Mitr.Models.Attachments>
+@using (Ajax.BeginForm("_LeaveAttachmentNonMitr", "Leave",
+          new { src = clsApplicationSetting.EncryptQueryString(ViewBag.MenuID.ToString() + "*/Leave/_LeaveAttachmentNonMitr") },
+           new AjaxOptions { HttpMethod = "POST", OnSuccess = "OnAttachmentSuccess", OnBegin = "ShowLoadingDialog();", OnFailure = "CloseLoadingDialog();" },
+       new
+       {
+           name = "_LeaveAttachmentNonMitr",
+           id = "_LeaveAttachmentNonMitr",
+           @class = "form-horizontal form-label-left input_mask",
+           enctype = "multipart/form-data"
+       }))
+{
+    <input type="hidden" name="Empid" id="Empid" value="@ViewBag.Empid" />
+    <input type="hidden" name="Leaveid" id="Leaveid" value="@ViewBag.Leaveid" />
+    <input type="hidden" name="Month" id="Month" value="@ViewBag.Month" />
+    <input type="hidden" name="id" id="id" value="@ViewBag.id" />
+    <div class="row d-flex mt-2 mb-2">
+        @for (int i = 0; i < Model.Count; i++)
+        {
+        <div class="col-lg-6 wh-575 form-group">
+            <label>@Model[i].FileName</label>
+            @Html.HiddenFor(model => Model[i].FileName)           
+            @if (Model[i].AttachmentID > 0)
+            {
+                <span class="pull-right">
+                    @*<a href="" data-toggle="modal" data-target="#vathcl" data-dismiss="modal"><i class="fas fa-eye" data-toggle="tooltip" title="" data-original-title="View"></i></a>*@
+                    <a href="~/Attachments/@Model[i].AttachmentID@Model[i].ContentType" download="@Model[i].FileName"><i class="fas fa-download green-clr" data-toggle="tooltip" title="" data-original-title="Donwload"></i></a>
+                </span>
+                <a class="btn-c deleteLeaveAttachment" onclick="DeleteAttachment(@Model[i].AttachmentID)" data-toggle="tooltip" data-original-title="Delete"><i class="fas fa-trash-alt"></i></a>
+            }
+            else
+            {
+                @Html.TextBoxFor(model => Model[i].UploadFile, new { @class = "form-control uploadCertificate", Type = "file" })
+            }
+
+
+
+        </div>
+        }
+        
+        <div class="col-sm-12 text-center mt-2">
+            <button type="button" class="btn cnl-btn ripplelink" data-dismiss="modal"><i class="fas fa-times"></i> Cancel</button>
+            <button type="submit" class="btn mtr-o-grn btn-l ripplelink " name="Command" value="Add"><i class="fas fa-paper-plane"></i>Submit</button>
+        </div>
+    </div>
+
+}

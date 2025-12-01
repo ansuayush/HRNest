@@ -1,0 +1,533 @@
+﻿@model  Project.ClientsDetails
+@{
+    string MenuID = ViewBag.MenuID.ToString();
+    long DonorID = 0;
+    if (Model.ContactPersonList != null)
+    {
+        long.TryParse(Model.ContactPersonList.Select(x => x.donor_id).FirstOrDefault().ToString(), out DonorID); ;
+    }
+}
+@Html.Partial("_ProjectHeader")
+
+
+<div class="mb-100">
+
+    @using (Ajax.BeginForm("ClientsDetails", "Projects",
+            new { src = ViewBag.src },
+            new AjaxOptions { HttpMethod = "POST", OnSuccess = "OnSuccess", OnBegin = "ShowLoadingDialog()", OnFailure = "OnPostFailure()" },
+        new { @id = "ClientsDetailsFrom", @autocomplete = "Off" })
+        )
+    {
+        @Html.HiddenFor(x => x.ID)
+        <input type="hidden" id="hdnProjectID" value="@Model.ID" />
+        <input type="hidden" id="hdnCommonDonorID" value="@DonorID" />
+        <div class="inner-main mb-3 pb-0">
+            <div class="row mb-3">
+                <div class="col-md-3 col-sm-4 form-group">
+                    <label>Principal Donor</label>
+                    <a onclick="ViewDonorDetails()" id="btnViewDonorDetails" class="green-clr lbl-rgtsde tb" style="@(Model.PrincipalDonorID>0?"":"display:none")"><i class="fas fa-eye"></i><strong>View Address</strong></a>
+                    @Html.DropDownListFor(n => n.PrincipalDonorID, new SelectList(Model.DonorList, "ID", "Name", Model.PrincipalDonorID), "Select",
+                             new { @class = "form-control  applyselect", @onchange = "ShowViewDonorDetails(this)" })
+                    @Html.ValidationMessageFor(model => model.PrincipalDonorID, "", new { @class = "text-danger" })
+                </div>
+                <div class="col-md-3 col-sm-4 form-group">
+                    <label>Primary Donor<sup>*</sup> <i class="fas fa-info-circle td-info" data-toggle="tooltip" data-placement="right" data-original-title="Contractual Donor"></i></label>
+                    @Html.DropDownListFor(n => n.donor_id, new SelectList(Model.DonorList, "ID", "Name", Model.PrincipalDonorID), "Select",
+                            new { @class = "form-control  applyselect", @onchange = "ValidateDonor(this)" })
+                    @Html.ValidationMessageFor(model => model.donor_id, "", new { @class = "text-danger" })
+                </div>
+                <div class="col-md-3 col-sm-4 form-group">
+                    <label>Consortium</label>
+                    @Html.HiddenFor(x => Model.ConsortiumProjectIDs)
+                    <select class="applyselect" multiple="multiple" id="ddConsortiumProjectIDs">
+
+                        @if (Model.ConsortiumProjectsList != null)
+                        {
+                            foreach (var item in Model.ConsortiumProjectsList)
+                            {
+                                if (string.IsNullOrEmpty(Model.ConsortiumProjectIDs))
+                                {
+                                    <option value="@item.ID">@item.Name</option>
+                                }
+                                else
+                                {
+                                    <option @(("@" + Model.ConsortiumProjectIDs.Replace(",", "@") + "@").Contains("@" + item.ID.ToString() + "@") ? "selected" : "") value="@item.ID">@item.Name</option>
+                                }
+
+                            }
+                        }
+                    </select>
+                </div>
+
+                <div class="col-md-3 col-sm-4 form-group">
+                    <label>Donor Type</label>
+                    <input type="text" value="@Model.DonorTypeName" id="txtDonorType" class="color-green" disabled="">
+                </div>
+                <div class="col-md-3 col-sm-4 form-group">
+                    <label>Type of Agreement<sup>*</sup></label>
+                    @Html.DropDownListFor(n => n.AgreementID, new SelectList(Model.AgreementTypeList, "ID", "Name", Model.AgreementID), "Select",
+                           new { @class = "form-control  applyselect" })
+                    @Html.ValidationMessageFor(model => model.AgreementID, "", new { @class = "text-danger" })
+                </div>
+                <div class="col-sm-12 form-group">
+                    <hr>
+                    <span class="hr-aps lgt-text font-sm">Donor POC </span>
+                </div>
+                <div class="col-sm-12 form-group">
+                    <table id="TableReferencesList" class="table table-stripted lg-table mb-0 mt-0">
+                        <thead>
+                            <tr>
+                                <th class="w-50 text-center">S. No. </th>
+                                <th>Name </th>
+                                <th>Designation</th>
+                                <th>Phone Number</th>
+                                <th>Email </th>
+                                <th>Purpose </th>
+                                <th>Location </th>
+                                <th class="w-50">Primary</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (Model.ContactPersonList != null)
+                            {
+                                int Rcount = 0;
+                                for (int i = 0; i < Model.ContactPersonList.Count; i++)
+                                {
+                                    Rcount++;
+                                    <tr>
+                                        <td class="text-center">
+                                            @Html.HiddenFor(model => Model.ContactPersonList[i].donor_id)
+                                            @Html.HiddenFor(model => Model.ContactPersonList[i].DonorDetailsID)
+                                            @Html.HiddenFor(model => Model.ContactPersonList[i].ID, new { @class = "hdnID" })
+                                            <label id="span_@Rcount" name="span_@Rcount">@Rcount </label>
+                                        </td>
+                                        <td>
+                                            @Html.TextBoxFor(model => Model.ContactPersonList[i].person_name, new { @class = "form-control" })
+                                            @Html.ValidationMessageFor(model => Model.ContactPersonList[i].person_name, "", new { @class = "text-danger" })
+                                        </td>
+                                        <td>
+                                            @Html.TextBoxFor(model => Model.ContactPersonList[i].designation, new { @class = "form-control" })
+                                            @Html.ValidationMessageFor(model => Model.ContactPersonList[i].designation, "", new { @class = "text-danger" })
+                                        </td>
+                                        <td>
+                                            @Html.TextBoxFor(model => Model.ContactPersonList[i].phone_no, new { @class = "form-control" })
+                                            @Html.ValidationMessageFor(model => Model.ContactPersonList[i].phone_no, "", new { @class = "text-danger" })
+                                        </td>
+                                        <td>
+                                            @Html.TextBoxFor(model => Model.ContactPersonList[i].email, new { @class = "form-control" })
+                                            @Html.ValidationMessageFor(model => Model.ContactPersonList[i].email, "", new { @class = "text-danger" })
+                                        </td>
+                                        <td>
+                                            @Html.TextBoxFor(model => Model.ContactPersonList[i].Purpose, new { @class = "form-control" })
+                                            @Html.ValidationMessageFor(model => Model.ContactPersonList[i].Purpose, "", new { @class = "text-danger" })
+                                        </td>
+                                        <td>
+                                            @Html.TextBoxFor(model => Model.ContactPersonList[i].location, new { @class = "form-control" })
+                                            @Html.ValidationMessageFor(model => Model.ContactPersonList[i].location, "", new { @class = "text-danger" })
+                                        </td>
+                                        <td >
+                                            <div class="radio text-center">
+                                                @Html.HiddenFor(model => Model.ContactPersonList[i].Isdefault, new { @class = "hdndefault" })
+                                                <input type="radio" id="chk_@i" name="group" onclick="SaveasPrimary(this)" class="form-control rdoIsdefault" @(Model.ContactPersonList[i].Isdefault == 1 ? "checked" : "")>
+                                                <label for="chk_@i" class="radio-label"></label>
+                                            </div>
+                                        </td>
+                                        <td class="text-center">
+                                            @if (Rcount > 1)
+                                            {
+                                                <a onclick="DeleteRow(this)"  data-toggle="tooltip" data-original-title="remove" class="remove"><i class="fas fa-window-close red-clr" aria-hidden="true"></i></a>
+                                            }
+                                            else
+                                            {
+                                                <a class="disabled"><i class="fas fa-window-close" aria-hidden="true"></i></a>
+                                            }
+                                        </td>
+                                    </tr>
+                                }
+                            }
+                        </tbody>
+                    </table>
+                    <div class="text-right mt-2">
+                        <button type="button" id="btnViewDonorContact" class="btn btn blk-gdn-btn m-0">
+                            <i class="fas fa-eye" style="color: #fff"></i>View Donor POC
+                        </button>
+                        <a class="btn mtr-g-grn m-0" onclick="AddNewRow(this)"><strong><i class="fas fa-plus"></i>Add</strong></a>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+
+		<div class="ftr-btn">
+			@if (clsApplicationSetting.GetSessionValue("RolesName") == "C3 Admin")
+			{
+				<button type="submit" class="btn mtr-o-grn " name="Command" value="Add"><i class="fas fa-paper-plane"></i>Submit</button>
+			}
+			else
+			{
+				<button type="submit" disabled class="btn mtr-o-grn " name="Command" value="Add"><i class="fas fa-paper-plane"></i>Submit</button>
+			}
+
+			@if (Model.Inactive == 0 && Model.ID > 0)
+			{
+				<button type="submit" class="btn mtr-o-grn " name="Command" value="Live"><i class="fas fa-paper-plane"></i>Make It Live</button>
+			}
+			@*<a class="btn blk-gdn-btn" data-toggle="tooltip" data-original-title="Go Next" href="@Url.Action("BudgetDetails",new { src = clsApplicationSetting.EncryptFriendly(ViewBag.MenuID+"*"+"/Projects/BudgetDetails*"+Model.ID) })">
+			Next <i class="fas fa-angle-double-right m-0"></i>
+		</a>*@
+			<a class="btn cnl-btn" href="@Url.Action("ProjectDetails",new { src = clsApplicationSetting.EncryptFriendly(ViewBag.MenuID+"*"+"/Projects/ProjectDetails*"+Model.ID) })">
+				<i class="fas fa-angle-double-left m-0"></i>  Back
+			</a>
+			<a class="btn cnl-btn" href="@Url.Action("ProjectRegistrationList",new { src = clsApplicationSetting.EncryptFriendly(ViewBag.MenuID+"*"+"/Projects/ProjectRegistrationList") })">
+				<i class="fas fa-times"></i> Close
+			</a>
+
+		</div>
+
+
+
+
+    }
+
+</div>
+<div class="modal" id="ViewModal" aria-modal="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content ">
+            <div class="modal-header">
+                <h4 class="modal-title"><span id="spnhead">Donor Contact Person</span></h4>
+                <button type="button" class="close" data-dismiss="modal">×</button>
+            </div>
+            <div class="modal-body">
+                <div id="ModalTagetDiv"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal" id="ViewDonorDetails" aria-modal="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content ">
+            <div class="modal-header">
+                <h4 class="modal-title"><span id="spnhead">Donor Contact Person</span></h4>
+                <button type="button" class="close" data-dismiss="modal">×</button>
+            </div>
+            <div class="modal-body">
+                <div id="DonorDetailsTagetDiv"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@section scripts    {
+    @System.Web.Optimization.Scripts.Render("~/bundle/unobtrusivejs")
+    @Html.IncludeVersionedJs(Url.Content("~/assets/design/scripts/AddInit.js"))
+    @Html.IncludeVersionedJs(Url.Content("~/assets/design/Scripts/SyncDialogUtility.js"))
+<script>
+        $('#ddConsortiumProjectIDs').change(function () {
+            var IDs = $("#ddConsortiumProjectIDs").val();
+            $("#ConsortiumProjectIDs").val(IDs);
+        });
+
+
+        function AddNewRow(obj) {
+            var Table = $(obj).parent("div").parent('div').find('table');
+            var TableID = $(Table).attr('ID');
+            var LastTRCount = parseInt($('#' + TableID + '').find("tbody tr").length) - 1;
+            var $tableBody = $('#' + TableID + '').find("tbody"),
+                $trLast = $tableBody.find("tr:last"),
+                $trNew = $trLast.clone();
+            $trNew.find("td:last").html('<a onclick="DeleteRow(this)" class="remove"><i class="fas fa-window-close red-clr" aria-hidden="true"></i></a>')
+            $trNew.find("label").each(function () {
+                if ($(this).attr("id")) {
+                    $(this).attr({
+                        'id': function (_, id) { var arr = id.split('_'); return id.replace(arr[1], LastTRCount + 1); },
+                    });
+                    $(this).html(parseInt($('#' + TableID + '').find("tbody tr").length) + 1)
+                }
+                if ($(this).attr("for")) {
+                    $(this).attr({
+                        'for': function (_, name) { return name.replace('_' + LastTRCount, '_' + (parseInt(LastTRCount) + 1)); }
+                    });
+                }
+            });
+
+            $trNew.find("input").each(function (i) {
+                if ($(this).attr('type') == "radio") {
+                    $(this).attr({
+                        'id': function (_, name) { return name.replace('_' + LastTRCount, '_' + (parseInt(LastTRCount) + 1)); }
+                    });
+                    $(this).prop("checked", false);
+                }
+                else {
+                    $(this).attr({
+                        'id': function (_, name) { return name.replace('_' + LastTRCount + '_', '_' + (parseInt(LastTRCount) + 1) + '_'); },
+                        'name': function (_, name) { return name.replace('[' + LastTRCount + ']', '[' + (parseInt(LastTRCount) + 1) + ']'); },
+                    });
+                    $(this).val('')
+                }
+            });
+
+            $trNew.find("span").each(function (i) {
+                if ($(this).attr("data-valmsg-for")) {
+                    $(this).attr({
+                        'data-valmsg-for': function (_, name) { return name.replace('[' + LastTRCount + ']', '[' + (parseInt(LastTRCount) + 1) + ']'); }
+                    });
+                }
+                if ($(this).attr("for")) {
+                    $(this).attr({
+                        'for': function (_, name) { return name.replace('_' + LastTRCount + '_', '_' + (parseInt(LastTRCount) + 1) + '_'); }
+                    });
+                }
+            });
+
+
+            $trLast.after($trNew);
+            var form = $("#ClientsDetailsFrom").closest("form");
+            form.removeData('validator');
+            form.removeData('unobtrusiveValidation');
+            $.validator.unobtrusive.parse(form);
+        }
+
+
+        function DeleteRow(obj) {
+            var Response = 0;
+            var ID = $(obj).closest('tr').find('.hdnID').val();
+            var Table = $(obj).closest('table');
+            var TableID = $(Table).attr('ID');
+            var Doctype = "ProjectContactPerson";
+
+
+            ConfirmMsgBox("Are you sure want to delete", '', function () {
+                if (ID) {
+                    var data = DelRecord_Common(ID, Doctype);
+                    if (data.Status) {
+                        Response = 1;
+                    }
+                    else {
+                        FailToaster(data.SuccessMessage);
+                    }
+                }
+                if (Response == 1 || !ID) {
+                    var TotalRowCount = $('#' + TableID + '').find("tbody tr").length;
+
+                    $(obj).closest('tr').remove();
+                    $('#' + TableID + ' TBODY TR').each(function (i) {
+                        $(this).closest("tr").find("label").each(function () {
+                            $(this).attr({
+                                'id': function (_, id) { var arr = id.split('_'); return id.replace(arr[1], i); },
+                            });
+                            $(this).html(i + 1)
+                        });
+
+
+                        $(this).closest("tr").find("input").each(function () {
+                            $(this).attr({
+                                'id': function (_, id) { return id.replace('_' + (parseInt(i) + 1) + '_', '_' + i + '_'); },
+                                'name': function (_, name) { return name.replace('[' + (parseInt(i) + 1) + ']', '[' + i + ']'); },
+                            });
+                        });
+
+                        $(this).closest("tr").find("span").each(function () {
+                            if ($(this).attr("data-valmsg-for")) {
+                                $(this).attr({
+                                    'data-valmsg-for': function (_, name) { return name.replace('[' + (parseInt(i) + 1) + ']', '[' + i + ']'); },
+                                });
+                            }
+                            if ($(this).attr("for")) {
+                                $(this).attr({
+                                    'for': function (_, id) { return id.replace('_' + (parseInt(i) + 1) + '_', '_' + i + '_'); },
+                                });
+                            }
+                        });
+                    });
+                    var form = $("#ClientsDetailsFrom").closest("form");
+                    form.removeData('validator');
+                    form.removeData('unobtrusiveValidation');
+                    $.validator.unobtrusive.parse(form);
+
+
+                }
+            })
+        }
+
+
+        function OnSuccess(obj) {
+            if (obj.Status) {
+                SuccessToaster(obj.SuccessMessage);
+                window.location.href = obj.RedirectURL;
+            }
+            else {
+                CloseLoadingDialog();
+                FailToaster(obj.SuccessMessage);
+
+            }
+        }
+
+        $("#btnViewDonorContact").on('click', function (e) {
+            PendingDonorContactList();
+        });
+
+        function PendingDonorContactList() {
+            var donor_id = $("#donor_id option:selected").val();
+            var hdnProjectID = $("#hdnProjectID").val();
+            ShowLoadingDialog();
+            $.ajax({
+                url: "/Projects/_PendingDonorContactList",
+				type: "Get",
+                data: { src: EncryptQueryStringJSON(@ViewBag.MenuID+"*" + "/Projects/_PendingDonorContactList" + "*" + hdnProjectID + "*" + donor_id) },
+                success: function (data) {
+                    $("#ModalTagetDiv").empty();
+                    $("#ModalTagetDiv").html(data);
+                    $('#ViewModal').modal({
+                        backdrop: 'static',
+                        keyboard: false
+                    });
+                    CloseLoadingDialog();
+                },
+                error: function (er) {
+                    console.log(er);
+                    CloseLoadingDialog();
+                }
+            });
+        }
+
+
+
+
+
+        function OnPendingDonorContactLSuccess(obj) {
+            if (obj.Status) {
+                SuccessToaster(obj.SuccessMessage);
+                window.location.reload();
+            }
+            else {
+                CloseLoadingDialog();
+                FailToaster(obj.SuccessMessage);
+
+            }
+        }
+
+        function SaveasPrimary(obj) {
+            var hdnProjectID = $("#hdnProjectID").val();
+            var ID = $(obj).closest('tr').find('.hdnID').val();
+            if (ID) {
+                var dataObject = JSON.stringify({
+                    'ID': ID,
+                    'Value': hdnProjectID,
+                    'Doctype': 'Project_ContactPersonPrimary'
+                });
+                $.ajax({
+                    url: "/CommonAjax/UpdateColumn_CommonJson",
+                    type: "Post",
+                    contentType: 'application/json',
+                    async: true,
+                    data: dataObject,
+                    success: function (args) {
+                        if (args.Status) {
+                            SuccessToaster(args.SuccessMessage);
+                            $(".rdoIsdefault").prop("checked", false);
+                            $('.hdndefault').val(0);
+                            $(obj).closest('tr').find('.hdndefault').val(1);
+                            $(obj).closest('tr').find('.rdoIsdefault').prop("checked", true);
+                        }
+                        else {
+
+                            FailToaster(args.SuccessMessage);
+                        }
+                    },
+                    error: function (er) {
+                        console.log(er);
+                    }
+                });
+            } else {
+                $(".rdoIsdefault").prop("checked", false);
+                $('.hdndefault').val(0);
+                $(obj).closest('tr').find('.hdndefault').val(1);
+                $(obj).closest('tr').find('.rdoIsdefault').prop("checked", true);
+            }
+        }
+
+        function ValidateDonor(obj) {
+
+            var DonorID = $(obj).find('option:selected').val();
+            if (DonorID != "") {
+                var data = GetGenerateValues(DonorID, "DonorTypeName");
+                if (data.Status) {
+                    $("#txtDonorType").val(data.SuccessMessage);
+                }
+            }
+
+
+
+            var hdnCommonDonorID = $("#hdnCommonDonorID").val();
+            if (hdnCommonDonorID != 0 && DonorID != hdnCommonDonorID) {
+                SyncConfirmBox('Warning', "Donor is mismatched you will have to clear contact person list first?", funCoOk, funCoCan)
+                function funCoOk() {
+                    SyncCloseDialog();
+                    ClearAllContactPerson();
+                }
+
+                function funCoCan() {
+                    SyncCloseDialog();
+                    $("#donor_id").val(hdnCommonDonorID).trigger('change');
+                }
+            }
+        }
+        function ClearAllContactPerson() {
+
+            var ID = $("#hdnProjectID").val();
+            if (ID) {
+                        ShowLoadingDialog();
+                    var data = DelRecord_Common(ID, 'ProjectContactPerson_All');
+                    if (data.Status) {
+                        SuccessToaster(data.SuccessMessage);
+                        window.location.reload(true);
+                    }
+                    else {
+                        FailToaster(data.SuccessMessage);
+                        CloseLoadingDialog();
+                    }
+                }
+        }
+
+
+
+         function ViewDonorDetails() {
+             var donor_id = $("#PrincipalDonorID option:selected").val();
+            ShowLoadingDialog();
+            $.ajax({
+                url: "/Master/_ViewDonor",
+				type: "Get",
+                data: { src: EncryptQueryStringJSON(@ViewBag.MenuID+"*" + "/Master/_ViewDonor*"+ donor_id) },
+                success: function (data) {
+                    $("#DonorDetailsTagetDiv").empty();
+                    $("#DonorDetailsTagetDiv").html(data);
+                    $('#ViewDonorDetails').modal({
+                        backdrop: 'static',
+                        keyboard: false
+                    });
+                    CloseLoadingDialog();
+                },
+                error: function (er) {
+                    console.log(er);
+                    CloseLoadingDialog();
+                }
+            });
+    }
+
+    function ShowViewDonorDetails(obj) {
+        var a = $(obj).find("option:selected").val();
+        if (a != "") {
+            $("#btnViewDonorDetails").show();
+        } else {
+            $("#btnViewDonorDetails").hide();
+        }
+    }
+
+
+    
+</script>
+}

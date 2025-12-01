@@ -1,0 +1,137 @@
+﻿@model Mitr.Models.TravelDesk
+@{
+	ViewBag.Title = "AddTravelDesk";
+	Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@using (Ajax.BeginForm("AddTravelDesk", "Travel",
+		new { src = ViewBag.src },
+		new AjaxOptions { HttpMethod = "POST", OnSuccess = "OnSuccess" },
+	new { @id = "AddTravelDesk" })
+	)
+{
+
+	if (Model.EmployeeId > 0)
+	{
+		@Html.HiddenFor(model => model.EmployeeId, new { @id = "hdfempid" })
+	}
+	else
+	{
+		@Html.HiddenFor(model => model.EmployeeId, new { @id = "hdfempid" })
+	}
+	<div class="inner-main defult-height p-3 pb-0">
+		<h1 class="heading-one  mb-3">Add Travel Desk</h1>
+		<div class="row">
+			<div class="col-sm-2 form-group">
+				<label class="lbl-abs">Employee Name</label>
+				@Html.DropDownListFor(model => model.EmployeeId, new SelectList(@ViewBag.EmpList, "Id", "Name"), "select", new { @class = "form-control applyselect", @id = "ddlemp" })
+				@Html.ValidationMessageFor(model => model.EmployeeId, "", new { @class = "text-danger" })
+			</div>
+
+		</div>
+
+		<div class="row">
+			<div class="col-md-8 col-lg-8">
+				
+				<div id="TargetDiv">
+
+				</div>
+
+
+				<div class=" mt-4 text-center hide" id="divbutton">
+					<button type="submit" class="btn mtr-o-grn"><i class="fas fa-paper-plane"></i>Submit</button>
+					<button type="button" class="btn cnl-btn" onclick="ShowLoadingDialog();window.location='@Url.Action("TravelDesk", new { src = clsApplicationSetting.EncryptQueryString(ViewBag.MenuID.ToString() + "*/Travel/TravelDesk*0")  })';"><i class="fas fa-times"></i> Close</button>
+				</div>
+
+
+			</div>
+
+			<div class="col-md-4 col-lg-4 text-center align-self-center">
+				<img src="https://mitr2.sahajapps.com/assets/images/generate-monthly-log-reports.jpg" class="reportimg" alt="">
+
+			</div>
+		</div>
+	</div>
+}
+
+@section scripts    {
+	@System.Web.Optimization.Scripts.Render("~/bundle/dataTablesjs")
+	@System.Web.Optimization.Scripts.Render("~/bundle/unobtrusivejs")
+	@Html.IncludeVersionedJs(Url.Content("~/assets/design/Scripts/AddInit.js"))
+	@Html.IncludeVersionedJs(Url.Content("~/assets/design/Scripts/ToolTip.js"))
+	@Html.IncludeVersionedJs(Url.Content("~/assets/design/scripts/CustomValidate.js"))
+<script type="text/javascript">
+	$(document).ready(function () {
+		$("#divbutton").hide();
+		var UrlId = '@ViewBag.Seturl';
+		var EmployeeId = '@ViewBag.EmployeeId';
+		if (EmployeeId == '') {
+			FillProspectData(0, UrlId);
+		}
+		else {
+			var EmpId = parseInt('@ViewBag.EmployeeId');
+			$("#ddlemp").attr("disabled", "disabled");
+			$("#divbutton").show();
+			FillProspectData(EmpId, UrlId);
+	       }
+		   $("#divText").hide();
+
+		});
+	$('.selectedId').change(function () {
+
+		var ischecked = 0;
+		if (this.checked) {
+			ischecked = 1;
+		}
+		$(this).closest("tr").find(".isSelect").val(ischecked);
+		var check = ($('.selectedId').filter(":checked").length == $('.selectedId').length);
+	});
+
+		function OnSuccess(obj) {
+			if (obj.Status) {
+				SuccessToaster(obj.SuccessMessage);
+				window.location.href = obj.RedirectURL
+			}
+			else {
+				CloseLoadingDialog();
+				FailToaster(obj.SuccessMessage);
+			}
+		}
+		$("#ddlemp").change(function () {
+	       	     var ddlemp = $("#ddlemp").val();
+			 if (ddlemp != "") {
+				$("#hdfempid").val(ddlemp);
+				var UrlId = '@ViewBag.Seturl';
+				$("#divbutton").show();
+				FillProspectData(ddlemp, UrlId);
+			}
+			else {
+				var UrlId = '@ViewBag.Seturl';
+				$("#divbutton").hide();
+				FillProspectData(0, UrlId);
+			}
+
+            });
+
+		function FillProspectData(obj, objsrc) {
+        var hdfempid = obj;
+        var src = objsrc;
+            $.ajax({
+				url: "/Travel/_listTravelWorkLocation",
+                type: "Get",
+                async: true,
+				data: { src: src, EmployeeId: hdfempid },
+				success: function (data) {
+                    $("#TargetDiv").empty();
+                    $("#TargetDiv").html(data);
+                },
+                error: function (er) {
+                    alert(er);
+
+                }
+            });
+    }
+
+</script>
+}
+

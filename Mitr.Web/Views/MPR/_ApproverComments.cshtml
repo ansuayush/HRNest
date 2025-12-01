@@ -1,0 +1,17 @@
+﻿@model List<SMPR.SMPRComments>
+
+@if (Model.Count > 0)
+{
+	<ul class="list-unstyled cmtlist scroll p-4 mb-2">
+		@foreach (var item in Model)
+		{
+		<li>
+			<strong>@item.CreatedByName</strong>, <span class="lgt-clr">@item.createddat</span>
+			<div class="cmt-box">
+				@item.Comment
+			</div>
+		</li>
+		}
+
+	</ul>
+}

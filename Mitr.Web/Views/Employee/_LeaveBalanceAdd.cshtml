@@ -1,0 +1,105 @@
+﻿
+@model Employee.LeaveBalance
+
+@using (Ajax.BeginForm("_LeaveBalanceAdd", "Employee",
+        new { src = ViewBag.src },
+        new AjaxOptions { HttpMethod = "POST", OnSuccess = "OnSuccess", OnBegin = "ShowLoadingDialog()" },
+    new { @id = "_LeaveBalanceAddFrom" })
+    )
+{
+
+    @Html.AntiForgeryToken()
+    @Html.HiddenFor(x => Model.ID)
+    @Html.HiddenFor(x => Model.srno)
+    @Html.HiddenFor(x => Model.emp_id)
+    <div class="row">
+        <div class="form-group  wh-575 col-sm-3 col-md-3 col-lg-3 ">
+            <label>Leave Type</label>
+            @Html.DropDownListFor(n => n.leave_id, new SelectList(Model.lstLeaveMaster, "ID", "Name", Model.leave_id), "Select", new { @class = "form-control  applyselect" })
+            @Html.ValidationMessageFor(model => model.leave_id, "", new { @class = "text-danger" })
+
+
+        </div>
+        <div class="col-sm-3 wh-575 form-group">
+            <label>Opening Balance</label>
+            @Html.TextBoxFor(model => model.opening, new { @class = "form-control", @placeholder="Enter", @Type = "Number" })
+            @Html.ValidationMessageFor(model => model.opening, "", new { @class = "text-danger" })
+        </div>
+        <div class="col-sm-3 wh-575 form-group">
+            <label>Alloted Hours</label>
+
+            @Html.TextBoxFor(model => model.allotted, new { @class = "form-control", @placeholder="Enter", @Type = "Number" })
+            @Html.ValidationMessageFor(model => model.allotted, "", new { @class = "text-danger" })
+        </div>
+        <div class="col-sm-3 wh-575 col-md-4 col-lg-3 form-group align-self-end">
+            <label>Start Date</label>
+
+            @Html.TextBoxFor(model => model.start_date, new { @class = "form-control", @placeholder="Enter", @Type = "Date" })
+            @Html.ValidationMessageFor(model => model.start_date, "", new { @class = "text-danger" })
+        </div>
+
+        <div class="col-md-12 col-lg-12 align-self-center text-right">
+           
+                <button type="submit" id="btnadd" name="Command" value="Add" class="btn mtr-g-grn btn-l ripplelink "> <i class="fas fa-plus"></i>Add</button>
+           
+
+        </div>
+
+        <div class="col-sm-12">
+            <div class="table-responsive">
+                <table class="table mt-0 tbl-600">
+                    <thead>
+                        <tr>
+                            <th width="33">S.No </th>
+                            <th>Leave Type</th>
+                            <th>Type</th>
+                            <th width="100">Opening Balance (in hrs)</th>
+                            <th width="100">Alloted Hours</th>
+                            <th width="100">Start Date</th>
+                            <th width="130">Action </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model.lstLeaveBalanceDet)
+                        {
+                        <tr>
+                            <td class="emp_id" style="display:none">@item.emp_id</td>
+                            <td class="ID" style="display:none">@item.ID</td>
+                            <td class="leave_id" style="display:none">@item.leave_id</td>
+                            <td class="srno" style="display:none">@item.srno</td>
+                            <td>@item.RowNum</td>
+                            <td class="leave_name">@item.leave_name</td>
+                            <td class="type">@item.type</td>
+                            <td class="opening">@item.opening</td>
+                            <td class="allotted">@item.allotted</td>
+                            <td class="start_date">@item.start_date</td>
+                            <td><a onclick="FnEdit(this)"><i class="fas fa-edit"></i>Edit</a><span class="divline">|</span><a onclick="DeleteRow(this)"><i class="far fa-trash-alt"></i>Delete</a></td>
+                        </tr>
+                        }
+
+
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+      
+
+
+        <div class="col-lg-12 text-center">
+            <button type="button" data-dismiss="modal" class="btn cnl-btn"><i class="fas fa-times"></i> Cancel</button>
+            <button type="button" onclick="Submit()" class="btn mtr-o-grn">@(Model.lstLeaveBalanceDet.Count==0?"Submit":"Update")</button>
+
+            @*@if (Model.ID > 0)
+        {
+            <button type="submit" class="btn  mtr-g-grn mb-0 btn-l ripplelink pull-right" name="Command" value="Add"><i class="fa fa-paper-plane" aria-hidden="true"></i> Update</button>
+        }
+        else
+        {
+
+            <button type="submit" class="btn  mtr-o-grn mb-0 btn-l ripplelink pull-right" name="Command" value="Add"><i class="fa fa-paper-plane" aria-hidden="true"></i> Submit</button>
+        }*@
+        </div>
+    </div>
+
+}

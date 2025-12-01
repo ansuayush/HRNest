@@ -1,0 +1,146 @@
+﻿@model IList<Mitr.Models.SalaryStructure.EarningStructure>
+@section style{
+    @System.Web.Optimization.Styles.Render("~/bundle/dataTablecss")
+}
+<div class="inner-main mb-5 pb-0">
+    <h1 class="heading-one ">Earning Structure Master</h1>
+    @*@Html.Partial("ListHeader_Partial", "Earning Structure Master")*@
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card p-0">
+                <div class="card-body p-0">
+                    <div class="x_content table-currency mt-0">
+                        <div class="table-responsive">
+                            <table class="table mt-0">
+                                <thead>
+                                    <tr>
+                                        <th class="w-33">S.No </th>
+                                        <th>Category</th>
+                                        <th class="tw-100">% Configured</th>
+                                        <th class="tw-100 text-center">Action </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @{int Count = 0; }
+                                    @foreach (var item in Model)
+                                    {
+                                        <tr>
+                                            <td>@(Count +1)</td>
+                                            <td>@item.Category </td>
+                                            <td class="text-right">@item.Configured</td>
+                                            <td class="text-left"><a onclick="ListHeaderAdd('@item.Category');"><i class="fas fa-edit"></i> @(@item.Configured=="0"?"Add":"Edit")</a> </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="ViewModal">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+
+            <div class="modal-header blk-gdn-btn">
+                <h4 class="modal-title"><i class="fa fa-plus"></i>Add Earning Structure </h4>
+                <div class="close" data-dismiss="modal">&times;</div>
+            </div>
+            <!-- Modal body -->
+            <div class="modal-body">
+                <div id="TagetDiv"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@section scripts    {
+    @System.Web.Optimization.Scripts.Render("~/bundle/dataTablesjs")
+
+    @System.Web.Optimization.Scripts.Render("~/bundle/unobtrusivejs")
+
+    @Html.IncludeVersionedJs(Url.Content("~/assets/design/Scripts/AddInit.js"))
+    @Html.IncludeVersionedJs(Url.Content("~/assets/design/Scripts/ToolTip.js"))
+    <script>
+
+
+
+    function ListHeaderAdd(CMSID) {
+        if (CMSID == undefined)
+        {
+            CMSID = "";
+        }
+			$.ajax({
+                url: "/SalaryStructure/_EarningStructureAdd",
+				type: "Get",
+                data: { src: EncryptQueryStringJSON(@ViewBag.MenuID+"*" + "/SalaryStructure/_EarningStructureAdd" + "*" + CMSID) },
+                success: function (data)
+                {
+					$("#TagetDiv").empty();
+                    $("#TagetDiv").html(data);
+                    $("#ViewModal").modal("show");
+                     var form = $("form")
+                .removeData("validator")
+                .removeData("unobtrusiveValidation");
+                    $.validator.unobtrusive.parse(form);
+                    $("#group_id").select2();
+				},
+				error: function (er) {
+					alert(er);
+
+				}
+			});
+            }
+
+        function OnSuccess(obj) {
+            if (obj.Status) {
+                SuccessToaster(obj.SuccessMessage);
+                window.location.reload();
+            }
+            else {
+                CloseLoadingDialog();
+                FailToaster(obj.SuccessMessage);
+
+            }
+        }
+        function FnCheckPercentage(obj,row) {
+           
+            if (parseFloat(Number($(obj).val())) < 0 || parseFloat(Number($(obj).val())) > 100) {
+                FailToaster("Percentage should be in between 0 and 100");
+                $(obj).val('0');
+            }
+            else {
+                $("#[" + row + "].StartMonth").rules("add", {
+                    required: true,
+                    messages: {
+                        required: "Hey! You missed this field."
+                    }
+                });
+            }
+
+            //$("#Stateids").val('');
+            //if (data.length != 0) {
+            //    $("#Stateids").rules("add", {
+            //        required: true,
+            //        messages: {
+            //            required: "Hey! You missed this field."
+            //        }
+            //    });
+            //}
+            //else {
+            //    $("#Stateids").rules("add", {
+            //        required: false,
+            //        messages: {
+            //            required: "Required"
+            //        }
+            //    });
+            //}
+        }
+    </script>
+}
+

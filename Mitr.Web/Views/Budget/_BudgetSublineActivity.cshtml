@@ -1,0 +1,238 @@
+﻿@model Mitr.Models.BudgetMaster.SetBudget
+@{
+	double TotalSum = 0;
+}
+	<div class="table-scrollable bsa-height">
+		<table id="tableActiveLogApprove" class="table table-scroll act-table">
+			<thead>
+				<tr>
+					<th	width="30">S.No</th>
+					<th width="150">Ledger</th>
+					<th width="250">Activity</th>
+					<th width="250">Sub Activity</th>
+					<th width="70">Sub Activity Code</th>
+					<th width="60">Unit</th>
+					<th width="150">Category</th>
+					<th width="100">Code</th>
+					<th width="80">Amount</th>
+					<th width="10"></th>
+				</tr>
+			</thead>
+			<tbody id="item_list">
+				@{
+					string MenuID = "0";
+					if (ViewBag.MenuID != null)
+					{
+						MenuID = ViewBag.MenuID;
+					}
+
+				}
+				@if (Model.listBudgetSublineActivity.Count == 0)
+				{
+
+					int count = 0;
+					int ProjectCode = 0;
+
+					for (int i = 0; i < Model.listBudgetSublineActivity.Count; i++)
+					{
+
+						count++;
+
+				<tr class="hdfact">
+					<td class="text-center hdftableid ">
+				
+						<label id="span_@count" name="span_@count">@count<input type="hidden" value="@count" /> </label>
+					</td>
+					<td>
+
+						@Html.DropDownListFor(model => model.listBudgetSublineActivity[i].Ledgerid, new SelectList(Model.listProjectBudgetLedger, "Id", "Name", Model.Ledgerid), "Select", new { @class = "form-control applyselect" })
+
+
+					</td>
+					<td>
+
+						@Html.DropDownListFor(model => model.listBudgetSublineActivity[i].Activityid, new SelectList(Model.ActivityList, "Id", "Name"), "Select", new { @class = "form-control ddlactivity", @onchange = "ddlchange(this)" })
+
+
+					</td>
+					<td>
+
+						@Html.DropDownListFor(model => model.listBudgetSublineActivity[i].SubActivityid, new List<SelectListItem>(), "Select", new { @class = "form-control", @onchange = "ddlsubcatchange(this)" })
+
+					</td>
+					<td>
+						@Html.TextBoxFor(model => model.listBudgetSublineActivity[i].SubActivityCode, new { @class = "form-control" })
+					</td>
+					<td>
+						@Html.TextBoxFor(model => model.listBudgetSublineActivity[i].ActivityCode, new { @class = "form-control" })
+					</td>
+
+
+					<td>
+						@if (Model.listemplist != null)
+						{
+							@*@Html.DropDownListFor(model => model.listBudgetSublineActivity[i].Categoryid, new SelectList(Model.listLedger, "Id", "Name"), "Select", new { @class = "form-control", @id = "ddlcatefgory" })*@
+							@Html.DropDownListFor(model => model.listBudgetSublineActivity[i].Categoryid, new SelectList(Model.listemplist, "Id", "Name"), "Select", new { @class = "form-control", @id = "ddlcatefgory" })
+						}
+						else
+						{
+
+							@Html.TextBoxFor(model => model.listBudgetSublineActivity[i].Category, new { @class = "form-control" })
+						}
+
+					</td>
+					<td>
+						
+						@Html.TextBoxFor(model => model.listBudgetSublineActivity[i].Code, new { @class = "form-control", @readonly = "readonly" })
+
+					</td>
+					<td>
+						@Html.TextBoxFor(model => model.listBudgetSublineActivity[i].Amount, new { @class = "form-control text-right AAmount" })
+
+					</td>
+					<td class="text-center">
+						<a data-toggle="tooltip" class="btnAddRowTravelFare" data-original-title="Remove" aria-describedby="tooltip594398"><i class="fas fa-window-close m-0 red-clr" aria-hidden="true"></i></a>
+					</td>
+				</tr>
+						ProjectCode++;
+					}
+
+				}
+				else
+				{
+					int count = 0;
+					int ProjectCode = 0;
+					double FirstAmount = 0;
+					for (int i = 0; i < Model.listBudgetSublineActivity.Count; i++)
+					{
+
+						count++;
+						FirstAmount = Convert.ToDouble(Model.listBudgetSublineActivity[i].Amount);
+						TotalSum += Math.Round(FirstAmount);
+			<tr class="hdfact">
+				<td class="text-center hdftableid">
+
+					@Html.HiddenFor(model => model.listBudgetSublineActivity[i].Id)
+					@Html.HiddenFor(model => model.Id)
+					<label id="span_@count" name="span_@count">@count<input type="hidden" value="@count" /> </label>
+				</td>
+				@if (Model.Ledgerid == 0)
+				{
+					<td>
+						@Html.DropDownListFor(model => model.listBudgetSublineActivity[i].Ledgerid, new SelectList(Model.listProjectBudgetLedger, "Id", "Name", Model.listBudgetSublineActivity[i].Ledgerid), "Select", new { @class = "form-control", @disabled = "disabled" })
+
+					</td>
+				}
+				else
+				{
+					<td>
+						@Html.DropDownListFor(model => model.listBudgetSublineActivity[i].Ledgerid, new SelectList(Model.listProjectBudgetLedger, "Id", "Name", Model.Ledgerid), "Select", new { @class = "form-control", @disabled = "disabled" })
+
+					</td>
+				}
+
+				<td>
+
+
+					@Html.DropDownListFor(model => model.listBudgetSublineActivity[i].Activityid, new SelectList(Model.ActivityList, "Id", "Name", Model.listBudgetSublineActivity[i].Activityid), "Select", new { @class = "form-control ddlactivity", @onchange = "ddlchange(this)" })
+
+
+				</td>
+				<td>
+
+					@Html.DropDownListFor(model => model.listBudgetSublineActivity[i].SubActivityid, new SelectList(Model.SubActivityList, "Id", "Name", Model.listBudgetSublineActivity[i].SubActivityid), "Select", new { @class = "form-control", @onchange = "ddlsubcatchange(this)" })
+
+				</td>
+				@if (Model.Ledgerid > 0)
+				{
+					<td>
+						@Html.TextBoxFor(model => model.listBudgetSublineActivity[i].SubActivityCode, new { @class = "form-control SubActivityCodeProject", @onClick = "SubactivityCode(this)", @onkeydown = "SubactivityCode(this)" })
+					</td>
+					<td>
+						@Html.TextBoxFor(model => model.listBudgetSublineActivity[i].ActivityCode, new { @class = "form-control", @onClick = "ActivityCode(this)", @onkeydown = "ActivityCode(this)" })
+					</td>
+
+				}
+				else
+				{
+					<td>
+						@Html.TextBoxFor(model => model.listBudgetSublineActivity[i].SubActivityCode, new { @class = "form-control SubActivityCodeProject" })
+					</td>
+					<td>
+						@Html.TextBoxFor(model => model.listBudgetSublineActivity[i].ActivityCode, new { @class = "form-control" })
+					</td>
+
+				}
+
+
+			<td>
+				@if (Model.listemplist != null)
+				{
+					@*@Html.DropDownListFor(model => model.listBudgetSublineActivity[i].Categoryid, new SelectList(Model.listLedger, "Id", "Name", Model.listBudgetSublineActivity[i].Categoryid), "Select", new { @class = "form-control", @id = "ddlcatefgory" })*@
+					@Html.DropDownListFor(model => model.listBudgetSublineActivity[i].Categoryid, new SelectList(Model.listemplist, "Id", "Name", Model.listBudgetSublineActivity[i].Categoryid), "Select", new { @class = "form-control", @id = "ddlcatefgory" })
+					@Html.ValidationMessageFor(model => model.listBudgetSublineActivity[i].Categoryid, "", new { @class = "text-danger" })
+				}
+				else
+				{
+
+					@Html.TextBoxFor(model => model.listBudgetSublineActivity[i].Category, new { @class = "form-control" })
+				}
+
+			</td>
+				<td>
+
+					@Html.TextBoxFor(model => model.listBudgetSublineActivity[i].Code, new { @class = "form-control"})
+
+				</td>
+				<td>
+					@Html.TextBoxFor(model => model.listBudgetSublineActivity[i].Amount, new { @class = "form-control text-right AAmount", @onchange = "ActivityAmount()" })
+
+				</td>
+				<td class="text-center">
+					<a data-toggle="tooltip" onclick="DeleteRow(this)" class="deleterow" data-original-title="Remove" aria-describedby="tooltip594398"><i class="fas fa-window-close m-0 red-clr" aria-hidden="true"></i></a>
+				</td>
+			</tr>
+						ProjectCode++;
+					}
+				}
+
+
+			</tbody>
+
+
+			<tfoot>
+				<tr class="ttl-bg">
+					<td  colspan="7"></td>
+					<td class="text-right">Total</td>
+					<td class="text-right">
+						<input type="text" disabled value="@TotalSum" class="total text-right" id="total">
+
+					</td>
+					
+					<td></td>
+
+				</tr>
+			</tfoot>
+		</table>
+	</div>
+
+	<div class="text-right" id="divbuttonrow">
+		<button type="button" onclick="btnrowactivity(this)" class="btn green-clr ripplelink">
+		<i class="fas fa-plus"></i> Add Row
+		</button>
+	</div>
+
+@section scripts    {
+	@System.Web.Optimization.Scripts.Render("~/bundle/dataTablesjs")
+	@System.Web.Optimization.Scripts.Render("~/bundle/unobtrusivejs")
+	@Html.IncludeVersionedJs(Url.Content("~/assets/design/Scripts/AddInit.js"))
+	@Html.IncludeVersionedJs(Url.Content("~/assets/design/Scripts/ToolTip.js"))
+	<script src="~/assets/design/Scripts/AddInit.js?v=@clsApplicationSetting.GetWebConfigValue("Version")"></script>
+
+	<script>
+		$(document).ready(function () {
+			$('[data-toggle="tooltip"]').tooltip();
+		});
+	</script>
+	
+}

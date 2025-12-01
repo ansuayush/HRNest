@@ -1,0 +1,1263 @@
+﻿
+@{
+    ViewBag.Title = "QuotationEntryPendingSubGrant";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h1 class="heading-one">Quotation Entry</h1>
+<!-- Start -->
+<div class="inner-main defult-height p-0 pb-0">
+    <input type="hidden" id="hdnIsProcureCommitee" value="1" />
+    <input type="hidden" id="hdnIsModuleAdmin" value="0" />
+    <div id="accordion">
+        <div class="acd-tab">
+
+            <div class="tabscroll">
+                <ul class="tabscrollinfo">
+                    <li class="item">
+                        <button class="btn-link" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne"> In Principal Approval </button>
+                    </li>
+                    <li class="item">
+                        <button class="btn-link " data-toggle="collapse" data-target="#collapseTwo" aria-expanded="true" aria-controls="collapseTwo"> Quotation Entry </button>
+                    </li>
+                    <li class="item">
+                        <button class="btn-link " data-toggle="collapse" data-target="#collapseThree" aria-expanded="true" aria-controls="collapseTwo"> Details of Deliverable</button>
+
+                    </li>
+                    <li class="item">
+                        <button class="btn-link " data-toggle="collapse" data-target="#collapseFour" aria-expanded="true" aria-controls="collapseTwo"> Attachment</button>
+                    </li>
+                    <li class="item">
+                        <button class="btn-link " data-toggle="collapse" data-target="#collapseFive" aria-expanded="true" aria-controls="collapseTwo"> Committee Member</button>
+                    </li>
+                </ul>
+
+                <div class="paddles">
+                    <button class="left-paddle paddle hidden">
+                        <i class="fas fa-chevron-left"></i>
+                    </button>
+                    <button class="right-paddle paddle hidden ">
+                        <i class="fas fa-chevron-right"></i>
+                    </button>
+                </div>
+
+            </div>
+
+
+        </div>
+        <div class="p-2">
+            <div id="collapseOne" class="collapse show" aria-labelledby="">
+
+                <!----->
+                <div class="row">
+                    <div class="col-sm-1 form-group">
+                        <label>Req No</label>
+                        <input type="text" disabled="" id="ReqNoA" placeholder="Enter" name="">
+                    </div>
+                    <div class="col-sm-2 form-group">
+                        <label>Req Date</label>
+                        <input type="text" disabled="" id="ReqDateA" placeholder="Enter" name="">
+                    </div>
+                    <div class="col-sm-3 form-group">
+                        <label>Process By</label>
+                        <input type="text" disabled="" id="ReqbyA" placeholder="Enter" name="">
+                    </div>
+                    <div class="col-sm-3 form-group">
+                        <label>Point of Contact <sup>*</sup></label>
+                        <select class="form-control applyselect" id="ddlPOCA" disabled="">
+                        </select>
+                    </div>
+                    <div class="col-sm-3 form-group">
+                        <label>Contract/Agreement Type <sup>*</sup></label>
+                        <select class="form-control applyselect" id="ddlAgreementA" onchange="RedirectToAgreement(this)">
+                            <option value="Select">Select</option>
+                            <option value="Purchase Order (PO)">Purchase Order (PO)</option>
+                            <option value="Consultant">Consultant</option>
+                            <option value="Sub-grant">Sub-grant</option>
+                        </select>
+                    </div>
+                    <div class="col-sm-12 form-group">
+                        <div class="table-responsive">
+                            <table id="datatableApproved" class="table mt-0 mb-0 ">
+                                <thead>
+                                    <tr>
+                                        <th width="10">S.NO</th>
+                                        <th width="90">Project Code<sup>*</sup></th>
+                                        <th width="250">Project Sub line Item<sup>*</sup></th>
+                                        <th>Project Line Desc</th>
+                                        <th width="100">Project Manager</th>
+                                        <th width="50">Qty</th>
+                                        <th width="90">Budget Amount</th>
+                                        <th width="80">Req. Amount<sup>*</sup></th>
+                                        <th width="100">Remarks</th>
+                                        <th width="98">Status</th>
+                                        <th>Action</th>
+
+
+                                    </tr>
+
+                                </thead>
+                                <tbody>
+
+
+
+
+
+                                <tfoot>
+                                    <tr class="green-clr lgt-mtr-o-bg text-right fn-bold">
+                                        <td colspan="6">Total</td>
+                                        <td class="text-right"><label class="text-right" id="lblTotal1A">0</label></td>
+                                        <td class="text-right"><label class="text-right" id="lblTotal2A">0</label></td>
+                                        <td colspan="3"></td>
+                                    </tr>
+                                </tfoot>
+
+
+
+                            </table>
+                        </div>
+
+                    </div>
+
+
+
+
+
+
+                </div>
+                <!----->
+
+            </div>
+            <div id="collapseTwo"  class="collapse show" aria-labelledby ="headingTwo">
+
+                <!----->
+                <div class="row">
+                    <div class="col-sm-12 form-group">
+                        <hr>
+                        <span class="hr-aps"><i class="fas fa-user-tie"></i>Quotation Entry</span>
+                        <input type="hidden" id="hdnMultiValue" />
+                    </div>
+
+                    <div class="col-sm-12 form-group">
+                        <div class="table-responsive">
+                            <table id="datatableQoutationEntry" class="table mt-0 ">
+                                <thead>
+                                    <tr>
+                                        <th width="10">S.NO</th>
+                                        <th width="100">Subgrantees Name	</th>
+
+                                        <th width="100">Subgrant Amount	</th>
+                                        <th width="200">Attach RFP	</th>
+                                        <th width="200">Attach Proposal Received	</th>
+                                        <th>Remarks</th>
+                                        <th width="80">Recommend</th>
+                                        <th></th>
+
+                                    </tr>
+
+                                </thead>
+                                <tbody id="tableToModify">
+                                    <tr>
+                                        <td><label class="lblSRNo" id="lblSRNo_0">1</label></td>
+
+                                        <td>
+                                            <select class="form-control applyselect ddlVendor" id="ddlVendor_0"  disabled>
+                                            </select>
+                                        </td>
+
+
+                                        <td class="text-right">
+                                            <input type="text" class="form-contoral   text-right txtSubgrant " OnPaste="return ValidatePasteNumeric(false,this)" onkeypress="AllowNumbersOnly(false,this,'Numeric only')" placeholder="0" id="txtSubgrant_0"   disabled   onblur="ClearInvalidText(this)">
+                                        </td>
+
+                                        <td class="text-right">
+                                            <input type="file" class="form-contoral  text-right Attach" placeholder="0" id="Attach_0"   disabled   onchange="UploadocumentProof(this)">
+                                            <label class="Fileurl" style="display:none;" id="hdnUploadFileUrl_0"></label>
+                                            <label class="FileActualName" onclick="DownloadFileQuotation(this)" style="display:none;" id="hdnUploadActualFileName_0"></label>
+                                            <label class="FileNewName" style="display:none;" id="hdnUploadNewFileName_0"></label>
+
+                                        </td>
+                                        <td class="text-right">
+                                            <input type="file" class="form-contoral  text-right AttachProposal" placeholder="0" id="AttachProposal_0"   disabled   onchange="UploadocumentProofAttachProposal(this)">
+                                            <label class="AttachProposalFileurl" style="display:none;" id="hdnAttachProposalUploadFileUrl_0"></label>
+                                            <label class="AttachProposalFileActualName" onclick="DownloadFileProposal(this)" style="display:none;" id="hdnAttachProposalUploadActualFileName_0"></label>
+                                            <label class="AttachProposalFileNewName" style="display:none;" id="hdnAttachProposalUploadNewFileName_0"></label>
+
+                                        </td>
+                                        <td class="text-right">
+                                            <textarea placeholder="Enter" class="form-contoral txtRemarks" id="txtRemarks_0"  disabled  ></textarea>
+                                        </td>
+                                        <td class="text-center">
+
+                                            <div class="radio-button">
+                                                <input id="recomandation_0"  disabled    name="radionewGrid" type="radio" class="recomandation"  value="">
+                                                <label for="recomandation_0" class="radio-label lblrecomandation"></label>
+                                            </div>
+
+                                        </td>
+                                        <td class="text-center" style="visibility:hidden;">
+                                            <a class="remove" data-toggle="tooltip" data-original-title="Remove"><i class="fas fa-window-close red-clr" aria-hidden="true"></i></a>
+
+
+                                        </td>
+
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="text-right">
+                            <button onclick="AddNewRows()" type="button" class="btn green-clr  m-0 HideClass"><i class="fas fa-plus"></i>Add</button>
+                        </div>
+                    </div>
+
+                    <div class="col-sm-12 form-group yes">
+                        <label>Have you received quotation from non registrator sub-grantee?	</label>
+                        <ul class="list-unstyled inline-li mt-2">
+                            <li>
+                                <div class="radio-button">
+                                    <input id="yes23" name="radionew" type="radio" value="" onclick="show1();"  disabled  >
+                                    <label for="yes23" class="radio-label">Yes</label>
+                                </div>
+                            </li>
+                            <li>
+                                <div class="radio-button">
+                                    <input id="no23" name="radionew" type="radio" onclick="show2();"  disabled  >
+                                    <label for="no23" class="radio-label">No</label>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <div class="col-sm-6 form-group hide" id="div1">
+                        <table class="table" id="tblVendor">
+                            <thead>
+                                <tr>
+                                    <th width="250">Add Temporary sub-grantee</th>
+                                    <th width="10"></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>
+
+                                        <input type="text" class="form-control" placeholder="Enter" id="txtTempVendor" onchange="HideErrorMessage(this)">
+                                        <span id="sptxtTempVendor" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+
+                                    </td>
+                                    <td>
+                                        <a title='Click to Remove' data-toggle='tooltip' data-original-title='Click to Remove'><i class='fas fa-window-close m-0 red-clr' aria-hidden='true'></i> </a>
+                                    </td>
+                                </tr>
+                            </tbody>
+
+                        </table>
+
+                        <div class="text-right">
+                            <button type="button" onclick="AddVendor()" class="btn green-clr  m-0 HideClass"><i class="fas fa-plus"></i>Add</button>
+                        </div>
+
+                    </div>
+                    <div class="col-sm-3 form-group mw-575">
+                        <label>Estimated  Start Date<sup>*</sup></label>
+
+                        <input autocomplete="off" class="form-control Mandatory datepicker" placeholder="Enter" id="tbEstimatedStartDate" onchange="HideErrorMessage(this)">
+                        <span id="sptbEstimatedStartDate" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+                    </div>
+                    <div class="col-sm-3 form-group mw-575">
+                        <label>Estimated End Date<sup>*</sup></label>
+
+                        <input autocomplete="off" class="form-control Mandatory datepicker" placeholder="Enter" id="tbEstimatedEndDate" onchange="HideErrorMessage(this)">
+                        <span id="sptbEstimatedEndDate" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+                    </div>
+
+                    <div class="col-sm-3 form-group" id="divFileScope1">
+                        <label>Scope of work<sup>*</sup></label>
+                        <input type="file" placeholder="Enter" class="form-control" id="fileScopeofwork" onchange="UploadFileScope()">
+                        <span id="spfileScopeofwork" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+                        <input type="hidden" id="hdnfileScopeActualName" />
+                        <input type="hidden" id="hdnfileScopeNewName" />
+                        <input type="hidden" id="hdnfileScopeFileUrl" />
+                    </div>
+
+                    <div class="col-sm-3 form-group" id="divFileScope2" style="display:none;">
+                        <label>Scope of work<sup>*</sup></label>
+                        <div class="vwdwn showatchimg">
+                            <label id="lblAttachementRFPDownload"></label>
+                            <span class="vwdwnicon delete rmatch green-clr" data-toggle="tooltip" title="" data-original-title="Download">
+                                <button id="btnDownload1" onclick='DownloadFileRFP()' target='_blank' class='green-clr'><i class='fas fa-download'></i></button>
+                            </span>
+                        </div>
+
+                    </div>
+                    <div class="col-sm-3 form-group" id="divBudget1" style="display:none;">
+                        <label>Budget Attachment </label>
+                        <input type="file" placeholder="Enter" class="form-control" id="fileBudgetAttachment " onchange="UploadFileBudgetAttachment()">
+                        <span id="spfileBudgetAttachment" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+                        <input type="hidden" id="hdnBudgetAttachmentActualName" />
+                        <input type="hidden" id="hdnBudgetAttachmentNewName" />
+                        <input type="hidden" id="hdnBudgetAttachmentFileUrl" />
+                    </div>
+                    <div class="col-sm-3 form-group" id="divBudget2" >
+                        <label>Budget Attachment </label>
+                        <div class="vwdwn showatchimg">
+                            <label id="lblAttachementBudgetDownload"></label>
+                            <span class="vwdwnicon delete rmatch green-clr" data-toggle="tooltip" title="" data-original-title="Download">
+                                <button id="btnDownload1" onclick='DownloadFileBudget()' target='_blank' class='green-clr'><i class='fas fa-download'></i></button>
+                            </span>
+                        </div>
+
+                    </div>
+                    <div class="col-sm-12 form-group">
+                        <label>Special Conditions, if any</label>
+                        <textarea class="form-control h-100 maxSize[1200]" placeholder="Explain Hare" id="txtSpecialCond"></textarea>
+
+                    </div>
+                </div>
+                <!----->
+
+            </div>
+            <div id="collapseThree"  class="collapse show" aria-labelledby ="headingTwo">
+
+                <!----->
+                <div class="row">
+                    <div class="col-sm-12 form-group">
+                        <hr>
+                        <span class="hr-aps"><i class="fas fa-list"></i>Details of Deliverable</span>
+                    </div>
+                    <div class="col-sm-6 form-group">
+                        <div class="table-responsive">
+                            <table class="table mb-2" id="tblPaymentTerm">
+                                <thead>
+                                    <tr>
+                                        <th>Payment Terms</th>
+                                        <th>Amount(Included tax and Others)</th>
+                                        <th>Due On	</th>
+                                        <th>
+
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>
+                                            <input type="text" class="form-control PaymentTerm" placeholder="Enter" id="txtPaymentTerm" onchange="HideErrorMessage(this)">
+                                            <span id="sptxtPaymentTerm" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+                                        </td>
+                                        <td>
+                                            <input type="text" class="form-control PaymentTerm" placeholder="Enter" id="txtPaymentTermAmount" onchange="HideErrorMessage(this)" OnPaste="return ValidatePasteNumeric(false,this)" onkeypress="AllowNumbersOnly(false,this,'Numeric only')">
+                                            <span id="sptxtPaymentTermAmount" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+                                        </td>
+                                        <td>
+
+                                            <input autocomplete="off" class="form-control datepicker PaymentTerm" placeholder="Enter" id="txtPaymentTermDueOn" onchange="HideErrorMessage(this)">
+                                            <span id="sptxtPaymentTermDueOn" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+                                        </td>
+
+                                        <td>
+                                            <a title='Click to Remove' data-toggle='tooltip' data-original-title='Click to Remove'><i class='fas fa-window-close m-0 red-clr' aria-hidden='true'></i> </a>
+                                        </td>
+                                    </tr>
+                                </tbody>
+
+                            </table>
+                        </div>
+                        <div class="text-right">
+                            <button type="button" onclick="AddPaymentTerm()" class="btn green-clr  m-0 HideClass"><i class="fas fa-plus"></i>Add</button>
+                        </div>
+                    </div>
+
+
+
+                    <div class="col-sm-12 form-group" style="display:none;">
+                        <label>Justification  in case of less than 3 Quotations</label>
+                        <textarea class="form-control h-80" placeholder="Enter" id="txtJustfication"></textarea>
+                    </div>
+
+                </div>
+                <!----->
+
+            </div>
+            <div id="collapseFour"  class="collapse show" aria-labelledby ="headingTwo">
+
+                <!----->
+                <div class="row">
+                    <div class="col-sm-12 form-group">
+                        <hr>
+                        <span class="hr-aps"><i class="fas fa-paperclip"></i>Attachment</span>
+                    </div>
+                    <div class="col-sm-6 form-group">
+                        <table class="table" id="tblDocumentList">
+                            <thead>
+                                <tr>
+                                    <th width="250">Nature of Attachment</th>
+                                    <th width="250">Remarks</th>
+                                    <th width="150"></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><input type="file" class="form-contorl" id="fileDocOtherUpload"></td>
+                                    <td><textarea placeholder="Enter" class="form-control" id="txtNatureRemark"></textarea> </td>
+                                    <td>
+                                        <a title='Click to Remove' data-toggle='tooltip' data-original-title='Click to Remove'><i class='fas fa-window-close m-0 red-clr' aria-hidden='true'></i> </a>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <div class="text-right">
+                            <button type="button" onclick="UploadOtherDocumentExtra()" class="btn green-clr  m-0 HideClass"><i class="fas fa-plus"></i>Add</button>
+                        </div>
+                    </div>
+                    <div class="col-sm-12 text-center" id="divAction">
+
+                        <button type="button" onclick="SaveQuotationEntry(1)" class="btn mtr-o-grn btn-l ripplelink pull-right"><i class="fas fa-save"></i>Save</button>
+                        <a href="#" onclick="SaveQuotationEntry(2)" class="btn mtr-o-grn btn-l ripplelink pull-right"><i class="fa fa-paper-plane"></i>Submit</a>
+                        <button type="button" class="btn cnl-btn ripplelink"><i class="fas fa-times"></i>Close</button>
+                    </div>
+                </div>
+                <!----->
+
+            </div>
+            <div id="collapseFive"  class="collapse show" aria-labelledby ="headingTwo">
+
+                <!----->
+                <div class="row">
+                    <div class="col-sm-12 form-group">
+                        <hr>
+                        <span class="hr-aps"><i class="fas fa-user-tie"></i>Committee Member</span>
+                    </div>
+                    <div class="col-sm-12 form-group">
+                        <div class="table-responsive">
+                            <table id="tblComitteeMember" class="table mt-0 ">
+                                <thead>
+                                    <tr>
+                                        <th width="10">S.NO</th>
+                                        <th width="250">Committee Member</th>
+                                        <th width="200">Designation</th>
+                                        <th width="200">Department</th>
+                                        <th width="200">Location</th>
+                                        <th>Remarks</th>
+                                        <th width="80">Status</th>
+
+                                    </tr>
+
+                                </thead>
+
+                            </table>
+                        </div>
+
+                    </div>
+
+
+
+
+
+                    <div class="col-sm-6 mx-auto" id="Div1" style="display: none;">
+                        <div class="row">
+                            <div class="col-md-12 form-group">
+                                <hr>
+                                <span class="hr-aps"><i class="fas fa-ban"></i>Reject</span>
+                            </div>
+
+                            <div class="col-sm-12 form-group">
+                                <label>Please share the reason for Rejection <sup>*</sup></label>
+                                <textarea class="form-control RejectCommitee h-100" placeholder="Explain Hare" id="txtRejectCommitee" onchange="HideErrorMessage(this)"></textarea>
+                                <span id="sptxtRejectCommitee" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+                            </div>
+                            <div class="col-sm-12 text-center">
+                                <button type="button" class="btn mtr-o-grn btn-l ripplelink pull-right" onclick="SaveRejectForCommitee()" name="Command" value="Add"><i class="fa-solid fa-paper-plane"></i>Submit</button>
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <div class="col-sm-12 text-center">
+
+                        <a href="#" id="divCommiteeApproval1" class="btn mtr-g-grn btn-l" name="Command" onclick="SaveApproveForCommitee()" value="Add"><i class="fas fa-check"></i> Approve</a>
+                        <button type="submit" id="divCommiteeApproval2" class="btn rjt-btn btn-l " name="Command" value="Add" onclick="divVisibility('Div1');"><i class="fa fa-ban" aria-hidden="true"></i> Reject</button>
+                        <button type="submit" onclick="AskQuery()" class="btn mtr-o-grn btn-l" data-toggle="modal" data-target="#mgs"><i class="fas fa-info-circle"></i> Ask a Query</button>
+                        <a href="ProcurementUserRequest" class="btn cnl-btn ripplelink"><i class="fas fa-times"></i>Close</a>
+                    </div>
+                </div>
+                <!----->
+
+            </div>
+        </div>
+
+
+
+        <!-- ENd -->
+    </div>
+
+
+
+    <!-- ENd -->
+
+</div>
+
+<div class="modal fade" id="pay">
+    <div class="modal-dialog modal-md">
+        <div class="modal-content">
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <h4 class="modal-title">
+                    <i class="fas fa-rupee-sign" aria-hidden="true"></i> <span id="spnHead">Payment</span>
+                </h4>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+
+            <div class="modal-body ">
+                <div class="row">
+                    <div class="col-sm-4 form-group">
+                        <label>Date<span class="required">*</span> </label>
+                        <input type="date" class="form-control" placeholder="Enter">
+                    </div>
+                    <div class="col-sm-4 form-group">
+                        <label>Amount<span class="required">*</span> </label>
+                        <input type="number" class="form-control" placeholder="0">
+                    </div>
+                    <div class="col-sm-4 form-group">
+                        <label>UTR No<span class="required">*</span> </label>
+                        <input type="number" class="form-control" placeholder="Enter">
+                    </div>
+                    <div class="col-sm-12 form-group">
+                        <label>Remark<span class="required">*</span> </label>
+                        <textarea class="form-control h-80" placeholder="Enter"></textarea>
+                    </div>
+                    <div class="col-lg-12 text-center mt-3">
+
+                        <a href="module-admin-pending_processed.html" type="submit" class="btn mtr-o-grn btn-l ripplelink pull-right" name="Command" value="Add"><i class="fa fa-paper-plane"></i>Submit</a>
+                        <button type="button" data-dismiss="modal" class="btn cnl-btn ripplelink  pull-right"><i class="fas fa-times"></i> Close</button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+
+</div>
+<div class="modal fade confirmmsg" id="confirmmsgrcmultiple">
+    <div class="modal-dialog modal-md ">
+        <div class="modal-content">
+            <!-- Modal Header -->
+            <div class="swal-icon swal-icon--warning">
+                <span class="swal-icon--warning__body">
+                    <span class="swal-icon--warning__dot"></span>
+                </span>
+            </div>
+
+            <div class="modal-body ">
+                <div class="swal-title text-center">
+                    Are you want to add mutiple
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" onclick="SetUnitEnable()" data-dismiss="modal" data-toggle="modal" class="btn cnl-btn hidemodalno">No</button>
+                <button type="button" onclick="SetUnitDisable()" class="btn mtr-o-grn hidemodal">Yes</button>
+
+            </div>
+
+        </div>
+
+
+
+    </div>
+
+</div>
+<div class="modal fade confirmmsg" id="confirmmsgnit">
+    <div class="modal-dialog modal-md ">
+        <div class="modal-content">
+            <!-- Modal Header -->
+            <div class="swal-icon swal-icon--warning">
+                <span class="swal-icon--warning__body">
+                    <span class="swal-icon--warning__dot"></span>
+                </span>
+            </div>
+
+            <div class="modal-body ">
+                <div class="swal-title text-center">
+                    Are you want to add mutiple
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" data-dismiss="modal" data-toggle="modal" class="btn cnl-btn hidemodalno">No</button>
+                <button type="button" class="btn mtr-o-grn hidemodal" data-toggle="modal" data-toggle="modal" data-target="#modalrcunit">Yes</button>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="modal fade pop-dgn modalrcmultiple" id="modalrcmultiple">
+    <div class="modal-dialog mdl-lg">
+        <div class="modal-content">
+            <div class="modal-header blk-gdn-btn">
+                <h4 class="modal-title">Rate Contract Multiple</h4>
+                <div class="close" data-dismiss="modal">&times;</div>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+
+                    <div class="col-sm-12 form-group">
+                        <div class="table-responsive">
+                            <table id="datatableMultiple" class="table mt-0 ">
+                                <thead>
+                                    <tr>
+
+                                        <th>Description</th>
+                                        <th width="70">Unit Rate</th>
+                                        <th width="70">Tax %</th>
+                                        <th width="100">Tax <br />(GST & Others)</th>
+
+                                        <th>
+
+                                        </th>
+                                    </tr>
+
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>
+
+                                            <textarea class="form-control MulitpleUnit" placeholder="Enter" id="txtDescription" onchange="HideErrorMessage(this)"></textarea>
+
+                                            <span id="sptxtDescription" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+
+                                        </td>
+                                        <td>
+                                            <input type="text" id="txtUnitRate" class="form-contoral  text-right MulitpleUnit" placeholder="0" onchange="HideErrorMessage(this); FillTax(this)" OnPaste="return ValidatePasteNumeric(false,this)" onkeypress="AllowNumbersOnly(false,this,'Numeric only')">
+                                            <span id="sptxtUnitRate" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+                                        </td>
+                                        <td>
+                                            <input type="text" id="txtTax" class="form-contoral  text-right MulitpleUnit allow_numeric" placeholder="0" onchange="HideErrorMessage(this); FillTax(this)" OnPaste="return ValidatePasteNumeric(false,this)" onkeypress="AllowNumbersOnly(false,this,'Numeric only')">
+                                            <span id="sptxtTax" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+                                        </td>
+                                        <td><input type="text" id="txtTax_GST" class="form-contoral  text-right allow_numeric" placeholder="0" disabled></td>
+                                        <td>
+                                            <a title='Click to Remove' data-toggle='tooltip' data-original-title='Click to Remove'><i class='fas fa-window-close m-0 red-clr' aria-hidden='true'></i> </a>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="text-right">
+                            <button type="button" onclick="AddMulitpleUnit()" class="btn green-clr  m-0 HideClass"><i class="fas fa-plus"></i>Add</button>
+                        </div>
+                    </div>
+                    <div class="col-sm-12 text-center">
+
+                        <button type="button" data-dismiss="modal" class="btn mtr-o-grn btn-l ripplelink"><i class="fas fa-save whiteclr"></i>Save</button>
+                        <button type="button" class="btn cnl-btn btn-l ripplelink" data-dismiss="modal"><i class="fas fa-times"></i>Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="modal fade pop-dgn modalrcunit" id="modalrcunit">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header blk-gdn-btn">
+                <h4 class="modal-title">Unit</h4>
+                <div class="close" data-dismiss="modal">&times;</div>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+
+                    <div class="col-sm-12 form-group">
+                        <div class="table-responsive">
+                            <table id="datatable" class="table mt-0 ">
+                                <thead>
+                                    <tr>
+                                        <th width="50">Qty</th>
+                                        <th>Description</th>
+                                        <th width="100">Unit</th>
+                                        <th width="70">Unit Rate</th>
+                                        <th width="70">Amount</th>
+                                        <th width="70">Tax %</th>
+                                        <th width="100">Tax <br />(GST & Others)</th>
+                                        <th width="100">Frieght/Transportation</th>
+
+
+                                    </tr>
+
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><input type="number" class="form-contoral  text-right" placeholder="0"></td>
+                                        <td><textarea class="form-control" placeholder="Enter"></textarea></td>
+                                        <td><input type="text" class="form-contoral" placeholder="Enter" value=""></td>
+                                        <td><input type="number" class="form-contoral  text-right" placeholder="0"></td>
+                                        <td><input type="number" class="form-contoral  text-right" placeholder="0" value="0" disabled></td>
+                                        <td><input type="number" class="form-contoral  text-right" placeholder="0"></td>
+                                        <td><input type="number" class="form-contoral  text-right" placeholder="0" value="0" disabled></td>
+                                        <td><input type="number" class="form-contoral  text-right" placeholder="0" value=""></td>
+
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="text-right">
+                            <button type="button" class="btn green-clr  m-0 HideClass"><i class="fas fa-plus"></i>Add</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="mt-2 text-center">
+
+                    <button type="button" data-dismiss="modal" class="btn mtr-o-grn btn-l ripplelink btnTicket "><i class="fas fa-save whiteclr"></i>Save</button>
+                    <button type="button" class="btn cnl-btn btn-l ripplelink" data-dismiss="modal"><i class="fas fa-times"></i>Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div style="display:none;">
+    <a id="btnVendorRegistrationReturn" href="~/Procurement/QuotationEntry" class="btn mtr-g-grn btn-l ripplelink "><i class="fa fa-plus"></i>Add</a>
+    <input type="hidden" id="hdnQuoteEntryId" value="0" />
+    <a id="btnRedirectToRegistration" href="#" class="btn mtr-g-grn btn-l ripplelink "><i class="fa fa-plus"></i>Add</a>
+</div>
+
+<div class="modal fade" id="mgs">
+    <div class="modal-dialog modal-lg ">
+        <div class="modal-content">
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <h4 class="modal-title"><i class="fas fa-comments"></i> Message</h4>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+
+            <div class="modal-body ">
+                <div class="row">
+                    <div class="col-sm-12 form-group">
+
+                        <!------>
+                        <!-- Comment #1 //-->
+
+                        <div class="scroll pr-3" id="divMessage">
+
+
+
+                        </div>
+
+                        <!----->
+
+                    </div>
+                    <div class="col-sm-12 form-group text-center">
+                        <button type="button" class="btn mtr-o-grn" data-dismiss="modal" data-toggle="modal" data-target="#aq"><i class="fa fa-paper-plane"></i> Ask a Query</button>
+                        <button type="button" data-dismiss="modal" class="btn cnl-btn"><i class="fas fa-times"></i> Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+</div>
+<div class="modal fade" id="aq">
+    <div class="modal-dialog modal-md ">
+        <div class="modal-content">
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <h4 class="modal-title"><i class="fas fa-plus"></i>Ask Query</h4>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+
+            <div class="modal-body ">
+                <div class="row">
+                    <div class="col-sm-12 form-group">
+                        <label>To<sup>*</sup></label>
+                        <select class="form-control applyselect Message" onchange="HideErrorMessage(this)" multiple id="ddlMessageMember">
+                        </select>
+
+                        <span id="spddlMessageMember" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+                    </div>
+                    <div class="col-sm-12 form-group">
+                        <label>Message<sup>*</sup></label>
+                        <textarea class="form-control h-100 Message maxSize[1200]" placeholder="Enter" id="txtMessage" onchange="HideErrorMessage(this)"></textarea>
+                        <span id="sptxtMessage" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+                    </div>
+                    <div class="col-sm-12 form-group text-center">
+                        <button type="button" class="btn mtr-o-grn" onclick="SendMessage()"><i class="fa fa-paper-plane"></i>Send</button>
+                        <button type="button" id="btnModelPopupClose" data-dismiss="modal" class="btn cnl-btn"><i class="fas fa-times"></i> Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+</div>
+@section scripts    {
+    @System.Web.Optimization.Scripts.Render("~/bundle/unobtrusivejs")
+    @System.Web.Optimization.Scripts.Render("~/bundle/dataTablesjs")
+    <script src="~/assets/design/Scripts/AddInit.js?v=@clsApplicationSetting.GetWebConfigValue("Version")"></script>
+    <script src="~/Areas/Procurement/DevScript/QuotationEntryPendingSubgrant.js"></script>
+
+    <script>
+		 var IsEDUser = '@ViewBag.IsED';
+       var loggedinUserid = '@ViewBag.UserId';
+		var loggedinUserName = '@ViewBag.UserName';
+		var UserGrade = '@ViewBag.Grade';
+        var IsPM = '@ViewBag.IsPM';
+        var VendorRegId = '@ViewBag.VendorRegId';
+            var IsProcurementApprover = '@ViewBag.IsProcurementApprover';
+
+        var RequestId = '@ViewBag.RequestId';
+        var QuotationTax = '@CommonMethods.QuotationTax';
+
+    </script>
+}
+<script>
+    $(document).ready(function () {
+        $('[data-toggle="tooltip"]').tooltip();
+    });
+</script>
+
+<script>
+
+    $('.uniticon').hide();
+    $('.rcmicon').hide();
+
+    $('.hidemodal').click(function () {
+        $('.confirmmsg').modal('hide');
+        $('.modal-backdrop').hide();
+    });
+
+
+</script>
+
+<script>
+
+    $(document).ready(function () {
+        var autowidth = $(".inner-main").width();
+
+        if (autowidth < 1920) {
+            $(".tabscroll").css("max-width", autowidth + "px");
+
+        }
+    });
+
+</script>
+
+<script>
+    // duration of scroll animation
+    var scrollDuration = 300;
+    // paddles
+    var leftPaddle = document.getElementsByClassName('left-paddle');
+    var rightPaddle = document.getElementsByClassName('right-paddle');
+    // get items dimensions
+    var itemsLength = $('.item').length;
+    var itemSize = $('.item').outerWidth(true);
+    // get some relevant size for the paddle triggering point
+    var paddleMargin = 20;
+
+    // get wrapper width
+    var getMenuWrapperSize = function () {
+        return $('.tabscroll').outerWidth();
+    }
+    var menuWrapperSize = getMenuWrapperSize();
+    // the wrapper is responsive
+    $(window).on('resize', function () {
+        menuWrapperSize = getMenuWrapperSize();
+    });
+    // size of the visible part of the menu is equal as the wrapper size
+    var menuVisibleSize = menuWrapperSize;
+
+    // get total width of all menu items
+    var getMenuSize = function () {
+        return itemsLength * itemSize;
+    };
+    var menuSize = getMenuSize();
+    // get how much of menu is invisible
+    var menuInvisibleSize = menuSize - menuWrapperSize;
+
+    // get how much have we scrolled to the left
+    var getMenuPosition = function () {
+        return $('.tabscrollinfo').scrollLeft();
+    };
+
+    // finally, what happens when we are actually scrolling the menu
+    $('.tabscrollinfo').on('scroll', function () {
+
+        // get how much of menu is invisible
+        menuInvisibleSize = menuSize - menuWrapperSize;
+        // get how much have we scrolled so far
+        var menuPosition = getMenuPosition();
+
+        var menuEndOffset = menuInvisibleSize - paddleMargin;
+
+        // show & hide the paddles
+        // depending on scroll position
+        if (menuPosition <= paddleMargin) {
+            $(leftPaddle).addClass('hidden');
+            $(rightPaddle).removeClass('hidden');
+        } else if (menuPosition < menuEndOffset) {
+            // show both paddles in the middle
+            $(leftPaddle).removeClass('hidden');
+            $(rightPaddle).removeClass('hidden');
+        } else if (menuPosition >= menuEndOffset) {
+            $(leftPaddle).removeClass('hidden');
+            $(rightPaddle).addClass('hidden');
+        }
+
+
+
+    });
+
+    // scroll to left
+    $(rightPaddle).on('click', function () {
+        $('.tabscrollinfo').animate({ scrollLeft: menuInvisibleSize }, scrollDuration);
+    });
+
+    // scroll to right
+    $(leftPaddle).on('click', function () {
+        $('.tabscrollinfo').animate({ scrollLeft: '0' }, scrollDuration);
+    });
+</script>
+<script>
+    function show1() {
+        document.getElementById('div1').style.display = 'block';
+    }
+
+</script>
+<script>
+    $(document).ready(function () {
+        $(".applyselect").select2();
+    });
+</script>
+
+<script>
+    var MenuID = Number(129);
+
+
+
+    function SuccessToaster(Message) {
+        $("#toastMsg").html(Message);
+        $("#toasticon i").addClass("fas fa-check green-clr ");
+        var x = document.getElementById("toast")
+        x.className = "show";
+        setTimeout(function () { x.className = x.className.replace("show", ""); }, 4000);
+    }
+
+    function FailToaster(Message) {
+        $("#toastMsg").html(Message);
+        $("#toasticon i").addClass("fas fa-exclamation-triangle red-clr");
+        var x = document.getElementById("toast")
+        x.className = "show toaster-warning";
+        setTimeout(function () { x.className = x.className.replace("show toaster-warning", ""); }, 4000);
+    }
+
+
+    function ValidateFile(FileName) {
+
+        var result = false;
+        if (document.getElementById(FileName).files[0].name.toUpperCase().match(/\.(PDF|DOCX|TXT|XLS|XLSX)$/)) {
+
+            var filesize = 3145728;
+            var sizeinbytes = document.getElementById(FileName).files[0].size;
+            if (filesize >= sizeinbytes) {
+                result = true;
+            }
+            else {
+                FailToaster("File size should be less than 3 MB");
+                document.getElementById(FileName).value = '';
+                result = false;
+
+            }
+            return result;
+        }
+        else {
+            FailToaster("Invalid file type , please select valid file again");
+            document.getElementById(FileName).value = '';
+            return result;
+        }
+
+    }
+
+    function ValidateImage(FileName) {
+
+        var result = false;
+        if (document.getElementById(FileName).files[0].name.toUpperCase().match(/\.(JPG|JPEG|PNG|PDF)$/)) {
+
+            var filesize = 2097152;
+            var sizeinbytes = document.getElementById(FileName).files[0].size;
+            if (filesize >= sizeinbytes) {
+                result = true;
+            }
+            else {
+                FailToaster("Image should be less than 2 MB");
+
+                document.getElementById(FileName).value = '';
+                result = false;
+
+            }
+            return result;
+        }
+        else {
+            FailToaster("Invalid Image type , please select valid Image");
+            document.getElementById(FileName).value = '';
+            return result;
+        }
+
+    }
+</script>
+<script>
+    // JavaScript Document
+    $(function () {
+        $('#js-nav-toggle').click(function (e) {
+            e.preventDefault();
+            $("html").toggleClass("is-sideopen");
+            $("#js-nav-toggle").toggleClass("is-active");
+        });
+
+        var $content = $('.l-contents');
+        var $header = $('.l-header');
+
+
+        $content.click(function () {
+            $("html").removeClass("is-sideopen");
+        });
+
+
+        $header.click(function () {
+            $("html").removeClass("is-sideopen");
+        });
+
+
+    });
+
+
+    $(function () {
+
+        var $dropdown = $('.js-dropdown');
+        var $content = $('.l-contents');
+        var $toggle = $('#js-nav-toggle');
+
+
+        $('.js-dropdown-menu').hide();
+        $dropdown.click(function () {
+            $('i').removeClass('is-rotate');
+            $('.js-dropdown-menu').slideUp(200);
+            if ($('+.js-dropdown-menu', this).css('display') == 'none') {
+                $('i', this).addClass('is-rotate');
+                $('+.js-dropdown-menu', this).slideDown(200);
+            }
+        });
+
+
+        $content.click(function () {
+            $('i').removeClass('is-rotate');
+            $('.js-dropdown-menu').slideUp(200);
+            if ($('+.js-dropdown-menu', this).css('display') == 'none') {
+                $('i', this).addClass('is-rotate');
+                $('+.js-dropdown-menu', this).slideDown(200);
+            }
+        });
+
+
+        $toggle.click(function () {
+            $('i').removeClass('is-rotate');
+            $('.js-dropdown-menu').slideUp(200);
+            if ($('+.js-dropdown-menu', this).css('display') == 'none') {
+                $('i', this).addClass('is-rotate');
+                $('+.js-dropdown-menu', this).slideDown(200);
+            }
+        });
+
+    });
+
+    $(function () {
+        $('.is-ac-close').hide();
+        $(".is-ac-click").on("click", function () {
+            if ($(this).children('i').is('.fa-angle-right')) {
+                $(this).children('i')
+                    .removeClass('fa-angle-right')
+                    .addClass('fa-angle-down');
+            } else {
+                $(this).children('i')
+                    .removeClass('fa-angle-down')
+                    .addClass('fa-angle-right');
+            }
+            $(this).next().slideToggle(200);
+        });
+
+        $('.is-ac-close').hide();
+        $(".is-ac-bar").on("click", function () {
+
+            if ($(this).find('i').is('.fa-caret-down')) {
+
+                $(this).find('i')
+                    .removeClass()
+                    .addClass('fa fa-caret-up');
+            } else {
+                $(this).find('i')
+                    .removeClass()
+                    .addClass('fa fa-caret-down');
+            }
+            $(this).next().slideToggle(200);
+        });
+    });
+
+
+
+
+    //---------------------------------------------------
+    // ▼　tab
+    //---------------------------------------------------
+    $(function () {
+        var rwdTab = $('.c-tab'),
+            switchPoint = 768,
+            fadeSpeed = 300,
+            slideSpeed = 300;
+
+        var tabBtn = rwdTab.children('.c-tab-panel').children('.c-tab-heading'),
+            contentsArea = rwdTab.children('.c-tab-panel').children('.c-tab-body');
+
+        tabBtn.on('click', function () {
+            if (!$(this).hasClass('c-tab-active')) {
+                tabBtn.removeClass('c-tab-active');
+                $(this).addClass('c-tab-active');
+
+                if (window.innerWidth > switchPoint) {
+                    contentsArea.fadeOut(fadeSpeed);
+                    $(this).next().fadeIn(fadeSpeed);
+                } else {
+                    contentsArea.slideUp(slideSpeed);
+                    $(this).next().slideDown(slideSpeed);
+                }
+            }
+        });
+
+        tabBtn.first().click();
+    });
+
+
+
+</script>
+<!-- required -->
+<script type="text/javascript">
+    jQuery(document).ready(function ($) {
+        jQuery('.stellarnav').stellarNav({
+            theme: 'dark',
+            breakpoint: 960,
+            position: 'right',
+
+        });
+        $('.notifyjs-corner').empty();
+    });
+</script>
+<!-- required -->
+<script>
+    $("document").ready(function () {
+
+        $('.dropdown-menu').on('click', function (e) {
+            if ($(this).hasClass('dropdown-menu-form')) {
+                e.stopPropagation();
+            }
+        });
+    });
+
+
+</script>
+<script>
+
+    var links = document.querySelectorAll('.ripplelink');
+
+    for (var i = 0, len = links.length; i < len; i++) {
+        links[i].addEventListener('click', function (e) {
+            var targetEl = e.target;
+            var inkEl = targetEl.querySelector('.ink');
+
+            if (inkEl) {
+                inkEl.classList.remove('animate');
+            }
+            else {
+                inkEl = document.createElement('span');
+                inkEl.classList.add('ink');
+                inkEl.style.width = inkEl.style.height = Math.max(targetEl.offsetWidth, targetEl.offsetHeight) + 'px';
+                targetEl.appendChild(inkEl);
+            }
+
+            inkEl.style.left = (e.offsetX - inkEl.offsetWidth / 2) + 'px';
+            inkEl.style.top = (e.offsetY - inkEl.offsetHeight / 2) + 'px';
+            inkEl.classList.add('animate');
+        }, false);
+    }
+</script>
+<script type="text/javascript">
+    $(window).scroll(function () {
+        if ($(this).scrollTop() > 250) {
+            $('.header').addClass("sticky");
+        }
+        else {
+            $('.header').removeClass("sticky");
+        }
+    });
+
+
+</script>
+
+<script type="text/javascript">
+    $(".but").click(function () {
+        // Close all open windows
+        $(".content").stop().slideUp(300);
+        // Toggle this window open/close
+        $(this).next(".content").stop().slideToggle(300);
+        //hitter test//
+        $(".hitter").show()
+    });
+
+    $(".hitter").click(function () {
+        // Close all open windows
+        $(".content").stop().slideUp(300);
+    });
+</script>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('#selectall').click(function () {
+            $('.selectedId').prop('checked', this.checked);
+        });
+
+        $('.selectedId').change(function () {
+            var check = ($('.selectedId').filter(":checked").length == $('.selectedId').length);
+            $('#selectall').prop("checked", check);
+        });
+    });
+</script>
+<script>
+    function valueChanged() {
+        if ($('.sltchk').is(":checked"))
+            $(".hide").show();
+        else
+            $(".hide").hide();
+    };
+</script>
+<script type="text/javascript">
+    var divs = ["Div1", "Div3"];
+    var visibleDivId = null;
+    function divVisibility(divId) {
+        if (visibleDivId === divId) {
+            visibleDivId = null;
+        } else {
+            visibleDivId = divId;
+        }
+        hideNonVisibleDivs();
+    }
+    function hideNonVisibleDivs() {
+        var i, divId, div;
+        for (i = 0; i < divs.length; i++) {
+            divId = divs[i];
+            div = document.getElementById(divId);
+            if (visibleDivId === divId) {
+                div.style.display = "block";
+            } else {
+                div.style.display = "none";
+            }
+        }
+    }
+</script>

@@ -1,0 +1,89 @@
+﻿
+@model Mitr.Models.DeclarationReport
+@{
+	Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@section style{
+	@System.Web.Optimization.Styles.Render("~/bundle/dataTablecss")
+}
+<div class="inner-main defult-height">
+	<div class="row">
+		<div class="col-sm-12">
+			<h1 class="heading-one mb-3">F & F Details</h1>
+		</div>
+		<div class="col-md-2  form-group">
+			<label>Employee</label>
+			@if (Model.FYId == 0)
+			{
+				@Html.DropDownListFor(model => model.FYId, new SelectList(ViewBag.Employee, "ID", "Name"), "Select Employee", new { @class = "form-control applyselect " })
+			}
+			else
+			{
+				@Html.HiddenFor(model => model.FYId)
+				@Html.DropDownListFor(model => model.FYId, new SelectList(ViewBag.Employee, "ID", "Name", Model.FYId), "Select Employee", new { @class = "form-control applyselect ", @disabled = "disabled" })
+			}
+
+		</div>
+
+		<div class="col-md-8  form-group align-self-end">
+			<button type="submit" class="btn mtr-g-grn btn-l ripplelink" id="btnSearch" name="Command" value="Search"><i class="fas fa-search"></i>Search</button>
+
+		</div>
+
+	</div>
+
+
+
+
+
+</div>
+@section scripts    {
+	@System.Web.Optimization.Scripts.Render("~/bundle/dataTablesjs")
+
+	@System.Web.Optimization.Scripts.Render("~/bundle/unobtrusivejs")
+
+	@Html.IncludeVersionedJs(Url.Content("~/assets/design/Scripts/AddInit.js"))
+	@Html.IncludeVersionedJs(Url.Content("~/assets/design/Scripts/ToolTip.js"))
+	@Html.IncludeVersionedJs(Url.Content("~/assets/tableToExcel.js"))
+	<script type="text/javascript">
+		$(document).ready(function () {
+			/*showtable(0,"Mitr")*/
+
+		});
+
+		$("#btnSearch").click(function () {
+			var EId = parseInt($("#FYId").val());
+			if (EId > 0) {
+				showtable(EId);
+			}
+			else {
+				SuccessToaster('Please Select list');
+			}
+
+		});
+		function showtable(EId) {
+			ShowLoadingDialog();
+			var url = "/Personnel/FNFReport?src=" + EncryptQueryStringJSON(341 + "*" + "/Personnel/FNFReport" + "*" + EId);
+			window.location.href = url;
+
+
+
+		}
+
+		function OnSuccess(obj) {
+
+
+			if (obj.Status) {
+
+				window.location.reload();
+			}
+			else {
+				CloseLoadingDialog();
+				FailToaster(obj.SuccessMessage);
+
+			}
+		}
+		
+	</script>
+}

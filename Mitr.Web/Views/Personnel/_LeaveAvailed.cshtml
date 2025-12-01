@@ -1,0 +1,85 @@
+﻿
+@model Mitr.Models.LeaveAvailedReport
+@using System.Data
+
+
+@if (Model.EmployeeList != null)
+{
+    
+    <div class="profile-header" id="empdetails">
+        <div class="row">
+            <div class="col-sm-2 text-center align-self-center">
+                <div class="profile-img">
+                    @*<img src="@(Model.EmployeeList.AttachmentID!=0?"/attachments/"+attach.AttachmentID+""+attach.ContentType+"":"/images/pic.svg")" alt="">*@
+                </div>
+            </div>
+            <div class="col-sm-10">
+                <div class="profile-txt">
+                    <h1>@Model.EmployeeList.EMPName</h1>
+                    <ul class="list-unstyled">
+                        <li><strong>Employee Code:</strong>@Model.EmployeeList.EMPCode</li>
+                        @*<li><strong>Designation:</strong> @Model.EmployeeList.</li>*@
+                        @*<li><strong>Location :</strong> @Model.EmployeeList.</li>*@
+                        @*<li><strong>Employee Status :</strong> @Model.EmployeeList.</li>*@
+                        @*<li><strong>Phone/Mobile No.:</strong>@Model.EmployeeList.pho</li>*@
+                        <li><strong>Supervisor's Name:</strong> @Model.EmployeeList.HODName</li>
+                        @*<li><strong>Date OF Joining :</strong> @Model.EmployeeList.DOJ</li>*@
+                        <li><strong>Emergency Contact Person :</strong> @Model.EmployeeList.EmergencyContactName</li>
+                        <li><strong>Emergency Contact No :</strong> @Model.EmployeeList.EmergencyContactNo</li>
+
+                    </ul>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+
+
+
+}
+
+
+@if (Model.LeaveDetails != null)
+{
+    <div class="x_content table-currency">
+        <div class="table-responsive">
+
+            <table id="datatable" class="table table-striped table-bordered dt-responsive nowrap tbltick new_width" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
+                <thead>
+                    <tr>
+                        <th>S.no.</th>
+                        <th>Leave Date</th>
+                        <th>Leave Type	</th>
+                        <th>Leave Hours	</th>
+                        <th>Requested On	</th>
+                        <th>Reason</th>
+                        <th>Approved On</th>
+                        <th>Recomanded for ED's Approval</th>
+                        <th>Approved by ED On</th>
+
+                    </tr>
+
+                </thead>
+                <tbody>
+                    @{ int Count = 0;}
+                    @foreach (DataRow item in Model.LeaveDetails.Tables[0].Rows)
+                    {
+                        Count++;
+                        <tr>
+                            <td>@Count</td>
+                            <td> @Convert.ToDateTime(item["Date"]).ToString("dd-MMM-yyyy")</td>
+                            <td> @item["Leave_name"]</td>
+                            <td> @item["Hours"]</td>
+                            <td> @Convert.ToDateTime(item["doc_Date"]).ToString("dd-MMM-yyyy")</td>
+                            <td> @item["Reason"]</td>
+                            <td> @Convert.ToDateTime(item["app_Date"]).ToString("dd-MMM-yyyy")</td>
+                            <td> @(!string.IsNullOrEmpty(item["recom_Date"].ToString()) ? Convert.ToDateTime(item["recom_Date"]).ToString("dd-MMM-yyyy") : "")</td>
+                            <td> @item["ApprovedByED"]</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+}

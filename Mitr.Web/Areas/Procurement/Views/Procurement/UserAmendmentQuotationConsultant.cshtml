@@ -1,0 +1,1378 @@
+﻿
+@{
+    ViewBag.Title = "QuotationEntryPending";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<style>
+
+    .prdodrheader {
+        padding: 10px;
+        font-size: 16px;
+        margin-bottom: 40px;
+    }
+
+        .prdodrheader h2 {
+            font-weight: normal;
+        }
+
+        .prdodrheader .offerleterlogo {
+            width: 200px;
+        }
+
+        .prdodrheader .rightsideinfo p {
+            margin-bottom: 5px;
+        }
+
+        .prdodrheader .rightsideinfo small {
+            line-height: 18px !important;
+            font-size: 12px;
+            display: table
+        }
+
+    .prdord-info, .prdord-tableprice {
+        padding: 0px 20px 20px;
+    }
+
+        .prdord-info h2 {
+            display: table;
+            font-size: 14px;
+            font-weight: normal;
+            background: #fffaf3;
+            padding: 4px 10px;
+            border-left: 4px solid #ef8813;
+            color: #7c7c7c;
+            margin-bottom: 15px;
+        }
+
+    .prdord-adr {
+        font-size: 14px;
+    }
+
+        .prdord-adr p {
+            margin-top: 5px;
+            margin-bottom: 0px;
+        }
+
+        .prdord-adr table td {
+            font-size: 14px !important;
+        }
+
+        .prdord-adr table td {
+            padding: 0px 15px 5px 0px;
+        }
+
+    .prdord-tableprice th {
+        font-size: 14px;
+        padding: 15px;
+        border: 0px;
+        background: #fffaf3;
+        color: #000;
+    }
+
+    .prdord-tableprice td {
+        padding: 15px !important;
+        border: 0px;
+        border-bottom: 1px solid #dbdbdb !important;
+        font-size: 14px !important;
+        border-bottom: 0px;
+    }
+
+    .prdordftr {
+        padding: 20px;
+        font-size: 14px;
+    }
+
+    .square li {
+        list-style-type: square;
+        padding: 0px 0px 10px;
+    }
+
+    .prdordftr td {
+        border: 0px;
+    }
+
+    ol li::before {
+        color: #040404;
+    }
+
+    ol li li::before {
+        content: "";
+    }
+
+    .rightsideinfo table td {
+        font-size: 14px !important;
+        padding-bottom: 5px;
+        vertical-align: top;
+    }
+
+    .prdord-info table td {
+        vertical-align: top;
+    }
+    #datatableApproved.disabled {
+        pointer-events: none;
+        opacity: 1.0;
+    }
+
+    #datatableQoutationEntry.disabled {
+        pointer-events: none;
+        opacity: 1.0;
+    }
+
+    #tblPaymentTerm.disabled {
+        pointer-events: none;
+        opacity: 1.0;
+    }
+
+    #tbEstimatedStartDate.disabled {
+        pointer-events: none;
+        opacity: 1.0;
+    }
+
+    #tbEstimatedEndDate.disabled {
+        pointer-events: none;
+        opacity: 1.0;
+    }
+
+    #fileScopeofwork.disabled {
+        pointer-events: none;
+        opacity: 1.0;
+    }
+
+    #btnAddPaymentButton.disabled {
+        pointer-events: none;
+        opacity: 1.0;
+    }
+
+    #tblPaymentTermReimbursable.disabled {
+        pointer-events: none;
+        opacity: 1.0;
+    }
+    #btntblPaymentTermReimbursable.disabled {
+        pointer-events: none;
+        opacity: 1.0;
+    }
+    
+</style>
+<h1 class="heading-one">Procurement Amendment</h1>
+<!-- Start -->
+<div class="inner-main defult-height p-0 pb-0">
+    <input type="hidden" id="hdnIsProcureCommitee" value="1" />
+    <input type="hidden" id="hdnUnitType" value="Select" />
+    <input type="hidden" id="hdnIsModuleAdmin" value="1" />
+    <input type="hidden" id="hdnIsModuleAdminMessage" value="1" />
+    <input type="hidden" id="hdnIsQuotationId" value="0" />
+    <div id="accordion">
+
+        <div class="p-2">
+            <div class="row">
+                <div class="col-sm-1 form-group">
+                    <label for="">Request No</label>
+                    <p id="AmendReqNo">155.1</p>
+                </div>
+
+                <div class="col-sm-5 form-group">
+                    <label>Nature of Amendment<sup>*</sup> </label>
+                    <select id="ddlAmend" name="event_type[]" class="form-control applyselect AmendSubmit" onchange="FillQuotationProcureData(this);HideErrorMessage(this)" multiple>
+
+                        <option value="all">All</option>
+                        <option value="valueofcontract">Value of Contract</option>
+                        <option value="contractenddate">Contract End Date</option>
+                        <option value="scopeofwork">Scope of work</option>
+                        <option value="paymentterms">Payment Terms</option>
+                    </select>
+                    <span id="spddlAmend" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+                </div>
+                <div class="col-sm-6 form-group">
+                    <label>Reason for amendment <sup>*</sup></label>
+                    <textarea id="txtAmendReason" placeholder="Enter" class="form-control AmendSubmit" onchange="HideErrorMessage(this)"></textarea>
+                    <span id="sptxtAmendReason" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+                </div>
+            </div>
+            <div id="collapseOne" class="collapse show" aria-labelledby="">
+
+                <!----->
+                <div class="row">
+                    <div class="col-sm-1 form-group">
+                        <label>Req No</label>
+                        <input type="text" disabled="" id="ReqNoA" placeholder="Enter" name="">
+                    </div>
+                    <div class="col-sm-2 form-group">
+                        <label>Req Date</label>
+                        <input type="text" disabled="" id="ReqDateA" placeholder="Enter" name="">
+                    </div>
+                    <div class="col-sm-3 form-group">
+                        <label>Process By</label>
+                        <input type="text" disabled="" id="ReqbyA" placeholder="Enter" name="">
+                    </div>
+                    <div class="col-sm-3 form-group">
+                        <label>Point of Contact <sup>*</sup></label>
+                        <select class="form-control applyselect" id="ddlPOCA" disabled="">
+                        </select>
+                    </div>
+                    <div class="col-sm-3 form-group">
+                        <label>Contract/Agreement Type <sup>*</sup></label>
+                        <select class="form-control applyselect" id="ddlAgreementA" disabled>
+                            <option value="Select">Select</option>
+                            <option value="Purchase Order (PO)">Purchase Order (PO)</option>
+                            <option value="Consultant">Consultant</option>
+                            <option value="Sub-grant">Sub-grant</option>
+                        </select>
+                    </div>
+                    <div class="col-sm-12 form-group">
+                        <div class="table-responsive">
+                            <table id="datatableApproved" class="table mt-0 mb-0 ">
+                                <thead>
+                                    <tr>
+                                        <th width="10">S.NO</th>
+                                        <th width="90">Project Code<sup>*</sup></th>
+                                        <th width="250">Project Sub line Item<sup>*</sup></th>
+                                        <th>Project Line Desc</th>
+                                        <th width="100">Project Manager</th>
+                                        <th width="50">Qty</th>
+                                        <th width="90">Budget Amount</th>
+                                        <th width="80">Req. Amount<sup>*</sup></th>
+                                        <th width="100">Remarks</th>
+                                        <th width="98">Status</th>
+                                        <th>Action</th>
+
+
+                                    </tr>
+
+                                </thead>
+                                <tbody>
+
+
+
+
+
+                                <tfoot>
+                                    <tr class="green-clr lgt-mtr-o-bg text-right fn-bold">
+                                        <td colspan="6">Total</td>
+                                        <td class="text-right"><label class="text-right" id="lblTotal1A">0</label></td>
+                                        <td class="text-right"><label class="text-right" id="lblTotal2A">0</label></td>
+                                        <td colspan="3"></td>
+                                    </tr>
+                                </tfoot>
+
+
+
+                            </table>
+                        </div>
+
+                    </div>
+
+
+
+
+
+
+                </div>
+                <!----->
+                <div class="row">
+                    <div class="col-sm-12 form-group">
+                        <hr>
+                        <span class="hr-aps"><i class="fas fa-user-tie"></i>ED waiver</span>
+
+                    </div>
+                    <div class="table-responsive">
+                        <table id="tblEDwaiver" class="table mt-0 ">
+                            <thead>
+                                <tr>
+                                    <th>Justification of ED waiver</th>
+                                    <th>Approved/Rejected On	</th>
+                                    <th>Status	</th>
+                                    <th>Remark	</th>
+                                </tr>
+                            </thead>
+
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div id="collapseTwo" class="collapse show" aria-labelledby="headingTwo">
+
+                <!----->
+                <div class="row">
+                    <div class="col-sm-12 form-group">
+                        <hr>
+                        <span class="hr-aps"><i class="fas fa-user-tie"></i>Quotation Entry</span>
+                        <input type="hidden" id="hdnMultiValue" />
+                    </div>
+                    <div class="col-sm-3 form-group">
+                        <label>Unit Type<sup>*</sup></label>
+                        <select class="form-control applyselect ticketperruleone type1 " id="ddlType" onchange="SetQuotationUnit(this); HideErrorMessage(this)" disabled>
+                            <option value="Select">Select</option>
+                            <option value="Daily">Daily</option>
+                            <option value="Monthly">Monthly</option>
+                            <option value="Yearly">Yearly</option>
+                            <option value="AsPerBudget">As Per Budget</option>
+                            <option value="Lumpsum">Lumpsum</option>
+                        </select>
+                        <span id="spddlType" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+                    </div>
+                    <div class="col-sm-3 form-group">
+                        <label>Is the amount reimbursable<sup>*</sup></label>
+                        <select class="form-control applyselect  type1 " id="ddlReimbursable" onchange="SetQuotationddlReimbursable(this); HideErrorMessage(this)" disabled>
+                            <option value="Select">Select</option>
+                            <option value="Yes">Yes</option>
+                            <option value="No">No</option>
+                        </select>
+                        <span id="spddlReimbursable" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+                    </div>
+                    <div class="col-sm-12 form-group">
+                        <div class="table-responsive">
+                            <table id="datatableQoutationEntry" class="table mt-0 ">
+                                <thead>
+                                    <tr>
+                                        <th width="10">S.NO</th>
+                                        <th width="100">Consultants Name	</th>
+                                        <th width="50">Rating	</th>
+                                        <th width="50">Units	</th>
+                                        <th width="60">Unit Rate	</th>
+                                        <th width="80">Fixed Fee</th>
+                                        <th width="80">Reimbursable Amount</th>
+                                        <th width="100">Tax %	</th>
+                                        <th width="100">Tax (GST & Others)	</th>
+                                        <th width="80">Total Value	</th>
+                                        <th width="200">Attach Quotation	</th>
+                                        <th>Remarks</th>
+                                        <th width="80">Recommend</th>
+                                        <th></th>
+
+                                    </tr>
+
+                                </thead>
+                                <tbody id="tableToModify">
+                                    <tr>
+                                        <td><label class="lblSRNo" id="lblSRNo_0">1</label></td>
+
+                                        <td>
+                                            <select class="form-control applyselect ddlVendor" id="ddlVendor_0" disabled>
+                                            </select>
+                                        </td>
+
+                                        <td>
+
+                                            <label class="lblUnitType" id="lblUnitType_0"></label>
+                                        </td>
+                                        <td class="text-right">
+                                            <input type="text" onchange="FillTotal(this,1)" class="form-contoral   text-right txtUnit " OnPaste="return ValidatePasteNumeric(false,this)" onkeypress="AllowNumbersOnly(false,this,'Numeric only')" placeholder="0" id="txtUnit_0" onblur="ClearInvalidText(this)">
+                                        </td>
+                                        <td class="text-right">
+                                            <input type="text" onchange="FillTotal(this,2)" class="form-contoral  text-right txtUnitRate " placeholder="0" id="txtUnitRate_0" OnPaste="return ValidatePasteNumeric(false,this)" onkeypress="AllowNumbersOnly(false,this,'Numeric only')" onblur="ClearInvalidText(this)">
+                                        </td>
+                                        <td class="text-right">
+                                            <input type="text" onchange="FillTotal(this,3)" class="form-contoral  inputB text-right txtFixedFee " disabled placeholder="0" id="txtFixedFee_0" OnPaste="return ValidatePasteNumeric(false,this)" onkeypress="AllowNumbersOnly(false,this,'Numeric only')" onblur="ClearInvalidText(this)">
+                                        </td>
+                                        <td class="text-right">
+                                            <input type="text" onchange="FillTotal(this,3)" class="form-contoral  inputB text-right txtReimbursable " placeholder="0" id="txtReimbursable_0" OnPaste="return ValidatePasteNumeric(false,this)" onkeypress="AllowNumbersOnly(false,this,'Numeric only')" onblur="ClearInvalidText(this)">
+                                        </td>
+
+                                        <td class="text-right">
+                                            <input type="text" onchange="FillTotal(this,6)" class="form-contoral  text-right txtTaxPer " placeholder="0" id="txtTaxPer_0" OnPaste="return ValidatePasteNumeric(false,this)" onkeypress="AllowNumbersOnly(false,this,'Numeric only')" onblur="ClearInvalidText(this)">
+                                        </td>
+                                        <td class="text-right">
+                                            <input type="text" onchange="FillTotal(this,4)" class="form-contoral  text-right txtGST " placeholder="0" id="txtGST_0" disabled>
+                                        </td>
+
+                                        <td class="text-right">
+                                            <input type="text" class="form-contoral text-right txtTotal" placeholder="0" id="txtTotal_0" disabled>
+                                        </td>
+                                        <td class="text-right">
+                                            <input type="file" class="form-contoral  text-right Attach" placeholder="0" id="Attach_0"  onchange="UploadocumentProof(this)">
+                                            <label class="Fileurl" style="display:none;" id="hdnUploadFileUrl_0"></label>
+                                            <label class="FileActualName" onclick="DownloadFileQuotation(this)" style="display:none;" id="hdnUploadActualFileName_0"></label>
+                                            <label class="FileNewName" style="display:none;" id="hdnUploadNewFileName_0"></label>
+
+                                        </td>
+                                        <td class="text-right">
+                                            <textarea placeholder="Enter" class="form-contoral txtRemarks" id="txtRemarks_0"></textarea>
+                                        </td>
+                                        <td class="text-center">
+
+                                            <div class="radio-button">
+                                                <input id="recomandation_0" disabled  name="radionewGrid" type="radio" class="recomandation"  value="">
+                                                <label for="recomandation_0" class="radio-label lblrecomandation"></label>
+                                            </div>
+
+                                        </td>
+                                        <td class="text-center" style="visibility:hidden;">
+                                            <a class="remove" data-toggle="tooltip" data-original-title="Remove"><i class="fas fa-window-close red-clr" aria-hidden="true"></i></a>
+
+
+                                        </td>
+
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                    </div>
+                    <div style="display:none">
+                        <button type="button" data-toggle="modal" data-target="#modalrcmultiple" id="btnMulti" class="btn green-clr  m-0"><i class="fas fa-plus"></i>ModelMulti</button>
+                        <button type="button" data-toggle="modal" data-target="#modalrcunit" id="btnSingle" class="btn green-clr  m-0"><i class="fas fa-plus"></i>ModelSingle</button>
+                        <button type="button" data-toggle="modal" data-target="#ddlUnitTypeConfirm" id="btnSingleUnit" class="btn green-clr  m-0"><i class="fas fa-plus"></i>ModelSingleUnit</button>
+                    </div>
+
+
+
+
+                    <div class="col-sm-3 form-group mw-575">
+                        <label>Estimated  Start Date<sup>*</sup></label>
+
+                        <input autocomplete="off" class="form-control Mandatory datepicker" placeholder="Enter" id="tbEstimatedStartDate" onchange="HideErrorMessage(this)">
+                        <span id="sptbEstimatedStartDate" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+                    </div>
+                    <div class="col-sm-3 form-group mw-575">
+                        <label>Estimated End Date<sup>*</sup></label>
+
+                        <input autocomplete="off" class="form-control Mandatory datepicker" placeholder="Enter" id="tbEstimatedEndDate" onchange="HideErrorMessage(this)">
+                        <span id="sptbEstimatedEndDate" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+                    </div>
+
+                    <div class="col-sm-3 form-group">
+                        <label>Scope of work<sup>*</sup></label>
+                        <div id="divFileScope1">
+                            <input type="file" placeholder="Enter" class="form-control" id="fileScopeofwork" onchange="UploadFileScope()">
+                            <span id="spfileScopeofwork" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+                            <input type="hidden" id="hdnfileScopeActualName" />
+                            <input type="hidden" id="hdnfileScopeNewName" />
+                            <input type="hidden" id="hdnfileScopeFileUrl" />
+                        </div>
+                        <div id="divFileScope2">
+                            <div class="vwdwn showatchimg">
+                                <label id="lblAttachementRFPDownload"></label>
+                                <span class="vwdwnicon delete rmatch green-clr" data-toggle="tooltip" title="" data-original-title="Download">
+                                    <button id="btnDownload1" onclick='DownloadFileRFP()' target='_blank' class='green-clr'><i class='fas fa-download'></i></button>
+                                </span>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <div class="col-sm-12 form-group">
+                        <label>Special Conditions, if any</label>
+                        <textarea class="form-control h-100 maxSize[1200]" placeholder="Explain Hare" id="txtSpecialCond"></textarea>
+
+                    </div>
+                </div>
+                <!----->
+
+            </div>
+            <div id="collapseThree" class="collapse show" aria-labelledby="headingTwo">
+
+                <!----->
+                <div class="row">
+                    <div class="col-sm-12 form-group">
+                        <hr>
+                        <span class="hr-aps"><i class="fas fa-list"></i>Payment terms for fixed fee</span>
+                    </div>
+                    <div class="col-sm-6 form-group">
+                        <div class="table-responsive">
+                            <table class="table mb-2" id="tblPaymentTerm">
+                                <thead>
+                                    <tr>
+                                        <th>Payment Terms</th>
+                                        <th>Amount(Included tax and Others)</th>
+                                        <th>Due On	</th>
+                                        <th>
+
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>
+                                            <input type="text" class="form-control PaymentTerm" placeholder="Enter" id="txtPaymentTerm" onchange="HideErrorMessage(this)">
+                                            <span id="sptxtPaymentTerm" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+                                        </td>
+                                        <td>
+                                            <input type="text" class="form-control PaymentTerm" placeholder="Enter" id="txtPaymentTermAmount" onchange="HideErrorMessage(this)" OnPaste="return ValidatePasteNumeric(false,this)" onkeypress="AllowNumbersOnly(false,this,'Numeric only')" onblur="ClearInvalidText(this)">
+                                            <span id="sptxtPaymentTermAmount" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+                                        </td>
+                                        <td>
+
+                                            <input autocomplete="off" class="form-control datepicker PaymentTerm" placeholder="Enter" id="txtPaymentTermDueOn" onchange="HideErrorMessage(this)">
+                                            <span id="sptxtPaymentTermDueOn" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+                                        </td>
+
+                                        <td>
+                                            <a title='Click to Remove' data-toggle='tooltip' data-original-title='Click to Remove'><i class='fas fa-window-close m-0 red-clr' aria-hidden='true'></i> </a>
+                                        </td>
+                                    </tr>
+                                </tbody>
+
+                            </table>
+                        </div>
+                        <div class="text-right" id="btnAddPaymentTerm">
+                            <button id="btnAddPaymentButton" type="button" onclick="AddPaymentTerm()" class="btn green-clr  m-0"><i class="fas fa-plus"></i>Add</button>
+                        </div>
+                    </div>
+
+
+
+                </div>
+                <!----->
+
+            </div>
+
+            <div id="collapseFive" class="collapse show" aria-labelledby="headingTwo">
+
+                <!----->
+                <div class="row">
+                    <div class="col-sm-12 form-group">
+                        <hr>
+                        <span class="hr-aps"><i class="fas fa-list"></i>Payment terms for reimbursable amount</span>
+                    </div>
+                    <div class="col-sm-6 form-group">
+                        <div class="table-responsive">
+                            <table class="table mb-2" id="tblPaymentTermReimbursable">
+                                <thead>
+                                    <tr>
+                                        <th>Payment Terms</th>
+                                        <th>Amount(Included tax and Others)</th>
+                                        <th>Due On	</th>
+                                        <th>
+
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>
+                                            <input type="text" class="form-control PaymentTermReimbursable" placeholder="Enter" id="txtPaymentTermReimbursable" onchange="HideErrorMessage(this)">
+                                            <span id="sptxtPaymentTermReimbursable" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+                                        </td>
+                                        <td>
+                                            <input type="text" class="form-control PaymentTermReimbursable" placeholder="Enter" id="txtPaymentTermAmountReimbursable" onchange="HideErrorMessage(this)" OnPaste="return ValidatePasteNumeric(false,this)" onkeypress="AllowNumbersOnly(false,this,'Numeric only')" onblur="ClearInvalidText(this)">
+                                            <span id="sptxtPaymentTermAmountReimbursable" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+                                        </td>
+                                        <td>
+
+                                            <input autocomplete="off" class="form-control datepicker PaymentTermReimbursable" placeholder="Enter" id="txtPaymentTermDueOnReimbursable" onchange="HideErrorMessage(this)">
+                                            <span id="sptxtPaymentTermDueOnReimbursable" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+                                        </td>
+
+                                        <td>
+                                            <a title='Click to Remove' data-toggle='tooltip' data-original-title='Click to Remove'><i class='fas fa-window-close m-0 red-clr' aria-hidden='true'></i> </a>
+                                        </td>
+                                    </tr>
+                                </tbody>
+
+                            </table>
+                        </div>
+                        <div class="text-right" id="btnAddReimbursableTerm">
+                            <button id="btntblPaymentTermReimbursable" type="button" onclick="AddPaymentTermReimbursable()" class="btn green-clr  m-0"><i class="fas fa-plus"></i>Add</button>
+                        </div>
+                    </div>
+
+                    <div class="col-sm-12 text-center valueofcontract contractenddate scopeofwork paymentterms all">
+                        <button id="btnAmendSubmit" type="button" onclick="SaveAmendment()" class="btn mtr-o-grn "><i class="fa fa-paper-plane"></i> Submit</button>
+
+                        <a href="ProcurementUserRequest" class="btn cnl-btn ripplelink"><i class="fas fa-times"></i>Close</a>
+                    </div>
+
+                </div>
+                <!----->
+
+            </div>
+
+
+
+
+        </div>
+
+
+
+        <!-- ENd -->
+    </div>
+
+
+
+    <!-- ENd -->
+
+</div>
+
+<div class="modal fade" id="pay">
+    <div class="modal-dialog modal-md">
+        <div class="modal-content">
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <h4 class="modal-title">
+                    <i class="fas fa-rupee-sign" aria-hidden="true"></i> <span id="spnHead">Payment</span>
+                </h4>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+
+            <div class="modal-body ">
+                <div class="row">
+                    <div class="col-sm-4 form-group">
+                        <label>Date<span class="required">*</span> </label>
+                        <input type="date" class="form-control" placeholder="Enter">
+                    </div>
+                    <div class="col-sm-4 form-group">
+                        <label>Amount<span class="required">*</span> </label>
+                        <input type="number" class="form-control" placeholder="0">
+                    </div>
+                    <div class="col-sm-4 form-group">
+                        <label>UTR No<span class="required">*</span> </label>
+                        <input type="number" class="form-control" placeholder="Enter">
+                    </div>
+                    <div class="col-sm-12 form-group">
+                        <label>Remark<span class="required">*</span> </label>
+                        <textarea class="form-control h-80" placeholder="Enter"></textarea>
+                    </div>
+                    <div class="col-lg-12 text-center mt-3">
+
+                        <a href="module-admin-pending_processed.html" type="submit" class="btn mtr-o-grn btn-l ripplelink pull-right" name="Command" value="Add"><i class="fa fa-paper-plane"></i>Submit</a>
+                        <button type="button" data-dismiss="modal" class="btn cnl-btn ripplelink  pull-right"><i class="fas fa-times"></i> Close</button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+
+</div>
+<div class="modal fade confirmmsg" id="confirmmsgrcmultiple">
+    <div class="modal-dialog modal-md ">
+        <div class="modal-content">
+            <!-- Modal Header -->
+            <div class="swal-icon swal-icon--warning">
+                <span class="swal-icon--warning__body">
+                    <span class="swal-icon--warning__dot"></span>
+                </span>
+            </div>
+
+            <div class="modal-body ">
+                <div class="swal-title text-center">
+                    Are you want to add mutiple
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" onclick="SetUnitEnable(1)" data-dismiss="modal" data-toggle="modal" class="btn cnl-btn hidemodalno">No</button>
+                <button type="button" onclick="SetUnitDisable(2)" class="btn mtr-o-grn hidemodal">Yes</button>
+
+            </div>
+
+        </div>
+
+
+
+    </div>
+
+</div>
+<div class="modal fade confirmmsg" id="confirmmsgnit">
+    <div class="modal-dialog modal-md ">
+        <div class="modal-content">
+            <!-- Modal Header -->
+            <div class="swal-icon swal-icon--warning">
+                <span class="swal-icon--warning__body">
+                    <span class="swal-icon--warning__dot"></span>
+                </span>
+            </div>
+
+            <div class="modal-body ">
+                <div class="swal-title text-center">
+                    Are you want to add mutiple
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" onclick="SetUnitEnable(3)" data-dismiss="modal" data-toggle="modal" class="btn cnl-btn hidemodalno">No</button>
+                <button type="button" onclick="SetUnitDisable(4)" class="btn mtr-o-grn hidemodal" data-toggle="modal" data-toggle="modal" data-target="#modalrcunit">Yes</button>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="modal fade pop-dgn modalrcmultiple" id="modalrcmultiple">
+    <div class="modal-dialog mdl-lg">
+        <div class="modal-content">
+            <div class="modal-header blk-gdn-btn">
+                <h4 class="modal-title">Rate Contract Multiple</h4>
+                <div class="close" data-dismiss="modal">&times;</div>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+
+                    <div class="col-sm-12 form-group">
+                        <div class="table-responsive">
+                            <table id="datatableMultiple" class="table mt-0 ">
+                                <thead>
+                                    <tr>
+
+                                        <th>Description</th>
+                                        <th width="70">Unit Rate</th>
+                                        <th width="70">Tax %</th>
+                                        <th width="100">Tax <br />(GST & Others)</th>
+
+                                        <th>
+
+                                        </th>
+                                    </tr>
+
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>
+
+                                            <textarea class="form-control MulitpleUnit" placeholder="Enter" id="txtDescription" onchange="HideErrorMessage(this)"></textarea>
+
+                                            <span id="sptxtDescription" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+
+                                        </td>
+                                        <td>
+                                            <input type="text" id="txtUnitRate" class="form-contoral  text-right MulitpleUnit" placeholder="0" onchange="HideErrorMessage(this); FillTax(this)" OnPaste="return ValidatePasteNumeric(false,this)" onkeypress="AllowNumbersOnly(false,this,'Numeric only')" onblur="ClearInvalidText(this)">
+                                            <span id="sptxtUnitRate" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+                                        </td>
+                                        <td>
+                                            <input type="text" id="txtTax" class="form-contoral  text-right MulitpleUnit allow_numeric" placeholder="0" onchange="HideErrorMessage(this); FillTax(this)" OnPaste="return ValidatePasteNumeric(false,this)" onkeypress="AllowNumbersOnly(false,this,'Numeric only')" onblur="ClearInvalidText(this)">
+                                            <span id="sptxtTax" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+                                        </td>
+                                        <td><input type="text" id="txtTax_GST" class="form-contoral  text-right allow_numeric" placeholder="0" disabled></td>
+                                        <td>
+                                            <a title='Click to Remove' data-toggle='tooltip' data-original-title='Click to Remove'><i class='fas fa-window-close m-0 red-clr' aria-hidden='true'></i> </a>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="text-right">
+                            <button type="button" onclick="AddMulitpleUnit()" class="btn green-clr  m-0 HideClass"><i class="fas fa-plus"></i>Add</button>
+                        </div>
+                    </div>
+                    <div class="col-sm-12 text-center">
+
+                        <button type="button" data-dismiss="modal" class="btn mtr-o-grn btn-l ripplelink"><i class="fas fa-save whiteclr"></i>Save</button>
+                        <button type="button" class="btn cnl-btn btn-l ripplelink" data-dismiss="modal"><i class="fas fa-times"></i>Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="modal fade pop-dgn modalrcunit" id="modalrcunit">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header blk-gdn-btn">
+                <h4 class="modal-title">Unit</h4>
+                <div class="close" data-dismiss="modal">&times;</div>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+
+                    <div class="col-sm-12 form-group">
+                        <div class="table-responsive">
+                            <table id="datatableUnit" class="table mt-0 " ">
+                                <thead>
+                                    <tr>
+
+                                        <th>Description</th>
+                                        <th width="100">Unit</th>
+                                        <th width="70">Unit Rate</th>
+                                        <th width="70">Amount</th>
+                                        <th width="70">Tax %</th>
+                                        <th width="100">Tax <br />(GST & Others)</th>
+                                        <th width="100">Frieght/Transportation</th>
+                                        <th>
+
+                                        </th>
+
+                                    </tr>
+
+                                </thead>
+                                <tbody>
+                                    <tr>
+
+                                        <td>
+                                            <textarea class="form-control MUnit" placeholder="Enter" id="txtTaxDescription"></textarea>
+                                            <span id="sptxtTaxDescription" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+                                        </td>
+                                        <td>
+
+                                            <input type="number" id="txtUnitmulti" class="form-contoral MUnit" placeholder="0" onchange="HideErrorMessage(this);FillUnitTax()" OnPaste="return ValidatePasteNumeric(false,this)" onkeypress="AllowNumbersOnly(false,this,'Numeric only')" onblur="ClearInvalidText(this)">
+                                            <span id="sptxtUnitmulti" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+                                        </td>
+                                        <td>
+                                            <input type="number" id="txtUnitmultiRate" class="form-contoral  text-right MUnit" placeholder="0" onchange="HideErrorMessage(this);FillUnitTax()" OnPaste="return ValidatePasteNumeric(false,this)" onkeypress="AllowNumbersOnly(false,this,'Numeric only')" onblur="ClearInvalidText(this)">
+                                            <span id="sptxtUnitmultiRate" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+                                        </td>
+                                        <td><input type="number" id="txtUnitAmount" class="form-contoral  text-right" placeholder="0" disabled></td>
+                                        <td>
+                                            <input type="number" id="txtUnitTaxPer" class="form-contoral  text-right MUnit" placeholder="0" onchange="HideErrorMessage(this);FillUnitTax()" OnPaste="return ValidatePasteNumeric(false,this)" onkeypress="AllowNumbersOnly(false,this,'Numeric only')" onblur="ClearInvalidText(this)">
+                                            <span id="sptxtUnitTaxPer" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+                                        </td>
+                                        <td><input type="number" id="txtUnitTaxCalcu" class="form-contoral  text-right" placeholder="0" disabled></td>
+                                        <td>
+                                            <input type="number" id="txtUnitFrieght" class="form-contoral  text-right MUnit" placeholder="0" onchange="HideErrorMessage(this)" OnPaste="return ValidatePasteNumeric(false,this)" onkeypress="AllowNumbersOnly(false,this,'Numeric only')" onblur="ClearInvalidText(this)">
+                                            <span id="sptxtUnitFrieght" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+                                        </td>
+
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="text-right">
+                            <button type="button" onclick="AddUnit()" class="btn green-clr  m-0 HideClass"><i class="fas fa-plus"></i>Add</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="mt-2 text-center">
+
+                    <button type="button" data-dismiss="modal" class="btn mtr-o-grn btn-l ripplelink btnTicket "><i class="fas fa-save whiteclr"></i>Save</button>
+                    <button type="button" class="btn cnl-btn btn-l ripplelink" data-dismiss="modal"><i class="fas fa-times"></i>Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div style="display:none;">
+    <a id="btnVendorRegistrationReturn" href="~/Procurement/QuotationEntry" class="btn mtr-g-grn btn-l ripplelink "><i class="fa fa-plus"></i>Add</a>
+    <input type="hidden" id="hdnQuoteEntryId" value="0" />
+
+    <a id="btnRedirectToRegistration" href="#" class="btn mtr-g-grn btn-l ripplelink "><i class="fa fa-plus"></i>Add</a>
+
+</div>
+
+<div class="modal fade confirmmsg" id="ddlUnitTypeConfirm">
+    <div class="modal-dialog modal-md ">
+        <div class="modal-content">
+            <!-- Modal Header -->
+            <div class="swal-icon swal-icon--warning">
+                <span class="swal-icon--warning__body">
+                    <span class="swal-icon--warning__dot"></span>
+                </span>
+            </div>
+
+            <div class="modal-body ">
+                <div class="swal-title text-center">
+                    Attention! existing data will be deleted if you change the unit type.
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" onclick="ClearData(1)" data-dismiss="modal" data-toggle="modal" class="btn cnl-btn hidemodalno">No</button>
+                <button type="button" onclick="ClearData(2)" class="btn mtr-o-grn hidemodal" data-toggle="modal">Yes</button>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+<div class="modal fade" id="mgs">
+    <div class="modal-dialog modal-lg ">
+        <div class="modal-content">
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <h4 class="modal-title"><i class="fas fa-comments"></i> Message</h4>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+
+            <div class="modal-body ">
+                <div class="row">
+                    <div class="col-sm-12 form-group">
+
+                        <!------>
+                        <!-- Comment #1 //-->
+
+                        <div class="scroll pr-3" id="divMessage">
+
+
+
+                        </div>
+
+                        <!----->
+
+                    </div>
+                    <div class="col-sm-12 form-group text-center">
+                        <button type="button" data-dismiss="modal" class="btn cnl-btn"><i class="fas fa-times"></i> Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+</div>
+
+@section scripts    {
+    @System.Web.Optimization.Scripts.Render("~/bundle/unobtrusivejs")
+    @System.Web.Optimization.Scripts.Render("~/bundle/dataTablesjs")
+    <script src="~/assets/design/Scripts/AddInit.js?v=@clsApplicationSetting.GetWebConfigValue("Version")"></script>
+    <script src="~/Areas/Procurement/DevScript/QuotationEntryPendingConsultantAmend.js"></script>
+
+
+    <script>
+
+		 var IsEDUser = '@ViewBag.IsED';
+       var loggedinUserid = '@ViewBag.UserId';
+		var loggedinUserName = '@ViewBag.UserName';
+		var UserGrade = '@ViewBag.Grade';
+        var IsPM = '@ViewBag.IsPM';
+        var VendorRegId = '@ViewBag.VendorRegId';
+            var IsProcurementApprover = '@ViewBag.IsProcurementApprover';
+
+        var RequestId = '@ViewBag.RequestId';
+        var QuotationTax = '@CommonMethods.QuotationTax';
+
+    </script>
+}
+<script>
+    $(document).ready(function () {
+        $('[data-toggle="tooltip"]').tooltip();
+    });
+</script>
+
+<script>
+
+    $('.uniticon').hide();
+    $('.rcmicon').hide();
+
+    $('.hidemodal').click(function () {
+        $('.confirmmsg').modal('hide');
+        $('.modal-backdrop').hide();
+    });
+
+
+</script>
+
+<script>
+
+    $(document).ready(function () {
+        var autowidth = $(".inner-main").width();
+
+        if (autowidth < 1920) {
+            $(".tabscroll").css("max-width", autowidth + "px");
+
+        }
+    });
+
+</script>
+
+<script>
+    // duration of scroll animation
+    var scrollDuration = 300;
+    // paddles
+    var leftPaddle = document.getElementsByClassName('left-paddle');
+    var rightPaddle = document.getElementsByClassName('right-paddle');
+    // get items dimensions
+    var itemsLength = $('.item').length;
+    var itemSize = $('.item').outerWidth(true);
+    // get some relevant size for the paddle triggering point
+    var paddleMargin = 20;
+
+    // get wrapper width
+    var getMenuWrapperSize = function () {
+        return $('.tabscroll').outerWidth();
+    }
+    var menuWrapperSize = getMenuWrapperSize();
+    // the wrapper is responsive
+    $(window).on('resize', function () {
+        menuWrapperSize = getMenuWrapperSize();
+    });
+    // size of the visible part of the menu is equal as the wrapper size
+    var menuVisibleSize = menuWrapperSize;
+
+    // get total width of all menu items
+    var getMenuSize = function () {
+        return itemsLength * itemSize;
+    };
+    var menuSize = getMenuSize();
+    // get how much of menu is invisible
+    var menuInvisibleSize = menuSize - menuWrapperSize;
+
+    // get how much have we scrolled to the left
+    var getMenuPosition = function () {
+        return $('.tabscrollinfo').scrollLeft();
+    };
+
+    // finally, what happens when we are actually scrolling the menu
+    $('.tabscrollinfo').on('scroll', function () {
+
+        // get how much of menu is invisible
+        menuInvisibleSize = menuSize - menuWrapperSize;
+        // get how much have we scrolled so far
+        var menuPosition = getMenuPosition();
+
+        var menuEndOffset = menuInvisibleSize - paddleMargin;
+
+        // show & hide the paddles
+        // depending on scroll position
+        if (menuPosition <= paddleMargin) {
+            $(leftPaddle).addClass('hidden');
+            $(rightPaddle).removeClass('hidden');
+        } else if (menuPosition < menuEndOffset) {
+            // show both paddles in the middle
+            $(leftPaddle).removeClass('hidden');
+            $(rightPaddle).removeClass('hidden');
+        } else if (menuPosition >= menuEndOffset) {
+            $(leftPaddle).removeClass('hidden');
+            $(rightPaddle).addClass('hidden');
+        }
+
+
+
+    });
+
+    // scroll to left
+    $(rightPaddle).on('click', function () {
+        $('.tabscrollinfo').animate({ scrollLeft: menuInvisibleSize }, scrollDuration);
+    });
+
+    // scroll to right
+    $(leftPaddle).on('click', function () {
+        $('.tabscrollinfo').animate({ scrollLeft: '0' }, scrollDuration);
+    });
+</script>
+<script>
+    function show1() {
+        document.getElementById('div1').style.display = 'block';
+    }
+
+</script>
+<script>
+    $(document).ready(function () {
+        $(".applyselect").select2();
+    });
+</script>
+
+<script>
+    var MenuID = Number(129);
+
+
+
+    function SuccessToaster(Message) {
+        $("#toastMsg").html(Message);
+        $("#toasticon i").addClass("fas fa-check green-clr ");
+        var x = document.getElementById("toast")
+        x.className = "show";
+        setTimeout(function () { x.className = x.className.replace("show", ""); }, 4000);
+    }
+
+    function FailToaster(Message) {
+        $("#toastMsg").html(Message);
+        $("#toasticon i").addClass("fas fa-exclamation-triangle red-clr");
+        var x = document.getElementById("toast")
+        x.className = "show toaster-warning";
+        setTimeout(function () { x.className = x.className.replace("show toaster-warning", ""); }, 4000);
+    }
+
+
+    function ValidateFile(FileName) {
+
+        var result = false;
+        if (document.getElementById(FileName).files[0].name.toUpperCase().match(/\.(PDF|DOCX|TXT|XLS|XLSX)$/)) {
+
+            var filesize = 3145728;
+            var sizeinbytes = document.getElementById(FileName).files[0].size;
+            if (filesize >= sizeinbytes) {
+                result = true;
+            }
+            else {
+                FailToaster("File size should be less than 3 MB");
+                document.getElementById(FileName).value = '';
+                result = false;
+
+            }
+            return result;
+        }
+        else {
+            FailToaster("Invalid file type , please select valid file again");
+            document.getElementById(FileName).value = '';
+            return result;
+        }
+
+    }
+
+    function ValidateImage(FileName) {
+
+        var result = false;
+        if (document.getElementById(FileName).files[0].name.toUpperCase().match(/\.(JPG|JPEG|PNG|PDF)$/)) {
+
+            var filesize = 2097152;
+            var sizeinbytes = document.getElementById(FileName).files[0].size;
+            if (filesize >= sizeinbytes) {
+                result = true;
+            }
+            else {
+                FailToaster("Image should be less than 2 MB");
+
+                document.getElementById(FileName).value = '';
+                result = false;
+
+            }
+            return result;
+        }
+        else {
+            FailToaster("Invalid Image type , please select valid Image");
+            document.getElementById(FileName).value = '';
+            return result;
+        }
+
+    }
+</script>
+<script>
+    // JavaScript Document
+    $(function () {
+        $('#js-nav-toggle').click(function (e) {
+            e.preventDefault();
+            $("html").toggleClass("is-sideopen");
+            $("#js-nav-toggle").toggleClass("is-active");
+        });
+
+        var $content = $('.l-contents');
+        var $header = $('.l-header');
+
+
+        $content.click(function () {
+            $("html").removeClass("is-sideopen");
+        });
+
+
+        $header.click(function () {
+            $("html").removeClass("is-sideopen");
+        });
+
+
+    });
+
+
+    $(function () {
+
+        var $dropdown = $('.js-dropdown');
+        var $content = $('.l-contents');
+        var $toggle = $('#js-nav-toggle');
+
+
+        $('.js-dropdown-menu').hide();
+        $dropdown.click(function () {
+            $('i').removeClass('is-rotate');
+            $('.js-dropdown-menu').slideUp(200);
+            if ($('+.js-dropdown-menu', this).css('display') == 'none') {
+                $('i', this).addClass('is-rotate');
+                $('+.js-dropdown-menu', this).slideDown(200);
+            }
+        });
+
+
+        $content.click(function () {
+            $('i').removeClass('is-rotate');
+            $('.js-dropdown-menu').slideUp(200);
+            if ($('+.js-dropdown-menu', this).css('display') == 'none') {
+                $('i', this).addClass('is-rotate');
+                $('+.js-dropdown-menu', this).slideDown(200);
+            }
+        });
+
+
+        $toggle.click(function () {
+            $('i').removeClass('is-rotate');
+            $('.js-dropdown-menu').slideUp(200);
+            if ($('+.js-dropdown-menu', this).css('display') == 'none') {
+                $('i', this).addClass('is-rotate');
+                $('+.js-dropdown-menu', this).slideDown(200);
+            }
+        });
+
+    });
+
+    $(function () {
+        $('.is-ac-close').hide();
+        $(".is-ac-click").on("click", function () {
+            if ($(this).children('i').is('.fa-angle-right')) {
+                $(this).children('i')
+                    .removeClass('fa-angle-right')
+                    .addClass('fa-angle-down');
+            } else {
+                $(this).children('i')
+                    .removeClass('fa-angle-down')
+                    .addClass('fa-angle-right');
+            }
+            $(this).next().slideToggle(200);
+        });
+
+        $('.is-ac-close').hide();
+        $(".is-ac-bar").on("click", function () {
+
+            if ($(this).find('i').is('.fa-caret-down')) {
+
+                $(this).find('i')
+                    .removeClass()
+                    .addClass('fa fa-caret-up');
+            } else {
+                $(this).find('i')
+                    .removeClass()
+                    .addClass('fa fa-caret-down');
+            }
+            $(this).next().slideToggle(200);
+        });
+    });
+
+
+
+
+    //---------------------------------------------------
+    // ▼　tab
+    //---------------------------------------------------
+    $(function () {
+        var rwdTab = $('.c-tab'),
+            switchPoint = 768,
+            fadeSpeed = 300,
+            slideSpeed = 300;
+
+        var tabBtn = rwdTab.children('.c-tab-panel').children('.c-tab-heading'),
+            contentsArea = rwdTab.children('.c-tab-panel').children('.c-tab-body');
+
+        tabBtn.on('click', function () {
+            if (!$(this).hasClass('c-tab-active')) {
+                tabBtn.removeClass('c-tab-active');
+                $(this).addClass('c-tab-active');
+
+                if (window.innerWidth > switchPoint) {
+                    contentsArea.fadeOut(fadeSpeed);
+                    $(this).next().fadeIn(fadeSpeed);
+                } else {
+                    contentsArea.slideUp(slideSpeed);
+                    $(this).next().slideDown(slideSpeed);
+                }
+            }
+        });
+
+        tabBtn.first().click();
+    });
+
+
+
+</script>
+<!-- required -->
+<script type="text/javascript">
+    jQuery(document).ready(function ($) {
+        jQuery('.stellarnav').stellarNav({
+            theme: 'dark',
+            breakpoint: 960,
+            position: 'right',
+
+        });
+        $('.notifyjs-corner').empty();
+    });
+</script>
+<!-- required -->
+<script>
+    $("document").ready(function () {
+
+        $('.dropdown-menu').on('click', function (e) {
+            if ($(this).hasClass('dropdown-menu-form')) {
+                e.stopPropagation();
+            }
+        });
+    });
+
+
+</script>
+<script>
+
+    var links = document.querySelectorAll('.ripplelink');
+
+    for (var i = 0, len = links.length; i < len; i++) {
+        links[i].addEventListener('click', function (e) {
+            var targetEl = e.target;
+            var inkEl = targetEl.querySelector('.ink');
+
+            if (inkEl) {
+                inkEl.classList.remove('animate');
+            }
+            else {
+                inkEl = document.createElement('span');
+                inkEl.classList.add('ink');
+                inkEl.style.width = inkEl.style.height = Math.max(targetEl.offsetWidth, targetEl.offsetHeight) + 'px';
+                targetEl.appendChild(inkEl);
+            }
+
+            inkEl.style.left = (e.offsetX - inkEl.offsetWidth / 2) + 'px';
+            inkEl.style.top = (e.offsetY - inkEl.offsetHeight / 2) + 'px';
+            inkEl.classList.add('animate');
+        }, false);
+    }
+</script>
+<script type="text/javascript">
+    $(window).scroll(function () {
+        if ($(this).scrollTop() > 250) {
+            $('.header').addClass("sticky");
+        }
+        else {
+            $('.header').removeClass("sticky");
+        }
+    });
+
+
+</script>
+
+<script type="text/javascript">
+    $(".but").click(function () {
+        // Close all open windows
+        $(".content").stop().slideUp(300);
+        // Toggle this window open/close
+        $(this).next(".content").stop().slideToggle(300);
+        //hitter test//
+        $(".hitter").show()
+    });
+
+    $(".hitter").click(function () {
+        // Close all open windows
+        $(".content").stop().slideUp(300);
+    });
+</script>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('#selectall').click(function () {
+            $('.selectedId').prop('checked', this.checked);
+        });
+
+        $('.selectedId').change(function () {
+            var check = ($('.selectedId').filter(":checked").length == $('.selectedId').length);
+            $('#selectall').prop("checked", check);
+        });
+    });
+</script>
+<script>
+    function valueChanged() {
+        if ($('.sltchk').is(":checked"))
+            $(".hide").show();
+        else
+            $(".hide").hide();
+    };
+</script>
+<script type="text/javascript">
+    var divs = ["Div1", "Div3"];
+    var visibleDivId = null;
+    function divVisibility(divId) {
+        if (visibleDivId === divId) {
+            visibleDivId = null;
+        } else {
+            visibleDivId = divId;
+        }
+        hideNonVisibleDivs();
+    }
+    function hideNonVisibleDivs() {
+        var i, divId, div;
+        for (i = 0; i < divs.length; i++) {
+            divId = divs[i];
+            div = document.getElementById(divId);
+            if (visibleDivId === divId) {
+                div.style.display = "block";
+            } else {
+                div.style.display = "none";
+            }
+        }
+    }
+
+</script>

@@ -1,0 +1,29 @@
+﻿@model Exit.Req_Process.Resolution
+
+ 
+	@using (Ajax.BeginForm("_ExitRetained", "Exit",
+        new { src = clsApplicationSetting.EncryptQueryString(ViewBag.MenuID.ToString() + "*/Exit/_ExitRetained*" + ViewBag.Exit_ID+"*"+ ViewBag.RetainedAt_Level) },
+          new AjaxOptions { HttpMethod = "POST", OnSuccess = "OnProcessSuccess", OnBegin = "ShowLoadingDialog()" },
+    new { @id = "_RequestProcessingFrom", @enctype = "multipart/form-data" })
+    )
+    {
+
+		<div class="row">
+			<div class="col-sm-12 form-group">
+				<label>Attachment </label>
+				@Html.TextBoxFor(model => model.UploadFile, new { @class = "form-control", @type = "file" })
+				@Html.ValidationMessageFor(model => model.UploadFile, "", new { @class = "text-danger" })
+			</div>
+			<div class="col-sm-12 form-group">
+				<label>Reason </label>
+				@Html.HiddenFor(model => model.RetainedAt_Level)
+				@Html.TextAreaFor(model => model.Retained_Remarks, new { @class = "form-control" })
+				@Html.ValidationMessageFor(model => model.Retained_Remarks, "", new { @class = "text-danger" })
+			</div>
+			<div class="col-sm-12 text-left">
+				<button type="submit" name="Command" value="Add" class="btn mtr-o-grn btn-l ripplelink"> <i class="fas fa-share"></i>Submit </button>
+				<button type="button" class="btn cnl-btn btn-l ripplelink close" data-dismiss="modal"><i class="fas fa-times"></i>Close</button>
+			</div>
+
+		</div>
+	}

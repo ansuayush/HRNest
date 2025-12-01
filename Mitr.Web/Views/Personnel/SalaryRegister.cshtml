@@ -1,0 +1,249 @@
+﻿@using System.Globalization
+@model DataSet
+@using System.Data
+@{
+	string MonthName = Model.Tables[0].Rows[0]["MonthYear"].ToString();
+	Layout = null;
+
+	var lstComponent = from emp in Model.Tables[1].AsEnumerable()
+					   select new
+					   {
+						   Componentid = emp.Field<int>("Componentid"),
+						   Component = emp.Field<string>("Component").ToString(),
+						   Amount = emp.Field<double>("Amount").ToString(),
+						   Doctype = emp.Field<string>("Doctype").ToString(),
+						   TotalEarning = emp.Field<double>("TotalEarning").ToString(),
+						   FixedBenefits = emp.Field<double>("FixedBenefits").ToString(),
+						   Gross = emp.Field<double>("Gross").ToString(),
+						   TotalDeduction = emp.Field<double>("TotalDeduction").ToString(),
+						   NetAmount = emp.Field<double>("NetAmount").ToString(),
+						   AmtWords = emp.Field<string>("AmtWords").ToString(),
+						   Empid = emp.Field<int>("Empid").ToString(),
+					   };
+	var lstEmpComponent = lstComponent.ToList();
+	var lstComponentList = lstComponent.ToList().GroupBy(x => x.Componentid)
+							.Select(x => new
+							{
+								Componentid = x.Key,
+								Component = x.Select(ex => ex.Component).FirstOrDefault(),
+								Doctype = x.Select(ex => ex.Doctype).FirstOrDefault()
+							}
+														 );
+}
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+	<title>Mitr_SalaryRegister_@MonthName</title>
+	<meta name="title" content="Mitr: ConsolidateActivityLog" />
+	<meta name="keywords" content="Mitr: ConsolidateActivityLog" />
+	<meta name="description" content="Mitr: ConsolidateActivityLog" />
+
+	<link href="https://fonts.googleapis.com/css?family=Roboto:300,400,700&display=swap" rel="stylesheet">
+
+	<link rel="shortcut icon" href="/assets/design/images/favicon.png" type="image/x-icon">
+	<link rel="icon" href="/assets/design/images/favicon.png" type="image/png" sizes="50x50">
+	<link href='/assets/design/css/icons.css?v=1.6' rel='stylesheet' />
+	<link href='/assets/design/css/bootstrap.min.css?v=1.6' rel='stylesheet' />
+	<link href='/assets/design/css/style.css?v=1.6' rel='stylesheet' />
+	<link href='/assets/design/css/custom.css?v=1.6' rel='stylesheet' />
+	<link href='/assets/design/css/responsive.css?v=1.6' rel='stylesheet' />
+
+	<link href='/assets/design/css/print.css?v=1.6' rel='stylesheet' type="text/css" media="print" />
+	@Html.IncludeVersionedJs(Url.Content("~/assets/design/scripts/WorkingSetting.js"))
+	<style type="text/css">
+		.tdbrd-none td {
+			border: 0px !important;
+			vertical-align: top !important;
+			padding: 3px 0px !important;
+		}
+	</style>
+
+</head>
+<body class=" header">
+	<div class="print-header">
+		<div class="container-fluid">
+			<div class="row">
+				<div class="col-md-10 col-sm-12 mx-auto text-right">
+					<a onclick="window.print()" class="btn mtr-g-grn btn-l ripplelink ">
+						<i class="fa fa-print"></i>Print
+					</a>
+				</div>
+				<div class="col-md-2 col-sm-12 mx-auto text-left">
+					<a onclick="exportReportToExcelAll()" class="btn mtr-g-grn btn-l ripplelink ">
+						<i class="fa fa-print"></i>Export
+					</a>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="container-fluid pm-0 mt-5 pt-4">
+
+
+		@*@foreach (DataRow item in Model.Tables[0].Rows)
+			{*@
+		<div class="row pagebreak">
+			<div class="col-md-12 col-sm-12 mx-auto">
+				<div class="inner-main">
+
+					<div class="bgbox">
+						<div class="row">
+							<div class="col-sm-2 align-self-center">
+								<img src=@Model.Tables[0].Rows[0]["Logo"] alt="">
+							</div>
+							<div class="col-sm-8 text-center">
+								<strong class="cntitle">@Model.Tables[0].Rows[0]["CompanyName"]</strong><br>
+								<small class="fn-md ">@Model.Tables[0].Rows[0]["Address"]</small>
+							</div>
+						</div>
+					</div>
+
+					<div class="row">
+						<div class="col-sm-12 text-center">
+							<h2 class="heading-one">Salary Register for the month of @Model.Tables[0].Rows[0]["MonthYear"]</h2>
+						</div>
+						<div class="col-sm-12 ">
+							<div class="three-sticky srtbl device-hgt-400 print-height-auto">
+								@{decimal EarningTotal = 0; decimal FBTotal = 0; decimal DeductionTotal = 0; decimal NetSalaryTotal = 0; }
+								<table id="tblExport" name="tblExport" class="table table-bordered table-striped left-110 mb-0">
+									<thead>
+										<tr id="TrHeading" style="display:none">
+											<th class="text-center" style="font-size:medium" colspan="2"><img src="~/assets/design/images/c3.png" /></th>
+											<th class="text-center" style="font-size:medium" colspan="20">@Model.Tables[0].Rows[0]["CompanyName"]<br />@Model.Tables[0].Rows[0]["Address"]<br />Salary Register for the month of @Model.Tables[0].Rows[0]["MonthYear"]</th>
+											
+										</tr>
+										<tr>
+											<th>Employee Code</th>
+											<th>Employee Name</th>
+											<th>Designation</th>
+											<th><div class="w-60">Category</div></th>
+											<th><div class="w-60">Location</div></th>
+											<th><div class="w-60">User Type</div></th>
+											<th colspan="@(lstComponentList.Where(n=>n.Doctype=="Earning" || n.Doctype=="OtherEarning" || n.Doctype=="OT").Count()+1)" class="text-center">Earning</th>
+											<th><div class="w-70">Fixed Benefits</div></th>
+											<th colspan="@(lstComponentList.Where(n=>n.Doctype=="Deduction").Count()+1)" class="text-center">Deduction</th>
+											<th><div class="w-60">Net salary</div></th>
+										</tr>
+										<tr class="sticky-sbhead csltop">
+											<th></th>
+											<th></th>
+											<th></th>
+											<th></th>
+											<th></th>
+											<th></th>
+											@foreach (var item in lstComponentList.Where(n => n.Doctype == "Earning" || n.Doctype == "OtherEarning" || n.Doctype == "OT"))
+											{
+												<th><div class="w-60">@item.Component</div></th>
+											}
+											<th><div class="w-70">Gross Salary</div></th>
+											<th></th>
+											@foreach (var item in lstComponentList.Where(n => n.Doctype == "Deduction"))
+											{
+												<th><div class="w-60">@item.Component</div></th>
+											}
+											<th><div class="w-60">Total</div></th>
+											<th></th>
+										</tr>
+									</thead>
+									<tbody>
+										@foreach (DataRow item in Model.Tables[0].Rows)
+										{
+											decimal NetSalary = Convert.ToDecimal(lstEmpComponent.Where(x => x.Empid == item["id"].ToString()).Select(x => x.TotalEarning).FirstOrDefault())
+															+ Convert.ToDecimal(lstEmpComponent.Where(x => x.Empid == item["id"].ToString()).Select(x => x.TotalDeduction).FirstOrDefault());
+
+
+
+											EarningTotal = EarningTotal + Math.Round(Convert.ToDecimal(lstEmpComponent.Where(x => x.Empid == item["id"].ToString()).Select(x => x.TotalEarning).FirstOrDefault()), 2);
+											FBTotal = FBTotal + Math.Round(Convert.ToDecimal(lstEmpComponent.Where(x => x.Empid == item["id"].ToString()).Select(x => x.FixedBenefits).FirstOrDefault()), 2);
+											DeductionTotal = DeductionTotal + Math.Round(Convert.ToDecimal(lstEmpComponent.Where(x => x.Empid == item["id"].ToString()).Select(x => x.TotalDeduction).FirstOrDefault()), 2);
+											NetSalaryTotal = NetSalaryTotal + Math.Round(Convert.ToDecimal(lstEmpComponent.Where(x => x.Empid == item["id"].ToString()).Select(x => x.NetAmount).FirstOrDefault()),2);
+										<tr>
+											<td>@item["emp_code"]</td>
+											<td><div class="ellipsis">@item["emp_name"]</div> </td>
+											<td><div class="ellipsis">@item["Designation"]</div></td>
+											<td>@(item["SalaryOption"]+" / " + item["Subcategory"])</td>
+											<td>@item["Location"]</td>
+											<td>@item["UserType"]</td>
+											@foreach (var C in lstComponentList.Where(n => n.Doctype == "Earning" || n.Doctype == "OtherEarning" || n.Doctype == "OT"))
+											{
+												<td class="text-right"> @((Convert.ToDecimal(lstEmpComponent.Where(x => x.Empid == item["id"].ToString() && x.Componentid == C.Componentid).Select(x => x.Amount).FirstOrDefault())).ToString("N", new CultureInfo("en-US")))</td>
+												@*<td class="text-right">@(string.Format("{0:#,0}", Convert.ToDecimal(lstEmpComponent.Where(x => x.Empid == item["id"].ToString() && x.Componentid == C.Componentid).Select(x => x.Amount).FirstOrDefault())))</td>*@
+											}
+											<td class="text-right"> @((Convert.ToDecimal(lstEmpComponent.Where(x => x.Empid == item["id"].ToString()).Select(x => x.TotalEarning).FirstOrDefault())).ToString("N", new CultureInfo("en-US")))</td>
+											<td class="text-right"> @((Convert.ToDecimal(lstEmpComponent.Where(x => x.Empid == item["id"].ToString()).Select(x => x.FixedBenefits).FirstOrDefault())).ToString("N", new CultureInfo("en-US")))</td>
+											@*<td class="text-right">@(string.Format("{0:#,0}", Convert.ToDecimal(lstEmpComponent.Where(x => x.Empid == item["id"].ToString()).Select(x => x.TotalEarning).FirstOrDefault())))</td>*@
+											@*<td class="text-right">@(string.Format("{0:#,0}", Convert.ToDecimal(lstEmpComponent.Where(x => x.Empid == item["id"].ToString()).Select(x => x.FixedBenefits).FirstOrDefault())))</td>*@
+											@foreach (var C in lstComponentList.Where(n => n.Doctype == "Deduction"))
+											{
+												<td class="text-right"> @((Convert.ToDecimal(lstEmpComponent.Where(x => x.Empid == item["id"].ToString() && x.Componentid == C.Componentid).Select(x => x.Amount).FirstOrDefault())).ToString("N", new CultureInfo("en-US")))</td>
+												@*<td class="text-right">@(string.Format("{0:#,0}", Convert.ToDecimal(lstEmpComponent.Where(x => x.Empid == item["id"].ToString() && x.Componentid == C.Componentid).Select(x => x.Amount).FirstOrDefault())))</td>*@
+											}
+											<td class="text-right"> @((Convert.ToDecimal(lstEmpComponent.Where(x => x.Empid == item["id"].ToString()).Select(x => x.TotalDeduction).FirstOrDefault())).ToString("N", new CultureInfo("en-US")))</td>
+											<td class="text-right"> @((Convert.ToDecimal(lstEmpComponent.Where(x => x.Empid == item["id"].ToString()).Select(x => x.NetAmount).FirstOrDefault())).ToString("N", new CultureInfo("en-US")))</td>
+											@*<td class="text-right">@(string.Format("{0:#,0}", Convert.ToDecimal(lstEmpComponent.Where(x => x.Empid == item["id"].ToString()).Select(x => x.TotalDeduction).FirstOrDefault())))</td>*@
+											@*<td class="text-right">@(string.Format("{0:#,0}", Convert.ToDecimal(lstEmpComponent.Where(x => x.Empid == item["id"].ToString()).Select(x => x.NetAmount).FirstOrDefault())))</td>*@
+										</tr>
+										}
+										<tr class="sticky-sbhead csltop">
+											<td></td>
+											<td></td>
+											<td></td>
+											<td></td>
+											<td></td>
+											<td><b>Total</b></td>
+											@foreach (var item in lstComponentList.Where(n => n.Doctype == "Earning" || n.Doctype == "OtherEarning" || n.Doctype == "OT"))
+											{
+												<td></td>
+											}
+											<td><div class="w-70 text-right"><b>@(string.Format("{0:#,0}", EarningTotal))</b></div></td>
+											<td class="text-right"><b>@FBTotal</b></td>
+											@foreach (var item in lstComponentList.Where(n => n.Doctype == "Deduction"))
+											{
+												<td></td>
+											}
+											<td><div class="w-60 text-right"><b>@DeductionTotal</b></div></td>
+											<td class="text-right"><b>@NetSalaryTotal</b></td>
+										</tr>
+									</tbody>
+								</table>
+							</div>
+						</div>
+						@*<div class="col-sm-12 text-center fn-bold">
+								<i>It’s a computer generated Salary Slip, hence does not require any signature</i>
+							</div>*@
+					</div>
+
+				</div>
+			</div>
+		</div>
+		@*}*@
+
+	</div>
+	<script src="~/assets/tableToExcel.js"></script>
+	<script type="text/javascript">
+
+
+		function exportReportToExcelAll() {		
+			//document.getElementsByClassName("TrHeading").style.display = '';
+			var row = document.getElementById('TrHeading');
+			row.style.display = '';
+			//Heading.show();
+            var MonthName ='@MonthName';
+            exportToExcelSahaj('tblExport', 'SalaryRegister_' + MonthName + '');
+            //let table = document.getElementsByTagName("table"); // you can use document.getElementById('tableId') as well by providing id to the table tag
+            //TableToExcel.convert(table[0], { // html code may contain multiple tables so here we are refering to 1st table tag
+            //    name: `SalaryRegister.xlsx`, // fileName you could use any name
+            //    sheet: {
+            //        name: 'Sheet 1' // sheetName
+            //    }
+            //});
+			row.style.display = 'none';
+        }
+	</script>
+
+
+</body>
+</html>

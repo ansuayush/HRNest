@@ -1,0 +1,52 @@
+﻿@model User_Task.Task.AddTask
+
+
+@using (Ajax.BeginForm("_AddTask", "Tools",
+		new { src = ViewBag.src },
+new AjaxOptions { HttpMethod = "POST", OnSuccess = "OnAddSuccess", OnBegin = "ShowLoadingDialog()" },
+new { @id = "_AddTaskFrom" })
+)
+{
+	<div class="row">
+
+		<div class="col-lg-3 col-md-3 col-sm-6 form-group">
+			<label>Subject<span class="required"> *</span>  </label>
+			@Html.TextAreaFor(model => model.Subject, new { @class = "form-control", @placeholder = "Subject" })
+			@Html.ValidationMessageFor(model => model.Subject, "", new { @class = "text-danger" })
+		</div>
+
+		<div class="col-lg-3 col-md-3 col-sm-6 form-group">
+			<label>Priority <span class="required"> *</span></label>
+			@{
+				List<SelectListItem> D1 = new List<SelectListItem>
+{
+								new SelectListItem{Text="Low",Value="Low" },
+								new SelectListItem{Text="Medium",Value="Medium" },
+								new SelectListItem{Text="High",Value="High" }
+								};
+			}
+			@Html.DropDownListFor(model => model.Priority, new SelectList(D1, "Value", "text", Model.Priority), "Select", new { @class = "form-control applyselect" })
+			@Html.ValidationMessageFor(model => model.Priority, "", new { @class = "text-danger" })
+
+
+		</div>
+
+		<div class="col-sm-3 form-group">
+			<lable>Assigned To</lable>
+			@Html.DropDownListFor(model => model.IDs, new SelectList(ViewBag.EmployeeList, "LoginID", "EMPName", Model.IDs), "select", new { @class = "form-control applyselect",@multiple="true" })
+			@Html.ValidationMessageFor(model => model.IDs, "", new { @class = "text-danger" })
+		</div>
+
+		<div class="col-sm-12 form-group">
+			<label>Message <span class="required"> *</span>  </label>
+			@Html.TextAreaFor(model => model.Message, new { @class = "form-control", @placeholder = "Enter Message" })
+			@Html.ValidationMessageFor(model => model.Message, "", new { @class = "text-danger" })
+		</div>
+		<div class="col-sm-12 text-center mt-3">
+
+			<button type="button" data-dismiss="modal" class="btn cnl-btn btn-l ripplelink"><i class="fas fa-times"></i>Close</button>
+			<button type="submit" name="Command" value="Add" class="btn mtr-o-grn btn-l ripplelink "> <i class="fa fa-paper-plane" aria-hidden="true"></i> Submit </button>
+		</div>
+	</div>
+}
+

@@ -1,0 +1,343 @@
+﻿@model Mitr.Models.AdvancePaymentUser
+@{
+	ViewBag.Title = "PaymentStatusToStaff";
+	Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@section style{
+	@System.Web.Optimization.Styles.Render("~/bundle/dataTablecss")
+}
+
+<div class="inner-main defult-height p-3 pb-0">
+	<h1 class="heading-one  mb-3">Finance Payment Status to Staff</h1>
+	<div class="row">
+		<div class="col-sm-12">
+			<div class="tab-main">
+				<ul id="tabs" class="nav nav-tabs " role="tablist">
+					<li class="nav-item"> <a id="tab-A" href="#pending" onClick="showtable(1);" class="nav-link active ripplelink" data-toggle="tab" role="tab"><i class="fas fa-clock"></i>Pending</a> </li>
+					<li class="nav-item"> <a id="tab-B" href="#approved" onClick="showtable(2);" class="nav-link ripplelink" data-toggle="tab" role="tab"><i class="fas fa-check"></i>Approved </a> </li>
+					<li class="nav-item"> <a id="tab-d" href="#rejected" onClick="showtable(3);" class="nav-link ripplelink" data-toggle="tab" role="tab"><i class="fa fa-ban" aria-hidden="true"></i>Reject</a> </li>
+				</ul>
+				<div id="content" class="tab-content p-0" role="tablist">
+
+
+					<div id="TargetDiv">
+
+					</div>
+					<!-- --->
+
+
+
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<div class="modal fade pop-dgn" id="rjct">
+	<div id="divreject" class="modal-dialog " style="display:none">
+		<div class="modal-content">
+
+			<!-- Modal Header -->
+			<div class="modal-header blk-gdn-btn">
+				<h4 class="modal-title"><i class="fas fa-ban"></i> Reject </h4>
+				<div class="close" data-dismiss="modal">&times;</div>
+			</div>
+
+			<!-- Modal body -->
+			<div class="modal-body">
+				<form>
+					<div class="row">
+						<div class="col-sm-12 form-group">
+							<label>Reason<sup>*</sup></label>
+							<input type="hidden" value="0" id="hdfadvanceId" />
+							<input type="hidden" value="0" id="hdfstage" />
+							<textarea class="form-group h-100" id="txtResion" placeholder="Enter"></textarea>
+						</div>
+						<div class="col-sm-12 mt-3 text-center">
+							<button type="submit" class="btn mtr-o-grn btn-l ripplelink RejectRequest  " name="Command" value="Add"> <i class="fa fa-paper-plane" aria-hidden="true"></i> Submit</button>
+							<button type="button" class="btn cnl-btn ripplelink  " data-dismiss="modal"><i class="fas fa-times"></i> Close</button>
+						</div>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+</div>
+
+
+@section scripts    {
+	@System.Web.Optimization.Scripts.Render("~/bundle/dataTablesjs")
+
+	@System.Web.Optimization.Scripts.Render("~/bundle/unobtrusivejs")
+	@Html.IncludeVersionedJs(Url.Content("~/assets/design/Scripts/AddInit.js"))
+	@Html.IncludeVersionedJs(Url.Content("~/assets/design/Scripts/ToolTip.js"))
+	<script type="text/javascript">
+		$(document).ready(function () {
+			showtable(1)
+	});
+		function showtable(tabname) {
+		
+			if (tabname == "1") {
+
+				
+				ShowLoadingDialog();
+				$.ajax({
+					url: "/Travel/_PendingPaymentStatusToStaff",
+					type: "Get",
+					async: true,
+					data: { src: EncryptQueryStringJSON(@ViewBag.MenuID+"*" + "/Travel/_PendingPaymentStatusToStaff") },
+					success: function (data) {
+						debugger;
+						$("#TargetDiv").empty();
+						$("#TargetDiv").html(data);
+						CloseLoadingDialog();
+						DatatableScriptsWithColumnSearch("PendingTable");
+						
+
+					},
+					error: function (er) {
+						alert(er);
+
+					}
+				});
+				//$(".tblpending").attr("id", "datatable-buttons");
+				//$(".tblapproved").removeAttr("id");
+				//$(".tblcancel").removeAttr("id");
+			}
+			else if (tabname == "2") {
+				ShowLoadingDialog();
+					$.ajax({
+					url: "/Travel/_ApproveRequestStatusToStaff",
+					type: "Get",
+					async: true,
+					data: { src: EncryptQueryStringJSON(@ViewBag.MenuID+"*" + "/Travel/_ApproveRequestStatusToStaff") },
+					success: function (data) {
+								debugger;
+						$("#TargetDiv").empty();
+						$("#TargetDiv").html(data);
+						CloseLoadingDialog();
+						DatatableScriptsWithColumnSearch("ApprovedTable");
+
+
+					},
+					error: function (er) {
+						alert(er);
+
+					}
+				});
+				//$(".tblpending").removeAttr("id");
+				//$(".tblcancel").removeAttr("id");
+				//$(".tblapproved").attr("id", "datatable-buttons");
+
+
+
+			}
+			else if (tabname == "3") {
+				ShowLoadingDialog();
+					$.ajax({
+						url: "/Travel/_RejectPaymentStatusToStaff",
+					type: "Get",
+					async: true,
+						data: { src: EncryptQueryStringJSON(@ViewBag.MenuID+"*" + "/Travel/_RejectPaymentStatusToStaff") },
+					success: function (data) {
+						$("#TargetDiv").empty();
+						$("#TargetDiv").html(data);
+						CloseLoadingDialog();
+						DatatableScriptsWithColumnSearch("RejectedTable");
+
+
+					},
+					error: function (er) {
+						alert(er);
+
+					}
+				});
+				//$(".tblcancel").attr("id", "datatable-buttons");
+				//$(".tblpending").removeAttr("id");
+				//$(".tblapproved").removeAttr("id");
+
+			}
+		}
+		function Cancel(obj) {
+
+			var ID = parseInt($(obj).closest('tr').find("td.hdftableid input[type='hidden']").val());
+			var stage = $(obj).closest('tr').find("td.hdftablestage input[type='hidden']").val();
+			$("#hdfadvanceId").val(ID);
+			$("#hdfstage").val(stage);
+			$("#txtResion").val('');
+			$("#divreject").show();
+		}
+		$('.RejectRequest').on('click', function (e) {
+			e.preventDefault();
+			e.stopPropagation();
+			var Id = $("#hdfadvanceId").val();
+			var Stage = $("#hdfstage").val();
+			var Cancelreason = $("#txtResion").val();
+			if (Stage == 'Travel Advance') {
+
+				if (parseInt(Id) > 0 && Cancelreason != '') {
+					$.ajax({
+						url: "/CommonAjax/CancelAdvanceTravelRequestJson",
+						type: "Get",
+						async: true,
+						data: { ID: Id, Reason: Cancelreason },
+						success: function (data) {
+							if (data == 1) {
+								SuccessToaster('Advance request/ TER rejected successfully');
+								window.location.reload();
+							}
+							else {
+								FailToaster('Can not Cancel.')
+							}
+						},
+						error: function (er) {
+							alert(er);
+						}
+					});
+				}
+			}
+			else if (Stage == 'Travel Expence') {
+				if (parseInt(Id) > 0 && Cancelreason != '') {
+					$.ajax({
+						url: "/CommonAjax/CancelExpenceTravelRequestJson",
+						type: "Get",
+						async: true,
+						data: { ID: Id, Reason: Cancelreason },
+						success: function (data) {
+							if (data == 1) {
+								SuccessToaster('Expense Request No  Reject successfully');
+								window.location.reload();
+							}
+							else {
+								FailToaster('Can not Cancel.')
+							}
+						},
+						error: function (er) {
+							alert(er);
+						}
+					});
+				}
+			}
+
+
+		});
+		function Confirm(obj) {
+
+			var ID = parseInt($(obj).closest('tr').find("td.hdftableid input[type='hidden']").val());
+			var stage = $(obj).closest('tr').find("td.hdftablestage input[type='hidden']").val();
+			var RowId = obj.id;
+			const myArray = RowId.split("_");
+			var Advanceamount = parseInt($(obj).closest('tr').find("td.hdfadvanceamount input[type='hidden']").val());
+			var date = $("#txtPaidDate_" + parseInt(myArray[1]) + "").val();
+			var amount = parseFloat($("#txtAmount_" + parseInt(myArray[1]) + "").val());
+			if (Advanceamount >= amount) {
+				if (ID > 0) {
+					ConfirmMsgBox("Are you sure to approve this Request.", '', function () {
+						if (stage == 'Travel Advance') {
+							ApproveRequest(ID, amount, date);
+						}
+						else if (stage == 'Travel Expence') {
+							ExpenceApproveRequest(ID, amount, date);
+						}
+
+					});
+				}
+			}
+			else {
+				ConfirmMsgBox("Paid amount should be equal to less than amount .", '', function () {
+
+
+
+				});
+			}
+
+
+		}
+
+		function ExpenceApproveRequest(ID, amount, date) {
+
+			$.ajax({
+				url: "/CommonAjax/ApprovedExpenceTravelRequestJson",
+				type: "Get",
+				async: true,
+				data: { ID: ID, Paidamount: amount, PaidDate: date },
+				success: function (data) {
+					if (data == 1) {
+						SuccessToaster('Advance request/ TER processed/paid successfully');
+						window.location.reload();
+					}
+					else {
+						FailToaster('Can not Approve.')
+					}
+				},
+				error: function (er) {
+					alert(er);
+				}
+			});
+		}
+
+		function ApproveRequest(ID, amount, date) {
+
+			$.ajax({
+				url: "/CommonAjax/ApprovedAdvanceTravelRequestJson",
+				type: "Get",
+				async: true,
+				data: { ID: ID, Paidamount: amount, PaidDate: date },
+				success: function (data) {
+					if (data == 1) {
+						SuccessToaster('Advance Request Approve successfully');
+						window.location.reload();
+					}
+					else {
+						FailToaster('Can not Approve.')
+					}
+				},
+				error: function (er) {
+					alert(er);
+				}
+			});
+		}
+
+		function Amount(obj) {
+
+			var Id = obj.id;
+			var amount = parseFloat(obj.value);
+			const myArray = Id.split("_");
+			var date = $("#txtPaidDate_" + parseInt(myArray[1]) + "").val();
+			if (amount > 0 && date != "") {
+				document.getElementById("btn_" + parseInt(myArray[1]) + "").disabled = false;
+			}
+
+
+		}
+
+
+		function PaidDate(obj) {
+
+			var Id = obj.id;
+			var date = obj.value;
+			const myArray = Id.split("_");
+			var amount = parseFloat($("#txtAmount_" + parseInt(myArray[1]) + "").val());
+			if (amount > 0 && date != "") {
+				document.getElementById("btn_" + parseInt(myArray[1]) + "").disabled = false;
+			}
+
+
+		}
+
+		function OnSuccess(obj) {
+
+
+			if (obj.Status) {
+
+				SuccessToaster(obj.SuccessMessage);
+				window.location.reload();
+			}
+			else {
+				CloseLoadingDialog();
+				FailToaster(obj.SuccessMessage);
+
+			}
+		}
+
+	</script>
+}

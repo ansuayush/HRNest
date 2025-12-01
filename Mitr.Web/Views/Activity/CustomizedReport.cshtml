@@ -1,0 +1,532 @@
+﻿@model Mitr.Models.CustomizedReport
+@using System.Data;
+@{
+	Layout = "~/Views/Shared/_Layout.cshtml";
+	var ReportData = TempData["dsdata"];
+	DataSet ds = (DataSet)ReportData;
+	string ReportType = Convert.ToString(TempData["Reporttype"]);
+	List<SelectListItem> List = new List<SelectListItem>
+
+{
+									new SelectListItem{Text="All",Value="All" },
+									new SelectListItem{Text="Mitr",Value="Mitr" },
+									new SelectListItem{Text="Non Mitr",Value="Non Mitr" }
+
+									};
+
+
+	string fromdate = ""; string todate = "";
+	string CompanyName = "", Address = "";
+	string ProjectName = "";
+	if (ReportType == "SALARY")
+	{
+		if (ds != null)
+		{
+			try
+			{
+				CompanyName = ds.Tables[1].Rows[0]["CompanyName"].ToString();
+				Address = ds.Tables[1].Rows[0]["CompanyAddress"].ToString();
+				fromdate = ds.Tables[1].Rows[0]["Fromdate"].ToString();
+				todate = ds.Tables[1].Rows[0]["Todate"].ToString();
+				ProjectName = ds.Tables[1].Rows[0]["ProjectName"].ToString();
+			}
+			catch
+			{
+			}
+
+		}
+	}
+
+}
+
+
+<link href="~/assets/design/css/bootstrap-multiselect.css" rel="stylesheet" />
+<div class="inner-main defult-height ">
+	<div class="row">
+		<div class="col-sm-12 form-group align-self-center">
+			<h1 class="heading-one mb-0">Staff salary and benefits report of a project</h1>
+		</div>
+
+
+
+		@*@using (Ajax.BeginForm("CustomizedReport", "Activity",
+				new { src = clsApplicationSetting.EncryptQueryString(ViewBag.MenuID.ToString() + "*/Activity/CustomizedReport") },
+				  new AjaxOptions { HttpMethod = "POST", OnSuccess = "BindTarget", OnBegin = "ShowLoadingDialog()" },
+			new { @id = "__CustomizedReportFrom" })
+			)
+				{*@
+		@using (Html.BeginForm("CustomizedReport", "Activity",
+	  new { src = ViewBag.src }, FormMethod.Post,
+	  new
+	  {
+		  name = "CustomizedReportForm",
+		  id = "CustomizedReportForm",
+		  enctype = "multipart/form-data"
+	  }))
+		{
+
+			<div>
+				<div class="col-sm-5">
+					<div class="row">
+						<div class="col-sm-6   form-group">
+							<label>From Period</label>
+							@Html.TextBoxFor(model => model.fromDate, new { @class = "form-control", type = "date" })
+							@Html.ValidationMessageFor(model => model.fromDate, "", new { @class = "text-danger" })
+
+						</div>
+
+						<div class="col-sm-6   form-group">
+							<label>To Period</label>
+							@Html.TextBoxFor(model => model.toDate, new { @class = "form-control", type = "date" })
+							@Html.ValidationMessageFor(model => model.toDate, "", new { @class = "text-danger" })
+						</div>
+
+						<div class="col-sm-12   form-group">
+							<label>Project</label>
+
+							@Html.DropDownListFor(model => model.proj_id, new SelectList(ViewBag.listProject, "Id", "Name"), "Select", new { @class = "form-control applyselect" })
+							@Html.ValidationMessageFor(model => model.proj_id, "", new { @class = "text-danger" })
+						</div>
+
+						<div class="col-sm-6   form-group">
+							<label>User</label>
+							@Html.DropDownListFor(model => model.MitrUser, new SelectList(List, "Value", "text", Model.MitrUser), new { @class = "form-control applyselect", onchange = "BindDropDown(this)" })
+
+
+						</div>
+
+
+						<div class="col-sm-6   form-group">
+							<label>Staff</label>
+							@Html.HiddenFor(x => Model.Empid)
+							<select class="applyselect" multiple="multiple" id="ddEMP_IDs">
+								<option>All </option>
+								@if (Model.EmpList != null)
+								{
+									foreach (var item in Model.EmpList)
+									{
+										if (string.IsNullOrEmpty(Model.Empid))
+										{
+											<option value="@item.ID">@item.Name</option>
+										}
+
+									}
+								}
+							</select>
+						</div>
+
+						<div class="col-sm-6   form-group">
+							<label>
+								Component
+							</label>
+							@Html.HiddenFor(x => Model.Earnings)
+							<select class="applyselect" multiple="multiple" id="ddEarnings_IDs">
+								<option Type="All">  All </option>
+								@if (Model.EarningsList != null)
+								{
+									foreach (var item in Model.EarningsList)
+									{
+										if (string.IsNullOrEmpty(Model.Earnings))
+										{
+											<option value="@item.ID" Type="@item.Name">@item.Name--(@item.ExtraValue)</option>
+										}
+
+									}
+								}
+							</select>
+							@Html.ValidationMessageFor(model => model.Earnings, "", new { @class = "text-danger" })
+						</div>
+
+
+
+						<div class="col-sm-12 align-self-end">
+
+							<button type="submit" class="btn mtr-g-grn btn-l m-0 ripplelink" name="Command" value="Download"><i class="fas fa-file-excel"></i>Export to Excel</button>
+						</div>
+
+
+					</div>
+				</div>
+			</div>
+
+
+
+			<div class="col-sm-12" id="tblProjectWiseSalary" style="display:none">
+				<table class="table">
+					<tr>
+						<td colspan="25"></td>
+					</tr>
+					<tr style="background: #f2f2f2; padding: 10px; border-radius: 10px; margin-bottom: 10px;  text-align:center; width:100%;  padding:10px">
+						<td width="120" rowspan="2" colspan="2" style="padding:15px; vertical-align: middle;"><img src="http://mitr2.sahajapps.com//assets/design/images/c3.png" height="50" alt=""></td>
+						<td colspan="19" style="padding:10px; text-align:left; font-size:16px; vertical-align: middle;"><strong style="font-size:16px">@CompanyName </strong></td>
+					</tr>
+					<tr style="background: #f2f2f2; padding: 10px; border-radius: 10px; margin-bottom: 10px;  text-align:left; width:100%;  padding:10px">
+						<td colspan="24"><small style="  display: block;text-align: left;font-weight: normal; font-size:14px">@Address</small></td>
+					</tr>
+					<tr>
+						<td colspan="25"></td>
+					</tr>
+					<tr>
+						<td colspan="25"><strong>Project: [@ProjectName] and Report for the period From: [@fromdate] To: [@todate]</strong></td>
+					</tr>
+					<tr>
+						<td colspan="5"></td>
+					</tr>
+                    <tr>
+                        <th width="50">S.No</th>
+                        <th>Staff Name</th>
+                        <th>EMP Code</th>
+                        <th>User</th>
+                        @if (ReportType == "SALARY")
+                        {
+                            if (ds != null)
+                            {
+                                DataTable dt = ds.Tables[0];
+                                for (int j = 3; j < dt.Columns.Count; j++)
+                                {
+
+
+                                    var column = dt.Columns[j].ToString();
+
+                                    if (j == 3)
+                                    {
+                                        continue;
+                                    }
+                                    else
+                                    {
+                                        if (column == "SALARY")
+                                        {
+                                            <td width="300" class="text-left"><strong>Salary(Benefit)</strong></td>
+                                        }
+                                        else
+                                        {
+                                            if (column == "Fixed Benefits")
+                                            {
+                                                <td width="300" class="text-left"><strong>Fixed Benefits(Benefit)</strong></td>
+                                            }
+                                            else if (column == "Life Insurance")
+                                            {
+                                                <td width="300" class="text-left"><strong>Life Insurance(Benefit)</strong></td>
+                                            }
+                                            else if (column == "Medical / Accident Insurance")
+                                            {
+                                                <td width="300" class="text-left"><strong>Medical / Accident Insurance(Benefit)</strong></td>
+                                            }
+                                            else if (column == "Mobile Reimbursement")
+                                            {
+                                                <td width="300" class="text-left"><strong>Mobile Reimbursement(Benefit)</strong></td>
+                                            }
+                                            else if (column == "Bonus")
+                                            {
+                                                <td width="300" class="text-left"><strong>Bonus(Benefit)</strong></td>
+                                            }
+                                            else if (column == "Gratuity")
+                                            {
+                                                <td width="300" class="text-left"><strong>Gratuity(Benefit)</strong></td>
+                                            }
+                                            else if (column == "NP Payable")
+                                            {
+                                                <td width="300" class="text-left"><strong>NP Payable(Other Earning)</strong></td>
+                                            }
+                                            @*else if (column == "OT")
+                                            {
+                                                <td width="300" class="text-left"><strong>OT(Other Earning)</strong></td>
+                                            }*@
+                                            else if (column == "Special Benefits")
+                                            {
+                                                <td width="300" class="text-left"><strong>Special Benefits(Benefit)</strong></td>
+                                            }
+                                            else if (column == "CL Recovery")
+                                            {
+                                                <td width="300" class="text-left"><strong>CL Recovery(Deduction)</strong></td>
+
+                                            }
+                                            else if (column == "NP Recovery")
+                                            {
+                                                <td width="300" class="text-left"><strong>NP Recovery(Deduction)</strong></td>
+
+
+                                            }
+
+
+
+
+                                            @*else if (column == "Other Additions - Any Other")
+                                            {
+                                                <td width="300" class="text-left"><strong>Other Additions - Any Other(Other Earning)</strong></td>
+                                            }
+                                            else if (column == "Other Additions - Arrears")
+                                            {
+                                                <td width="300" class="text-left"><strong>Other Additions - Arrears(Other Earning)</strong></td>
+                                            }
+
+
+                                            else if (column == "Internet Reimbursement")
+                                            {
+                                                <td width="300" class="text-left"><strong>Internet Reimbursement(Benefit)</strong></td>
+                                            }
+
+
+
+                                            else if (column == "Medical Reimbursement")
+                                            {
+                                                <td width="300" class="text-left"><strong>Medical Reimbursement(Benefit)</strong></td>
+                                            }
+
+
+                                            else if (column == "AL Payable")
+                                            {
+                                                <td width="300" class="text-left"><strong>AL Payable(Other Earning)</strong></td>
+                                            }
+
+                                            else if (column == "Provident Fund C3Contribution")
+                                            {
+                                                <td width="300" class="text-left"><strong>Provident Fund C3Contributions(Benefit)</strong></td>
+                                            }
+
+                                            else if (column == "TDS")
+                                            {
+                                                <td width="300" class="text-left"><strong>TDS(Deduction)</strong></td>
+                                            }
+                                            else if (column == "Professional Tax")
+                                            {
+                                                <td width="300" class="text-left"><strong>Professional Tax(Deduction)</strong></td>
+                                            }
+                                            else if (column == "Other Deduction - Advances")
+                                            {
+                                                <td width="300" class="text-left"><strong>Other Deduction - Advances(Deduction)</strong></td>
+                                            }
+                                            else if (column == "Other Deduction - Any other")
+                                            {
+                                                <td width="300" class="text-left"><strong>Other Deduction - Any other(Deduction)</strong></td>
+
+                                            }
+                                            else if (column == "AL Recovery")
+                                            {
+                                                <td width="300" class="text-left"><strong>AL Recovery(Deduction)</strong></td>
+
+                                            }
+
+
+                                            else if (column == "VPF")
+                                            {
+                                                <td width="300" class="text-left"><strong>VPF(Deduction)</strong></td>
+                                            }*@
+                                            else
+                                            {
+                                                <td width="300" class="text-left"><strong>@column</strong></td>
+                                            }
+                                        }
+
+                                    }
+
+
+
+                                }
+                            }
+                        }
+
+                    </tr>
+
+					@if (ds != null)
+					{
+						if (ReportType == "SALARY")
+						{
+
+
+							int count = 1;
+							var dt = ds.Tables[0];
+
+
+							for (int i = count - 1; i < dt.Rows.Count; i++)
+							{
+
+								// Add a conditional to check if this is the last row
+
+								if (i == dt.Rows.Count - 1)
+								{
+									<tr style="background-color: #fffaf3">
+										@for (int j = 0; j < dt.Columns.Count; j++)
+										{
+											string columnName = dt.Columns[j].ColumnName;
+											if (columnName == "EmpID")
+											{
+												<td>@count</td>
+												count++;  // Increment count after printing the EmpID
+											}
+											else
+											{
+												if (columnName == "EMPName" || columnName == "EMPCode" || columnName == "TypeUser")
+												{
+													if (dt.Rows[i][j].ToString() == "z")
+													{
+														<td class="text-right"></td>
+													}
+													else
+													{
+														<td class="text-right">	<strong>@dt.Rows[i][j].ToString()</strong></td>
+													}
+
+												}
+												else
+												{
+													<td class="text-right">
+														<strong>	@Convert.ToDouble(@dt.Rows[i][j]).ToString("#,##0")</strong>
+
+													</td>
+												}
+
+
+
+
+												// Print the value of the current row and column
+											}
+										}
+									</tr>
+								}
+								else
+								{
+									<tr>
+										@for (int j = 0; j < dt.Columns.Count; j++)
+										{
+											string columnName = dt.Columns[j].ColumnName;
+											if (columnName == "EmpID")
+											{
+												<td>@count</td>
+												count++;  // Increment count after printing the EmpID
+											}
+											else
+											{
+												if (columnName == "EMPName" || columnName == "EMPCode" || columnName == "TypeUser")
+												{
+													if (dt.Rows[i][j].ToString() == "z")
+													{
+														<td class="text-right"></td>
+													}
+													else
+													{
+														<td class="text-right">@dt.Rows[i][j].ToString()</td>
+													}
+
+												}
+												else
+												{
+													<td class="text-right">
+														@Convert.ToDouble(@dt.Rows[i][j]).ToString("#,##0")
+
+													</td>
+												}
+
+
+
+
+												// Print the value of the current row and column
+											}
+										}
+									</tr>
+								}
+
+							}
+
+						}
+					}
+
+
+
+
+				</table>
+
+			</div>
+
+		}
+	</div>
+</div>
+
+@section scripts    {
+	@System.Web.Optimization.Scripts.Render("~/bundle/unobtrusivejs")
+	@Html.IncludeVersionedJs(Url.Content("~/assets/design/scripts/AddInit.js"))
+	@Html.IncludeVersionedJs(Url.Content("~/assets/tableToExcel.js"))
+
+
+
+
+	<script>
+
+		function BindDropDown(obj) {
+
+		  var Id = $(obj).find("option:selected").val();
+		  var data = GetDropDownData(Id,"ProjectEMP");
+            if (data) {
+
+		           ShowLoadingDialog();
+                    $("#ddEMP_IDs").empty();
+                    $("#ddEMP_IDs").append($("<option  />").val(0).text("All"));
+                    $(data).each(function () {
+
+                       $("#ddEMP_IDs").append($("<option />").val(this.ID).text(this.Name));
+                       $("#ddEMP_IDs").select2();
+
+                    });
+                }
+
+            CloseLoadingDialog();
+		}
+
+        $(document).ready(function () {
+
+            if ("@ReportType" == "SALARY") {
+                exportToExcelSahaj('tblProjectWiseSalary', 'Staffsalaryandbenefitsreport');
+            }
+
+
+
+        });
+        function exportReportToExcel(Sheet, ReportName) {
+
+            let table = document.getElementsByTagName("table"); // you can use document.getElementById('tableId') as well by providing id to the table tag
+           // let table = document.getElementById("tblProjectWiseSalary");
+            //let table = document.getElementsByClassName('tblProjectWiseSalary');
+            TableToExcel.convert(table[0], { // html code may contain multiple tables so here we are refering to 1st table tag
+                name: ReportName, // fileName you could use any name
+                sheet: {
+                    name: Sheet // sheetName
+                }
+
+            });
+        }
+
+	</script>
+
+
+	<script>
+
+		 $('#ddEMP_IDs').change(function () {
+            GetValue()
+        });
+        function GetValue() {
+		
+            var IDs = $("#ddEMP_IDs").val();
+            $("#Empid").val(IDs);
+        }
+		 $('#ddEarnings_IDs').change(function () {
+            GetEValue()
+        });
+        function GetEValue() {
+            var IDs =$("#ddEarnings_IDs option:selected").attr("Type");;
+            $("#Earnings").val(IDs);
+        }
+
+			function BindTarget(args) {
+			CloseLoadingDialog();
+			$("#TargetDiv").empty();
+			$("#TargetDiv").html(args);
+			$('[data-toggle="tooltip"]').tooltip();
+			$(".applyselect").select2();
+		}
+
+
+
+
+
+	</script>
+}

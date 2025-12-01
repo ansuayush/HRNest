@@ -1,0 +1,49 @@
+﻿@model LeaveReport
+	<div class="table-responsive">
+		<table class="table mt-0">
+			<thead>
+				<tr>
+					<th width="100">Employee Code</th>
+					<th>Employee Name </th>
+					<th width="120">Leave Type </th>
+					<th width="80">Opening </th>
+					<th width="80">Accrual</th>
+					<th width="80">Availed </th>
+					<th width="80">Balance </th>
+
+				</tr>
+			</thead>
+			<tbody>
+				@if (Model.leaveReports != null)
+				{
+					
+					foreach (var item in Model.leaveReports)
+					{
+						
+				<tr>
+					<td>
+						@item.EmpCode
+
+					</td>
+					<td>
+						@item.EmpName
+
+					</td>
+
+					<td>@item.Leave_type</td>
+					<td>@item.Opening</td>
+					<td>@item.Monthly_accrred</td>
+					<td>@item.availed</td>
+					<td>@item.balance</td>
+
+				</tr>
+					}
+				}
+
+
+
+
+			</tbody>
+		</table>
+	</div>
+

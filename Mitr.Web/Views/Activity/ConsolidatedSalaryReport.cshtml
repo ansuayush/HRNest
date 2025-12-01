@@ -1,0 +1,264 @@
+﻿@model Mitr.Models.ConsolidateReport
+@using System.Data;
+@{
+    ViewBag.Title = "Consolidated Salary report";
+}
+@Html.Partial("HeaderMsg_Partial")
+<div class="inner-main">
+    <h1 class="heading-one">Consolidated Salary report</h1>
+
+    @using (Ajax.BeginForm("_ConsolidatedSalaryReport", "Activity",
+        new { src = clsApplicationSetting.EncryptQueryString(ViewBag.MenuID.ToString() + "*/Activity/_ConsolidatedSalaryReport*" + Model.MitrUser + "*" + Model.Date + "*" + Model.ToDate) },
+        new AjaxOptions { HttpMethod = "POST", OnSuccess = "OnSuccess", OnBegin = "ShowLoadingDialog();", OnFailure = "CloseLoadingDialog();" },
+        new
+        {
+            name = "_ConsolidatedSalaryReportForm",
+            id = "_ConsolidatedSalaryReportForm",
+            @class = "form-horizontal form-label-left input_mask",
+            enctype = "multipart/form-data"
+        }))
+    {
+
+        <div class="row">
+            <div class="col-sm-3 hf-575 form-group">
+                <label class="lbl-abs">From Month</label>
+                @Html.TextBoxFor(model => model.Date, new { @class = "form-control actdate h-30", @type = "month" })
+                @Html.ValidationMessageFor(model => model.Date, "", new { @class = "text-danger" })
+            </div>
+            <div class="col-sm-3 hf-575 form-group">
+                <label class="lbl-abs">To Month</label>
+                @Html.TextBoxFor(model => model.ToDate, new { @class = "form-control actdate h-30", @type = "month" })
+                @Html.ValidationMessageFor(model => model.ToDate, "", new { @class = "text-danger" })
+            </div>
+            <div class="col-sm-3 hf-575 form-group">
+                <label class="lbl-abs"> Mitr/Non Mitr </label>
+                @Html.EnumDropDownListFor(model => model.MitrUser, "All", htmlAttributes: new { @class = "form-control applyselect" })
+
+            </div>
+            <div class="col-sm-3 hf-575 form-group">
+                <button type="button" onclick="GetList()" class="btn mtr-g-grn btn-l ripplelink pull-right" name="Command" value="Add"><i class="fas fa-search" aria-hidden="true"></i> Show</button>
+                @*<button type="button" onclick="RefreshSalaryComponentsAmt()" class="btn blk-gdn-btn" name="Command" value="SetComponentAmt"><i class="fas fa-redo-alt"></i>Refresh Reports Data</button>*@
+            </div>
+
+            <div class="col-sm-12 form-group">
+                <div id="TagetDiv">
+                </div>
+            </div>
+        </div>
+
+    }
+
+</div>
+
+
+@section scripts    {
+    @System.Web.Optimization.Scripts.Render("~/bundle/dataTablesjs")
+    <script src="~/assets/design/Scripts/AddInit.js?v=@clsApplicationSetting.GetWebConfigValue("Version")"></script>
+    @System.Web.Optimization.Scripts.Render("~/bundle/unobtrusivejs");
+    <script src="~/assets/tableToExcel.js"></script>
+    <script>
+		//$(document).ready(function () {
+		//	$("#btnVerifyAndSave").click(function () {
+		//		if (ValidateAmt()) {
+		//			$("#btnsave").click();
+
+		//		}
+
+		//	});
+  //      });
+
+        function GetList() {
+           
+            var FDate = $("#Date").val();
+            var TDate = $("#ToDate").val();
+            var MitrUser = $("#MitrUser option:selected").text();
+            ShowLoadingDialog();
+            var Src = EncryptQueryStringJSON(@ViewBag.MenuID+"*" + "/Activity/_ConsolidatedSalaryReport" + "*" + '0' + "*" + '0')
+                 var menuid =@ViewBag.MenuID;
+                    $.ajax({
+                        url: "/Activity/_ConsolidatedSalaryReport",
+                        type: "Get",
+                        async: true,
+                        data: { src: Src, Emptype: MitrUser, FromDate: FDate, ToDate: TDate },
+                        success: function (data) {
+                           
+                            $("#TagetDiv").empty();
+                            $("#TagetDiv").html(data);
+                            CloseLoadingDialog();
+                        },
+                        error: function (er) {
+                            CloseLoadingDialog();
+                            alert(er);
+
+                        }
+                    });
+        }
+      function RefreshSalaryComponentsAmt() {
+            var dt = $("#Date").val();
+            var MitrUser = $("#MitrUser option:selected").text();
+            ShowLoadingDialog();
+          var Src = '';//EncryptQueryStringJSON(@ViewBag.MenuID+"*" + "/Activity/_ConsolidatedSalaryReport" + "*" + '0')
+                 var menuid =@ViewBag.MenuID;
+                    $.ajax({
+						url: "/CommonAjax/RefreshSalaryComponentAmtFromConsolidate",
+                        type: "Post",
+                        async: true,
+                        data: { src: Src, Emptype: MitrUser, Date: dt},
+                        success: function (data) {
+                            if (data > 0) {
+                                SuccessToaster('Refresh Successfully');
+                            }
+                            else
+                            {
+								FailToaster('Not Refreshed.');
+                            }
+                            CloseLoadingDialog();
+                        },
+                        error: function (er) {
+                            CloseLoadingDialog();
+                            alert(er);
+
+            }
+         });
+        }
+        function OnSuccess(obj) {
+            if (obj.Status) {
+                SuccessToaster(obj.SuccessMessage);
+                //  window.location.href = obj.RedirectURL;
+                GetList();
+            }
+            else {
+                CloseLoadingDialog();
+                FailToaster(obj.SuccessMessage);
+
+            }
+        }
+		function ValidateAmt() {
+			var Ret = false;
+			var Msg = "";
+			var Original = 0;
+			var FCRA = 0, FCRA_PF_DEDUCTION = 0, NFCRA_PF_DEDUCTION = 0;
+			var NFCRA = 0;
+			var Empcode = "";
+			var ClassName = "";
+			var obj;
+
+			var ComponentStr = $(".ComponentsList").val();
+			$("#tblProjects TBODY TR").each(function (i) {
+				CheckPFColumn(this);
+				ClassName = "ALPaid";
+				Original = $(this).closest("tr").find("." + ClassName).text();
+				Original = parseFloat(Original.replace(",", ""));
+				FCRA = parseFloat($(this).closest("tr").find(".FCRA_" + ClassName).val());
+				NFCRA = parseFloat($(this).closest("tr").find(".NFCRA_" + ClassName).val());
+				//FCRA_PF_DEDUCTION = parseFloat($(this).closest("tr").find(".FCRA_PF_DEDUCTION").val());
+				//NFCRA_PF_DEDUCTION = parseFloat($(this).closest("tr").find(".NFCRA_PF_DEDUCTION").val());
+				if (isNaN(Original)) { Original = 0; }
+				if (isNaN(NFCRA)) { NFCRA = 0; }
+				if (isNaN(FCRA)) { FCRA = 0; }
+				if (Original != FCRA + NFCRA) {
+					//alert(Original + "#" + FCRA + "#" + NFCRA);
+					Empcode = $(this).closest("tr").find(".Empcode").val();
+					Msg = "Annual Leave paid Not Match in Employee:" + Empcode;
+					//FailToaster("Wrong Input");
+					//$(obj).closest("tr").find(".FCRA_" + ClassName).val(Original);
+					//$(obj).closest("tr").find(".NFCRA_" + ClassName).val(Original);
+					return false;
+				}
+				ClassName = "OT";
+
+
+				Original = $(this).closest("tr").find("." + ClassName).text();
+				Original = parseFloat(Original.replace(",", ""));
+
+				// Original = parseFloat($(this).closest("tr").find("." + ClassName).text());
+				FCRA = parseFloat($(this).closest("tr").find(".FCRA_" + ClassName).val());
+				NFCRA = parseFloat($(this).closest("tr").find(".NFCRA_" + ClassName).val());
+				Empcode = $(this).closest("tr").find(".Empcode").val();
+				if (isNaN(Original)) { Original = 0; }
+				if (isNaN(NFCRA)) { NFCRA = 0; }
+				if (isNaN(FCRA)) { FCRA = 0; }
+				if (Original != FCRA + NFCRA) {
+					//alert(Original + "#" + FCRA +"#"+ NFCRA);
+
+					Msg = "OT Not Match in Employee:" + Empcode;
+					//FailToaster("Wrong Input");
+					//$(obj).closest("tr").find(".FCRA_" + ClassName).val(Original);
+					//$(obj).closest("tr").find(".NFCRA_" + ClassName).val(Original);
+					return false;
+				}
+				if (FCRA_PF_DEDUCTION > 0 && NFCRA_PF_DEDUCTION > 0) {
+					Msg = "Provident Fund can not be in FCRA and Non FCRA in Employee:" + Empcode;
+					return false;
+				}
+
+				obj = this;
+				var Components = ComponentStr.split('#');
+
+				for (var j = 0; j < Components.length; j++) {
+
+					ClassName = Components[j];
+					Original = $(this).closest("tr").find("." + ClassName).text();
+					Original = parseFloat(Original.replace(",", ""));
+
+					//Original = parseFloat($(this).closest("tr").find("." + ClassName).text());
+					FCRA = parseFloat($(this).closest("tr").find(".FCRA_" + ClassName).val());
+					NFCRA = parseFloat($(this).closest("tr").find(".NFCRA_" + ClassName).val());
+					if (isNaN(Original)) { Original = 0; }
+					if (isNaN(FCRA)) { FCRA = 0; }
+					if (isNaN(NFCRA)) { NFCRA = 0; }
+					//alert(Original + "#" + FCRA + "#" + NFCRA);
+					if (Original != FCRA + NFCRA) {
+						Empcode = $(obj).closest("tr").find(".Empcode").val();
+						Msg = " Not Match in Employee:" + Empcode;
+						//FailToaster("Wrong Input");
+						//$(obj).closest("tr").find(".FCRA_" + ClassName).val(Original);
+						//$(obj).closest("tr").find(".NFCRA_" + ClassName).val(Original);
+						return false;
+					}
+
+				}
+
+			});
+
+
+			if (Msg == "") {
+				Ret = true;
+
+			}
+			else {
+				FailToaster(Msg);
+			}
+			return Ret;
+
+		}
+        function CalculateNet(obj)
+        {
+			var NetFCRA = 0, FCRA_SALARY = 0, FCRA_FB = 0, FCRA_OT = 0, FCRA_PF = 0, FCRA_AL=0;
+			var NetNFCRA = 0, NFCRA_SALARY = 0, NFCRA_FB = 0, NFCRA_OT = 0, NFCRA_PF = 0, NFCRA_AL = 0;
+        }
+        function CheckPFColumn(obj)
+        {
+
+			FCRA_PF_DEDUCTION = parseFloat($(obj).closest("tr").find(".FCRA_PF_DEDUCTION").val());
+            NFCRA_PF_DEDUCTION = parseFloat($(obj).closest("tr").find(".NFCRA_PF_DEDUCTION").val());
+			FCRA_PF = parseFloat($(obj).closest("tr").find(".FCRA_PF").val());
+            NFCRA_PF = parseFloat($(obj).closest("tr").find(".NFCRA_PF").val());
+
+            var PF = FCRA_PF > 0 ? FCRA_PF : NFCRA_PF;
+           // alert(FCRA_PF_DEDUCTION + '#' + NFCRA_PF_DEDUCTION + '#' + FCRA_PF + '#' + NFCRA_PF + '#' + PF);
+			if (isNaN(FCRA_PF_DEDUCTION)) { FCRA_PF_DEDUCTION = 0; }
+            if (isNaN(NFCRA_PF_DEDUCTION)) { NFCRA_PF_DEDUCTION = 0; }
+            if (FCRA_PF_DEDUCTION > 0)
+            {
+                $(obj).closest("tr").find(".FCRA_PF").val(PF);
+				$(obj).closest("tr").find(".NFCRA_PF").val('0');
+            }
+			else if (NFCRA_PF_DEDUCTION > 0) {
+				$(obj).closest("tr").find(".FCRA_PF").val('0');
+				$(obj).closest("tr").find(".NFCRA_PF").val(PF);
+			}
+
+        }
+    </script>
+}

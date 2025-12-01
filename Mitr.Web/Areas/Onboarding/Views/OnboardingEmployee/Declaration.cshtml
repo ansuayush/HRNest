@@ -1,0 +1,299 @@
+﻿
+@{
+	ViewBag.Title = "Declaration";
+	Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@model Mitr.Models.Employee.Declaration
+
+@Html.Partial("_EmployeeHeaderOnBoarding")
+
+
+
+<div class="mb-100">
+	<!---->
+	<div class="inner-main mb-5 defult-height">
+
+		@Html.HiddenFor(Model => Model.EmpId)
+		<div class="tab-main mb-5">
+			<ul id="tabs" class="nav nav-tabs " role="tablist">
+				<li class="nav-item"> <a id="tab-A" href="#active-log" onClick="showtable(1);" class="nav-link active ripplelink" data-toggle="tab" role="tab"><i class="fas fa-clock"></i>Pending</a> </li>
+				<li class="nav-item"> <a id="tab-B" href="#leaves" onClick="showtable(2);" class="nav-link ripplelink" data-toggle="tab" role="tab"><i class="fas fa-check"></i>Approved </a></li>
+			</ul>
+			<div id="content" class="tab-content p-0" role="tablist">
+				<div id="active-log" class="card tab-pane fade show active" role="tabpanel" aria-labelledby="tab-A">
+					<div class="card-header" role="tab" id="heading-A">
+						<h5 class="mb-0">
+							<!-- Note: `data-parent` removed from here -->
+							<a data-toggle="collapse" href="#collapse-A" aria-expanded="true" aria-controls="collapse-A"> <i class="fas fa-ticket-alt"></i> Pending </a>
+						</h5>
+					</div>
+
+					<!-- Note: New place of `data-parent` -->
+					
+					<div id="TargetDiv">
+
+					</div>
+
+				</div>
+				<div id="leaves" class="card tab-pane fade" role="tabpanel" aria-labelledby="tab-B">
+					<div class="card-header" role="tab" id="heading-B">
+						<h5 class="mb-0"> <a class="collapsed" data-toggle="collapse" href="#collapse-B" aria-expanded="false" aria-controls="collapse-B"><i class="fa fa-check" aria-hidden="true"></i> Resolved</a> </h5>
+					</div>
+					<div id="TargetDivApproved">
+
+					</div>
+				</div>
+
+			</div>
+		</div>
+
+
+	</div>
+
+</div>
+<div class="modal fade pop-dgn" id="ViewModal">
+	<div class="modal-dialog  modal-lg">
+		<div class="modal-content ">
+
+			<!-- Modal Header -->
+			<div class="modal-header">
+				<h4 class="modal-title"><i class="fas fa-sticky-note"></i>Statement on Drug-free Workplace</h4>
+				<button type="button" class="close" data-dismiss="modal">&times;</button>
+			</div>
+			<input type="hidden" value="" id="hdfId" />
+			<input type="hidden" value="" id="hdfAccept" />
+			<!-- Modal body -->
+			<div class="modal-body p-0">
+				<div class="scroll p-4" id="divContent">
+
+
+				</div>
+
+				<!-- Modal footer -->
+				<div class="p-2 ftr-shw">
+
+
+					<div class="row" id="submit_buttonsdw">
+						<div class="form-group col-sm-12">
+							<label>Remark</label>
+							<textarea class="form-control" id="txtremark" placeholder="Enter"></textarea>
+						</div>
+
+
+						<div class="col-sm-8 align-self-center">
+							<input type="checkbox" class="newwidth acceptchksdw" id="acceptchksdw" name="">
+							<label for="acceptchksdw"> “I acknowledge that I have read the above policy and declaration and understand that abiding by the terms of the policy is a condition of my employment at C3 and any violation of the term(s) of the above policy may result in disciplinary action, which may include termination.”</label>
+						</div>
+						<div class="col-sm-4 text-right">
+							<button type="button" id="btnconfirm" disabled class="btn mtr-g-grn btn-l m-0 checkbtnsdw"><i class="fas fa-check"></i>Submit</button>
+
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+@section scripts    {
+	@System.Web.Optimization.Scripts.Render("~/bundle/unobtrusivejs")
+	<script src="~/assets/design/Scripts/AddInit.js?v=@clsApplicationSetting.GetWebConfigValue("Version")"></script>
+	<script src="~/assets/design/Scripts/ToolTip.js?v=@clsApplicationSetting.GetWebConfigValue("Version")"></script>
+	<script src="~/assets/design/Scripts/ckeditor.js?v=@clsApplicationSetting.GetWebConfigValue("Version")"></script>
+	<script>
+
+    var CandidateId = '@ViewBag.CandidateID';
+		var MenuID = '@ViewBag.MenuID';
+		var EMPID = '@ViewBag.EMPID';
+		var LoginID = '@ViewBag.LoginID';
+	var UserGrade = '@ViewBag.Grade';
+		var IsPM = '@ViewBag.IsPM';
+
+
+	</script>
+	<script>
+		function EmployeemasterConfirmation() {
+			var EmpId = $("#EmpId").val();
+			CommonAjaxMethod(virtualPath + 'OnboardingRequest/UpdateOnboardEmployeeStatus', { id: CandidateId }, 'GET', function (response) {
+				FailToaster(response.data.SuccessMessage);
+				window.location.href = virtualPath + 'Onboarding/UserOnboarding?id=' + CandidateId;
+			});
+		}
+	$(document).ready(function () {
+		showtable(1)
+
+	});
+
+	function showtable(tabname) {
+
+		if (tabname == "1") {
+
+			var EmpId = $("#EmpId").val();
+		
+			ShowLoadingDialog();
+			$.ajax({
+				url: "/OnboardingEmployee/_PendingDeclaration",
+				type: "Get",
+				async: true,
+				data: { src: EncryptQueryStringJSON(@ViewBag.MenuID+"*" + "/OnboardingEmployee/_PendingDeclaration" + "*" + CandidateId + "*" + EMPID + "*" + LoginID) },
+				success: function (data) {
+					
+					$("#TargetDiv").empty();
+					$("#TargetDiv").html(data);
+					CloseLoadingDialog();
+
+
+
+				},
+				error: function (er) {
+					alert(er);
+
+				}
+			});
+
+		}
+		else if (tabname == "2") {
+			var EmpId = $("#EmpId").val();
+			ShowLoadingDialog();
+			$.ajax({
+				url: "/OnboardingEmployee/_ApproveDeclaration",
+				type: "Get",
+				async: true,
+				data: { src: EncryptQueryStringJSON(@ViewBag.MenuID+"*" + "/OnboardingEmployee/_ApproveDeclaration" + "*" + CandidateId + "*" + EMPID + "*" + LoginID) },
+				success: function (data) {
+				
+					$("#TargetDivApproved").empty();
+					$("#TargetDivApproved").html(data);
+					CloseLoadingDialog();
+					//DatatableScriptsWithColumnSearch("ApprovedTable");
+
+
+				},
+				error: function (er) {
+					alert(er);
+
+				}
+			});
+
+
+
+
+		}
+	}
+	$(".acceptchksdw").change(function () {
+
+		if ($(this).is(":checked")) {
+			$("#hdfAccept").val(1);
+		}
+		else {
+			$("#hdfAccept").val(0);
+		}
+	});
+	function btnconfirm() {
+		var Id = $("#hdfId").val();
+		var Accept = $("#hdfAccept").val();
+		var Remark = $("#txtremark").val();
+		if (parseInt(Id) > 0 ) {
+			$.ajax({
+				url: "/CommonAjax/DeclrationApproved",
+				type: "Get",
+				async: true,
+				data: { ID: Id, Accept: Accept, Remark: Remark },
+				success: function (data) {
+					if (data == 1) {
+						SuccessToaster('Declaration Approved successfully');
+						window.location.reload();
+					}
+					else {
+						FailToaster('Can not Approved.')
+					}
+				},
+				error: function (er) {
+					alert(er);
+				}
+			});
+		}
+	}
+	function ShowData(CMSID) {
+
+
+		$("#txtremark").val();
+		$("#hdfId").val();
+		$("#acceptchksdw" + name).prop('checked', false);
+		$("#txtremark").val("");
+		$("#hdfAccept").val();
+		if (CMSID == undefined) {
+			CMSID = 0;
+		}
+		if (CMSID > 0) {
+			$("#ViewModal").modal("show");
+			$("#hdfId").val(CMSID)
+			$('#divContent').html("");
+
+		}
+		$.ajax({
+			url: "/CommonAjax/ShowDeclarationContent",
+			type: "Get",
+			async: true,
+			data: { ID: CMSID },
+			success: function (data) {
+			
+				$("#btnconfirm").prop('disabled', false);
+				$('#divContent').html(data);
+			},
+			error: function (er) {
+				alert(er);
+			}
+		});
+	}
+	function ShowApprovedData(CMSID) {
+
+
+		$("#txtremark").val();
+		$("#hdfId").val();
+		$("#hdfAccept").val();
+		$("#acceptchksdw" + name).prop('checked', false);
+		if (CMSID == undefined) {
+			CMSID = 0;
+		}
+		if (CMSID > 0) {
+			$("#ViewModal").modal("show");
+			$("#hdfId").val(CMSID)
+			$('#divContent').html("");
+
+		}
+		$.ajax({
+			url: "/CommonAjax/ShowDeclarationApprovedContent",
+			type: "Get",
+			async: true,
+			data: { ID: CMSID },
+			success: function (data) {
+
+
+				$('#divContent').html(data.Content);
+				$("#txtremark").val(data.Remark);
+				if (data.Accept == 1) {
+					$("#acceptchksdw" + name).prop('checked', true);
+
+				}
+				$("#btnconfirm").prop('disabled', true);
+			},
+			error: function (er) {
+				alert(er);
+			}
+		});
+	}
+	function OnSuccess(obj) {
+		if (obj.Status) {
+			SuccessToaster(obj.SuccessMessage);
+			window.location.reload();
+		}
+		else {
+			FailToaster(obj.SuccessMessage);
+			CloseLoadingDialog();
+		}
+
+	}
+	</script>
+}
+

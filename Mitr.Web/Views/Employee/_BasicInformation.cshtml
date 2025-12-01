@@ -1,0 +1,727 @@
+﻿@model  Employee.RegistrationDetails
+<div class="tab-pane fade show active" id="bi" role="tabpanel" aria-labelledby="home-tab">
+	<div class="table-responsive">
+		<table class="table td-border-none th-bg-none   m-0">
+			<thead>
+				<tr>
+					<th width="350"></th>
+					@if (ViewBag.status == 1)
+					{
+						@*<th width="250" class="lgt-clr">NEW</th>*@
+						<th class="lgt-clr">OLD</th>
+					}
+					else
+					{
+						<th width="250" class="lgt-clr">OLD</th>
+						<th class="lgt-clr">NEW</th>
+					}
+
+					<th width="10" class="text-center"></th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr>
+					<td colspan="3"><h2 class="headingtwo"><i class="fas fa-university"></i>Bank Account Details for Salary and Benefits </h2></td>
+					@if (ViewBag.status == 0)
+					{
+						<td class="text-center">
+							<input class="cbx-select-group updateDetails" id="selectall" name="BankAcdetail" type="checkbox" value="Salary_@Model.ID" />
+							<label class="m-0" for="selectall" data-toggle="tooltip" title="Select All"></label>
+						</td>
+					}
+				</tr>
+				<tr>
+					<td>Name of the Bank</td>
+					@if (ViewBag.status == 0)
+					{
+						if (Model.SalaryAccount != null)
+						{
+							<td>@Model.SalaryAccount.BankName</td>
+						}
+						else
+						{
+							<td>-</td>
+						}
+
+					}
+
+					@if (Model.SalaryAccountNew != null)
+					{
+						if (Model.SalaryAccountNew.BankName != null)
+						{
+							<td class="fn-bold">@Model.SalaryAccountNew.BankName</td>
+						}
+						else
+						{
+							<td class="fn-bold">-</td>
+						}
+					}
+					@*else if(Model.SalaryAccountNew==null)
+		{
+			<td class="fn-bold">-</td>
+		}*@
+
+					@if (Model.SalaryAccountNew.HRVBankId == 0)
+					{
+						<td class="text-center">
+							<input class="cbx-group-a selectedSallary" id="cbx-group-a-2" type="checkbox" disabled value="Salary_BankId_@Model.ID+@Model.SalaryAccountNew.BankID+@Model.SalaryAccountNew.MUID" />
+							<label class="m-0 ipbdr-none" for="cbx-group-a-2"></label>
+						</td>
+					}
+					else
+					{
+						<td class="text-center">
+							<input class="cbx-group-a" id="cbx-group-a-2" type="checkbox" checked value="Salary_BankId_@Model.ID+@Model.SalaryAccountNew.BankID" />
+							<label class="m-0 ipbdr-none" for="cbx-group-a-2"></label>
+						</td>
+					}
+
+				</tr>
+				<tr>
+					<td>Type of Bank Account</td>
+					@if (ViewBag.status == 0)
+					{
+						if (Model.SalaryAccount != null)
+						{
+							<td>@Model.SalaryAccount.AccountType</td>
+						}
+						else
+						{
+							<td>-</td>
+						}
+
+					}
+
+
+					@if (Model.SalaryAccountNew != null)
+					{
+						if (Model.SalaryAccountNew.AccountType != null)
+						{
+							<td class="fn-bold">@Model.SalaryAccountNew.AccountTypeNew</td>
+						}
+						else
+						{
+							<td class="fn-bold">-</td>
+						}
+					}
+					else
+					{
+						<td class="fn-bold">-</td>
+					}
+					@if (Model.SalaryAccountNew.HRAccountType == 0)
+					{
+
+						<td class="text-center">
+							<input class="cbx-group-a selectedSallary" id="cbx-group-a-3" type="checkbox" disabled value="Salary_AccountType_@Model.ID+@Model.SalaryAccountNew.AccountTypeNew+@Model.SalaryAccountNew.MUID" />
+							<label class="m-0 ipbdr-none" for="cbx-group-a-3"></label>
+						</td>
+					}
+					else
+					{
+						<td class="text-center">
+							<input class="cbx-group-a" id="cbx-group-a-3" type="checkbox" checked value="Salary_AccountType_@Model.ID+@Model.SalaryAccountNew.AccountTypeNew" />
+							<label class="m-0 ipbdr-none" for="cbx-group-a-3"></label>
+						</td>
+					}
+
+				</tr>
+				<tr>
+					<td>Account Title</td>
+
+					@if (ViewBag.status == 0)
+					{
+						if (Model.SalaryAccount != null)
+						{
+							<td>@Model.SalaryAccount.AccountName</td>
+						}
+						else
+						{
+							<td>-</td>
+						}
+
+					}
+
+					@if (Model.SalaryAccountNew != null)
+					{
+						if (Model.SalaryAccountNew.AccountName != null)
+						{
+							<td class="fn-bold">@Model.SalaryAccountNew.AccountName</td>
+						}
+						else
+						{
+							<td class="fn-bold">-</td>
+						}
+					}
+					else
+					{
+						<td class="fn-bold">-</td>
+					}
+					@if (Model.SalaryAccountNew.HRAccountName == 0)
+					{
+						<td class="text-center">
+							<input class="cbx-group-a selectedSallary" id="cbx-group-a-4" type="checkbox" disabled value="Salary_AccountName_@Model.ID+@Model.SalaryAccountNew.AccountName+@Model.SalaryAccountNew.MUID" />
+							<label class="m-0 ipbdr-none" for="cbx-group-a-4"></label>
+						</td>
+					}
+					else
+					{
+						<td class="text-center">
+							<input class="cbx-group-a " id="cbx-group-a-4" type="checkbox" checked value="Salary_AccountName_@Model.ID+@Model.SalaryAccountNew.AccountName" />
+							<label class="m-0 ipbdr-none" for="cbx-group-a-4"></label>
+						</td>
+					}
+				</tr>
+				<tr>
+					<td>Bank Account No.</td>
+
+					@if (ViewBag.status == 0)
+					{
+						<td>@Model.SalaryAccount.AccountNo</td>
+					}
+					@if (Model.SalaryAccountNew != null)
+					{
+						if (Model.SalaryAccountNew.AccountNo != null)
+						{
+							<td class="fn-bold">@Model.SalaryAccountNew.AccountNo</td>
+						}
+						else
+						{
+							<td class="fn-bold">-</td>
+						}
+					}
+					else
+					{
+						<td class="fn-bold">-</td>
+					}
+					@if (Model.SalaryAccountNew.HRVAccountNo == 0)
+					{
+						<td class="text-center">
+							<input class="cbx-group-a selectedSallary" id="cbx-group-a-5" type="checkbox" disabled value="Salary_AccountNo_@Model.ID+@Model.SalaryAccountNew.AccountNo+@Model.SalaryAccountNew.MUID" />
+							<label class="m-0 ipbdr-none" for="cbx-group-a-5"></label>
+						</td>
+					}
+					else
+					{
+						<td class="text-center">
+							<input class="cbx-group-a " id="cbx-group-a-4" type="checkbox" checked value="Salary_AccountNo_@Model.ID+@Model.SalaryAccountNew.AccountNo" />
+							<label class="m-0 ipbdr-none" for="cbx-group-a-4"></label>
+						</td>
+					}
+
+
+				</tr>
+				<tr>
+					<td>Branch Address</td>
+					@if (ViewBag.status == 0)
+					{
+						<td>@Model.SalaryAccount.BranchAddress</td>
+					}
+
+
+					@if (Model.SalaryAccountNew != null)
+					{
+						if (Model.SalaryAccountNew.BranchAddress != null)
+						{
+							<td class="fn-bold">@Model.SalaryAccountNew.BranchAddress</td>
+						}
+						else
+						{
+							<td class="fn-bold">-</td>
+						}
+					}
+					else
+					{
+						<td class="fn-bold">-</td>
+					}
+					@if (Model.SalaryAccountNew.HRVBranchAddress == 0)
+					{
+						<td class="text-center">
+							<input class="cbx-group-a selectedSallary" id="cbx-group-a-6" type="checkbox" disabled value="Salary_BranchAddress_@Model.ID+@Model.SalaryAccountNew.BranchAddress+@Model.SalaryAccountNew.MUID" />
+							<label class="m-0 ipbdr-none" for="cbx-group-a-6"></label>
+						</td>
+					}
+					else
+					{
+						<td class="text-center">
+							<input class="cbx-group-a " id="cbx-group-a-6" type="checkbox" checked value="Salary_BranchAddress_@Model.ID+@Model.SalaryAccountNew.BranchAddress" />
+							<label class="m-0 ipbdr-none" for="cbx-group-a-6"></label>
+						</td>
+					}
+
+				</tr>
+				<tr>
+					<td>IFS Code</td>
+
+
+					@if (ViewBag.status == 0)
+					{
+						<td>@Model.SalaryAccount.IFSCCode</td>
+					}
+					@if (Model.SalaryAccountNew != null)
+					{
+						if (Model.SalaryAccountNew.IFSCCode != null)
+						{
+							<td class="fn-bold">@Model.SalaryAccountNew.IFSCCode</td>
+						}
+						else
+						{
+							<td class="fn-bold">-</td>
+						}
+					}
+					else
+					{
+						<td class="fn-bold">-</td>
+					}
+					@if (Model.SalaryAccountNew.HRVIFSCCode == 0)
+					{
+						<td class="text-center">
+							<input class="cbx-group-a selectedSallary" id="cbx-group-a-7" type="checkbox" disabled value="Salary_IFSCCode_@Model.ID+@Model.SalaryAccountNew.IFSCCode+@Model.SalaryAccountNew.MUID" />
+							<label class="m-0 ipbdr-none" for="cbx-group-a-7"></label>
+						</td>
+					}
+					else
+					{
+						<td class="text-center">
+							<input class="cbx-group-a" id="cbx-group-a-7" type="checkbox" checked value="Salary_IFSCCode_@Model.ID+@Model.SalaryAccountNew.IFSCCode" />
+							<label class="m-0 ipbdr-none" for="cbx-group-a-7"></label>
+						</td>
+					}
+
+				</tr>
+				<tr>
+					<td>SWIFT Code</td>
+
+					@if (ViewBag.status == 0)
+					{
+						<td>@Model.SalaryAccount.SwiftCode</td>
+					}
+
+					@if (Model.SalaryAccountNew != null)
+					{
+						if (Model.SalaryAccountNew.SwiftCode != null)
+						{
+							<td class="fn-bold">@Model.SalaryAccountNew.SwiftCode</td>
+						}
+						else
+						{
+							<td class="fn-bold">-</td>
+						}
+					}
+					else
+					{
+						<td class="fn-bold">-</td>
+					}
+					@if (Model.SalaryAccountNew.HRVSwiftCode == 0)
+					{
+						<td class="text-center">
+							<input class="cbx-group-a selectedSallary" id="cbx-group-a-8" type="checkbox" disabled value="Salary_SwiftCode_@Model.ID+@Model.SalaryAccountNew.SwiftCode+@Model.SalaryAccountNew.MUID" />
+							<label class="m-0 ipbdr-none" for="cbx-group-a-8"></label>
+						</td>
+					}
+					else
+					{
+						<td class="text-center">
+							<input class="cbx-group-a" id="cbx-group-a-8" type="checkbox" checked value="Salary_SwiftCode_@Model.ID+@Model.SalaryAccountNew.SwiftCode" />
+							<label class="m-0 ipbdr-none" for="cbx-group-a-8"></label>
+						</td>
+					}
+
+				</tr>
+				<tr>
+					<td>Other Details</td>
+
+					@if (ViewBag.status == 0)
+					{
+						<td>@Model.SalaryAccount.OtherDetails</td>
+					}
+
+
+					@if (Model.SalaryAccountNew != null)
+					{
+						if (Model.SalaryAccountNew.OtherDetails != null)
+						{
+							<td class="fn-bold">@Model.SalaryAccountNew.OtherDetails</td>
+						}
+						else
+						{
+							<td class="fn-bold">-</td>
+						}
+					}
+					else
+					{
+						<td class="fn-bold">-</td>
+					}
+					@if (Model.SalaryAccountNew.HRVOtherDetails == 0)
+					{
+						<td class="text-center">
+							<input class="cbx-group-a selectedSallary" id="cbx-group-a-9" type="checkbox" disabled value="Salary_OtherDetails_@Model.ID+@Model.SalaryAccountNew.OtherDetails+@Model.SalaryAccountNew.MUID" />
+							<label class="m-0 ipbdr-none" for="cbx-group-a-9"></label>
+						</td>
+					}
+					else
+					{
+						<td class="text-center">
+							<input class="cbx-group-a" id="cbx-group-a-9" type="checkbox" checked value="Salary_OtherDetails_@Model.ID+@Model.SalaryAccountNew.OtherDetails" />
+							<label class="m-0 ipbdr-none" for="cbx-group-a-9"></label>
+						</td>
+					}
+
+				</tr>
+
+				<tr>
+					<td colspan="3"><h2 class="headingtwo"><i class="fas fa-university"></i>Bank Account Details for Official Reimbursement</h2></td>
+					@if (ViewBag.status == 0)
+					{
+						<td class="text-center">
+							<input class="cbx-select-group selectallReimbursement" id="selectallReimbursement" type="checkbox" value="Reimbursement_@Model.ID" />
+							<label class="m-0" for="selectallReimbursement" data-toggle="tooltip" title="Select All"></label>
+						</td>
+					}
+				</tr>
+				<tr>
+					<td>Name of the Bank</td>
+					@if (ViewBag.status == 0)
+					{
+						<td>@Model.ReimbursementAccount.BankName</td>
+					}
+
+
+					@if (Model.ReimbursementAccountNew != null)
+					{
+						if (Model.ReimbursementAccountNew.BankName != null)
+						{
+							<td class="fn-bold">@Model.ReimbursementAccountNew.BankName</td>
+						}
+						else
+						{
+							<td class="fn-bold">-</td>
+						}
+					}
+					else
+					{
+						<td class="fn-bold">-</td>
+					}
+					@if (Model.ReimbursementAccountNew.HRVBankId == 0)
+					{
+						<td class="text-center">
+							<input class="cbx-group-b selectedReimbursement" id="cbx-group-b-12" disabled type="checkbox" value="Reimbursement_BankId_@Model.ID+@Model.ReimbursementAccountNew.BankID+@Model.ReimbursementAccountNew.MUID" />
+							<label class="m-0 ipbdr-none" for="cbx-group-b-12"></label>
+						</td>
+					}
+					else
+					{
+						<td class="text-center">
+							<input class="cbx-group-b " id="cbx-group-b-12" checked type="checkbox" value="Reimbursement_BankId_@Model.ID+@Model.ReimbursementAccountNew.BankID" />
+							<label class="m-0 ipbdr-none" for="cbx-group-b-12"></label>
+						</td>
+					}
+
+				</tr>
+				<tr>
+					<td>Type of Bank Account</td>
+					@if (ViewBag.status == 0)
+					{
+						<td>@Model.ReimbursementAccount.AccountType</td>
+					}
+
+
+					@if (Model.ReimbursementAccountNew != null)
+					{
+						if (Model.ReimbursementAccountNew.AccountType != null)
+						{
+							<td class="fn-bold">@Model.ReimbursementAccountNew.AccountTypeNew</td>
+						}
+						else
+						{
+							<td class="fn-bold">-</td>
+						}
+					}
+					else
+					{
+						<td class="fn-bold">-</td>
+					}
+					@if (Model.ReimbursementAccountNew.HRAccountType == 0)
+					{
+						<td class="text-center">
+							<input class="cbx-group-b selectedReimbursement" id="cbx-group-b-13" disabled type="checkbox" value="Reimbursement_AccountTypeNew_@Model.ID+@Model.ReimbursementAccountNew.AccountTypeNew+@Model.ReimbursementAccountNew.MUID" />
+							<label class="m-0 ipbdr-none" for="cbx-group-b-13"></label>
+						</td>
+					}
+					else
+					{
+						<td class="text-center">
+							<input class="cbx-group-b" id="cbx-group-b-13" checked type="checkbox" value="Reimbursement_AccountTypeNew_@Model.ID+@Model.ReimbursementAccountNew.AccountTypeNew" />
+							<label class="m-0 ipbdr-none" for="cbx-group-b-13"></label>
+						</td>
+					}
+
+				</tr>
+				<tr>
+					<td>Account Title</td>
+					@if (ViewBag.status == 0)
+					{
+						<td>@Model.ReimbursementAccount.AccountName</td>
+					}
+
+
+					@if (Model.ReimbursementAccountNew != null)
+					{
+						if (Model.ReimbursementAccountNew.AccountName != null)
+						{
+							<td class="fn-bold">@Model.ReimbursementAccountNew.AccountName</td>
+						}
+						else
+						{
+							<td class="fn-bold">-</td>
+						}
+					}
+					else
+					{
+						<td class="fn-bold">-</td>
+					}
+					@if (Model.ReimbursementAccountNew.HRAccountName == 0)
+					{
+						<td class="text-center">
+							<input class="cbx-group-b selectedReimbursement" id="cbx-group-b-14" disabled type="checkbox" value="Reimbursement_AccountName_@Model.ID+@Model.ReimbursementAccountNew.AccountName+@Model.ReimbursementAccountNew.MUID" />
+							<label class="m-0 ipbdr-none" for="cbx-group-b-14"></label>
+						</td>
+					}
+					else
+					{
+						<td class="text-center">
+							<input class="cbx-group-b" id="cbx-group-b-14" checked type="checkbox" value="Reimbursement_AccountName_@Model.ID+@Model.ReimbursementAccountNew.AccountName" />
+							<label class="m-0 ipbdr-none" for="cbx-group-b-14"></label>
+						</td>
+					}
+
+				</tr>
+				<tr>
+					<td>Bank Account No.</td>
+					@if (ViewBag.status == 0)
+					{
+						<td>@Model.ReimbursementAccount.AccountNo</td>
+					}
+
+
+					@if (Model.ReimbursementAccountNew != null)
+					{
+						if (Model.ReimbursementAccountNew.AccountNo != null)
+						{
+							<td class="fn-bold">@Model.ReimbursementAccountNew.AccountNo</td>
+						}
+						else
+						{
+							<td class="fn-bold">-</td>
+						}
+					}
+					else
+					{
+						<td class="fn-bold">-</td>
+					}
+					@if (Model.ReimbursementAccountNew.HRVAccountNo == 0)
+					{
+						<td class="text-center">
+							<input class="cbx-group-b selectedReimbursement" id="cbx-group-b-15" disabled type="checkbox" value="Reimbursement_AccountNo_@Model.ID+@Model.ReimbursementAccountNew.AccountNo+@Model.ReimbursementAccountNew.MUID" />
+							<label class="m-0 ipbdr-none" for="cbx-group-b-15"></label>
+						</td>
+					}
+					else
+					{
+						<td class="text-center">
+							<input class="cbx-group-b" id="cbx-group-b-15" checked type="checkbox" value="Reimbursement_AccountNo_@Model.ID+@Model.ReimbursementAccountNew.AccountNo" />
+							<label class="m-0 ipbdr-none" for="cbx-group-b-15"></label>
+						</td>
+					}
+
+				</tr>
+				<tr>
+					<td>Branch Address</td>
+
+					@if (ViewBag.status == 0)
+					{
+						<td>@Model.ReimbursementAccount.BranchAddress</td>
+					}
+
+					@if (Model.ReimbursementAccountNew != null)
+					{
+						if (Model.ReimbursementAccountNew.BranchAddress != null)
+						{
+							<td class="fn-bold">@Model.ReimbursementAccountNew.BranchAddress</td>
+						}
+						else
+						{
+							<td class="fn-bold">-</td>
+						}
+					}
+					else
+					{
+						<td class="fn-bold">-</td>
+					}
+					@if (Model.ReimbursementAccountNew.HRVBranchAddress == 0)
+					{
+						<td class="text-center">
+							<input class="cbx-group-b selectedReimbursement" id="cbx-group-b-16" disabled type="checkbox" value="Reimbursement_BranchAddress_@Model.ID+@Model.ReimbursementAccountNew.BranchAddress+@Model.ReimbursementAccountNew.MUID" />
+							<label class="m-0 ipbdr-none" for="cbx-group-b-16"></label>
+						</td>
+					}
+					else
+					{
+						<td class="text-center">
+							<input class="cbx-group-b" id="cbx-group-b-16" checked type="checkbox" value="Reimbursement_BranchAddress_@Model.ID+@Model.ReimbursementAccountNew.BranchAddress" />
+							<label class="m-0 ipbdr-none" for="cbx-group-b-16"></label>
+						</td>
+					}
+
+				</tr>
+				<tr>
+					<td>IFS Code</td>
+
+					@if (ViewBag.status == 0)
+					{
+						<td>@Model.ReimbursementAccount.IFSCCode</td>
+					}
+
+					@if (Model.ReimbursementAccountNew != null)
+					{
+						if (Model.ReimbursementAccountNew.IFSCCode != null)
+						{
+							<td class="fn-bold">@Model.ReimbursementAccountNew.IFSCCode</td>
+						}
+						else
+						{
+							<td class="fn-bold">-</td>
+						}
+					}
+					else
+					{
+						<td class="fn-bold">-</td>
+					}
+					@if (Model.ReimbursementAccountNew.HRVIFSCCode == 0)
+					{
+						<td class="text-center">
+							<input class="cbx-group-b selectedReimbursement" disabled id="cbx-group-b-17" type="checkbox" value="Reimbursement_IFSCCode_@Model.ID+@Model.ReimbursementAccountNew.IFSCCode+@Model.ReimbursementAccountNew.MUID" />
+							<label class="m-0 ipbdr-none" for="cbx-group-b-17"></label>
+						</td>
+					}
+					else
+					{
+						<td class="text-center">
+							<input class="cbx-group-b" checked id="cbx-group-b-17" type="checkbox" value="Reimbursement_IFSCCode_@Model.ID+@Model.ReimbursementAccountNew.IFSCCode" />
+							<label class="m-0 ipbdr-none" for="cbx-group-b-17"></label>
+						</td>
+					}
+
+				</tr>
+				<tr>
+					<td>SWIFT Code</td>
+
+
+					@if (ViewBag.status == 0)
+					{
+						<td>@Model.ReimbursementAccount.SwiftCode</td>
+					}
+					@if (Model.ReimbursementAccountNew != null)
+					{
+						if (Model.ReimbursementAccountNew.SwiftCode != null)
+						{
+							<td class="fn-bold">@Model.ReimbursementAccountNew.SwiftCode</td>
+						}
+						else
+						{
+							<td class="fn-bold">-</td>
+						}
+					}
+					else
+					{
+						<td class="fn-bold">-</td>
+					}
+					@if (Model.ReimbursementAccountNew.HRVSwiftCode == 0)
+					{
+						<td class="text-center">
+							<input class="cbx-group-b selectedReimbursement" disabled id="cbx-group-b-18" type="checkbox" value="Reimbursement_SwiftCode_@Model.ID+@Model.ReimbursementAccountNew.SwiftCode+@Model.ReimbursementAccountNew.MUID" />
+							<label class="m-0 ipbdr-none" for="cbx-group-b-18"></label>
+						</td>
+					}
+					else
+					{
+						<td class="text-center">
+							<input class="cbx-group-b" checked id="cbx-group-b-18" type="checkbox" value="Reimbursement_SwiftCode_@Model.ID+@Model.ReimbursementAccountNew.SwiftCode" />
+							<label class="m-0 ipbdr-none" for="cbx-group-b-18"></label>
+						</td>
+					}
+
+				</tr>
+				<tr>
+					<td>Other Details</td>
+
+
+					@if (ViewBag.status == 0)
+					{
+						<td>@Model.ReimbursementAccount.OtherDetails</td>
+					}
+					@if (Model.ReimbursementAccountNew != null)
+					{
+						if (Model.ReimbursementAccountNew.OtherDetails != null)
+						{
+							<td class="fn-bold">@Model.ReimbursementAccountNew.OtherDetails</td>
+						}
+						else
+						{
+							<td class="fn-bold">-</td>
+						}
+					}
+					else
+					{
+						<td class="fn-bold">-</td>
+					}
+					@if (Model.ReimbursementAccountNew.HRVOtherDetails == 0)
+					{
+						<td class="text-center">
+							<input class="cbx-group-b selectedReimbursement" disabled id="cbx-group-b-19" type="checkbox" value="Reimbursement_OtherDetails_@Model.ID+@Model.ReimbursementAccountNew.OtherDetails+@Model.ReimbursementAccountNew.MUID" />
+							<label class="m-0 ipbdr-none" for="cbx-group-b-19"></label>
+						</td>
+					}
+					else
+					{
+						<td class="text-center">
+							<input class="cbx-group-b" checked id="cbx-group-b-19" type="checkbox" value="Reimbursement_OtherDetails_@Model.ID+@Model.ReimbursementAccountNew.OtherDetails" />
+							<label class="m-0 ipbdr-none" for="cbx-group-b-19"></label>
+						</td>
+					}
+
+				</tr>
+
+
+			</tbody>
+		</table>
+	</div>
+
+
+</div>
+
+
+
+<script>
+	$('#selectall').click(function () {
+		debugger;
+		var someObj = {};
+		someObj.NochkId = [];
+		someObj.ChkId = [];
+		if (this.checked) {
+			$('.checkbox').each(function () {
+				this.checked = true;
+			});
+		} else {
+			$('.checkbox').each(function () {
+				this.checked = false;
+			});
+		}
+		$('.selectedSallary').prop('checked', this.checked);
+	});
+	$('#selectallReimbursement').click(function () {
+		var someObj = {};
+		someObj.NochkId = [];
+		someObj.ChkId = [];
+		$('.selectedReimbursement').prop('checked', this.checked);
+	});
+</script>

@@ -1,0 +1,88 @@
+﻿@using System.Data
+@model DataSet
+@{
+    long loginEMPID = 0;
+    long.TryParse(clsApplicationSetting.GetSessionValue("EMPID"), out loginEMPID);
+}
+<div class="x_content table-currency mt-2">
+    <div class="table-responsive">
+        <table id="tableLeave" class="table table-striped table-bordered dt-responsive nowrap tbltick new_width" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
+            <thead>
+                <tr>
+                    <th width="30">S.No.</th>
+                    <th width="60">Doc No</th>
+                    <th  >Request Date</th>
+                    <th  >Start Date</th>
+                    <th  >End Date</th>
+                    <th width="70"  >Leave Hours</th>
+                    <th  >Leave Name</th>
+                    <th  width="100">Action</th>
+                </tr>
+                <tr class="searchbar">
+                    <th class="searchhide"> </th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    <th class="searchhide"> </th>
+                </tr>
+            </thead>
+            <tbody>
+                @{ int Count = 0;}
+                @foreach (DataRow item in Model.Tables[0].Rows)
+                {
+                    Count++;
+                <tr>
+                    <td>
+                        @Count
+                    </td>
+                    <td> @item["doc_no"]</td>
+                    <td> @Convert.ToDateTime(item["Request_Date"]).ToString("dd-MMM-yyyy")</td>
+                    <td> @Convert.ToDateTime(item["Start_Date"]).ToString("dd-MMM-yyyy")</td>
+                    <td> @Convert.ToDateTime(item["End_Date"]).ToString("dd-MMM-yyyy")</td>
+                    <td> @item["hoursDayWise"]</td>
+                    <td>
+                        @item["leave_name"]
+                        @if (Convert.ToInt32(item["RFC"]) > 0)
+                        {
+                            <div class="rfcRequestdiv td-rfc">
+                                <span class="badge" data-toggle="tooltip" data-original-title="Request for cancellation">RFC</span>
+                            </div>
+                        }
+                    </td>
+                    <td class="text-right">
+                        
+                            <input type="hidden" name="AR" value="@item["AttachmentRequired"]" />
+                            <input type="hidden" name="L" value="@item["ID"]" />
+                            <input type="hidden" name="E" value="@item["EMP_ID"]" />
+                            <input type="hidden" name="EN" value="@item["EMP_Name"]" />
+                            <input type="hidden" name="EC" value="@item["EMP_Code"]" />
+                            <input type="hidden" name="D" value="@item["Start_Date"]" />
+                            <input type="hidden" name="DocNo" value="@item["Doc_No"]" />
+                            <input type="hidden" name="LE" value="@(loginEMPID==Convert.ToInt64(item["EMP_ID"])?"Y":"N")" />
+
+                            
+                            @if (item["IsDailyLogApproved"].ToString() == "N" && Convert.ToInt32(item["RFC"]) == 0 && (Convert.ToInt32(item["Approved"]) == 3 || Convert.ToInt32(item["Approved"]) == 0))
+                            {
+                                <a class="btn-c RFCRequest" data-toggle="tooltip" data-original-title="Cancel your approved leave"><i class="fa fa-times red-clr"></i></a>
+                            }
+                            @if (Convert.ToInt32(item["AttachmentRequired"]) > 0)
+                            {
+                                <a class="btn-c aLeaveAttachment" data-toggle="tooltip" data-original-title="Attach Medical or fitness certificate"><i class="fa fa-paperclip"></i></a>
+                            }
+                            @if (Convert.ToInt32(item["Approved"]) == 0)
+                            {
+                                <a class="btn-c deleteRequest" data-toggle="tooltip" data-original-title="Delete your leave request"><i class="fas fa-trash-alt red-clr"></i></a>
+                            }
+                            <a class="btn-g anchorpopup" data-toggle="tooltip" data-original-title="View your leave request"><i class="fas fa-ellipsis-h"></i></a>
+                        
+                    </td>
+                </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+<script src="~/assets/design/Scripts/PagesJS/LeaveDashboard.js?v=@clsApplicationSetting.GetWebConfigValue("Version")"></script>

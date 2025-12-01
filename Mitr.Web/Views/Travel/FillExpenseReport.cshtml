@@ -1,0 +1,1689 @@
+﻿@model Mitr.Models.TravelExpenseCompleteRequest
+
+@{
+	ViewBag.Title = "FillExpenseReport";
+	string MenuID = ViewBag.MenuID.ToString();
+
+	string fdate = string.Empty;
+	string ldate = string.Empty;
+	if (Model.BPERDIEM != null)
+	{
+		for (int i = 0; i < Model.BPERDIEM.Count; i++)
+		{
+
+			fdate = Model.BPERDIEM.Where(x => x.Status == "Working").Select(x => x.Date).FirstOrDefault();
+			ldate = Model.BPERDIEM.Where(x => x.Status == "Working").Select(x => x.Date).LastOrDefault();
+		}
+	}
+
+	var dates = new List<DateTime>();
+	List<BPERDIEM> Bperdiemnewlist = new List<BPERDIEM>();
+
+
+	for (var dt = Convert.ToDateTime(fdate); dt <= Convert.ToDateTime(ldate); dt = dt.AddDays(1))
+	{
+		BPERDIEM obj = new BPERDIEM();
+		obj.CheckDate = dt;
+		Bperdiemnewlist.Add(obj);
+	}
+}
+
+
+<div class="inner-main mb-5">
+	<h1 class="heading-one mb-0">Travel Expense Report(TER)</h1>
+	<ul class="list-unstyled trl-rq">
+		<li>TER No : @Model.TravelExpense.TRPN</li>
+
+		<li>TR No : @Model.TravelExpense.NewReqNo</li>
+
+		<li>
+			Traveler’s Name: @Model.TravelExpense.TravellerName
+		</li>
+	</ul>
+
+
+
+
+	<div class="row">
+		<div class="col-sm-12">
+			<strong>Project Details</strong>
+			<table class="table table-striped mt-0 mb-0">
+				<thead>
+					<tr>
+						<th width="33">S.No.</th>
+						<th>Project Name </th>
+						<th>Cost Centre </th>
+					</tr>
+				</thead>
+				<tbody>
+					@{ int ProjectCount = 0;}
+					@foreach (var item in Model.ProjectList)
+					{
+						ProjectCount++;
+						<tr>
+							<td>@ProjectCount</td>
+							<td>@item.Proj_name</td>
+							<td> @item.costcenter_Name </td>
+						</tr>
+					}
+
+				</tbody>
+			</table>
+		</div>
+	</div>
+	<hr class="mt-2" />
+	<ul class="list-unstyled radio-btn" id="divradio">
+
+		<li class="radio">
+			<label class="sz-md"><strong>Do you want to distribute expense equally ? </strong> </label>
+		</li>
+		@if (ViewBag.projectcout == 1)
+		{
+			<li class="radio">
+				<input type="radio" id="yesdistrubute" name="yesdistrubute" value="yesdistrubute" disabled>
+				<label for="yesdistrubute" class="radio-label">Yes</label>
+			</li>
+			<li class="radio">
+				<input type="radio" id="nodistrubute" name="nodistrubute" value="nodistrubute" disabled>
+				<label for="nodistrubute" class="radio-label">No</label>
+			</li>
+		}
+		else
+		{
+			<li class="radio">
+				<input type="radio" id="yesdistrubute" name="yesdistrubute" value="yesdistrubute">
+				<label for="yesdistrubute" class="radio-label">Yes</label>
+			</li>
+			<li class="radio">
+				<input type="radio" id="nodistrubute" name="nodistrubute" value="nodistrubute">
+				<label for="nodistrubute" class="radio-label">No</label>
+			</li>
+		}
+
+	</ul>
+	<hr class="mt-2" />
+	<div class="card multicard mb-0">
+		<div class="card-header blk-gdn-btn ">
+			<div><i class="fas fa-ticket-alt"></i> A - Travel Fare</div>
+		</div>
+		<div class="card-body p-0">
+
+
+			<div class="table-responsive table-box">
+				@{Html.RenderPartial("_ATravelFare", Model.ATRAVELFARE);}
+				@if (Model.TravelExpense.StaffId > 0)
+				{
+					<p><strong>Some of the ticket booked by the staff make sure you are claiming the same</strong></p>
+				}
+
+			</div>
+
+		</div>
+	</div>
+
+	@using (Ajax.BeginForm("FillExpenseReport", "Travel",
+			  new { src = ViewBag.src },
+			  new AjaxOptions { HttpMethod = "POST", OnSuccess = "OnSuccessAction", OnFailure = "OnSuccessAction" },
+		  new { @id = "FillExpenseReportFrom", enctype = "multipart/form-data" })
+		  )
+	{
+		@Html.AntiForgeryToken()
+		@Html.HiddenFor(x => Model.TravelExpense.Expensedistrubute_status)
+		@Html.HiddenFor(x => Model.TravelExpense.TravellerName)
+		@Html.HiddenFor(x => Model.TravelExpense.TRPN)
+		@Html.HiddenFor(x => Model.TravelExpense.ReqNo)
+		<div class="card multicard mb-2">
+			<div class="card-header blk-gdn-btn ">
+				<div><i class="fas fa-ticket-alt"></i> B - PER DIEM</div>
+			</div>
+			<div class="card-body p-0">
+				<div class="table-responsive table-box">
+					<table class="table table-striped mb-0" id="tblBPerDiem">
+						<thead>
+							<tr>
+								<th width="33">S.No.</th>
+								<th width="80"><i class="far fa-calendar-alt"></i>Date </th>
+								<th width="200"><i class="fas fa-map-marker"></i>Name of City </th>
+								<th width="200"><i class="fas fa-map-marker"></i>Class of City </th>
+								<th width="300"><i class="fas fa-map-marker"></i>Project Name</th>
+								<th width="100"><i class="fas fa-utensils"></i>Free Meal/Others </th>
+								<th width="120"><i class="fas fa-star"></i>Per Diem Rate </th>
+								<th width="100"><i class="fas fa-rupee-sign"></i>Amount(Rs.)</th>
+							</tr>
+						</thead>
+						<tbody>
+						<tbody>
+							@if (Model.BPERDIEM != null)
+							{
+								int countBPERDIEM = 0;
+								int NewcountBPERDIEM = 0;
+								for (int i = 0; i < Model.BPERDIEM.Count; i++)
+								{
+									DateTime dateTime = Convert.ToDateTime(Model.BPERDIEM[i].Date);
+									countBPERDIEM++;
+									//var fdate = Model.BPERDIEM.Where(x => x.Status == "Working").Select(x => x.Date).FirstOrDefault();
+									//var ldate = Model.BPERDIEM.Where(x => x.Status == "Working").Select(x => x.Date).LastOrDefault();
+									<tr>
+										<td>
+											<label id="Bspan_@countBPERDIEM" name="Bspan_@countBPERDIEM">@countBPERDIEM </label>
+											<input type="hidden" class="hdnIndexValue" value="@countBPERDIEM" />
+										</td>
+										<td>
+											@dateTime.ToString("dd/MM/yyyy")
+											@Html.HiddenFor(x => x.BPERDIEM[i].Date)
+
+											@for (int y = NewcountBPERDIEM; y < Bperdiemnewlist.Count; y++)
+											{
+												if (dateTime == Bperdiemnewlist[y].CheckDate && Model.BPERDIEM[i].Status == "Working" && (NewcountBPERDIEM == 0 || Bperdiemnewlist.Count == NewcountBPERDIEM + 1))
+												{
+													<input type="hidden" class="hdnFirstLast" value="0.75" />
+													NewcountBPERDIEM++;
+													break;
+												}
+												else if (dateTime == Bperdiemnewlist[y].CheckDate)
+												{
+													<input type="hidden" class="hdnFirstLast" value="0" />
+													NewcountBPERDIEM++;
+													break;
+												}
+
+											}
+											@if (Model.BPERDIEM[i].Status == "WeeklyOff")
+											{
+												<input type="hidden" class="hdnFirstLast" value="1.1" />
+											}
+											else
+											{
+												<input type="hidden" class="hdnFirstLast" value="1.2" />
+											}
+
+											@*@if (countBPERDIEM == 1 && Model.BPERDIEM[i].Status == "Working")
+												{
+													<input type="hidden" class="hdnFirstLast" value="0.75" />
+												}
+												else if (countBPERDIEM == Model.BPERDIEM.Count && Model.BPERDIEM[i].Status == "Working")
+												{
+													<input type="hidden" class="hdnFirstLast" value="0.75" />
+												}
+												else
+												{
+													<input type="hidden" class="hdnFirstLast" value="0" />
+												}*@
+											@*<input type="hidden" class="hdnFirstLast" value="@(countBPERDIEM == 1 || countBPERDIEM == Model.BPERDIEM.Count ? "0.75" : "0" )" />*@
+										</td>
+										<td>
+											@Model.BPERDIEM[i].CityName
+											@Html.HiddenFor(x => x.BPERDIEM[i].CityName)
+										</td>
+										<td>
+											@Model.BPERDIEM[i].ClassofCity
+											@Html.HiddenFor(x => x.BPERDIEM[i].ClassofCity)
+										</td>
+										<td class="divBperdiem">
+											@*@if (Model.BPERDIEM[i].ProjectID == 0)
+												{
+													<select id="@Html.IdFor(model => model.BPERDIEM[i].ProjectID)" name="@Html.NameFor(model => model.BPERDIEM[i].ProjectID))" class="form-control applyselect ddlBperdiemProjectId">
+														@foreach (var item in Model.ProjectList)
+														{
+
+															<option kmrate="@item.proReqDet_ID" value="@item.ProjectID">@item.LineItem</option>
+														}
+													</select>
+												}
+												else
+												{
+													<select id="@Html.IdFor(model => model.BPERDIEM[i].ProjectID)" name="@Html.NameFor(model => model.BPERDIEM[i].ProjectID)" class="form-control applyselect ddlBperdiemProjectId">
+														@foreach (var item in Model.ProjectList)
+														{
+
+															<option kmrate="@item.proReqDet_ID" @(item.ProjectID == Model.BPERDIEM[i].ProjectID ? "selected" : "") value="@item.ProjectID">@item.LineItem</option>
+														}
+													</select>
+												}*@
+											@Html.DropDownListFor(model => model.BPERDIEM[i].ProjectID, new SelectList(Model.ProjectList, "ProjectID", "LineItem", Model.BPERDIEM[i].ProjectID), new { @class = "form-control applyselect ddlBperdiemProjectId" })
+
+											@Html.ValidationMessageFor(model => model.BPERDIEM[i].ProjectID, "", new { @class = "text-danger" })
+										</td>
+										<td>
+											@if (Model.BPERDIEM[i].FreeMealID == 0)
+											{
+												int count = 0;
+
+												<select id="@Html.IdFor(model => model.BPERDIEM[i].FreeMealID)" name="@Html.NameFor(model => model.BPERDIEM[i].FreeMealID)" class="form-control applyselect BFreemealDD">
+													@foreach (var item in Model.FreemealList)
+													{
+														if (Model.BPERDIEM[i].LeaveYes > 0)
+														{
+															var datafree = Model.FreemealList.Where(x => x.Name == "leave (100 %)").FirstOrDefault();
+															<option percentage="@datafree.Percantage" @(datafree.isDefault == 1 ? "selected" : datafree.ID == Model.BPERDIEM[i].FreeMealID ? "selected" : "") value="@datafree.ID">@datafree.Name</option>
+														}
+														else if (Model.BPERDIEM[i].Status == "WeeklyOff" && count==0 && item.Name== "Holiday/ Saturday/ Sunday (100 %)")
+														{
+
+															var datafree = Model.FreemealList.Where(x => x.Name == "Holiday/ Saturday/ Sunday (100 %)").FirstOrDefault();
+															<option percentage="@datafree.Percantage" @(datafree.isDefault == 0? "selected" : datafree.ID == Model.BPERDIEM[i].FreeMealID ? "selected" : "") value="@datafree.ID">@datafree.Name</option>
+															count++;
+														}
+														else
+														{
+															<option percentage="@item.Percantage" @(item.isDefault == 1 ? "selected" : item.ID == Model.BPERDIEM[i].FreeMealID ? "selected" : "") value="@item.ID">@item.Name</option>
+														}
+
+													}
+												</select>
+											}
+											else
+											{
+												int count = 0;
+										<select id="@Html.IdFor(model => model.BPERDIEM[i].FreeMealID)" name="@Html.NameFor(model => model.BPERDIEM[i].FreeMealID)" class="form-control applyselect BFreemealDD">
+											@foreach (var item in Model.FreemealList)
+											{
+												if (Model.BPERDIEM[i].LeaveYes > 0)
+												{
+													var datafree = Model.FreemealList.Where(x => x.Name == "leave (100 %)").FirstOrDefault();
+													<option percentage="@datafree.Percantage" @(datafree.isDefault == 1 ? "selected" : datafree.ID == Model.BPERDIEM[i].FreeMealID ? "selected" : "") value="@datafree.ID">@datafree.Name</option>
+												}
+												
+												else
+												{
+													<option percentage="@item.Percantage" @(item.ID == Model.BPERDIEM[i].FreeMealID ? "selected" : "") value="@item.ID">@item.Name</option>
+												}
+
+											}
+										</select>
+											}
+
+
+											@Html.ValidationMessageFor(model => model.BPERDIEM[i].FreeMealID, "", new { @class = "text-danger" })
+										</td>
+										<td>
+											<span class="spnperdiemrate text-right"> @Model.BPERDIEM[i].PerDiemRate</span>
+											@Html.HiddenFor(x => x.BPERDIEM[i].PerDiemRate)
+										</td>
+										<td>
+
+											@Html.TextBoxFor(model => model.BPERDIEM[i].Amount, new { @class = "form-control bAmount text-right", @readonly = "Readonly" })
+											@*<label>@Model.BPERDIEM[i].Amount</label>*@
+											@*@Html.TextBoxFor(model => model.BPERDIEM[i].Amount, new { @class = "form-control bAmount text-right"})*@
+											@Html.ValidationMessageFor(model => model.BPERDIEM[i].Amount, "", new { @class = "text-danger" })
+										</td>
+									</tr>
+								}
+							}
+						
+
+						</tbody>
+					</table>
+					<div class="p-1"><small><strong>As per the organization policy the applicable per diem rate for first and last day of the travel is 75% of the normal per diem rate.</strong> </small></div>
+				</div>
+
+			</div>
+		</div><div class="card multicard mb-2">
+			<div class="card-header blk-gdn-btn ">
+				<div><i class="fas fa-bus"></i> C - TRANSPORTATION</div>
+			</div>
+			<div class="card-body p-0">
+				<div class="table-responsive table-box">
+					<table class="table table-striped" id="tblTransport">
+						<thead>
+							<tr>
+								<th width="33">S.No.</th>
+								<th>Project </th>
+								<th><i class="far fa-calendar-alt"></i> Date </th>
+								<th><i class="fas fa-bus"></i> Mode of Transport </th>
+								<th><i class="fas fa-info-circle"></i> Details </th>
+								<th><i class="fas fa-paperclip"></i> Attachment No </th>
+								<th><i class="fas fa-suitcase"></i> Travel KM </th>
+								<th><i class="fas fa-map-marker-alt"></i> KM</th>
+								<th width="100"><i class="fas fa-rupee-sign"></i>Amount(Rs.)</th>
+								<th width="50">Action</th>
+							</tr>
+						</thead>
+						<tbody>
+
+							@if (Model.CTRANSPORTATION != null)
+							{
+								int countTransport = 0;
+								PerKM obj = new PerKM();
+								obj.Id = 0;
+								obj.VehicleType = "Select";
+								Model.PerKMList.Insert(0, obj);
+								for (int i = 0; i < Model.CTRANSPORTATION.Count; i++)
+								{
+									countTransport++;
+									<tr>
+										<td>
+											<label id="span_@countTransport" name="span_@countTransport">@countTransport </label>
+										</td>
+										<td class="divCtrans">
+											@Html.DropDownListFor(model => model.CTRANSPORTATION[i].ProjectID, new SelectList(Model.ProjectList, "ProjectID", "LineItem", Model.CTRANSPORTATION[i].ProjectID), new { @class = "form-control applyselect ddlCtransProjectId" })
+											@Html.ValidationMessageFor(model => model.CTRANSPORTATION[i].ProjectID, "", new { @class = "text-danger" })
+										</td>
+										<td>
+											@Html.TextBoxFor(model => model.CTRANSPORTATION[i].Date, new { @class = "form-control transdate", @type = "date" })
+											@Html.ValidationMessageFor(model => model.CTRANSPORTATION[i].Date, "", new { @class = "text-danger" })
+
+
+										</td>
+										<td>
+											@{
+												List<SelectListItem> ModeOfTransport = new List<SelectListItem>
+																																																																																																																																																																																																																																																																																																																																																																																																																																															{
+												new SelectListItem{Text="Hired Taxi",Value="Hired Taxi" },
+												new SelectListItem{Text="Hired two wheeler",Value="Hired two wheeler" },
+												new SelectListItem{Text="Self two wheeler",Value="Self two wheeler" },
+													new SelectListItem{Text="Self four wheeler",Value="Self four wheeler" }
+												};
+
+											}
+											@*@Html.DropDownListFor(model => model.CTRANSPORTATION[i].ModeOfTransport, new SelectList(ModeOfTransport, "Value", "text", Model.CTRANSPORTATION[i].ModeOfTransport), new { @class = "form-control applyselect" })*@
+											@if (Model.CTRANSPORTATION[i].TransportId == 0)
+											{
+												<select id="@Html.IdFor(model => model.CTRANSPORTATION[i].TransportId)" name="@Html.NameFor(model => model.CTRANSPORTATION[i].TransportId))" class="form-control applyselect CModeOfTransportDD">
+													@foreach (var item in Model.PerKMList)
+													{
+
+														<option kmrate="@item.KMRate" value="@item.Id">@item.VehicleType</option>
+													}
+												</select>
+											}
+											else
+											{
+												<select id="@Html.IdFor(model => model.CTRANSPORTATION[i].TransportId)" name="@Html.NameFor(model => model.CTRANSPORTATION[i].TransportId)" class="form-control applyselect CModeOfTransportDD">
+													@foreach (var item in Model.PerKMList)
+													{
+
+														<option kmrate="@item.KMRate" @(item.Id == Model.CTRANSPORTATION[i].TransportId ? "selected" : "") value="@item.Id">@item.VehicleType</option>
+													}
+												</select>
+											}
+											@*<select class="applyselect form-control CModeOfTransportDD" id="@Html.IdFor(model => model.CTRANSPORTATION[i].TransportId)" name="@Html.IdFor(model => model.CTRANSPORTATION[i].TransportId)">
+													@if (Model.PerKMList != null)
+													{
+														<option value="">Select</option>
+														foreach (var item in Model.PerKMList)
+														{
+															<option value="@item.Id">@item.VehicleType</option>
+														}
+													}
+												</select>*@
+											@Html.ValidationMessageFor(model => model.CTRANSPORTATION[i].TransportId, "", new { @class = "text-danger" })
+										</td>
+										<td>
+
+											@Html.TextAreaFor(model => model.CTRANSPORTATION[i].Details, new { @class = "form-control transdet" })
+											@Html.ValidationMessageFor(model => model.CTRANSPORTATION[i].Details, "", new { @class = "text-danger" })
+										</td>
+										<td>
+											@Html.TextBoxFor(model => model.CTRANSPORTATION[i].AttachmentNo, new { @class = "form-control AttachmentNo", @type = "number" })
+											@Html.ValidationMessageFor(model => model.CTRANSPORTATION[i].AttachmentNo, "", new { @class = "text-danger" })
+
+										</td>
+										<td>
+
+											@Html.TextBoxFor(model => model.CTRANSPORTATION[i].RateofPerKM, new { @class = "form-control RateofPerKM", @type = "number" })
+											@Html.ValidationMessageFor(model => model.CTRANSPORTATION[i].RateofPerKM, "", new { @class = "text-danger" })
+										</td>
+										<td>
+											@Html.TextBoxFor(model => model.CTRANSPORTATION[i].TravelKM, new { @class = "form-control cTrnasKM", @type = "number" })
+											@Html.ValidationMessageFor(model => model.CTRANSPORTATION[i].TravelKM, "", new { @class = "text-danger" })
+										</td>
+										<td>
+											@Html.TextBoxFor(model => model.CTRANSPORTATION[i].Amount, new { @class = "form-control CAmount text-right", @onkeypress = "return isNumberKey(event,this)" })
+											@Html.ValidationMessageFor(model => model.CTRANSPORTATION[i].Amount, "", new { @class = "text-danger" })
+										</td>
+										<td></td>
+									</tr>
+								}
+							}
+						</tbody>
+					</table>
+					<div class="text-right pr-2 pb-3">
+						<a class="btn mtr-g-grn btn-l ripplelink btnaddTransport"> <i class="fas fa-plus"></i> Add Row</a>
+					</div>
+				</div>
+
+			</div>
+		</div>
+		<div class="card multicard">
+			<div class="card-header blk-gdn-btn ">
+				<div><i class="fas fa-rupee-sign"></i> D - OTHER EXPENDITURE</div>
+			</div>
+			<div class="card-body p-0">
+				<div class="table-responsive table-box">
+					<table class="table table-striped" id="tblOtherExpense">
+						<thead>
+							<tr>
+								<th width="33">S.No.</th>
+								<th width="250">Project</th>
+								<th width="100"><i class="far fa-calendar-alt"></i> Date </th>
+								<th><i class="fas fa-info-circle"></i> Details </th>
+								<th width="120"><i class="fas fa-paperclip"></i> Attachment No</th>
+								<th width="100"><i class="fas fa-rupee-sign"></i>Amount(Rs.)</th>
+								<th width="50">Action</th>
+							</tr>
+						</thead>
+						<tbody>
+							@if (Model.DOTHEREXPENDITURE != null)
+							{
+								int CountOtherExpense = 0;
+								for (int i = 0; i < Model.DOTHEREXPENDITURE.Count; i++)
+								{
+									CountOtherExpense++;
+									<tr>
+										<td>
+											<label id="otherspan_@CountOtherExpense" name="otherspan_@CountOtherExpense">@CountOtherExpense </label>
+										</td>
+										<td class="divOther">
+											@Html.DropDownListFor(model => model.DOTHEREXPENDITURE[i].ProjectID, new SelectList(Model.ProjectList, "ProjectID", "LineItem", Model.DOTHEREXPENDITURE[i].ProjectID), new { @class = "form-control applyselect ddlDotherProjectId" })
+											@Html.ValidationMessageFor(model => model.DOTHEREXPENDITURE[i].ProjectID, "", new { @class = "text-danger" })
+										</td>
+										<td>
+											@Html.TextBoxFor(model => model.DOTHEREXPENDITURE[i].Date, new { @class = "form-control otherdate", @type = "date" })
+											@Html.ValidationMessageFor(model => model.DOTHEREXPENDITURE[i].Date, "", new { @class = "text-danger" })
+
+
+										</td>
+										<td>
+
+											@Html.TextAreaFor(model => model.DOTHEREXPENDITURE[i].DetailsofExpenditure, new { @class = "form-control otherexpt", @placeholder = "Enter" })
+											@Html.ValidationMessageFor(model => model.DOTHEREXPENDITURE[i].DetailsofExpenditure, "", new { @class = "text-danger" })
+
+
+										</td>
+										<td>
+											@Html.TextBoxFor(model => model.DOTHEREXPENDITURE[i].AttachmentNo, new { @class = "form-control otherattechment", @type = "number", @placeholder = "Enter" })
+											@Html.ValidationMessageFor(model => model.DOTHEREXPENDITURE[i].AttachmentNo, "", new { @class = "text-danger" })
+
+										</td>
+
+										<td>
+											@Html.TextBoxFor(model => model.DOTHEREXPENDITURE[i].Amount, new { @class = "form-control DAmount text-right", @onkeypress = "return isNumberKey(event,this)" })
+											@Html.ValidationMessageFor(model => model.DOTHEREXPENDITURE[i].Amount, "", new { @class = "text-danger" })
+										</td>
+										<td></td>
+									</tr>
+								}
+							}
+
+
+						</tbody>
+					</table>
+					<div class="text-right pr-2 pb-3">
+						<a class="btn mtr-g-grn btn-l ripplelink btnaddOtherExpense"> <i class="fas fa-plus"></i> Add Row</a>
+					</div>
+				</div>
+
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-sm-12 form-group">
+				<hr class="mt-0" />
+				<ul class="list-unstyled radio-btn">
+					<li class="radio">
+						<label class="sz-md"><strong>E - OTHER CREDITS </strong> </label>
+					</li>
+					<li class="radio">
+						<input id="yes" name="@Html.NameFor(x => Model.TravelExpense.rdbOther_status)" type="radio" value="Yes" @(Model.TravelExpense.rdbOther_status == "Yes" ? "checked" : "") class="ErdbOther_status">
+						<label for="yes" class="radio-label">Yes</label>
+					</li>
+					<li class="radio">
+						<input id="no" name="@Html.NameFor(x => Model.TravelExpense.rdbOther_status)" type="radio" value="No" @(string.IsNullOrEmpty(Model.TravelExpense.rdbOther_status) ? "checked" : Model.TravelExpense.rdbOther_status == "No" ? "checked" : "") class="ErdbOther_status">
+						<label for="no" class="radio-label">No</label>
+					</li>
+				</ul>
+
+				<div class="EDiv mt-2 row">
+					<div class="col-sm-4 form-group">
+						<label>Details of Credit </label>
+						@Html.TextBoxFor(model => model.TravelExpense.credit_details, new { @class = "form-control", @placeholder = "Enter" })
+						@Html.ValidationMessageFor(model => model.TravelExpense.credit_details, "", new { @class = "text-danger" })
+
+					</div>
+					<div class="col-sm-2 form-group">
+						<label>Amount</label>
+						@Html.TextBoxFor(model => model.TravelExpense.amount, new { @class = "form-control text-right" })
+						@Html.ValidationMessageFor(model => model.TravelExpense.amount, "", new { @class = "text-danger" })
+
+					</div>
+					<div class="col-sm-12 form-group">
+						<ul class="list-unstyled radio-btn">
+							<li class="radio">
+								<label><strong>Pay Mode</strong> </label>
+							</li>
+							<li class="radio">
+								<input id="cheque" name="@Html.NameFor(x => Model.TravelExpense.pay_mode)" type="radio" value="By Cheque" @(Model.TravelExpense.pay_mode == "By Cheque" ? "checked" : "")>
+								<label for="cheque" class="radio-label">By Cheque</label>
+							</li>
+							<li class="radio">
+								<input id="cash" name="@Html.NameFor(x => Model.TravelExpense.pay_mode)" type="radio" value="By Cash" @(string.IsNullOrEmpty(Model.TravelExpense.pay_mode) ? "checked" : Model.TravelExpense.pay_mode == "By Cash" ? "checked" : "")>
+								<label for="cash" class="radio-label">By Cash</label>
+							</li>
+						</ul>
+					</div>
+					<div class="col-sm-12 form-group">
+						<label>Remark</label>
+
+						@Html.TextAreaFor(model => model.TravelExpense.remark, new { @class = "form-control", @placeholder = "Enter Remark" })
+						@Html.ValidationMessageFor(model => model.TravelExpense.remark, "", new { @class = "text-danger" })
+					</div>
+
+				</div>
+
+
+			</div>
+
+
+			<div class="col-sm-12 ">
+				<label class="green-clr sz-md"><strong>Summary</strong> </label>
+			</div>
+			<div class="col-sm-7 form-group">
+				<div class="table-responsive">
+					<table class="table table-striped mt-0" id="tblsummary">
+
+
+						<tr>
+							<th w-100>Particular</th>
+							@{ int Projectno = 0; string Projectid = "";}
+
+							@foreach (var item in Model.ProjectList)
+							{
+								Projectno++;
+								Projectid = Projectid + "," + Convert.ToString(item.ProjectID);
+
+
+								<th class="text-right tw-100">@item.LineItemCode  </th>
+							}
+							<input type="hidden" value="@Projectid" id="hdfCountprojectid" />
+							<th class="text-right tw-100">Total</th>
+						</tr>
+
+
+
+
+						<tr class="TravelFare">
+
+							<td>Travel Fare</td>
+							@*@if (Model.ProjectList != null)
+											{
+												int counttravel = 0;
+
+												foreach (var item in Model.ProjectList)
+												{
+													counttravel++;
+
+													<td class="text-right prnttravelfare"><input type="text" id="txttravel_@counttravel" class="dvdtravelfare text-right EAmount" readonly /></td>
+									}
+								}*@
+							@if (Model.EXPENSESUMMARY != null)
+							{
+								for (int i = 0; i < Model.EXPENSESUMMARY.Count; i++)
+								{
+									@Html.HiddenFor(model => model.EXPENSESUMMARY[i].ID)
+									@Html.HiddenFor(model => model.EXPENSESUMMARY[i].TravelexpenseId)
+									@Html.HiddenFor(model => model.EXPENSESUMMARY[i].TravelId)
+									@Html.HiddenFor(model => model.EXPENSESUMMARY[i].ProjectID)
+									<td class="text-right prnttravelfare">
+										@Html.TextBoxFor(model => model.EXPENSESUMMARY[i].Travelfare, new { @class = "form-control dvdtravelfare text-right EAmount", @readonly = "readonly", @onkeypress = "return isNumberKey(event,this)" })
+									</td>
+								}
+
+							}
+							<td class="text-right">
+								@Html.TextBoxFor(model => model.TravelExpense.travel_fare, new { @class = "form-control text-right totalA", @readonly = "readonly" })
+								@Html.ValidationMessageFor(model => model.TravelExpense.travel_fare, "", new { @class = "text-danger" })
+							</td>
+						</tr>
+						<tr class="PerDiem">
+							<td>Per Diem</td>
+							@*@if (Model.ProjectList != null)
+								{
+									int countdiem = 0;
+									foreach (var item in Model.ProjectList)
+									{
+										countdiem++;
+										<td class="text-right prntperdiem"><input type="text" id="txtcountdiem_@countdiem" class="dvdperdiemrate text-right FAmount" readonly /></td>
+									}
+								}*@
+							@if (Model.EXPENSESUMMARY != null)
+							{
+								int count = 0;
+								for (int i = 0; i < Model.EXPENSESUMMARY.Count; i++)
+								{
+
+
+									<td class="text-right prntperdiem">
+										@Html.TextBoxFor(model => model.EXPENSESUMMARY[i].Perdiem, new { @class = "form-control dvdperdiemrate text-right FAmount", @readonly = "readonly" })
+									</td>
+									count++;
+								}
+
+							}
+
+							<td class="text-right">
+								@Html.TextBoxFor(model => model.TravelExpense.per_Diem, new { @class = "form-control text-right totalB", @readonly = "readonly" })
+								@Html.ValidationMessageFor(model => model.TravelExpense.per_Diem, "", new { @class = "text-danger" })
+							</td>
+						</tr>
+						<tr class="Transportion">
+							<td>Transportation</td>
+							@*@if (Model.ProjectList != null)
+								{
+
+									int counttranst = 0;
+									foreach (var item in Model.ProjectList)
+									{
+										counttranst++;
+										<td class="text-right prnttransportion"><input type="text" id="txttranst_@counttranst" class="dvdtransportion text-right GAmount" readonly /></td>
+									}
+								}*@
+
+							@if (Model.EXPENSESUMMARY != null)
+							{
+								for (int i = 0; i < Model.EXPENSESUMMARY.Count; i++)
+								{
+									<td class="text-right prnttransportion">
+										@Html.TextBoxFor(model => model.EXPENSESUMMARY[i].Transportion, new { @class = "form-control dvdtransportion text-right GAmount", @readonly = "readonly" })
+									</td>
+								}
+
+							}
+							<td class="text-right">
+								@Html.TextBoxFor(model => model.TravelExpense.transporation, new { @class = "form-control totalC text-right", @readonly = "readonly" })
+								@Html.ValidationMessageFor(model => model.TravelExpense.transporation, "", new { @class = "text-danger" })
+							</td>
+						</tr>
+						<tr class="OtherExpenses">
+							<td>Other Expenses</td>
+							@*@if (Model.ProjectList != null)
+								{
+
+									int countotherexp = 0;
+
+									foreach (var item in Model.ProjectList)
+									{
+										countotherexp++;
+
+										<td class="text-right prntExpenses"><input type="text" id="txtotherexp_@countotherexp" class="dvdExpenses text-right HAmount" readonly /></td>
+									}
+								}*@
+							@if (Model.EXPENSESUMMARY != null)
+							{
+								for (int i = 0; i < Model.EXPENSESUMMARY.Count; i++)
+								{
+									<td class="text-right prntExpenses">
+										@Html.TextBoxFor(model => model.EXPENSESUMMARY[i].Otherexpesnse, "{0:n2}", new { @class = "form-control dvdExpenses text-right HAmount", @readonly = "readonly" })
+									</td>
+								}
+
+							}
+
+
+							<td class="text-right">
+								@Html.TextBoxFor(model => model.TravelExpense.other_expense, new { @class = "form-control text-right totalD", @readonly = "readonly" })
+								@Html.ValidationMessageFor(model => model.TravelExpense.other_expense, "", new { @class = "text-danger" })
+							</td>
+						</tr>
+						<tr class="Totalline">
+							<td class="text-left"><strong>Total</strong></td>
+							@if (Model.ProjectList != null)
+							{
+								int counttotal = 0;
+								foreach (var item in Model.ProjectList)
+								{
+									counttotal++;
+
+									<td class="text-right prntTotal"><input type="text" id="txttotal_@counttotal" class="dvdTotal text-right" disabled /></td>
+								}
+							}
+
+
+							<td class="text-right">
+								@Html.TextBoxFor(model => model.TravelExpense.total, new { @class = "form-control totalFinal text-right", @readonly = "readonly" })
+								@Html.ValidationMessageFor(model => model.TravelExpense.total, "", new { @class = "text-danger" })
+							</td>
+						</tr>
+						<tr>
+							<td class="text-left"><strong>Less: Advance Received</strong></td>
+
+							@foreach (var item in Model.ProjectList)
+							{
+
+								<td class="text-right"></td>
+							}
+							<td class="text-right">
+								@Html.TextBoxFor(model => model.TravelExpense.Paidamount, new { @class = "form-control text-right", @readonly = "readonly" })
+								@*@Html.TextBoxFor(model => model.TravelExpense.advance_received, new { @class = "form-control text-right", @readonly = "readonly" })*@
+								@Html.ValidationMessageFor(model => model.TravelExpense.Paidamount, "", new { @class = "text-danger" })
+							</td>
+						</tr>
+						<tr>
+							<td class="text-left"><strong>Less: Any Other Credits</strong></td>
+							@foreach (var item in Model.ProjectList)
+							{
+
+								<td class="text-right"></td>
+							}
+							<td class="text-right">
+								@Html.TextBoxFor(model => model.TravelExpense.anyOther_Credit, new { @class = "form-control text-right", @readonly = "readonly" })
+								@Html.ValidationMessageFor(model => model.TravelExpense.anyOther_Credit, "", new { @class = "text-danger" })
+							</td>
+						</tr>
+						<tr class="lgt-mtr-o-bg">
+							<td class="text-left">Net (Payable)/Receivable</td>
+							@foreach (var item in Model.ProjectList)
+							{
+
+								<td class="text-right"></td>
+							}
+							<td class="text-right">
+								@Html.TextBoxFor(model => model.TravelExpense.net_receivable, new { @class = "form-control Netpayable text-right", @readonly = "readonly" })
+								@Html.ValidationMessageFor(model => model.TravelExpense.net_receivable, "", new { @class = "text-danger" })
+							</td>
+						</tr>
+
+					</table>
+				</div>
+				<ul class="list-unstyled smr-list">
+					<li>
+						Remark
+						@Html.TextAreaFor(model => model.TravelExpense.remark1, new { @class = "form-control", @placeholder = "Enter Remark" })
+						@Html.ValidationMessageFor(model => model.TravelExpense.remark1, "", new { @class = "text-danger" })
+					</li>
+				</ul>
+				@if (Model.TravelExpense.ResubmitTer != "")
+				{
+					<p>Resubmit Reason : @Model.TravelExpense.ResubmitTer</p>
+				}
+			</div>
+			<div class="col-sm-5 form-group">
+				<a class="btn blk-gdn-btn" data-toggle="modal" data-target="#ftr"><i class="far fa-clipboard"></i> Fill Travel Report</a>
+				<div class="gry-clr-bg p-2 mt-2">
+
+					<div class="row">
+						<a class="btn blk-gdn-btn" data-toggle="modal" data-target="#AddAttachmentModal"><i class="fas fa-paperclip"></i> Add Trip Attachment</a>
+					</div>
+				</div>
+				<div class="table-responsive  table-box" id="DivAttachmentList">
+					@{Html.RenderAction("_ViewAllAttachments", "Master", new { src = clsApplicationSetting.EncryptQueryString(ViewBag.MenuID.ToString() + "*/Master/_ViewAllAttachments*" + Model.TravelExpense.ReqNo + "*TravelExpense") });}
+				</div>
+			</div>
+
+			<div class="col-sm-12 text-center">
+				<button type="submit" class="btn mtr-o-grn btn-l ripplelink " name="Command" value="Save"> <i class="fas fa-save"></i> Save </button>
+				<button type="submit" class="btn mtr-o-grn btn-l ripplelink " id="btnFinalSubmit" name="Command" value="Submit"> <i class="fa fa-paper-plane" aria-hidden="true"></i> Submit </button>
+				<a onclick="ShowLoadingDialog();window.location='@Url.Action("TravelDashboard", new { src = clsApplicationSetting.EncryptQueryString(ViewBag.MenuID.ToString() + "*/Travel/TravelDashboard*" + ViewBag.TravelREQID + "*" + ViewBag.Type) })';" class="btn cnl-btn ripplelink"><i class="fas fa-angle-double-left"></i>Back</a>
+
+
+			</div>
+		</div>
+
+
+
+		<!-- TASK Modal -->
+		<div class="modal fade pop-dgn" id="ftr">
+			<div class="modal-dialog modal-lg">
+				<div class="modal-content">
+					<!-- Modal Header -->
+					<div class="modal-header blk-gdn-btn">
+						<h4 class="modal-title">Centre for Catalyzing Change<br /><small>New Delhi, Office</small></h4>
+						<div class="close" data-dismiss="modal">&times;</div>
+					</div>
+					<!-- Modal body -->
+					<div class="modal-body">
+						<h2 class="green-clr sz-md">Trip Report </h2>
+						<table class="table">
+							<tr>
+								<td width="80"><strong>Name</strong></td>
+								<td> @Model.TravelExpense.TravellerName</td>
+							</tr>
+						</table>
+
+						<div class="table-responsive">
+							<table class="table v-top table-striped" id="tbltripreport">
+								<thead>
+									<tr>
+										<th width="33"> SNo.</th>
+										<th width="100">Date</th>
+										<th>Description</th>
+									</tr>
+								</thead>
+								<tbody>
+									@if (Model.TripReport != null)
+									{
+										int TripReportCount = 0;
+										for (int i = 0; i < Model.TripReport.Count; i++)
+										{
+											TripReportCount++;
+											<tr>
+												<td>@TripReportCount</td>
+												<td>
+													@Model.TripReport[i].Date
+													@Html.HiddenFor(x => x.TripReport[i].Date)
+													@Html.HiddenFor(x => x.TripReport[i].DetailsID)
+												</td>
+												<td>
+													@Html.TextAreaFor(model => model.TripReport[i].Justification, new { @class = "form-control h-80 txtjust", @placeholder = "Enter" })
+													@Html.ValidationMessageFor(model => model.TripReport[i].Justification, "", new { @class = "text-danger" })
+												</td>
+											</tr>
+
+										}
+									}
+								</tbody>
+							</table>
+
+						</div>
+						<div class="text-center">
+							<button type="button" class="btn mtr-o-grn btn-l ripplelink " data-dismiss="modal"><i class="fas fa-save"></i> Save</button>
+							<button type="button" class="btn cnl-btn ripplelink " data-dismiss="modal"><i class="fas fa-times"></i> Close</button>
+						</div>
+
+
+					</div>
+				</div>
+			</div>
+		</div>
+	}
+</div>
+@*project number*@
+<input type="hidden" value="@ViewBag.projectcout" id="hdfprojectcount" />
+<div class="modal fade pop-dgn" id="AddAttachmentModal">
+	<div class="modal-dialog modal-md">
+		<div class="modal-content">
+
+			<div class="modal-header blk-gdn-btn">
+				<h4 class="modal-title"><i class="fas fa-paperclip"></i>Add Attach Trip Report </h4>
+				<div class="close" data-dismiss="modal">&times;</div>
+			</div>
+			<!-- Modal body -->
+			<div class="modal-body">
+				<div id="TargetAttachmentDiv">
+					@{Html.RenderAction("_AddAttachment", "Master", new { src = clsApplicationSetting.EncryptQueryString(ViewBag.MenuID.ToString() + "*/Master/_AddAttachment*" + Model.TravelExpense.ReqNo + "*TravelExpense*File") });}
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+@section scripts    {
+
+	@System.Web.Optimization.Scripts.Render("~/bundle/unobtrusivejs")
+	<script src="~/assets/design/Scripts/AddInit.js?v=@clsApplicationSetting.GetWebConfigValue("Version")"></script>
+	<script src="~/assets/design/Scripts/PagesJS/FillExpense.js?v=@clsApplicationSetting.GetWebConfigValue("Version")"></script>
+
+
+	<script>
+		$(document).ready(function () {
+
+            PageLoadATravelfareAmount();
+            ShowE();
+			TravelTransDisable();
+		      // TravelBPerDiem();
+		     TravelBPerDiemChangeByDDl();
+		   	var checkradio = $("#TravelExpense_Expensedistrubute_status").val();
+			if (checkradio == "Yes") {
+				const yesBtn = document.getElementById('yesdistrubute');
+				yesBtn.checked = true
+				$('.dividtraveller').addClass("trvsltdisable");
+				$('.divBperdiem').addClass("trvsltdisable");
+				$('.divCtrans').addClass("trvsltdisable");
+				$('.divOther').addClass("trvsltdisable");
+				$(".dvdtravelfare").attr("readonly", true);
+
+
+				$(".dvdtravelfare").attr("readonly", true);
+				$(".dvdperdiemrate").attr("readonly", true);
+				$(".dvdtransportion").attr("readonly", true);
+				$(".dvdExpenses").attr("readonly", true);
+				$(".EAmount").each(function (index) {
+					$(this).val(0);
+				});
+				$(".totalA").val(0);
+
+				$(".FAmount").each(function (index) {
+					$(this).val(0);
+				});
+				$(".totalB").val(0);
+				$(".GAmount").each(function (index) {
+					$(this).val(0);
+				});
+				$(".totalC").val(0);
+				$(".HAmount").each(function (index) {
+					$(this).val(0);
+				});
+				$(".totalD").val(0);
+				CalculateAll();
+				 //  BCalFreeMealAmount();
+			}
+			else if (checkradio == "No") {
+				const yesBtn = document.getElementById('nodistrubute');
+				yesBtn.checked = true;
+				$('.dividtraveller').removeClass("trvsltdisable");
+				$('.divBperdiem').removeClass("trvsltdisable");
+				$('.divCtrans').removeClass("trvsltdisable");
+				$('.divOther').removeClass("trvsltdisable");
+				$(".dvdtravelfare").attr("readonly", true);
+				$(".dvdperdiemrate").attr("readonly", true);
+				$(".dvdtransportion").attr("readonly", true);
+				$(".dvdExpenses").attr("readonly", true);
+				//CalCulateTotal();
+
+				var countProj = $("#hdfprojectcount").val();
+
+				if (countProj == 1) {
+					var temptravelone = $("#EXPENSESUMMARY_0__Travelfare").val();
+					var tempperdiemone = $("#EXPENSESUMMARY_0__Perdiem").val();
+					var temptrnasone = $("#EXPENSESUMMARY_0__Transportion").val();
+					var temptotherexpone = $("#EXPENSESUMMARY_0__Otherexpesnse").val();
+					$("#txttotal_1").val(Number(Number(temptravelone) + Number(tempperdiemone) + Number(temptrnasone) + Number(temptotherexpone)).toFixed(2));
+					$("#TravelExpense_travel_fare").val(Number(temptravelone));
+					$("#TravelExpense_per_Diem").val(Number(tempperdiemone));
+					$("#TravelExpense_transporation").val(Number(temptrnasone));
+					$("#TravelExpense_other_expense").val(Number(temptotherexpone));
+					var Totalone = $("#txttotal_1").val();
+
+					$("#TravelExpense_total").val(Number(Totalone));
+					$("#TravelExpense_net_receivable").val(Number(Totalone));
+				}
+				if (countProj == 2) {
+
+
+					var temptravelone = $("#EXPENSESUMMARY_0__Travelfare").val();
+					var temptraveltwo = $("#EXPENSESUMMARY_1__Travelfare").val();
+					var tempperdiemone = $("#EXPENSESUMMARY_0__Perdiem").val();
+					var tempperdiemtwo = $("#EXPENSESUMMARY_1__Perdiem").val();
+					var temptrnasone = $("#EXPENSESUMMARY_0__Transportion").val();
+					var temptrnastwo = $("#EXPENSESUMMARY_1__Transportion").val();
+					var temptotherexpone = $("#EXPENSESUMMARY_0__Otherexpesnse").val();
+					var temptotherexptwo = $("#EXPENSESUMMARY_1__Otherexpesnse").val();
+					$("#txttotal_1").val(Number(Number(temptravelone) + Number(tempperdiemone) + Number(temptrnasone) + Number(temptotherexpone)).toFixed(2));
+					$("#txttotal_2").val(Number(Number(temptraveltwo) + Number(tempperdiemtwo) + Number(temptrnastwo) + Number(temptotherexptwo)).toFixed(2));
+					$("#TravelExpense_travel_fare").val(Number(Number(temptravelone) + Number(temptraveltwo)));
+					$("#TravelExpense_per_Diem").val(Number(Number(tempperdiemone) + Number(tempperdiemtwo)));
+					$("#TravelExpense_transporation").val(Number(Number(temptrnasone) + Number(temptrnastwo)));
+					$("#TravelExpense_other_expense").val(Number(Number(temptotherexpone) + Number(temptotherexptwo)));
+					var Totalone = $("#txttotal_1").val();
+					var Totaltwo = $("#txttotal_2").val();
+					$("#TravelExpense_total").val(Number(Number(Totalone) + Number(Totaltwo)));
+					$("#TravelExpense_net_receivable").val(Number(Number(Totalone) + Number(Totaltwo)));
+				}
+				if (countProj == 3) {
+
+					var temptravelone = $("#EXPENSESUMMARY_0__Travelfare").val();
+					var temptraveltwo = $("#EXPENSESUMMARY_1__Travelfare").val();
+					var temptravelthree = $("#EXPENSESUMMARY_2__Travelfare").val();
+					var tempperdiemone = $("#EXPENSESUMMARY_0__Perdiem").val();
+					var tempperdiemtwo = $("#EXPENSESUMMARY_1__Perdiem").val();
+					var tempperdiemthree = $("#EXPENSESUMMARY_2__Perdiem").val();
+					var temptrnasone = $("#EXPENSESUMMARY_0__Transportion").val().toFixed(2);
+					var temptrnastwo = $("#EXPENSESUMMARY_1__Transportion").val().toFixed(2);
+					var temptrnasthree = $("#EXPENSESUMMARY_2__Transportion").val().toFixed(2);
+					var temptotherexpone = $("#EXPENSESUMMARY_0__Otherexpesnse").val();
+					var temptotherexptwo = $("#EXPENSESUMMARY_1__Otherexpesnse").val();
+					var temptotherexpthree = $("#EXPENSESUMMARY_2__Otherexpesnse").val();
+					$("#txttotal_1").val(Number(Number(temptravelone) + Number(tempperdiemone) + Number(temptrnasone) + Number(temptotherexpone)).toFixed(2));
+					$("#txttotal_2").val(Number(Number(temptraveltwo) + Number(tempperdiemtwo) + Number(temptrnastwo) + Number(temptotherexptwo)).toFixed(2));
+					$("#txttotal_3").val(Number(Number(temptravelthree) + Number(tempperdiemthree) + Number(temptrnasthree) + Number(temptotherexpthree)).toFixed(2));
+					$("#TravelExpense_travel_fare").val(Number(Number(temptravelone) + Number(temptraveltwo) + Number(temptravelthree)));
+					$("#TravelExpense_per_Diem").val(Number(Number(tempperdiemone) + Number(tempperdiemtwo) + Number(tempperdiemthree)));
+					$("#TravelExpense_transporation").val(Number(Number(temptrnasone) + Number(temptrnastwo) + Number(temptrnasthree)));
+					$("#TravelExpense_other_expense").val(Number(Number(temptotherexpone) + Number(temptotherexptwo) + Number(temptotherexpthree)));
+					var Totalone = $("#txttotal_1").val();
+					var Totaltwo = $("#txttotal_2").val();
+					var Totalthree = $("#txttotal_3").val();
+					$("#TravelExpense_total").val(Number(Number(Totalone) + Number(Totaltwo) + Number(Totalthree)));
+					$("#TravelExpense_net_receivable").val(Number(Number(Totalone) + Number(Totaltwo) + Number(Totalthree)));
+				}
+				CalculateNoDist();
+				CalcualteNetpayable();
+			}
+			else {
+				const yesBtn = document.getElementById('yesdistrubute');
+				yesBtn.checked = true
+				var chkdist = $('input:radio[name=yesdistrubute]:checked').val();
+				$("#TravelExpense_Expensedistrubute_status").val("Yes");
+			}
+
+
+
+		});
+		document.body.addEventListener("click", function (evt) {
+			console.dir(this);
+			//note evt.target can be a nested element, not the body element, resulting in misfires
+			console.log(evt.target);
+			var checkradio = $("#TravelExpense_Expensedistrubute_status").val();
+			if (checkradio == "No") {
+				CalculateNoDist();
+			}
+			else {
+				CalculateAll();
+			}
+
+		});
+
+		$("#divradio input[name='yesdistrubute']").click(function () {
+
+			var data = $('input:radio[name=yesdistrubute]:checked').val();
+			$("#TravelExpense_Expensedistrubute_status").val("Yes");
+			const noBtn = document.getElementById('nodistrubute');
+			noBtn.checked = false;
+			$('.dividtraveller').addClass("trvsltdisable");
+			$('.divBperdiem').addClass("trvsltdisable");
+			$('.divCtrans').addClass("trvsltdisable");
+			$('.divOther').addClass("trvsltdisable");
+
+			$(".dvdtravelfare").attr("readonly", true);
+			$(".dvdperdiemrate").attr("readonly", true);
+			$(".dvdtransportion").attr("readonly", true);
+			$(".dvdExpenses").attr("readonly", true);
+			$(".EAmount").each(function (index) {
+				$(this).val(0);
+			});
+			$(".totalA").val(0);
+
+			$(".FAmount").each(function (index) {
+				$(this).val(0);
+			});
+			$(".totalB").val(0);
+			$(".GAmount").each(function (index) {
+				$(this).val(0);
+			});
+			$(".totalC").val(0);
+			$(".HAmount").each(function (index) {
+				$(this).val(0);
+			});
+			$(".totalD").val(0);
+			CalculateAll();
+
+		});
+		$("#divradio input[name='nodistrubute']").click(function () {
+
+			$(".dvdtravelfare").attr("readonly", true);
+			$(".dvdperdiemrate").attr("readonly", true);
+			$(".dvdtransportion").attr("readonly", true);
+			$(".dvdExpenses").attr("readonly", true);
+			$('.dividtraveller').removeClass("trvsltdisable");
+			$('.divBperdiem').removeClass("trvsltdisable");
+			$('.divCtrans').removeClass("trvsltdisable");
+			$('.divOther').removeClass("trvsltdisable");
+			var data = $('input:radio[name=nodistrubute]:checked').val();
+			$("#TravelExpense_Expensedistrubute_status").val("No");
+			const yesBtn = document.getElementById('yesdistrubute');
+			yesBtn.checked = false;
+
+			//ECalculatetotal();
+			//FCalculatetotal();
+			//GCalculatetotal();
+			//HCalculatetotal();
+			CalculateNoDist();
+			CalcualteNetpayable();
+
+		});
+
+
+        function OnSuccessAction(objsss) {
+            if (objsss.Status) {
+                SuccessToaster(objsss.SuccessMessage);
+                var src = "/Travel/TravelDashboard?src="+ EncryptQueryStringJSON(@ViewBag.MenuID+"*" + "/Travel/TravelDashboard*1");
+                window.location.href = src;
+            }
+            else {
+                FailToaster(objsss.SuccessMessage);
+            }
+
+        }
+
+        function ATravelFareSuccess(objsss) {
+            if (objsss.Status) {
+                SuccessToaster(objsss.SuccessMessage);
+                window.location.reload();
+            }
+            else {
+                FailToaster(objsss.SuccessMessage);
+            }
+
+        }
+
+		function OnAttachmentSuccess(objsss) {
+
+			CloseLoadingDialog();
+			if (objsss.Status) {
+
+                SuccessToaster(objsss.SuccessMessage);
+			if (objsss.ViewAsString != "") {
+
+                 $("#Description").val('');
+                 $("#UploadFile").val('');
+                 $("#DivAttachmentList").empty();
+                 $("#DivAttachmentList").html(objsss.ViewAsString);
+                 $("#AddAttachmentModal").modal('hide');
+                 $('.deletedoc').on('click', function (e) {
+                 e.preventDefault();
+                 e.stopPropagation();
+                 var L = $(this).closest("tr").find("input:hidden[name=TDID]").val();
+                 DeleteAttachment(L,this);
+     });
+            }
+            }
+            else {
+                FailToaster(objsss.SuccessMessage);
+        }
+
+            }
+
+     $('.deletedoc').on('click', function (e) {
+                e.preventDefault();
+                e.stopPropagation();
+                var L = $(this).closest("tr").find("input:hidden[name=TDID]").val();
+                DeleteAttachment(L,this);
+     });
+
+        function DeleteAttachment(AttachmentID,obj) {
+            ConfirmMsgBox('Are you sure want to delete Document', '', function () {
+                $.ajax({
+                    url: "/CommonAjax/DeleteAttachmentJSON",
+                    type: "Post",
+                    async: true,
+                    data: { AttachmentID: AttachmentID },
+                    success: function (data) {
+                        if (data>0) {
+                            $(obj).closest("tr").remove();
+                        }
+                        else {
+                            FailToaster('Can not delete this request');
+                        }
+                    },
+                    error: function (er) {
+                        alert(er);
+                    }
+                });
+            });
+            }
+
+      $("#btnFinalSubmit").click(function () {
+		var a=MyTrnasportionChk();
+		var b=Myvalidate();
+		var c=MyOtherExpChk();
+		 var d=MyTripvalidate();
+		 if (a === false) {
+        swal("Please fill c - transportion details ", "");
+          return false;
+
+         }
+		else if (c === false) {
+        swal("Please fill d - other expenditure details ", "");
+          return false;
+
+         }
+		else if(b === false && d===true){
+		     swal("Please upload atleast One Trip Attachment or Trip Report ", "");
+          return false;
+		}
+
+       // return MyTrnasportionChk();
+
+      });
+
+		function MyTripvalidate() {
+
+   	     var status=true;
+			$("#tbltripreport TBODY TR").each(function (i) {
+
+		     var just=$(this).closest('tr').find(".txtjust ").val();
+
+		if(just!="" )
+		{
+		   status= false;
+		  return status;
+
+		}
+
+		 	});
+		if(status==false)
+		{
+		  status=false;
+		}
+		else
+		{
+		  status=true;
+		}
+		 return status;
+
+    }
+
+
+     function Myvalidate() {
+
+        var LastTRCount = parseInt($('#tbltraveldoc').find("tbody tr").length);
+        if (LastTRCount === 0) {
+        //swal("Please upload atleast One Trip Attachment", "");
+        return false;
+
+    }
+
+    return true;
+		}
+
+		function MyOtherExpChk(){
+			var status=true;
+			$("#tblOtherExpense TBODY TR").each(function (i) {
+
+
+
+		var ammount=parseInt($(this).closest('tr').find(".DAmount ").val());
+
+		if(ammount>0 || isNaN(ammount)){
+		var date=$(this).closest('tr').find(".otherdate").val();
+		var details=$(this).closest('tr').find(".otherexpt").val();
+		var attachement=$(this).closest('tr').find(".otherattechment").val();
+
+		if((date=="") || (details=="") || (attachement=="") )
+		{
+		   status= false;
+		  return status;
+
+		}
+
+
+
+		}
+
+		if(status==false)
+		{
+		  status=false;
+		}
+		else
+		{
+		  status=true;
+		}
+		 return status;
+
+	});
+	   if(status==false)
+		{
+		  status=false;
+		}
+		else
+		{
+		  status=true;
+		}
+		 return status;
+		}
+
+
+		function MyTrnasportionChk(){
+		var status=true;
+			$("#tblTransport TBODY TR").each(function (i) {
+		var ammount=parseInt($(this).closest('tr').find(".CAmount").val());
+		if(ammount>0 || isNaN(ammount)){
+		var date=$(this).closest('tr').find(".transdate").val();
+		var details=$(this).closest('tr').find(".transdet").val();
+		var attachement=$(this).closest('tr').find(".AttachmentNo").val();
+		var TrnasType = parseInt($(this).closest('tr').find("select.CModeOfTransportDD option:selected").val());
+		var TrnasTypeText = $(this).closest('tr').find("select.CModeOfTransportDD option:selected").text();
+		if(TrnasTypeText=="Self four wheeler" || TrnasTypeText=="Self two wheeler")
+		{
+		if((date=="") || (details=="") ||  (TrnasType==0))
+		{
+		   status= false;
+		  return status;
+
+		}
+
+		}
+		else{
+		if((date=="") || (details=="") || (attachement=="") || (TrnasType==0))
+		{
+		   status= false;
+		  return status;
+
+		}
+
+		}
+
+
+
+		}
+
+		if(status==false)
+		{
+		  status=false;
+		}
+		else
+		{
+		  status=true;
+		}
+		 return status;
+
+	});
+	   if(status==false)
+		{
+		  status=false;
+		}
+		else
+		{
+		  status=true;
+		}
+		 return status;
+		}
+
+		function checkdecimal(obj) {
+
+			var end = obj.id;
+			var num = parseFloat(document.getElementById(end).value);
+			var new_num = num.toFixed(2);
+			document.getElementById(end).value = new_num;
+		}
+
+		function checkDate(obj) {
+
+			//var TotalRowCount = $('#tblTravelFare').find("tbody tr").length;
+			//var Rowid = parseInt(TotalRowCount) - 1;
+			//for (let i = 1; i <= Rowid; i++) {
+			//	
+			//	var selectedText = document.getElementsByName('[0].Date').value;
+			//}
+
+			//var selectedDate = new Date(selectedText);
+			//var data = $("input[name='[6].Date]").val();
+			//alert(data);
+			var datetext = $(obj).val();
+			var selectedDate = Date.parse(datetext);
+			$("#tblTravelFare TBODY TR").each(function (i) {
+
+				var chkdaterow = Date.parse($(this).find(".datefare").val());
+				if (selectedDate < chkdaterow ) {
+					$(obj).val("");
+				}
+
+
+			});
+		}
+
+
+		function CalculateNoDist() {
+			var ATravelFare = [];
+			$("#tblTravelFare TBODY TR").each(function (i) {
+
+
+				var ProjectId = $(this).find("select.ddltravelProjectId option:selected").val();
+				var Amount = $(this).find(".AAmount").val();
+				ATravelFare.push({ ["ProjectId"]: ProjectId, Amount });
+
+			});
+
+			var BPerdiem = [];
+			$("#tblBPerDiem TBODY TR").each(function (i) {
+
+
+				var ProjectId = $(this).find("select.ddlBperdiemProjectId option:selected").val();
+				var Amount = $(this).find(".bAmount").val();
+				BPerdiem.push({ ["ProjectId"]: ProjectId, Amount });
+
+			});
+			var Ctrans = [];
+			$("#tblTransport TBODY TR").each(function (i) {
+
+
+				var ProjectId = $(this).find("select.ddlCtransProjectId option:selected").val();
+				var Amount = $(this).find(".CAmount").val();
+				Ctrans.push({ ["ProjectId"]: ProjectId, Amount });
+
+			});
+			var DOther = [];
+			$("#tblOtherExpense TBODY TR").each(function (i) {
+
+
+				var ProjectId = $(this).find("select.ddlDotherProjectId option:selected").val();
+				var Amount = $(this).find(".DAmount").val();
+				DOther.push({ ["ProjectId"]: ProjectId, Amount });
+
+			});
+			var ProjectId = $("#hdfCountprojectid").val().split(',').slice(1);
+			// Travel BPerdiem No Case Sum
+			var tempSumBperdiemone = 0;
+			var tempSumBperdiemtwo = 0;
+			var tempSumBperdiemthree = 0;
+			var count = 0;
+			for (let i = 0; i < ProjectId.length; i++) {
+
+
+
+				for (let b = 0; b < BPerdiem.length; b++) {
+
+
+					if (ProjectId[i] == BPerdiem[b].ProjectId) {
+						if (count == 0) {
+							tempSumBperdiemone += parseFloat(Number(BPerdiem[b].Amount));
+						}
+						else if (count == 1) {
+							tempSumBperdiemtwo += parseFloat(Number(BPerdiem[b].Amount));
+						}
+						else if (count == 2) {
+							tempSumBperdiemthree += parseFloat(Number(BPerdiem[b].Amount));
+						}
+
+					}
+				}
+				count++;
+				if (count == 1) {
+					$("#EXPENSESUMMARY_0__Perdiem").val(tempSumBperdiemone);
+
+				}
+				else if (count == 2) {
+					$("#EXPENSESUMMARY_1__Perdiem").val(tempSumBperdiemtwo);
+				}
+				else if (count == 3) {
+					$("#EXPENSESUMMARY_2__Perdiem").val(tempSumBperdiemthree);
+				}
+
+			}
+
+			// ATravelFare No Case sum
+			var tempSumATravelone = 0;
+			var tempSumATraveltwo = 0;
+			var tempSumATravelthree = 0;
+			var count = 0;
+			for (let i = 0; i < ProjectId.length; i++) {
+
+
+
+				for (let b = 0; b < ATravelFare.length; b++) {
+
+
+					if (ProjectId[i] == ATravelFare[b].ProjectId) {
+						if (count == 0) {
+							tempSumATravelone += parseFloat(Number(ATravelFare[b].Amount));
+						}
+						else if (count == 1) {
+							tempSumATraveltwo += parseFloat(Number(ATravelFare[b].Amount));
+						}
+						else if (count == 2) {
+							tempSumATravelthree += parseFloat(Number(ATravelFare[b].Amount));
+						}
+
+					}
+				}
+				count++;
+				if (count == 1) {
+					$("#EXPENSESUMMARY_0__Travelfare").val(tempSumATravelone);
+				}
+				else if (count == 2) {
+					$("#EXPENSESUMMARY_1__Travelfare").val(tempSumATraveltwo);
+				}
+				else if (count == 3) {
+					$("#EXPENSESUMMARY_2__Travelfare").val(tempSumATravelthree);
+				}
+
+			}
+			// Ctrans No Case sum
+			var tempSumCTransOne = 0;
+			var tempSumCTransTwo = 0;
+			var tempSumCTransThree = 0;
+			var count = 0;
+			for (let i = 0; i < ProjectId.length; i++) {
+
+
+
+				for (let b = 0; b < Ctrans.length; b++) {
+
+
+					if (ProjectId[i] == Ctrans[b].ProjectId) {
+						if (count == 0) {
+							tempSumCTransOne += parseFloat(Number(Ctrans[b].Amount));
+						}
+						else if (count == 1) {
+							tempSumCTransTwo += parseFloat(Number(Ctrans[b].Amount));
+						}
+						else if (count == 2) {
+							tempSumCTransThree += parseFloat(Number(Ctrans[b].Amount));
+						}
+
+					}
+				}
+				count++;
+				if (count == 1) {
+					$("#EXPENSESUMMARY_0__Transportion").val(tempSumCTransOne);
+				}
+				else if (count == 2) {
+					$("#EXPENSESUMMARY_1__Transportion").val(tempSumCTransTwo);
+				}
+				else if (count == 3) {
+					$("#EXPENSESUMMARY_2__Transportion").val(tempSumCTransThree);
+				}
+
+			}
+			// Dother No Case sum
+			   var tempSumOtherOne = 0;
+			   var tempSumOtherTwo = 0;
+			   var tempSumOtherThree = 0;
+			   var count = 0;
+			for (let i = 0; i < ProjectId.length; i++) {
+										
+
+
+				for (let b = 0; b < DOther.length; b++) {
+
+
+					if (ProjectId[i] == DOther[b].ProjectId) {
+						if (count == 0) {
+							tempSumOtherOne += parseFloat(Number(DOther[b].Amount));
+						}
+						else if (count == 1) {
+							tempSumOtherTwo += parseFloat(Number(DOther[b].Amount));
+						}
+						else if (count == 2) {
+							tempSumOtherThree += parseFloat(Number(DOther[b].Amount));
+						}
+
+					}
+				}
+				count++;
+				if (count == 1) {
+					$("#EXPENSESUMMARY_0__Otherexpesnse").val(tempSumOtherOne);
+				}
+				else if (count == 2) {
+					$("#EXPENSESUMMARY_1__Otherexpesnse").val(tempSumOtherTwo);
+				}
+				else if (count == 3) {
+					$("#EXPENSESUMMARY_2__Otherexpesnse").val(tempSumOtherThree);
+				}
+
+			}
+			var countProj = $("#hdfprojectcount").val();
+
+			if (countProj == 1) {
+				var temptravelone = $("#EXPENSESUMMARY_0__Travelfare").val();
+				var tempperdiemone = $("#EXPENSESUMMARY_0__Perdiem").val();
+				var temptrnasone = $("#EXPENSESUMMARY_0__Transportion").val();
+				var temptotherexpone = $("#EXPENSESUMMARY_0__Otherexpesnse").val();
+				$("#txttotal_1").val(Number(Number(temptravelone) + Number(tempperdiemone) + Number(temptrnasone) + Number(temptotherexpone)).toFixed(2));
+				$("#TravelExpense_travel_fare").val(Number(temptravelone));
+				$("#TravelExpense_per_Diem").val(Number(tempperdiemone));
+				$("#TravelExpense_transporation").val(Number(temptrnasone));
+				$("#TravelExpense_other_expense").val(Number(temptotherexpone));
+				var Totalone = $("#txttotal_1").val();
+
+				$("#TravelExpense_total").val(Number(Totalone));
+				$("#TravelExpense_net_receivable").val(Number(Totalone));
+			}
+			if (countProj == 2) {
+
+
+				var temptravelone = $("#EXPENSESUMMARY_0__Travelfare").val();
+				var temptraveltwo = $("#EXPENSESUMMARY_1__Travelfare").val();
+				var tempperdiemone = $("#EXPENSESUMMARY_0__Perdiem").val();
+				var tempperdiemtwo = $("#EXPENSESUMMARY_1__Perdiem").val();
+				var temptrnasone = $("#EXPENSESUMMARY_0__Transportion").val();
+				var temptrnastwo = $("#EXPENSESUMMARY_1__Transportion").val();
+				var temptotherexpone = $("#EXPENSESUMMARY_0__Otherexpesnse").val();
+				var temptotherexptwo = $("#EXPENSESUMMARY_1__Otherexpesnse").val();
+				$("#txttotal_1").val(Number(Number(temptravelone) + Number(tempperdiemone) + Number(temptrnasone) + Number(temptotherexpone)).toFixed(2));
+				$("#txttotal_2").val(Number(Number(temptraveltwo) + Number(tempperdiemtwo) + Number(temptrnastwo) + Number(temptotherexptwo)).toFixed(2));
+
+				$("#TravelExpense_travel_fare").val(Number(Number(temptravelone) + Number(temptraveltwo)));
+				$("#TravelExpense_per_Diem").val(Number(Number(tempperdiemone) + Number(tempperdiemtwo)));
+				$("#TravelExpense_transporation").val(Number(Number(temptrnasone) + Number(temptrnastwo)));
+				$("#TravelExpense_other_expense").val(Number(Number(temptotherexpone) + Number(temptotherexptwo)));
+				var Totalone = $("#txttotal_1").val();
+				var Totaltwo = $("#txttotal_2").val();
+				$("#TravelExpense_total").val(Number(Number(Totalone) + Number(Totaltwo)));
+				$("#TravelExpense_net_receivable").val(Number(Number(Totalone) + Number(Totaltwo)));
+
+			}
+			if (countProj == 3) {
+				var temptravelone = $("#EXPENSESUMMARY_0__Travelfare").val();
+				var temptraveltwo = $("#EXPENSESUMMARY_1__Travelfare").val();
+				var temptravelthree = $("#EXPENSESUMMARY_2__Travelfare").val();
+				var tempperdiemone = $("#EXPENSESUMMARY_0__Perdiem").val();
+				var tempperdiemtwo = $("#EXPENSESUMMARY_1__Perdiem").val();
+				var tempperdiemthree = $("#EXPENSESUMMARY_2__Perdiem").val();
+				var temptrnasone = $("#EXPENSESUMMARY_0__Transportion").val();
+				var temptrnastwo = $("#EXPENSESUMMARY_1__Transportion").val();
+				var temptrnasthree = $("#EXPENSESUMMARY_2__Transportion").val();
+				var temptotherexpone = $("#EXPENSESUMMARY_0__Otherexpesnse").val();
+				var temptotherexptwo = $("#EXPENSESUMMARY_1__Otherexpesnse").val();
+				var temptotherexpthree = $("#EXPENSESUMMARY_2__Otherexpesnse").val();
+				$("#txttotal_1").val(Number(Number(temptravelone) + Number(tempperdiemone) + Number(temptrnasone) + Number(temptotherexpone)).toFixed(2));
+				$("#txttotal_2").val(Number(Number(temptraveltwo) + Number(tempperdiemtwo) + Number(temptrnastwo) + Number(temptotherexptwo)).toFixed(2));
+				$("#txttotal_3").val(Number(Number(temptravelthree) + Number(tempperdiemthree) + Number(temptrnasthree) + Number(temptotherexpthree)).toFixed(2));
+
+				$("#TravelExpense_travel_fare").val(Number(Number(temptravelone) + Number(temptraveltwo) + Number(temptravelthree)) );
+				$("#TravelExpense_per_Diem").val(Number(Number(tempperdiemone) + Number(tempperdiemtwo) + Number(tempperdiemthree)) );
+				$("#TravelExpense_transporation").val(Number(Number(temptrnasone) + Number(temptrnastwo) + Number(temptrnasthree)));
+				$("#TravelExpense_other_expense").val(Number(Number(temptotherexpone) + Number(temptotherexptwo) + Number(temptotherexpthree)));
+				var Totalone = $("#txttotal_1").val();
+				var Totaltwo = $("#txttotal_2").val();
+				var Totalthree = $("#txttotal_3").val();
+				$("#TravelExpense_total").val(Number(Number(Totalone) + Number(Totaltwo) + Number(Totalthree)));
+				$("#TravelExpense_net_receivable").val(Number(Number(Totalone) + Number(Totaltwo) + Number(Totalthree)));
+			}
+		}
+		$(".ddltravelProjectId").change(function () {
+			var checkradio = $("#TravelExpense_Expensedistrubute_status").val();
+			if (checkradio == "No") {
+				CalculateNoDist();
+			}
+		})
+		$(".ddlBperdiemProjectId").change(function () {
+			var checkradio = $("#TravelExpense_Expensedistrubute_status").val();
+			if (checkradio == "No") {
+				CalculateNoDist();
+			}
+		})
+		$(".ddlCtransProjectId").change(function () {
+
+			var checkradio = $("#TravelExpense_Expensedistrubute_status").val();
+			if (checkradio == "No") {
+				CalculateNoDist();
+			}
+		})
+		$(".ddlDotherProjectId").change(function () {
+			var checkradio = $("#TravelExpense_Expensedistrubute_status").val();
+			if (checkradio == "No") {
+				CalculateNoDist();
+			}
+		})
+	</script>
+}

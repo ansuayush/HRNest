@@ -1,0 +1,39 @@
+﻿@model IList<Project.SpecialConditions.Condition.List>
+
+@if (Model != null)
+{
+    <div class="table-responsive">
+        <table class="table lg-table mt-0">
+            <thead>
+                <tr>
+                    <th class="w-33">S.No</th>
+                    <th>Special Conditions</th>
+                    <th>Allocated to </th>
+                    <th class="tw-100">Consider for project closure</th>
+                    <th class="w-33"></th>
+                </tr>
+            </thead>
+            <tbody>
+                @{ int COunt = 0;}
+                @foreach (var item in Model)
+                {
+                    COunt++;
+                    <tr>
+                        <td>
+                            @COunt
+                            <input type="hidden" class="hdnID" value="@item.ID" />
+                        </td>
+                        <td>@item.Condition </td>
+                        <td>@item.AllocatedName</td>
+                        <td>@(item.AutoClosure==1?"Yes":"No")</td>
+                        <td class="text-center">
+                            <a onclick="DeleteRecord(this)" data-toggle="tooltip" data-original-title="Remove">
+                                <i class="fas fa-window-close m-0 red-clr" aria-hidden="true"></i>
+                            </a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}

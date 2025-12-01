@@ -1,0 +1,43 @@
+﻿
+@model Mitr.Models.BloodGroup
+
+
+
+@using (Ajax.BeginForm("_BloodGroupAdd", "Master",
+        new { src = ViewBag.src },
+        new AjaxOptions { HttpMethod = "POST", OnSuccess = "OnSuccess" },
+    new { @id = "_BloodGroupAddFrom" })
+    )
+{
+
+    @Html.AntiForgeryToken()
+    @Html.HiddenFor(x => Model.ID)
+    <div class="row">
+        <div class="col-lg-6 col-md-6 col-sm-6 form-group">
+            <label>Name<sup>*</sup></label>
+            @Html.TextBoxFor(model => model.Blood_Group_Name, new { @class = "form-control" })
+            @Html.ValidationMessageFor(model => model.Blood_Group_Name, "", new { @class = "text-danger" })
+        </div>
+        
+        <div class="col-lg-12 col-md-12 col-sm-6 form-group">
+            <label>Description<sup>*</sup></label>
+            @Html.TextAreaFor(model => model.Description, new { @class = "form-control" })
+            @Html.ValidationMessageFor(model => model.Description, "", new { @class = "text-danger" })
+        </div>
+
+
+    </div>
+
+    <div class="row">
+
+        @if (Model.ID> 0)
+        {
+            <button type="submit" class="btn mtr-o-grn btn-l ripplelink pull-right" name="Command" value="Add"><i class="fa fa-paper-plane" aria-hidden="true"></i> Update</button>
+        }
+        else
+        {
+            <button type="submit" class="btn mtr-o-grn btn-l ripplelink pull-right" name="Command" value="Add"><i class="fa fa-paper-plane" aria-hidden="true"></i> Submit</button>
+        }
+    </div>
+
+}

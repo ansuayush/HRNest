@@ -1,0 +1,71 @@
+﻿@using System.Data
+@model DataSet
+@{
+	string MonthName = ""; string YearName = "";
+	string CompanyName = "", Address = "";
+	if (Model != null)
+	{
+		try
+		{
+			MonthName = Model.Tables[0].Rows[0]["MonthName"].ToString();
+			YearName = Model.Tables[0].Rows[0]["YearName"].ToString();
+			CompanyName = Model.Tables[0].Rows[0]["CompanyName"].ToString();
+			Address = Model.Tables[0].Rows[0]["CompanyAddress"].ToString();
+		}
+		catch
+		{
+		}
+	}
+}
+<table id="tblPTax" name="tblPTax">
+	<thead>
+		<tr>
+			<th class="text-center" style="font-size:medium" colspan="4"><img src="~/assets/design/images/c3.png" /></th>
+			<th class="text-center" style="font-size:medium" colspan="6">@CompanyName <br />@Address</th>
+		</tr>
+		<tr>
+			<th class="text-center" style="font-size:medium" colspan="4"></th>
+			<th class="text-center" style="font-size:medium" colspan="6">Professional Tax Report for the month of @MonthName @YearName</th>
+		</tr>
+		<tr style="font-weight:bold">
+			<th class="text-center">S.No</th>
+			<th class="text-center">Code</th>
+			<th class="text-center">Name</th>
+			<th class="text-center">Date of Joining</th>
+			<th class="text-center">Last Working Day</th>
+			<th class="text-center">Location</th>
+			<th class="text-center">Annual CTC</th>
+			<th class="text-center" colspan="3">P Tax deducted</th>
+		</tr>
+		<tr>
+			<th colspan="7"></th>
+			<th>(by previous employer)</th>
+			<th>(by C3) - This month</th>
+			<th>Total for FY</th>
+		</tr>
+	</thead>
+	<tbody>
+		@{
+			var Employee = from myRow in Model.Tables[1].AsEnumerable()
+						   select myRow;
+			
+			int count = 0;
+		}
+		@foreach (var item in Employee)
+		{
+			count++;
+		<tr>
+			<td>@(count)</td>
+			<td>@item["emp_code"]</td>
+			<td>@item["emp_name"]</td>
+			<td>@item["DateOfJoining"]</td>
+			<td>@item["lastworking_day"]</td>
+			<td>@item["Location"]</td>
+			<td>@Convert.ToDouble(item["AnualCTC"]).ToString("#,##0")</td>
+			<td>@Convert.ToDouble(item["PreviosEmployer"]).ToString("#,##0")</td>
+			<td>@Convert.ToDouble(item["PFAmountC3"]).ToString("#,##0")</td>
+			<td>@Convert.ToDouble(item["PFAmountC3All"]).ToString("#,##0")</td>
+		</tr>
+		}
+	</tbody>
+</table>

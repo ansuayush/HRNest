@@ -1,0 +1,115 @@
+﻿@using System.Data
+@model DataSet
+
+
+@{
+    
+    long loginEMPID = 0;
+    long.TryParse(clsApplicationSetting.GetSessionValue("EMPID"), out loginEMPID);
+   
+}
+
+
+<div class="card-body p-0">
+    <ul class="list-unstyled rqt-list scroll height-316 PlDMUL">
+
+        @if (Model.Tables[0].Rows.Count > 0)
+        {
+            int count = 0;
+            foreach (DataRow item in Model.Tables[0].Rows)
+            {
+                count++;
+                <li class="@item["ID"] pl-2">
+                    <div class="row">
+                        <div class="col-sm-3">
+                            <div class="left-dtl-r">
+                                <!----<small><strong>@item["EMP_Name"]</strong></small><br />---->
+								<small><strong>Req#@item["Doc_No"]</strong></small><br />
+                                <small class="lgt-text">@Convert.ToDateTime(item["Doc_Date"]).ToString("dd-MMM-yyyy")</small>
+                            </div>
+                        </div>
+                        <div class="col-sm-7">
+                            <div class="cntr-dtl-r">
+                                <strong>@item["Leave_Name"]</strong><br />
+                                <small class="lgt-text">@Convert.ToDateTime(item["start_Date"]).ToString("dd-MMM-yyyy") to @Convert.ToDateTime(item["End_Date"]).ToString("dd-MMM-yyyy") (@item["hoursDayWise"].ToString())</small>
+                            </div>
+                            @if (Convert.ToInt32(item["RFC"]) > 0)
+                            {
+                                <div class="rfcRequestdiv">
+                                    <span>RFC</span>
+                                </div>
+                            }
+                            @if (Convert.ToInt32(item["Approved"]) == 3)
+                            {
+                                <span>Leave request is  <strong>pending for Approval<strong> By Special Approver</strong></span>
+                            }
+                        </div>
+                        <div class="col-sm-2">
+                            <div class="right-dtl-r">
+                                <input type="hidden" name="L" value="@item["ID"]" />
+                                <input type="hidden" name="E" value="@item["EMP_ID"]" />
+                                <input type="hidden" name="D" value="@item["start_Date"]" />
+                                <input type="hidden" name="Doc" value="@item["Doc_No"]" />
+                                <input type="hidden" name="LE" value="@(loginEMPID==Convert.ToInt32(item["EMP_ID"])?"Y":"N")" />
+                                @if (Convert.ToInt32(item["AttachmentRequired"]) > 0)
+                                {
+                                    <a class="btn-c aLeaveAttachment" data-toggle="tooltip" data-original-title="View Documents"><i class="fa fa-paperclip"></i></a>
+                                }
+                                @if (Convert.ToInt32(item["Approved"]) ==0)
+                                {
+                                    <a class="btn-a anchorApproved" data-toggle="tooltip" data-original-title="Click here for approve"><i class="fas fa-check"></i></a>
+                                }
+
+                                    <a class="btn-g anchorpopup" data-toggle="tooltip" data-original-title="View leave request"><i class="fas fa-ellipsis-h"></i></a>
+                                </div>
+
+                        </div>
+                    </div>
+                </li>
+            }
+        }
+        else
+        {
+            <li>
+
+                <div class="no-dat-dv">
+                    <img src="~/assets/design/images/not-found-image.png" alt="">
+
+                    <p class="mtr-o-clr">No Record Found</p>
+
+
+                </div>
+
+            </li>
+        }
+
+    </ul>
+</div> 
+
+<script src="~/assets/design/Scripts/PagesJS/PendingLeaveDuringTheMonth.js?v=@clsApplicationSetting.GetWebConfigValue("Version")"></script>
+<script>
+
+    function removeLi(Class) {
+        var a = $(".PlDMUL");
+        $(a).find("li." + Class).remove();
+        var liLenght = $(a).find("li").length;
+        if (liLenght == 0) {
+            var innerHTL = '<li><div class="no-dat-dv"><img src="/assets/design/images/not-found-image.png" alt=""><p class="mtr-o-clr">No Record Found</p></div></li >';
+            $(".PlDMUL").html(innerHTL);
+        }
+    }
+
+
+    function ResponseLeaveAppproval(obj) {
+
+        if (obj.Status) {
+           
+            $("#LeaveModal").modal('hide');
+            removeLi(obj.ID);
+        } else {
+            swal(obj.SuccessMessage, '');
+        }
+
+    }
+
+</script>

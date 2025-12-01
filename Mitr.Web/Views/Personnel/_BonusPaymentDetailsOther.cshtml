@@ -1,0 +1,64 @@
+﻿
+
+@model Mitr.Model.BonusPaymentEntry
+
+@using (Ajax.BeginForm("_BonusPaymentDetailsOther", "Personnel",
+			new { src = clsApplicationSetting.EncryptQueryString(ViewBag.MenuID + "*" + "/Personnel/_BonusPaymentDetailsOther*" + ViewBag.EmpID) },
+			new AjaxOptions { HttpMethod = "POST", OnSuccess = "OnSuccess", OnBegin = "ShowLoadingDialog()" },
+			new { @id = "_BonusPaymentEntryOtherform" }))
+{
+
+	<div class="modal-content">
+		@Html.ValidationSummary(false, "", new { @class = "error" })
+		@Html.HiddenFor(x => Model.Component)
+		@Html.HiddenFor(x => Model.EmpID)
+		@Html.HiddenFor(x => Model.ID)
+		@Html.HiddenFor(x => Model.DocType)
+		<div class="modal-header blk-gdn-btn">
+			<h4 class="modal-title"><i class="fa fa-plus"></i>@Model.Component </h4>
+			<div class="close" data-dismiss="modal">&times;</div>
+		</div>
+		<!-- Modal body -->
+		<div class="modal-body">
+			<div class="row">
+				<div class="col-sm-6 form-group">
+					<label>Month</label>
+					@if (Model.Component == "Mobile Reimbursement" || Model.Component == "Internet Reimbursement")
+					{
+						@Html.TextBoxFor(model => model.PaidDate, new { @class = "form-control", @type = "date", @placeholder = "Enter", onchange = "checkdeptDate()" })
+						@Html.ValidationMessageFor(model => model.PaidDate, "", new { @class = "text-danger" })
+					}
+					else
+					{
+						@Html.TextBoxFor(model => model.PaidDate, new { @class = "form-control", @type = "month", @placeholder = "Enter", onchange = "checkdeptDate()" })
+						@Html.ValidationMessageFor(model => model.PaidDate, "", new { @class = "text-danger" })
+					}
+
+
+				</div>
+				<div class="col-sm-6 form-group">
+					<label>Amount</label>
+
+					@if (Model.Component == "AL Payable" || Model.Component == "Mobile Reimbursement" || Model.Component == "Internet Reimbursement")
+					{
+						@Html.HiddenFor(x => Model.PaidAmount)
+						@Html.TextBoxFor(model => model.PaidAmount, new { @class = "form-control", @type = "number", @disabled = "disabled" })
+
+						@*@Html.TextBoxFor(model => model.PaidAmount, new { @class = "form-control", @type = "number"})*@
+						@Html.ValidationMessageFor(model => model.PaidAmount, "", new { @class = "text-danger" })
+					}
+					else
+					{
+						@Html.TextBoxFor(model => model.PaidAmount, new { @class = "form-control", @type = "number" })
+						@Html.ValidationMessageFor(model => model.PaidAmount, "", new { @class = "text-danger" })
+					}
+				</div>
+				<div class="col-sm-12 text-center">
+
+					<button type="submit" class="btn mtr-o-grn" name="Command" value="Add"><i class="fas fa-paper-plane"></i>Submit</button>
+					<button type="button" class="btn cnl-btn ripplelink" data-dismiss="modal"><i class="fas fa-times"></i>Close</button>
+				</div>
+			</div>
+		</div>
+	</div>
+}

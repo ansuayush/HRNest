@@ -1,0 +1,125 @@
+﻿@model Mitr.Models.FundRaising.Tabs
+@section style{
+    @System.Web.Optimization.Styles.Render("~/bundle/dataTablecss")
+}
+@{
+    string MenuID = "0";
+    if (ViewBag.MenuID != null)
+    {
+        MenuID = ViewBag.MenuID;
+    }
+}
+<div class="inner-main">
+    <div class="right_col" role="main">
+        @Html.Partial("ListHeader_Partial", "Lead List")
+        <input type="hidden" id="hdnAddUrl" name="hdnAddUrl" value="@Url.Action("AddLead",new { src = clsApplicationSetting.EncryptFriendly(ViewBag.MenuID+"*"+"/FundRaising/AddLead*0") })" />
+		@using (Ajax.BeginForm("_LeadList", "FundRaising",
+           new { src = clsApplicationSetting.EncryptQueryString(ViewBag.MenuID.ToString() + "*/FundRaising/_LeadList") },
+           new AjaxOptions { HttpMethod = "POST", OnSuccess = "BindTarget" },
+       new { @id = "_LeadListFrom" })
+       )
+        {
+            
+            <div class="col-sm-3 form-group">
+                <label>Stage</label>
+                <select class="form-control  applyselect ddapplyaction" id="StageLevelid" name="StageLevelid">
+                    <option value="0" >All</option>
+                    @foreach (var item in ViewBag.StageLevel)
+                    {
+                        <option value="@item.ID">@item.Name</option>
+
+                    }
+                </select>
+            </div>
+            <div class="tab-main ">
+                <div class="row text-clr">
+                    <div class="col-md-12">
+                        <ul id="tabs" class="nav nav-tabs " role="tablist">
+                            <li class="nav-item"> <a tabvalue="0" class="nav-link active ripplelink AnchorApproval" data-toggle="tab" role="tab"><i class="far fa-clock"></i>Pending</a> </li>
+                            <li class="nav-item"> <a tabvalue="1" class="nav-link ripplelink AnchorApproval" data-toggle="tab" role="tab"><i class="fas fa-database"></i>Processed</a> </li>
+
+                        </ul>
+                    </div>
+                    <div style="display:none">
+                        @Html.HiddenFor(model => model.Approve)
+                        <button type="submit" class="btn mtr-g-grn btn-l ripplelink" id="btnSearch" name="Command" value="Search">
+                            <i class="fas fa-search"></i>Search
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+        }
+
+        <div id="TargetDiv"></div>
+    </div>
+        </div>
+
+
+@section scripts    {
+    @System.Web.Optimization.Scripts.Render("~/bundle/unobtrusivejs")
+    @Html.IncludeVersionedJs(Url.Content("~/assets/design/Scripts/ToolTip.js"))
+    @Html.IncludeVersionedJs(Url.Content("~/assets/design/Scripts/SyncScripts.js"))
+<script>
+    $(document).ready(function () {
+       
+        $(".ddapplyaction").select2();
+            $("#btnSearch").click();
+          //  GetList("PENDING");
+        });
+    $('.ddapplyaction').bind("change", function () {
+       
+        $("#btnSearch").click();
+    });
+        $('.AnchorApproval').on('click', function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+            var att = $(this).attr("tabvalue");
+            $(".AnchorApproval.active").removeClass("active");
+            $(this).addClass("active");
+            $("#Approve").val(att);
+            ShowLoadingDialog();
+            $("#btnSearch").click();
+        });
+    function GetList(Tab) {
+       
+			ShowLoadingDialog();
+            var Levelid = $("#ddlStage").val();
+                    $.ajax({
+                        url: "/FundRaising/_LeadList",
+                        type: "Get",
+                        async: true,
+                        data: { Status: Tab, StageLevelid: Levelid },
+                        success: function (data) {
+                           
+                            alert(data);
+                            $("#TagetDiv_PENDING").empty();
+                            $("#TagetDiv_PENDING").html(data);
+       //                     DatatableScriptsWithColumnSearch("table_" + Tab);
+							//DatatableScriptsWithColumnSearch("table1_" + Tab);
+							CloseLoadingDialog();
+                        },
+                        error: function (er) {
+                            alert(er);
+
+                        }
+                    });
+                }
+
+        function BindTarget(args) {
+            CloseLoadingDialog();
+            $("#TargetDiv").empty();
+            $("#TargetDiv").html(args);
+		}
+
+
+		function ListAdd(ID) {
+				var ID = Number(ID);
+				var MenuID = Number('@MenuID');
+                ShowLoadingDialog();
+            var url = "/FundRaising/AddLead?src=" + EncryptQueryStringJSON(MenuID + "*" + "/FundRaising/AddLead" + "*" + ID);
+                window.location.href = url;
+	}
+
+</script>
+}

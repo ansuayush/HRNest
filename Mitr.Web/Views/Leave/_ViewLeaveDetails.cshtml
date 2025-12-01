@@ -1,0 +1,202 @@
+﻿@model Mitr.Models.LeaveDetails
+
+@{
+    long EMPID = 0;
+    long.TryParse(clsApplicationSetting.GetSessionValue("EMPID"), out EMPID);
+    string TotalhoursDayWise = "0", FileName = "";
+    if (!string.IsNullOrEmpty(Model.LeaveDetails_Tran.Select(x => x.EMPCode).FirstOrDefault()))
+    {
+        FileName = Model.LeaveDetails_Tran.Select(x => x.EMPCode).FirstOrDefault() + "-" + Model.LeaveDetails_Tran.Select(x => x.DocNo).FirstOrDefault();
+    }
+
+}
+
+<div class="mypartial">
+    <div class="heading-grd heading-btn  blk-gdn-btn mb-0 ">
+
+        <div class="row hedr-emp-dtl">
+            <div class="col-sm-2">
+                <div class="lef-emp-prf">
+                    @*@Html.ShowAttachment(clsApplicationSetting.GetSessionValue("AttachmentID"), "")*@
+                    @Html.ShowAttachment(Model.LeaveDetails_Tran.Select(x => x.AttachmentID).FirstOrDefault().ToString(), "")
+                    @*<img src="@clsApplicationSetting.GetImageLink(Model.LeaveDetails_Tran.Select(x => x.AttachmentID).FirstOrDefault().ToString(),Model.LeaveDetails_Tran.Select(x => x.ContentType).FirstOrDefault())" alt="">*@
+                    @Model.LeaveDetails_Tran.Select(x => x.EMPName).FirstOrDefault()
+                    <p>(<small> @Model.LeaveDetails_Tran.Select(x => x.EMPCode).FirstOrDefault()</small>)</p>
+                </div>
+            </div>
+            <div class="col-sm-3 wh-575">
+                <div class="emg-txt">
+                    <strong class="mtr-y-clr">Application Details</strong>
+                    <table class="mt-1 va-t">
+                        <tr>
+                            <td class="w-60"><b>Req. No</b></td>
+                            <td class="pr-1">:</td>
+                            <td> @Model.LeaveDetails_Tran.Select(x => x.DocNo).FirstOrDefault()</td>
+                        </tr>
+                        <tr>
+                            <td><b>Req Date</b></td>
+                            <td class="pr-1">:</td>
+                            <td>@Model.LeaveDetails_Tran.Select(x => x.DocDate).FirstOrDefault()</td>
+                        </tr>
+                        @if (!string.IsNullOrEmpty(Model.LeaveDetails_Tran.Select(x => x.ExpectedDeliveryDate).FirstOrDefault()))
+                        {
+                            <tr>
+                                <td><b>Exp Date :</b></td>
+                                <td>@Model.LeaveDetails_Tran.Select(x => x.ExpectedDeliveryDate).FirstOrDefault()</td>
+                            </tr>
+                        }
+                    </table>
+                </div>
+            </div>
+            <div class="col-sm-4 wh-575">
+                <div class="emg-txt">
+                    <strong class="mtr-y-clr">Emergency Contact </strong>
+                    <table class="mt-1 va-t">
+                        <tr>
+                            <td class="w-60"><b>Name </b></td>
+                            <td class="pr-1">:</td>
+                            <td>@Model.LeaveDetails_Tran.Select(x => x.EmergenContactName).FirstOrDefault()</td>
+                        <tr>
+                            <td><b>Phone </b></td>
+                            <td class="pr-1">:</td>
+                            <td>@Model.LeaveDetails_Tran.Select(x => x.emergenContact_no).FirstOrDefault()</td>
+                        </tr>
+                        <tr>
+                            <td><b>Relation </b></td>
+                            <td class="pr-1">:</td>
+                            <td>@Model.LeaveDetails_Tran.Select(x => x.EmergenContactRelation).FirstOrDefault()</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+
+            <div class="col-sm-3">
+                <div class="rmrk-text">
+                    <strong class="mtr-y-clr">Reason</strong>
+                    <p class="mt-1">@Model.LeaveDetails_Tran.Select(x => x.Reason).FirstOrDefault()</p>
+                </div>
+            </div>
+
+
+        </div>
+    </div>
+    <!--- -->
+
+    <div class="tab-content">
+        <div class="tab-pane active mt-0" id="tabs-1" role="tabpanel">
+            <div class="p-2">
+                <div class="table-responsive">
+                    <table class="table table-striped sticky table-design m-0">
+                        <thead>
+                            <tr class="gry-clr-bg">
+                                <th  width="50">S No.</th>
+                                <th> Leave Date </th>
+                                <th> Leave Type </th>
+                                <th width="100" class="text-right"> Leave Hrs   </th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+						
+                            @if (Model.LeaveDetails_Tran != null)
+                            {
+                                int Count = 0;
+                                foreach (var item in Model.LeaveDetails_Tran)
+                                {
+                                    Count++;
+                                    TotalhoursDayWise = item.TotalhoursDayWise;
+                                    <tr>
+                                        <td>@Count </td>
+                                        <td>@item.Date</td>
+                                        <td>@item.LeaveType</td>
+                                        <td class="text-right">@item.hoursDayWise</td>
+                                    </tr>
+                                }
+                            }
+
+                            <tr class="gry-clr-bg text-right">
+                                <td colspan="3"><strong>Total</strong></td>
+                                <td ><strong>@Model.LeaveDetails_Tran.Sum(x => x.Hours) Hrs</strong></td>
+                            </tr>
+
+                        </tbody>
+
+                    </table>
+                </div>
+            </div>
+
+            <!---tab --->
+
+        </div>
+        
+        <!-- <div class="mtr-y-bg box-tab">
+
+
+             <ul class="nav nav-tabs  float-right" role="tablist">
+                 <li class="nav-item">
+                     <a class="nav-link active" data-toggle="tab" href="#tabs-1" role="tab"><i class="fas fa-th-list"></i>Leave Request </a>
+                 </li>
+
+             </ul>
+         </div>
+         -->
+        <!-- Tab panes -->
+    </div>
+    @if (Model.LeaveAttachment.Count > 0)
+    {
+
+        <div class="col-md-12">
+            <div class="table-responsive">
+                <table class="table mt-0 mb-0">
+                    <thead>
+                        <tr>
+                            <th class="w-50">S. No</th>
+                            <th>Certificate Name</th>
+                            <th class="w-100">Attachment</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+
+                        @{int couint = 0; }
+                        @foreach (Mitr.Models.Attachments item in Model.LeaveAttachment)
+                        {
+                            couint++;
+
+                            <tr>
+                                <td>@couint</td>
+                                <td>
+                                    @item.Description
+                                    <input type="hidden" name="TDID" value="@item.AttachmentID" />
+                                </td>
+                                <td><a target="_blank" href="@Url.Action("DownloadFile","Image",new {item.AttachmentID,item.ContentType,FileName=(FileName+"-"+item.FileName)})"><strong class="green-clr"><i class="fas fa-paperclip"></i>@item.FileName</strong></a></td>
+
+
+                            </tr>
+                        }
+
+
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+
+    }
+
+    @{
+        Html.RenderAction("_SetLeaveApprovalStatus",
+              new
+              {
+                  src = ViewBag.src,
+                  LeaveLogID = Model.LeaveDetails_Tran.Select(x => x.LeaveLogID).FirstOrDefault(),
+                  Approved = Model.LeaveDetails_Tran.Select(x => x.Approved).FirstOrDefault(),
+                  EMPID = Model.LeaveDetails_Tran.Select(x => x.EMPID).FirstOrDefault(),
+                  HODRemarks = Model.LeaveDetails_Tran.Select(x => x.HODRemarks).FirstOrDefault(),
+                  EDRemarks = Model.LeaveDetails_Tran.Select(x => x.EDRemarks).FirstOrDefault(),
+                  RFC = Model.LeaveDetails_Tran.Select(x => x.RFC).FirstOrDefault(),
+                  RFCRemarks = Model.LeaveDetails_Tran.Select(x => x.RFCRemarks).FirstOrDefault(),
+                  RFCStatus = Model.LeaveDetails_Tran.Select(x => x.RFCStatus).FirstOrDefault()
+              });
+    }
+
+</div>

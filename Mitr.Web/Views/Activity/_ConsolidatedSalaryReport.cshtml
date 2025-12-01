@@ -1,0 +1,656 @@
+﻿
+@model Mitr.Models.ConsolidateSalaryReport
+@{
+	int countD = 0;
+	decimal NetFCRATotal = 0, NetNFCRATotal = 0, SalaryAmountTotal = 0, ALAmountTotal = 0, PFAmountTotal = 0, FBAmountTotal = 0, ALPaidTotal = 0, OTAmountTotal = 0;
+	decimal SalaryAmountFCRATotal = 0, ALAmountFCRATotal = 0, ALAmountFCRAEntryTotal = 0, PFAmountFCRATotal = 0, FBAmountFCRATotal = 0, ALPaidFCRATotal = 0, OTAmountFCRATotal = 0, PFAmountEntryFCRATotal = 0;
+	decimal SalaryAmountNFCRATotal = 0, ALAmountNFCRATotal = 0, ALAmountNFCRAEntryTotal = 0, PFAmountNFCRATotal = 0, FBAmountNFCRATotal = 0, ALPaidNFCRATotal = 0, OTAmountNFCRATotal = 0, PFAmountEntryNFCRATotal = 0; ;
+
+
+
+	var OtherAdditionsArrear = Model.Component.Where(n => n.Componentid == 449).ToList();
+	var OtherAdditionsother = Model.Component.Where(n => n.Componentid == 450).ToList();
+
+	var OtherAdditionsArrearFCRA = Model.Component.Where(n => n.Componentid == 449 && n.ProjectType == "FCRA").ToList();
+	var OtherAdditionsotherFCRA = Model.Component.Where(n => n.Componentid == 450 && n.ProjectType == "FCRA").ToList();
+
+
+	var OtherAdditionsArrearNFCRA = Model.Component.Where(n => n.Componentid == 449 && n.ProjectType == "NFCRA").ToList();
+	var OtherAdditionsotherNFCRA = Model.Component.Where(n => n.Componentid == 450 && n.ProjectType == "NFCRA").ToList();
+
+
+	var ComponentListDeduction = Model.Component.GroupBy(x => x.Componentid)
+.Select(x => new
+{
+	Componentid = x.Select(ex => ex.Componentid).FirstOrDefault(),
+	Component = x.Select(ex => ex.Component).FirstOrDefault(),
+	Doctype = x.Select(ex => ex.Doctype).FirstOrDefault(),
+	ProjectType = x.Select(ex => ex.ProjectType).FirstOrDefault()
+
+}).Where(n => n.Doctype == "Deduction")
+.ToList();
+
+	var ComponentListDeduction_new = Model.Component.GroupBy(x => new { x.Componentid, x.ProjectType })
+.Select(x => new
+{
+	Componentid = x.Select(ex => ex.Componentid).FirstOrDefault(),
+	Component = x.Select(ex => ex.Component).FirstOrDefault(),
+	Doctype = x.Select(ex => ex.Doctype).FirstOrDefault(),
+	ProjectType = x.Select(ex => ex.ProjectType).FirstOrDefault()
+
+}).Where(n => n.Doctype == "Deduction")
+.ToList();
+
+
+
+
+	decimal[] ArrDeductionFCRA = new decimal[ComponentListDeduction.Count];
+	decimal[] ArrDeductionNFCRA = new decimal[ComponentListDeduction.Count];
+	decimal[] ArrEarning = new decimal[ComponentListDeduction.Count];
+	var ComponentListOtherEarning = Model.Component.GroupBy(x => x.Componentid)
+.Select(x => new
+{
+	Componentid = x.Select(ex => ex.Componentid).FirstOrDefault(),
+	Component = x.Select(ex => ex.Component).FirstOrDefault(),
+	Doctype = x.Select(ex => ex.Doctype).FirstOrDefault(),
+	ProjectType = x.Select(ex => ex.ProjectType).FirstOrDefault()
+}).Where(n => n.Doctype == "Other Earning")
+.ToList();
+	int Count = 0;
+	string ProjectType = "";
+	string Components = "";
+	int EmpCount = 0;
+	decimal[] ArrEarningFCRA = new decimal[ComponentListOtherEarning.Count];
+	decimal[] ArrEarningNFCRA = new decimal[ComponentListOtherEarning.Count];
+	ArrEarning = new decimal[ComponentListOtherEarning.Count];
+}
+<div class="three-sticky device-hgt-400">
+	@Html.HiddenFor(x => Model.Month)
+	@Html.HiddenFor(x => Model.Emptype)
+	@foreach (var item in ComponentListOtherEarning)
+	{
+		<input type="hidden" name="Component[@Count].Component" value="@item.Component" />
+		<input type="hidden" name="Component[@Count].Componentid" value="@item.Componentid" />
+		<input type="hidden" name="Component[@Count].Doctype" value="@item.Doctype" />
+		<th></th>
+		Count = Count + 1;
+	}
+	@foreach (var item in ComponentListOtherEarning)
+	{
+		Components = Components + (Components == "" ? "0" : "#") + item.Componentid.ToString();
+	}
+	@foreach (var item in ComponentListDeduction)
+	{
+		Components = Components + (Components == "" ? "0" : "#") + item.Componentid.ToString();
+	}
+	<input type="hidden" class="ComponentsList" value="@Components" />
+	<table id="tblExport" class="table tds-fism amtwidth-inpt table-bordered table-striped m-0">
+		<thead>
+			<tr>
+				@*<th class="text-center" width="33" data-toggle="tooltip" title="" data-original-title="Select All" data-placement="right" aria-describedby="tooltip211254">
+					</th>*@
+				<th>Sr No.</th>
+				<th>Code</th>
+				<th>Name</th>
+				<th>Employment Type</th>
+				<th>Location</th>
+				<th class="text-center">Hourly Rate</th>
+				<th class="text-center">Salary Amount(Salary+AL Paid+OT)</th>
+				<th class="text-center">AL Amount</th>
+				<th class="text-center">PF (C3) Amount</th>
+				<th class="text-center">Fixed Benefits Amount</th>
+				<th class="text-center">Annual Leave paid</th>
+				@foreach (var item in ComponentListOtherEarning)
+				{
+					<th class="text-center">@item.Component</th>
+				}
+				<th class="text-center">Overtime Amount</th>
+				<th colspan="@(ComponentListOtherEarning.Count + 6)" class="text-center ylwlightbg">FCRA</th>
+				<th colspan="@(ComponentListOtherEarning.Count + 6)" class="text-center ylwlght2bg">Non FCRA</th>
+				<th colspan="@(ComponentListDeduction.Count*2 + 4)" class="text-center">ENTRY FORM</th>
+				<th colspan="2" class="text-center">NET PAID</th>
+			</tr>
+			<tr class="sticky-sbhead csltop">
+
+				<th></th>
+				<th></th>
+				<th></th>
+				<th></th>
+				<th></th>
+				<th></th>
+				<th></th>
+				<th></th>
+				<th></th>
+				<th></th>
+				<th></th>
+				@foreach (var item in ComponentListOtherEarning)
+				{
+					<input type="hidden" name="Component[@Count].Component" value="@item.Component" />
+					<input type="hidden" name="Component[@Count].Componentid" value="@item.Componentid" />
+					<input type="hidden" name="Component[@Count].Doctype" value="@item.Doctype" />
+					<th></th>
+					Count = Count + 1;
+				}
+
+				<th></th>
+				<th class="ylwlightbg text-center">Salary</th>
+				<th class="ylwlightbg text-center">AL Allocation</th>
+				<th class="ylwlightbg text-center">PF (C3) Allocation</th>
+				<th class="ylwlightbg text-center">Fixed Benefits</th>
+				<th class="ylwlightbg text-center">Annual Leave paid</th>
+				@foreach (var item in ComponentListOtherEarning)
+				{
+					<th class="ylwlightbg text-center">@item.Component</th>
+				}
+				<th class="ylwlightbg text-center">Overtime</th>
+				<th class="ylwlght2bg text-center">Salary</th>
+				<th class="ylwlght2bg text-center">AL Allocation</th>
+				<th class="ylwlght2bg text-center">PF (C3) Allocation</th>
+				<th class="ylwlght2bg text-center">Fixed Benefits</th>
+				<th class="ylwlght2bg text-center">Annual LeavePaid</th>
+				@foreach (var item in ComponentListOtherEarning)
+				{
+					<th class="ylwlightbg text-center">@item.Component</th>
+				}
+				<th class="ylwlght2bg text-center">Overtime</th>
+				<th class="text-center">PF allocation FCRA</th>
+				<th class="text-center">>PF Allocation (Non FCRA)</th>
+				<th class="text-center">>AL Allocation- FCRA</th>
+				<th class="text-center">>AL Allocation Non FCRA]</th>
+				@foreach (var item in ComponentListDeduction)
+				{
+					<input type="hidden" name="Component[@Count].Component" value="@item.Component" />
+					<input type="hidden" name="Component[@Count].Componentid" value="@item.Componentid" />
+					<input type="hidden" name="Component[@Count].Doctype" value="@item.Doctype" />
+					<th class="text-center">@item.Component -FCRA</th>
+					<th class="text-center">@item.Component -Non FCRA</th>
+					Count = Count + 1;
+				}
+
+				<th class="text-center">FCRA</th>
+				<th class="text-center">Non FCRA</th>
+			</tr>
+		</thead>
+		<tbody>
+			@{ decimal NetFCRA = 0; decimal NetNFCRA = 0; int SrNo = 1; decimal TotalALNFRA = 0;
+
+			}
+			@for (int i = 0; i < Model.Emplist.Count; i++)
+			{
+				EmpCount = EmpCount + 1;
+				NetFCRA = 0; NetNFCRA = 0;
+				NetFCRA = Convert.ToDecimal(Model.Emplist[i].Salary_FCRA)
+					+ Convert.ToDecimal(Model.Emplist[i].AL_FCRA)
+					+ Convert.ToDecimal(Model.Emplist[i].PF_FCRA)
+					+ Convert.ToDecimal(Model.Emplist[i].FB_FCRA)
+					+ Convert.ToDecimal(Model.Emplist[i].ALPaid_FCRA)
+					+ Convert.ToDecimal(Model.Emplist[i].OT_FCRA);
+
+				NetNFCRA = Convert.ToDecimal(Model.Emplist[i].Salary_NONFCRA)
+					+ Convert.ToDecimal(Model.Emplist[i].AL_NONFCRA)
+					+ Convert.ToDecimal(Model.Emplist[i].PF_NONFCRA)
+					+ Convert.ToDecimal(Model.Emplist[i].FB_NONFCRA)
+					+ Convert.ToDecimal(Model.Emplist[i].ALPaid_NONFCRA)
+					+ Convert.ToDecimal(Model.Emplist[i].OT_NONFCRA);
+				@Html.HiddenFor(x => Model.Emplist[i].Empid)
+
+				ProjectType = Model.Emplist[i].ProjectType;
+				SalaryAmountTotal = SalaryAmountTotal + Convert.ToDecimal(Model.Emplist[i].Salary);
+				ALAmountTotal = ALAmountTotal + Convert.ToDecimal(Model.Emplist[i].ALAmount);
+				PFAmountTotal = PFAmountTotal + Convert.ToDecimal(Model.Emplist[i].PFAmountC3);
+				FBAmountTotal = FBAmountTotal + Convert.ToDecimal(Model.Emplist[i].FixedAmount);
+				ALPaidTotal = ALPaidTotal + Convert.ToDecimal(Model.Emplist[i].ALPaid);
+				OTAmountTotal = OTAmountTotal + Convert.ToDecimal(Model.Emplist[i].OTAmount);
+
+				SalaryAmountFCRATotal = SalaryAmountFCRATotal + Convert.ToDecimal(Model.Emplist[i].Salary_FCRA);
+				ALAmountFCRATotal = ALAmountFCRATotal + Convert.ToDecimal(Model.Emplist[i].AL_FCRA);
+				ALAmountFCRAEntryTotal = ALAmountFCRAEntryTotal + Convert.ToDecimal(ProjectType != "Non-FCRA" ? Model.Emplist[i].AL_FCRA : "0");
+				PFAmountFCRATotal = PFAmountFCRATotal + Convert.ToDecimal(Model.Emplist[i].PF_FCRA);
+				PFAmountEntryFCRATotal = PFAmountEntryFCRATotal + Convert.ToDecimal(ProjectType != "Non-FCRA" ? Model.Emplist[i].PF_FCRA_Entry : "0");
+
+				FBAmountFCRATotal = FBAmountFCRATotal + Convert.ToDecimal(Model.Emplist[i].FB_FCRA);
+				ALPaidFCRATotal = ALPaidFCRATotal + Convert.ToDecimal(Model.Emplist[i].ALPaid_FCRA);
+				OTAmountFCRATotal = OTAmountFCRATotal + Convert.ToDecimal(Model.Emplist[i].OT_FCRA);
+
+				SalaryAmountNFCRATotal = SalaryAmountNFCRATotal + Convert.ToDecimal(Model.Emplist[i].Salary_NONFCRA);
+
+				TotalALNFRA = TotalALNFRA + Convert.ToDecimal(Model.Emplist[i].AL_NONFCRA);
+				ALAmountNFCRATotal = ALAmountNFCRATotal + Convert.ToDecimal(Model.Emplist[i].AL_NONFCRA);
+
+				ALAmountNFCRAEntryTotal = ALAmountNFCRAEntryTotal + Convert.ToDecimal(ProjectType != "FCRA" ? Model.Emplist[i].AL_NONFCRA : "0");
+				PFAmountNFCRATotal = PFAmountNFCRATotal + Convert.ToDecimal(Model.Emplist[i].PF_NONFCRA);
+				PFAmountEntryNFCRATotal = PFAmountEntryNFCRATotal + Convert.ToDecimal(ProjectType != "FCRA" ? Model.Emplist[i].PF_NONFCRA_Entry : "0");
+
+				FBAmountNFCRATotal = FBAmountNFCRATotal + Convert.ToDecimal(Model.Emplist[i].FB_NONFCRA);
+				ALPaidNFCRATotal = ALPaidNFCRATotal + Convert.ToDecimal(Model.Emplist[i].ALPaid_NONFCRA);
+				OTAmountNFCRATotal = OTAmountNFCRATotal + Convert.ToDecimal(Model.Emplist[i].OT_NONFCRA);
+
+
+				<tr>
+					<td>@SrNo</td>
+					<td>
+						<input type="hidden" class="Empcode" value="@Model.Emplist[i].emp_code" />
+						@Model.Emplist[i].emp_code
+					</td>
+					<td>@Model.Emplist[i].emp_name</td>
+					<td>@Model.Emplist[i].EmploymentTerm</td>
+					<td>@Model.Emplist[i].Location</td>
+					<td>@(Convert.ToDecimal(Model.Emplist[i].HourlyRate))</td>
+					<td class="text-right">@(string.Format("{0:#,0}", Convert.ToDecimal(Model.Emplist[i].Salary)))</td>
+					<td class="text-right">@(string.Format("{0:#,0}", Convert.ToDecimal(Model.Emplist[i].ALAmount)))</td>
+					<td class="text-right">@(string.Format("{0:#,0}", Convert.ToDecimal(Model.Emplist[i].PFAmountC3)))</td>
+					<td class="text-right">@(string.Format("{0:#,0}", Convert.ToDecimal(Model.Emplist[i].FixedAmount)))</td>
+					<td class="text-right ALPaid">@(string.Format("{0:#,0}", Convert.ToDecimal(Model.Emplist[i].ALPaid)))</td>
+					@{ countD = 0; }
+					@foreach (var item in ComponentListOtherEarning)
+					{
+						if (Model.Component.Where(n => n.Empid == Model.Emplist[i].Empid && n.Componentid == item.Componentid).ToList().Count > 0)
+						{
+							var lst = Model.Component.Where(n => n.Empid == Model.Emplist[i].Empid && n.Componentid == item.Componentid).FirstOrDefault();
+							//TotalEarning = TotalEarning + Convert.ToDecimal(lst.Amt);
+							ArrEarning[countD] = ArrEarning[countD] + Convert.ToDecimal(lst.Amt);
+							<td class="text-right @lst.Componentid">
+								@(lst!=null? lst.Amt : 0)
+							</td>
+							countD++;
+						}
+						else
+						{
+							<td class="text-right">
+								0
+							</td>
+						}
+					}
+
+					<td class="text-right OT">@(string.Format("{0:#,0}", Convert.ToDecimal(Model.Emplist[i].OTAmount)))</td>
+					<td class="text-right ylwlightbg FCRA_SALARY">@(ProjectType!= "Non-FCRA"? string.Format("{0:#,0}", Convert.ToDecimal(Model.Emplist[i].Salary_FCRA)):"0")</td>
+					<td class="text-right ylwlightbg FCRA">@(ProjectType!= "Non-FCRA"? string.Format("{0:#,0}", Convert.ToDecimal(Model.Emplist[i].AL_FCRA)) : "0")</td>
+					<td class="text-right ylwlightbg">@(ProjectType!= "Non-FCRA"? string.Format("{0:#,0}", Convert.ToDecimal(Model.Emplist[i].PF_FCRA)) : "0")</td>
+					<td class="text-right ylwlightbg FCRA_FB">@(ProjectType!= "Non-FCRA"? string.Format("{0:#,0}", Convert.ToDecimal(Model.Emplist[i].FB_FCRA)) : "0")</td>
+					<td class="text-right ylwlightbg">@(ProjectType!= "Non-FCRA"? Model.Emplist[i].ALPaid_FCRA : "0")</td>
+
+					@{ countD = 0; }
+					@foreach (var item in ComponentListOtherEarning)
+					{
+						//NetFCRA = 0;
+
+						if (Model.Component.Where(n => n.Empid == Model.Emplist[i].Empid && n.Componentid == item.Componentid).ToList().Count > 0)
+						{
+							var lst = Model.Component.Where(n => n.Empid == Model.Emplist[i].Empid && n.Componentid == item.Componentid).FirstOrDefault();
+							NetFCRA = NetFCRA + Convert.ToDecimal(lst.AmtFCRA);
+							ArrEarningFCRA[countD] = ArrEarningFCRA[countD] + (ProjectType != "Non-FCRA" ? Convert.ToDecimal(lst.AmtFCRA) : 0);
+							<td class="text-right ylwlightbg">
+								<label>@(ProjectType!= "Non-FCRA"? lst.AmtFCRA : 0)</label>
+							</td>
+							countD++;
+
+
+						}
+
+						else
+						{
+							<td class="text-right ylwlightbg">
+								0
+							</td>
+						}
+
+					}
+
+					<td class="text-right ylwlightbg">@(ProjectType!= "Non-FCRA"? Model.Emplist[i].OT_FCRA : "0")</td>
+
+
+
+					<td class="text-right ylwlght2bg NFCRA_SALARY">@(ProjectType!= "FCRA"? string.Format("{0:#,0}", Convert.ToDecimal(Model.Emplist[i].Salary_NONFCRA)) : "0")</td>
+					@*<td class="text-right ylwlght2bg test">@(ProjectType!= "FCRA"? string.Format("{0:#,0}", Convert.ToDecimal(Model.Emplist[i].AL_NONFCRA)) : "0")</td>*@
+					@if (Convert.ToDecimal(Model.Emplist[i].AL_NONFCRA) > 0)
+					{
+						<td class="text-right ylwlght2bg test">
+							@(string.Format("{0:#,0}", Convert.ToDecimal(Model.Emplist[i].AL_NONFCRA)))
+						</td>
+					}
+					else
+					{
+						<td class="text-right ylwlght2bg test">
+							0
+						</td>
+					}
+					@if (Convert.ToDecimal(Model.Emplist[i].PF_NONFCRA) > 0)
+					{
+						<td class="text-right ylwlght2bg test">
+							@(string.Format("{0:#,0}", Convert.ToDecimal(Model.Emplist[i].PF_NONFCRA)))
+						</td>
+					}
+					else
+					{
+						<td class="text-right ylwlght2bg test">
+							0
+						</td>
+					}
+
+					@*<td class="text-right ylwlght2bg">@(ProjectType!= "FCRA"? string.Format("{0:#,0}", Convert.ToDecimal(Model.Emplist[i].PF_NONFCRA)): "0")</td>*@
+					<td class="text-right ylwlght2bg NFCRA_FB">@(ProjectType!= "FCRA"? string.Format("{0:#,0}", Convert.ToDecimal(Model.Emplist[i].FB_NONFCRA)): "0")</td>
+					<td class="text-right ylwlght2bg">@(ProjectType!= "FCRA"? Model.Emplist[i].ALPaid_NONFCRA :"0") </td>
+					@{ countD = 0;
+						decimal AmtNFCRAValues = 0;
+					}
+					@foreach (var item in ComponentListOtherEarning)
+					{
+						AmtNFCRAValues = 0;
+						if (Model.Component.Where(n => n.Empid == Model.Emplist[i].Empid && n.Componentid == item.Componentid).ToList().Count > 0)
+						{
+							//var lst = Model.Component.Where(n => n.Empid == Model.Emplist[i].Empid && n.Componentid == item.Componentid && n.ProjectType == "FCRA" && n.ProjectType != null).FirstOrDefault();
+							var NFCRAlst = Model.Component.Where(n => n.Empid == Model.Emplist[i].Empid && n.Componentid == item.Componentid && n.ProjectType == "NFCRA" && n.ProjectType != null).FirstOrDefault();
+							if (NFCRAlst != null && NFCRAlst.Amt > 0)
+							{
+								AmtNFCRAValues = Convert.ToDecimal(NFCRAlst.Amt);
+								NetNFCRA = NetNFCRA + AmtNFCRAValues;
+								ArrEarningNFCRA[countD] = ArrEarningNFCRA[countD] + (ProjectType != "FCRA" ? AmtNFCRAValues : 0);
+							}
+							<td class="text-right ylwlght2bg">@(ProjectType!= "FCRA"? AmtNFCRAValues : 0) </td>
+						}
+						else
+						{
+							<td class="text-right ylwlght2bg">0</td>
+						}
+
+					}
+					<td class="text-right ylwlght2bg"> @(ProjectType!= "FCRA"? Model.Emplist[i].OT_NONFCRA : "0")</td>
+					<td class="text-right"> @(ProjectType!= "Non-FCRA"? Model.Emplist[i].PF_FCRA_Entry : "0")   </td>
+					<td class="text-right"> @(ProjectType!= "FCRA"? Model.Emplist[i].PF_NONFCRA_Entry : "0")  </td>
+					<td class="text-right"> @(ProjectType!= "Non-FCRA"? Model.Emplist[i].AL_FCRA : "0")  </td>
+					<td class="text-right"> @(ProjectType!= "FCRA"? Model.Emplist[i].AL_NONFCRA : "0")</td>
+					@{ countD = 0;
+						decimal AmtNFCRAValue = 0;
+						decimal AmtFCRAValue = 0;
+						NetFCRA = NetFCRA - Convert.ToDecimal(Model.Emplist[i].PF_FCRA_Entry);
+						NetFCRA = NetFCRA - Convert.ToDecimal(Model.Emplist[i].AL_FCRA);
+
+						NetNFCRA = NetNFCRA - Convert.ToDecimal(Model.Emplist[i].PF_NONFCRA_Entry);
+						NetNFCRA = NetNFCRA - Convert.ToDecimal(Model.Emplist[i].AL_NONFCRA);
+					}
+					@foreach (var item in ComponentListDeduction)
+					{
+						AmtNFCRAValue = 0;
+						AmtFCRAValue = 0;
+						if (Model.Component.Where(n => n.Empid == Model.Emplist[i].Empid && n.Componentid == item.Componentid).ToList().Count > 0)
+						{
+							var lst = Model.Component.Where(n => n.Empid == Model.Emplist[i].Empid && n.Componentid == item.Componentid && n.ProjectType == "FCRA" && n.ProjectType != null).FirstOrDefault();
+							var NFCRAlst = Model.Component.Where(n => n.Empid == Model.Emplist[i].Empid && n.Componentid == item.Componentid && n.ProjectType == "NFCRA" && n.ProjectType != null).FirstOrDefault();
+							if (lst != null && lst.AmtFCRA > 0)
+							{
+								AmtFCRAValue = Convert.ToDecimal(lst.AmtFCRA);
+								NetFCRA = NetFCRA - AmtFCRAValue;
+								ArrDeductionFCRA[countD] = ArrDeductionFCRA[countD] + (ProjectType != "Non-FCRA" ? Convert.ToDecimal(lst.AmtFCRA) : 0);
+							}
+							if (NFCRAlst != null && NFCRAlst.AmtNFCRA > 0)
+							{
+								AmtNFCRAValue = Convert.ToDecimal(NFCRAlst.AmtNFCRA);
+								NetNFCRA = NetNFCRA - AmtNFCRAValue;
+								ArrDeductionNFCRA[countD] = ArrDeductionNFCRA[countD] + (ProjectType != "FCRA" ? Convert.ToDecimal(NFCRAlst.AmtNFCRA) : 0);
+							}
+
+							<td class="text-center">@(ProjectType!= "Non-FCRA"? AmtFCRAValue : 0)</td>
+							<td class="text-center">@(ProjectType!= "FCRA"? AmtNFCRAValue : 0)</td>
+						}
+						else
+						{
+							<td class="text-right ylwlightbg">0</td>
+							<td class="text-right ylwlightbg">0</td>
+						}
+						countD++;
+					}
+					@{
+						NetFCRATotal = NetFCRATotal + NetFCRA;
+						NetNFCRATotal = NetNFCRATotal + NetNFCRA;
+					}
+					<td class="text-right"><strong>@(string.Format("{0:#,0}", Convert.ToDecimal(NetFCRA)))</strong></td>
+					<td class="text-right"><strong>@(string.Format("{0:#,0}", Convert.ToDecimal(NetNFCRA)))</strong></td>
+				</tr>
+				SrNo++;
+			}
+		<tr>
+			<td></td>
+			<td></td>
+			<td></td>
+			<td class="text-center"><strong>Total</strong></td>
+			<td></td>
+			<td></td>
+			<td class="text-right"><strong>@(string.Format("{0:#,0}", SalaryAmountTotal))</strong></td>
+			<td class="text-right"><strong>@(string.Format("{0:#,0}", ALAmountTotal))</strong></td>
+			<td class="text-right"><strong>@(string.Format("{0:#,0}", PFAmountTotal))</strong></td>
+			<td class="text-right"><strong>@(string.Format("{0:#,0}", FBAmountTotal))</strong></td>
+			<td class="text-right"><strong>@(string.Format("{0:#,0}", ALPaidTotal))</strong></td>
+			@*@{ countD = 0; }
+		@foreach (var item in ComponentListOtherEarning)
+		{
+			<td class="text-center">
+				<strong>
+					@(string.Format("{0:#,0}", Convert.ToInt64(ArrEarning[countD])))
+
+				</strong>
+			</td>
+			countD++;
+		}*@
+
+			@{
+				decimal sum = 0;
+				foreach (var item in OtherAdditionsother)
+				{
+					sum = sum + Convert.ToDecimal(item.Amt);
+				}
+
+
+			}
+			@if (OtherAdditionsother.Count > 0)
+			{
+				<td class="text-center">
+					<strong>
+						@(string.Format("{0:#,0}", Convert.ToInt64(sum)))
+
+					</strong>
+				</td>
+			}
+
+			@{
+				decimal sumarr = 0;
+				foreach (var item in OtherAdditionsArrear)
+				{
+					sumarr = sumarr + Convert.ToDecimal(item.Amt);
+				}
+			}
+			@if (OtherAdditionsArrear.Count > 0)
+			{
+				<td class="text-center">
+					<strong>
+						@(string.Format("{0:#,0}", Convert.ToInt64(sumarr)))
+
+					</strong>
+				</td>
+			}
+
+			<td class="text-right"><strong>@(string.Format("{0:#,0}", OTAmountTotal))</strong></td>
+
+			<td class="text-right"><strong>@(string.Format("{0:#,0}", SalaryAmountFCRATotal))</strong></td>
+			<td class="text-right"><strong>@(string.Format("{0:#,0}", ALAmountFCRATotal))</strong></td>
+			<td class="text-right"><strong>@(string.Format("{0:#,0}", PFAmountFCRATotal))</strong></td>
+			<td class="text-right"><strong>@(string.Format("{0:#,0}", FBAmountFCRATotal))</strong></td>
+			<td class="text-right"><strong>@(string.Format("{0:#,0}", ALPaidFCRATotal))</strong></td>
+			@{ countD = 0; }
+		@foreach (var item in ComponentListOtherEarning)
+		{
+			Int64 EarningFCRA = 0;
+			if (item.ProjectType == "FCRA") { EarningFCRA = Convert.ToInt64(ArrEarningFCRA[countD]); }
+			<td class="text-right"><strong>@(string.Format("{0:#,0}", EarningFCRA))</strong></td>
+			countD++;
+		}
+
+			@*@{
+
+				decimal sumfcra = 0;
+				foreach (var item in OtherAdditionsotherFCRA)
+				{
+					sumfcra = sumfcra + Convert.ToDecimal(item.Amt);
+				}
+
+
+			}
+			@if (OtherAdditionsotherFCRA.Count > 0)
+			{
+				<td class="text-right"><strong>@(string.Format("{0:#,0}", sumfcra))</strong></td>
+			}
+
+			@{
+
+				decimal sumfcrarr = 0;
+				foreach (var item in OtherAdditionsArrearFCRA)
+				{
+					sumfcrarr = sumfcrarr + Convert.ToDecimal(item.Amt);
+				}
+
+
+			}
+			@if (OtherAdditionsArrearFCRA.Count > 0)
+			{
+				<td class="text-right"><strong>@(string.Format("{0:#,0}", sumfcrarr))</strong></td>
+			}*@
+			
+			<td class="text-right"><strong>@(string.Format("{0:#,0}", OTAmountFCRATotal))</strong></td>
+
+			@*<td colspan="@(ComponentListOtherEarning.Count + 6)" class="text-center ylwlightbg"></td>*@
+			@*<td colspan="@(ComponentListOtherEarning.Count + 6)" class="text-center ylwlght2bg"></td>*@
+
+			<td class="text-right"><strong>@(string.Format("{0:#,0}", SalaryAmountNFCRATotal))</strong></td>
+			<td class="text-right test"><strong>@(string.Format("{0:#,0}", ALAmountNFCRATotal))</strong></td>
+			<td class="text-right test"><strong>@(string.Format("{0:#,0}", PFAmountNFCRATotal))</strong></td>
+			<td class="text-right"><strong>@(string.Format("{0:#,0}", FBAmountNFCRATotal))</strong></td>
+			<td class="text-right"><strong>@(string.Format("{0:#,0}", ALPaidNFCRATotal))</strong></td>
+			@{ countD = 0; }
+		@foreach (var item in ComponentListOtherEarning)
+		{
+			Int64 EarningNonFCRA = 0;
+			if (item.ProjectType == "NFCRA") { EarningNonFCRA = Convert.ToInt64(ArrEarningNFCRA[countD]); }
+			<td class="text-right"><strong>@(string.Format("{0:#,0}", EarningNonFCRA))</strong></td>
+			countD++;
+		}
+			@*@{
+
+				decimal sumnfcra = 0;
+				foreach (var item in OtherAdditionsotherNFCRA)
+				{
+					sumnfcra = sumnfcra + Convert.ToDecimal(item.Amt);
+				}
+
+
+			}
+			@if (OtherAdditionsotherNFCRA.Count > 0)
+			{
+				<td class="text-right"><strong>@(string.Format("{0:#,0}", sumnfcra))</strong></td>
+			}
+
+			@{
+
+				decimal sumnfcrarr = 0;
+				foreach (var item in OtherAdditionsArrearNFCRA)
+				{
+					sumnfcrarr = sumnfcrarr + Convert.ToDecimal(item.Amt);
+				}
+
+
+
+
+			}
+			@if (OtherAdditionsArrearNFCRA.Count > 0)
+			{
+				<td class="text-right"><strong>@(string.Format("{0:#,0}", sumnfcrarr))</strong></td>
+			}*@
+
+			<td class="text-right"><strong>@(string.Format("{0:#,0}", OTAmountNFCRATotal))</strong></td>
+
+			<td class="text-right"><strong>@(string.Format("{0:#,0}", PFAmountEntryFCRATotal))</strong></td>
+			<td class="text-right"><strong>@(string.Format("{0:#,0}", PFAmountEntryNFCRATotal))</strong></td>
+			<td class="text-right"><strong>@(string.Format("{0:#,0}", ALAmountFCRAEntryTotal))</strong></td>
+			<td class="text-right"><strong>@(string.Format("{0:#,0}", ALAmountNFCRAEntryTotal))</strong></td>
+			@{ countD = 0; int count_iD = 0; }
+			@foreach (var item in ComponentListDeduction)
+			{
+				var lstFCRA = ComponentListDeduction_new.Where(n => n.ProjectType == "FCRA").FirstOrDefault();
+				var lstNFCRA = ComponentListDeduction_new.Where(n => n.ProjectType == "NFCRA").FirstOrDefault();
+
+				Int64 DeductionFCRA = 0;
+				Int64 DeductionNFCRA = 0;
+				if (lstFCRA != null)
+				{
+					if (lstFCRA.ProjectType == "FCRA") { DeductionFCRA = Convert.ToInt64(ArrDeductionFCRA[countD]); }
+				}
+				<td class="text-right"><strong>@(string.Format("{0:#,0}", DeductionFCRA))</strong></td>
+				if (lstNFCRA != null)
+				{
+					if (lstNFCRA.ProjectType == "NFCRA") { DeductionNFCRA = Convert.ToInt64(ArrDeductionNFCRA[countD]); }
+				}
+				<td class="text-right"><strong>@(string.Format("{0:#,0}", DeductionNFCRA))</strong></td>
+				countD++;
+
+				@*@{ countD = 0; }
+			@foreach (var items in ComponentListDeduction_new)
+			{
+				Int64 DeductionNFCRA = 0;
+				if (items.ProjectType == "NFCRA") { DeductionNFCRA = Convert.ToInt64(ArrDeductionNFCRA[countD]); }
+				<td class="text-right"><strong>Rakesh@(string.Format("{0:#,0}", DeductionNFCRA))</strong></td>
+				countD++;
+			}*@
+
+			}
+
+
+			@*<td colspan="@(ComponentListDeduction.Count*2 + 4)" class="text-center"></td>*@
+			<td class="text-right"><strong>@(string.Format("{0:#,0}", NetFCRATotal))</strong></td>
+			<td class="text-right"><strong>@(string.Format("{0:#,0}", NetNFCRATotal))</strong></td>
+		</tr>
+
+		</tbody>
+	</table>
+</div>
+<div class="text-center mt-3">
+
+	<button type="button" class="btn blk-gdn-btn btn-l ripplelink" onclick="exportReportToExcelAll()"><i class="fas fa-file-excel"></i>Export</button>
+	<a href="/Dashboard" class="btn cnl-btn ripplelink  "><i class="fas fa-times"></i>Close</a>
+
+
+</div>
+
+<script>
+    $(document).ready(function () {
+        $("#btnVerifyAndSave").click(function () {
+            if (ValidateAmt()) {
+                $("#btnsave").click();
+            }
+
+        });
+
+        $('.selectall').click(function () {
+            var ischecked = 0;
+            if (this.checked) {
+                ischecked = 1;
+            }
+            $('.isSelect').val(ischecked);
+            $('.selectedId').prop('checked', this.checked);
+        });
+
+        $('.selectedId').change(function () {
+            var ischecked = 0;
+            var Empid = "rowselectsingle_" + $(this).closest("tr").find('.hfempid').val();
+            if (this.checked) {
+                ischecked = 1;
+            }
+            $(this).closest("tr").find(".isSelect").val(ischecked);
+            var check = ($('.selectedId').filter(":checked").length == $('.selectedId').length);
+            $('.selectall').prop("checked", check);
+        });
+    });
+    function exportReportToExcelAll() {
+        var FDate = $("#Date").val();
+        var TDate = $("#ToDate").val();
+        exportToExcelSahaj('tblExport', 'ConsolidateSalaryReport_' + FDate + '_' + TDate);
+    }
+
+</script>

@@ -1,0 +1,77 @@
+﻿@model Mitr.Models.MasterAll.Add
+@using (Ajax.BeginForm("SaveMasterAll", "SalaryStructure",
+        new { src = clsApplicationSetting.EncryptQueryString(ViewBag.MenuID + "*" + "/SalaryStructure/SaveMasterAll*" + ViewBag.ID) },
+         new AjaxOptions { HttpMethod = "POST", OnSuccess = "OnSuccess", OnBegin = "ShowLoadingDialog()" },
+            new { @id = "SaveMasterAllForm" })
+    )
+{
+
+
+    @Html.HiddenFor(x => Model.ID)
+    @Html.HiddenFor(x => Model.table_name)
+
+<div class="row">
+    <div class="col-lg-6 col-md-6 col-sm-6 form-group">
+        <label>Subcategory Name<sup>*</sup></label>
+        @Html.TextBoxFor(model => model.field_name, new { @class = "form-control", @placeholder = "Enter", @readonly="" })
+        @Html.ValidationMessageFor(model => model.field_name, "", new { @class = "text-danger" })
+    </div>
+    <div class="col-lg-3 col-md-6 col-sm-6 form-group">
+        <label>Days<sup>*</sup></label>
+        <select class="form-control applyselect" id="field_name1" name="field_name1" onchange="FillSubcategory()">
+            <option @(Model.field_name1 != null ? Model.field_name1 == "" ? "Selected" : "" : "") value="" >Select</option>
+            <option @(Model.field_name1 != null ? Model.field_name1 == "5 Days" ? "Selected" : "" : "") value="5 Days">5 Days</option>
+            <option @(Model.field_name1 != null ? Model.field_name1 == "6 Days" ? "Selected" : "" : "") value="6 Days">6 Days</option>
+        </select>
+        @Html.ValidationMessageFor(model => model.field_name1, "", new { @class = "text-danger" })
+    </div>
+    <div class="col-lg-3 col-md-6 col-sm-6 form-group">
+        <label>Hours <sup>*</sup></label>
+        @Html.TextBoxFor(model => model.field_name2, new { @class = "form-control", @type = "Number", @placeholder = "Enter",@OnBlur= "FillSubcategory()" })
+        @Html.ValidationMessageFor(model => model.field_name2, "", new { @class = "text-danger" })
+    </div>
+    <div class="col-lg-12 col-md-6 col-sm-6 form-group">
+        <label>Description </label>
+        @Html.TextAreaFor(model => model.field_value, new { @class = "form-control h-80", @placeholder = "Enter" })
+        @Html.ValidationMessageFor(model => model.field_value, "", new { @class = "text-danger" })
+    </div>
+</div>
+
+    <div class="text-center">
+    @if (Model.ID > 0)
+        {
+            <button type="submit" class="btn mtr-g-grn btn-l ripplelink pull-right" name="Command" value="Add"><i class="fa fa-paper-plane" aria-hidden="true"></i> Update</button>
+        }
+        else
+        {
+            <button type="submit" class="btn mtr-o-grn btn-l ripplelink pull-right" name="Command" value="Add"><i class="fa fa-paper-plane" aria-hidden="true"></i> Submit</button>
+        }
+        <button type="button" class="btn cnl-btn ripplelink" data-dismiss="modal"><i class="fas fa-times"></i>Close</button>
+
+        
+    </div>
+
+}
+<script type="text/javascript">
+    $(document).ready(function () {        
+        $("#field_name2").rules('add', {
+            required: true,
+            messages: {
+                required: "Hey! You missed this field."
+            }
+        });
+        $("#field_name1").rules('add', {
+            required: true,
+            messages: {
+                required: "Hey! You missed this field."
+                
+            }
+        });
+    });
+    function FillSubcategory()
+    {
+        var Subcategory = $("#field_name1 option:selected").text() + ', ' + $("#field_name2").val() +' Hours';
+        $("#field_name").val(Subcategory);       
+    }
+   
+</script>

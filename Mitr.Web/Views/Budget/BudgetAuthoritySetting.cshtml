@@ -1,0 +1,58 @@
+﻿
+@{
+    ViewBag.Title = "BudgetAuthoritySetting";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="inner-main mb-5">
+    <div class="row">
+        <div class="col-sm-4">
+            <h1 class="heading-one mb-3">Budget-Authority Setting</h1>
+        </div>
+
+    </div>
+
+    <div class="table-responsive">
+        <div class="table-responsive">
+            <table class="table mt-0">
+                <thead>
+                    <tr>
+                        <th class="w-33">S.No </th>
+                        <th>Finance person for budget approval</th>
+
+                        <th class="tw-100">Action</th>
+
+                    </tr>
+                </thead>
+                <tbody>
+                    @{
+                        string MenuID = "0";
+                        if (ViewBag.MenuID != null)
+                        {
+                            MenuID = ViewBag.MenuID;
+                        }
+                        int count = 0;
+
+
+                    }
+
+                    @foreach (var item in ViewBag.EMPList)
+                    {
+                        
+                            count++;
+                            <tr>
+                                <td>@count</td>
+
+                                <td>@item.Name</td>
+
+
+                                <td><a href="@Url.Action("AddBudgetAuthoritySetting", new { src = clsApplicationSetting.EncryptFriendly(ViewBag.MenuID + "*" + "/Budget/AddBudgetAuthoritySetting*"+@item.FinancePerson+"") })"><i class="fas fa-edit"></i> Update</a></td>
+                            </tr>
+                        }
+
+                    </tbody>
+            </table>
+        </div>
+    </div>
+
+</div>

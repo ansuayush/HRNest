@@ -1,0 +1,230 @@
+﻿@using System.Data
+@model DataSet
+
+@{
+    int A = 0;
+    string[] COlor = new string[32];
+    string[] HolidayType = new string[32];
+    string[] Description = new string[32];
+    string[] ClassName = new string[32];
+    string[] ValidHours = new string[32];
+
+    for (int i = 0; i < 32; i++)
+    {
+        COlor[i] = "";
+        HolidayType[i] = "";
+        Description[i] = "";
+        ClassName[i] = "";
+        ValidHours[i] = "";
+    }
+
+
+    DateTime SelectedDate = ViewBag.SelectedDate;
+    DateTime StartDate = new DateTime(SelectedDate.Year, SelectedDate.Month, 1);
+    DateTime EndDate = StartDate.AddMonths(1).AddDays(-1);
+    List<HolidayDailyLog> LeaveList = new List<HolidayDailyLog>();
+    LeaveList = ViewBag.GetHolidayDailyLog;
+    string FixHolidays = clsApplicationSetting.GetConfigValue("FixHolidays");
+
+
+    for (DateTime date = StartDate; date <= EndDate; date = date.AddDays(1))
+    {
+        ClassName[Convert.ToInt32(date.ToString("dd"))] = (FixHolidays.Contains(date.ToString("dddd")) ? "fixholidaycolor" : "");
+        ValidHours[Convert.ToInt32(date.ToString("dd"))] = (FixHolidays.Contains(date.ToString("dddd")) ? "" : "validatehours");
+        if (LeaveList.Any(x => x.Date == date.ToString("dd/MM/yyyy")))
+        {
+            COlor[Convert.ToInt32(date.ToString("dd"))] = LeaveList.Where(x => x.Date == date.ToString("dd/MM/yyyy")).Select(x => x.Color).FirstOrDefault();
+            HolidayType[Convert.ToInt32(date.ToString("dd"))] = LeaveList.Where(x => x.Date == date.ToString("dd/MM/yyyy")).Select(x => x.HolidayType).FirstOrDefault();
+            Description[Convert.ToInt32(date.ToString("dd"))] = LeaveList.Where(x => x.Date == date.ToString("dd/MM/yyyy")).Select(x => x.Description).FirstOrDefault();
+            ClassName[Convert.ToInt32(date.ToString("dd"))] = ClassName[Convert.ToInt32(date.ToString("dd"))] + " " + LeaveList.Where(x => x.Date == date.ToString("dd/MM/yyyy")).Select(x => x.ClassName).FirstOrDefault();
+            ValidHours[Convert.ToInt32(date.ToString("dd"))] = (string.IsNullOrEmpty(LeaveList.Where(x => x.Date == date.ToString("dd/MM/yyyy")).Select(x => x.ClassName).FirstOrDefault()) ? "validatehours" : "");
+        }
+
+    }
+
+}
+
+
+<div class="mb-2 dnone">
+    <strong class="green-clr">
+        <span id="spnMonthHeading">@SelectedDate.ToString("MMMM") @SelectedDate.ToString("yyyy") </span>
+    </strong>
+    <input type="hidden" id="IsSubmitted" name="IsSubmitted" value="@ViewBag.IsMontlyLogSubmited.ToString()" />
+</div>
+
+
+
+@if (ViewBag.IsMontlyLogSubmited)
+{
+
+    <div class="form-group text-center">
+        <div class="successmgs-dgn green-clr">
+            <i class="far fa-calendar-check green-clr msgicon"></i> Activity Log has been Submitted.
+            <a class="font-md btnbackToDailLog"><strong><i class="fas fa-edit"></i>Back</strong></a>
+        </div>
+    </div>
+
+}
+else
+{
+    if (Model.Tables[0].Rows.Count > 0)
+    {
+        using (Ajax.BeginForm("SubmitActiveLog", "Activity",
+new { src = clsApplicationSetting.EncryptQueryString(ViewBag.MenuID.ToString() + "*/Activity/SubmitActiveLog") },
+new AjaxOptions { HttpMethod = "POST", OnSuccess = "BindTargetAfterSubmit", OnBegin = "ShowLoadingDialog();", OnFailure = "CloseLoadingDialog();" },
+new { @id = "_SubmitActiveLogFrom" })
+)
+        {
+
+            <input type="hidden" id="hdnSelectedDate" name="hdnSelectedDate" value="@ViewBag.SelectedDate" />
+
+            <div class="mb-4">
+                <div class="card-header blk-gdn-btn ">
+                    <div><i class="fas fa-ticket-alt"></i>Monthly Log</div>
+                </div>
+                <div class=" p-0">
+                    <div class="table-responsive">
+
+                        <table class="table table-scroll act-table m-0">
+                            <thead>
+                                <tr>
+                                    <th><div class="tw-100"> Project</div></th>
+                                    <th><div class="w-70"> Activity</div></th>
+
+                                    @for (DateTime date = StartDate; date <= EndDate; date = date.AddDays(1))
+                                    {
+                                        <th class="text-center">@Convert.ToInt32(date.ToString("dd")) <span> @date.ToString("ddd") </span></th>
+                                    }
+                                    <th><div class="w-30 text-right">Total</div></th>
+                                </tr>
+
+                            </thead>
+                            <tbody>
+                                @if (Model.Tables[0].Rows.Count > 0)
+                                {
+
+                                    foreach (DataRow item in Model.Tables[0].Rows)
+                                    {
+                                        <tr>
+                                            <td>@(item["proj_name"] + (string.IsNullOrEmpty(item["proj_no"].ToString()) ? "" : " (" + item["proj_no"] + ")")) </td>
+                                            <td>@item["Activity"]</td>
+
+                                            @for (DateTime date = StartDate; date <= EndDate; date = date.AddDays(1))
+                                            {
+                                                int.TryParse(date.ToString("dd"), out A);
+                                                <td data-toggle="tooltip" data-original-title="@Html.Raw(Description[A])" class="@ClassName[A] text-center  workclass workclass_1 @COlor[A] ">
+                                                    @item["day" + Convert.ToInt32(date.ToString("dd"))]
+
+                                                    @if (item["doc_type"].ToString() == "G")
+                                                    {
+                                                        <input type="hidden" id="hdnGrandTotal_@A" name="hdnGrandTotal_@A" value="@item["day" + A]" />
+                                                    }
+                                                </td>
+                                            }
+
+                                            <td class="text-right"><strong>@item["Total"]</strong> </td>
+                                        </tr>
+                                    }
+
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+
+            </div>
+
+            // Commented by Ashwati  11-04-2022
+            if (Model.Tables[1].Rows.Count > 0)
+            {
+
+                foreach (DataRow item in Model.Tables[1].Rows)
+                {
+                    <input type="hidden" id="HourWorked" name="HourWorked" value="@item["MWHrs"]" />
+                    <input type="hidden" id="LeaveAvailed" name="LeaveAvailed" value="@item["TLAHrs"]" />
+                    <input type="hidden" id="LeavePendingForApproval" name="LeavePendingForApproval" value="@item["TLPHrs"]" />
+                    <input type="hidden" id="CompensatoryHours" name="CompensatoryHours" value="@item["TCHrs"]" />
+                    <input type="hidden" id="CompensatoryHoursApproved" name="CompensatoryHoursApproved" value="@item["TCAHrs"]" />
+                    <input type="hidden" id="txtCC" name="txtCC" value="@item["EMailCC"]" />
+                    <input type="hidden" id="txtDoj" name="txtDoj" value="@item["doj"]" />
+                    <input type="hidden" id="txtLastWorkingDay" name="txtLastWorkingDay" value="@item["lastworking_day"]" />
+
+                    @*<div class="row mb-1  widht-sm  text-clr">
+
+                            <div class="col-sm-3 form-group">
+                                <div class="hwlist">
+                                    <label>Hours Worked During the Month	</label>
+                                    <span class="badge float-right ">@item["MWHrs"]</span>
+                                    <p class="mb-0 sz-sm dnone"> <input type="text" readonly="readonly" id="HourWorked" name="HourWorked" value="@item["MWHrs"]" class="form-control" /> </p>
+                                </div>
+                            </div>
+                            <div class="col-sm-3 form-group">
+                                <div class="hwlist">
+                                    <label>Leave Availed</label>
+                                    <span class="badge float-right ">@item["TLAHrs"]</span>
+                                    <p class="mb-0 sz-sm dnone"><input type="text" readonly="readonly" id="LeaveAvailed" name="LeaveAvailed" value="@item["TLAHrs"]" class="form-control" /></p>
+                                </div>
+                            </div>
+
+                            <div class="col-sm-3 form-group">
+                                <div class="hwlist">
+                                    <label>Leave Pending For Approval	</label>
+                                    <span class="badge float-right 	">@item["TLPHrs"]</span>
+                                    <p class="mb-0 sz-sm dnone"><input type="text" readonly="readonly" id="LeavePendingForApproval" name="LeavePendingForApproval" value="@item["TLPHrs"]" class="form-control" /></p>
+                                </div>
+                            </div>
+                            <div class="col-sm-3 form-group">
+                                <div class="hwlist">
+                                    <label>@item["EMPType"] Hours	  </label>
+                                    <span class="badge float-right ">@item["TCHrs"]</span>
+                                    <p class="mb-0 sz-sm dnone"><input type="text" readonly="readonly" id="CompensatoryHours" name="CompensatoryHours" value="@item["TCHrs"]" class="form-control" /></p>
+                                </div>
+                            </div>
+                            <div class="col-sm-3 form-group">
+                                <div class="hwlist">
+                                    <label>@item["EMPType"] Hours Approved   </label>
+                                    <span class="badge float-right ">@item["TCAHrs"]</span>
+                                    <p class="mb-0 sz-sm dnone"><input type="text" readonly="readonly" id="CompensatoryHoursApproved" name="CompensatoryHoursApproved" value="@item["TCAHrs"]" class="form-control" /></p>
+                                </div>
+                            </div>
+                            <div class="col-sm-3 form-group dnone">
+                                <label>CC  </label>
+                                <p class="mb-0 sz-sm"><input type="email" id="txtCC" name="txtCC" class="form-control" value="@item["EMailCC"]" /> </p>
+                            </div>
+                        </div>*@
+                }
+            }
+
+            <div class="row mt-3">
+                @if (!string.IsNullOrEmpty(ViewBag.ResubmitRemarks))
+                {
+
+                    <div class="col-md-8 mx-auto">
+                        <strong class="heading-three"><i class="fas fa-comments"></i>Supervisor Remarks</strong>
+                        @ViewBag.ResubmitRemarks
+
+                    </div>
+
+                }
+            </div>
+
+            <div class="mt-1  text-center">
+                <a class="btn cnl-btn ripplelink   btnbackToDailLog"><i class="fas fa-angle-double-left"></i>Back</a>
+                <button type="submit" class="btn mtr-o-grn btn-l ripplelink" onclick="return Validate();" name="Command" value="Submit"><i class="fa fa-paper-plane" aria-hidden="true"></i>Submit</button>
+            </div>
+
+        }
+
+    }
+    else
+    {
+        <div class="norecordfound">
+
+            @Html.Partial("_NoRecordsFound")
+
+        </div>
+    }
+
+
+}

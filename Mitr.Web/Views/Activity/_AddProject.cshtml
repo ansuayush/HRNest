@@ -1,0 +1,43 @@
+﻿@model Mitr.Models.AddActivityProjectList
+
+
+<div class="modal-body p-0">
+	<div class="clickproject">
+		<div class="adproject-side">
+			<p><strong>Project Lists (@Model.ActivityProjectList.Count)</strong></p>
+			<input type="text" id="txtSearchProject" placeholder="Search project" onkeyup="createProjectListSearch()">
+			<ul id="ULProjectList" class="bin addproject">
+				@foreach (var item in Model.ActivityProjectList.Where(p => Model.ProjectMappedList.All(p2 => p2.ProjectRegID != p.ID)))
+				{
+
+					<li id="item_@item.ID" class="item">
+						<a>@item.ProjectName</a>
+					</li>
+				}
+			</ul>
+		</div>
+		<div class="select-side">
+			<!-- Destination bin title bold -->
+			<p><strong>Select</strong></p>
+			<!-- Destination bin -->
+			<input type="text" id="txtSearchRemove" placeholder="Search project" onkeyup="createProjectRemoveSearch()">
+			<ul id="ULProjectRemove" class="bin project-remove">
+
+				@foreach (var item in Model.ProjectMappedList)
+				{
+					<li id="item_@item.ProjectRegID" class="item">
+						<a>@item.ProjectName</a>
+					</li>
+				}
+			</ul>
+		</div>
+	</div>
+	<div class="row">
+		<div class="col-sm-12 text-center mt-3">
+			<button type="button" class="btn mtr-o-grn btn-l ripplelink" id="btnAddSaveProject" name="Command" value="Add">
+				<i class="fas fa-save"></i>Save
+			</button>
+			<button type="button" class="btn cnl-btn ripplelink" id="btnclose" data-dismiss="modal"><i class="fas fa-times"></i>Close</button>
+		</div>
+	</div>
+</div>

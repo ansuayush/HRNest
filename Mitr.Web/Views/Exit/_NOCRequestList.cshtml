@@ -1,0 +1,767 @@
+﻿
+
+@model List<Exit.NOC_Request.List>
+
+@{
+	string MenuID = "0";
+	if (ViewBag.MenuID != null)
+	{
+		MenuID = ViewBag.MenuID;
+	}
+	var Modify = "True";// clsApplicationSetting.GetSessionValue("Modify");
+}
+
+<div class="control-section">
+	@if (ViewBag.Approve == 0)
+	{
+		@Html.EJS().Grid("FlatGrid").DataSource((List<Exit.NOC_Request.List>)Model).GridLines(Syncfusion.EJ2.Grids.GridLine.Both).Columns(col =>
+   {
+	   col.Field("Exit_ID").Visible(false).Add();
+	   col.Field("Exit_HP_ID").Visible(false).Add();
+	   col.Field("EMP_ID").Visible(false).Add();
+	   col.Field("HandOver_Dept").Visible(false).Add();
+	   col.Field("RowNum").HeaderText("S.No").Width("50").Add();
+	   col.Field("Req_No").Visible(false).Add();
+	   col.Field("Req_Date").Visible(false).Add();
+	   col.Field("emp_code").HeaderText("Employee Code").Width("80").Add();
+	   col.Field("emp_name").HeaderText("Employee Name").Width("150").Add();
+	   col.Field("EMP_Department").HeaderText("Department").Width("150").Add();	   
+	   col.Field("DesignationName").HeaderText("Designation").Width("100").Add();
+	   col.Field("RelievingDate").HeaderText("Last Working Day").Width("80").Add();
+	   col.Field("DaysLeft").HeaderText("Days Left").Width("80").Add();
+	   col.Field("location_name").Visible(false).Add();
+	   col.HeaderText("Action").TextAlign(Syncfusion.EJ2.Grids.TextAlign.Center).Template("#tmpAction").Width("100").Add();
+
+   }).AllowPaging().PageSettings(page => page.PageCount(10)).Toolbar(new List<string>() { "Search" }).Render()
+	}
+	else
+	{
+		@Html.EJS().Grid("FlatGrid").DataSource((List<Exit.NOC_Request.List>)Model).GridLines(Syncfusion.EJ2.Grids.GridLine.Both).Columns(col =>
+   {
+	   col.Field("Exit_ID").Visible(false).Add();
+	   col.Field("Exit_HP_ID").Visible(false).Add();
+	   col.Field("EMP_ID").Visible(false).Add();	   
+	   col.Field("HandOver_Dept").Visible(false).Add();
+	   col.Field("RowNum").HeaderText("S.No").Width("50").Add();
+	   col.Field("Req_No").Visible(false).Add();
+	   col.Field("Req_Date").Visible(false).Add();
+	   col.Field("emp_code").HeaderText("Employee Code").Width("80").Add();
+	   col.Field("emp_name").HeaderText("Employee Name").Width("150").Add();
+	   col.Field("EMP_Department").HeaderText("Department").Width("150").Add();
+	   col.Field("DesignationName").HeaderText("Designation").Width("100").Add();
+	   col.Field("RelievingDate").HeaderText("Last Working Day").Width("80").Add();
+	   col.Field("DaysLeft").HeaderText("Days Left").Width("80").Add();
+	   col.Field("location_name").Visible(false).Add();
+	   col.HeaderText("Action").TextAlign(Syncfusion.EJ2.Grids.TextAlign.Center).Template("#tmpAction").Width("100").Add();
+
+   }).AllowPaging().PageSettings(page => page.PageCount(10)).Toolbar(new List<string>() { "Search" }).Render()
+	}
+</div>
+<div class="modal fade pop-dgn" id="tmpAction1" aria-modal="true" style="display: none; padding-left: 8px;">
+	<div class="modal-dialog modal-lg">
+		<div class="modal-content ">
+
+			<!-- Modal Header -->
+			<div class="modal-header">
+				<h4 class="modal-title">Employee Name </h4>
+				<button type="button" class="close" onclick="CloseEmpDetails();" data-dismiss="modal">×</button>
+			</div>
+
+			<!-- Modal body -->
+			<div class="modal-body">
+				<div class="row">
+					<div class="col-sm-12 form-group">
+						<ul class="list-unstyled inline-li m-0 rqt-dtl" style="background: #f5f5f5; padding: 15px 10px">
+							<li>
+								<label>Requested by</label>
+								<br><label id="lblRequestedby"></label>
+							</li>
+
+							<li>
+								<label>Req No</label>
+								<br>
+								<label id="lblReqNo"></label>
+							</li>
+
+							<li>
+								<label>Locatiion</label>
+								<br><label id="lblLocatiion"></label>
+							</li>
+							<li>
+								<label>Department</label>
+								<br>
+								<label id="lblDepartment"></label>
+							</li>
+							<li>
+								<label>Designation</label>
+								<br>
+								<label id="lblDesignation"></label>
+							</li>
+							<li>
+								<label>Requested Date</label>
+								<br>
+								<label id="lblRequestedDate"></label>
+							</li>
+							<li>
+								<label>Last Working Day </label>
+								<br><label id="lblLastWorkingDay"></label>
+							</li>
+						</ul>
+					</div>
+					<div class="col-sm-12">
+						<div class="table-responsive">
+							<table id="datatable" class="table mt-0  table-bordered dt-responsive nowrap tbltick new_width">
+								<thead>
+									<tr>
+										<th class="w-10">S.No</th>
+										<th class="w-100">Asset ID</th>
+										<th class="w-100">Date of issue</th>
+										<th class="w-500">Description</th>
+										<th class="w-100">Type</th>
+										<th class="w-100">Status</th>
+										<th class="w-500">Remarks</th>
+									</tr>
+								</thead>
+								<tbody>
+									<tr>
+										<td>1</td>
+										<td>
+											<input type="text" id="txtAssetID" class="form-control Mandatory" placeholder="Enter" onchange="HideErrorMessage(this)">
+											<span id="sptxtAssetID" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+										</td>
+										<td> <input type="text" id="txtDateOfIssue" autocomplete="off" class="form-control datepicker Mandatory" onchange="HideErrorMessage(this)" placeholder="Enter">
+											 <span id="sptxtDateOfIssue" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+										</td>
+										<td> <input type="text" id="txtDescription" class="form-control Mandatory" placeholder="Enter" onchange="HideErrorMessage(this)">
+											 <span id="sptxtDescription" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+										</td>
+										<td> <input type="text" id="txtType" class="form-control Mandatory" placeholder="Enter" onchange="HideErrorMessage(this)">
+											 <span id="sptxtType" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+										</td>
+										<td>
+											<select id="ddlStatus" onchange="HideErrorMessage(this)" class="form-control dpselect select2-hidden-accessible Mandatorypld" tabindex="-1" aria-hidden="true">
+												<option>Select</option>
+												<option selected="" value="1">Received</option>
+												<option value="2">Received but Damage &amp; Usable</option>
+												<option value="3">Received but Damage &amp; Not Usable</option>
+												<option value="4">Lost</option>
+												<option value="5">Agreed to return later</option>
+												<option value="6">Refused to return</option>
+											</select>
+											<span id="spddlStatus" class="text-danger field-validation-error Project" style="display:none;">Hey, You missed this field!!</span>
+										</td>
+										<td><textarea id="txtaRemarks" class="form-control" placeholder="Enter "></textarea></td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+						<div class="form-group  text-right">
+							<button type="button" id="btnAddAssets" onclick="AddOrientationSchedulesArray()" class="btn green-clr ripplelink">
+								<i class="fas fa-plus"></i> Add Row
+							</button>
+						</div>
+						<div id="tblOrientationSchedule1">
+
+						</div>
+					</div>
+					<div class="col-sm-12 form-group" id="divHRInstructions" style="display:none">
+						<div class="row">
+							<div class="col-sm-6 form-group" data-popover-content="#comment" data-toggle="popover" data-placement="right" data-original-title="" title="">
+								<label>Instructions by HR</label>
+								<p>Lorem ipsum dolor sit amet...<a href="#" style="color: #ef8813;">View</a></p>
+								<div id="comment" style="display: none">
+									<div class="popover-body">
+										<button type="button" class="popover-close close"> <i class="fas fa-times"></i> </button>
+										Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed vitae lectus ex. Suspendisse potenti. Proin in molestie neque. Curabitur in leo et nisl luctus semper. Sed laoreet ut justo eu tristique. Integer eleifend neque ut gravida ultrices. Nulla id tortor feugiat, auctor urna non, rutrum ligula. Donec sodales lacus in finibus efficitur. Quisque lacinia quis nunc sed ultricies.
+									</div>
+								</div>
+							</div>
+							<div class="col-sm-6 form-group" data-popover-content="#comment" data-toggle="popover" data-placement="right" data-original-title="" title="">
+								<label>Overall Instructions by HR</label>
+								<p>Lorem ipsum dolor sit amet...<a href="#" style="color: #ef8813;">View</a></p>
+								<div id="comment" style="display: none">
+									<div class="popover-body">
+										<button type="button" class="popover-close close"> <i class="fas fa-times"></i> </button>
+										Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed vitae lectus ex. Suspendisse potenti. Proin in molestie neque. Curabitur in leo et nisl luctus semper. Sed laoreet ut justo eu tristique. Integer eleifend neque ut gravida ultrices. Nulla id tortor feugiat, auctor urna non, rutrum ligula. Donec sodales lacus in finibus efficitur. Quisque lacinia quis nunc sed ultricies.
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="col-sm-12 form-group">
+						<div class="table-responsive">
+							<div id="TasksTable">
+
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<!-- Modal footer -->
+			<div class="p-0 text-center ">
+				<button type="button" id="btnSubmit" class="btn mtr-o-grn btn-l " data-toggle="modal" data-target="#dc"><i class="fas fa-paper-plane"></i>Submit</button>
+				<button type="button" class="btn cnl-btn ripplelink" onclick="CloseEmpDetails();" data-dismiss="modal"><i class="fas fa-times"></i>Close</button>
+			</div>
+		</div>
+	</div>
+</div>
+<div class="modal fade" id="dc">
+	<div class="modal-dialog modal-md">
+		<div class="modal-content">
+			<!-- Modal Header -->
+			<div style="position: relative;"> </div>
+			<div class="modal-body p-0">
+				<div class="swal-icon"> <i class="fas fa-exclamation-triangle"></i> </div>
+				<div class="swal-btn p-2 pb-3">
+					<p class="text-center mb-4"><strong>There are some items pending. Are you sure you want to proceed?</strong></p>
+					<div class="text-center">
+						<button type="button" class="btn cnl-btn btn-l ripplelink" data-dismiss="modal">Cancel</button>
+						<a href="#" onclick="SaveAssetsDetails();" class="btn mtr-o-grn btn-l ripplelink ">Yes</a>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<script id="tmpAction" type="text/x-template">
+	${if('@Modify' === "True")}
+	<input type="hidden" id="hddExitHPID" name="I" value="${Exit_HP_ID}" />
+	<input type="hidden" id="hddExitID" name="N" value="${Exit_ID}" />
+	@*<a onclick="BindEdit(this)"><i class="fas fa-cogs"></i>Process </a>*@
+	<a onclick="EmpDetails(this)"><i class="fas fa-cogs"></i>Process </a>
+	${/if}
+</script>
+<script>
+	$(document).ready(function () {
+		$(function () {
+			$('.datepicker').datepicker({
+				changeMonth: true,
+				changeYear: true,
+				dateFormat: "dd/mm/yy",
+				yearRange: "-90:+10"
+			});
+
+		});
+	});
+</script>
+<script>
+	var OrientationSchedulesArray = [];
+	function SaveAssetsDetails() {debugger
+		var obj = {
+			assetsDetails: OrientationSchedulesArray
+		}
+		var  dataObj = JSON.stringify(obj);		 
+		if ($('#tblAssetsDetails tr').length > 1) {
+			$.ajax({
+				async: false,
+				type: 'POST',
+				url: "/Exit/SaveAssetsDetails",
+				data: dataObj,
+				contentType: 'application/json',
+				success: function (res) {
+					debugger;
+					SuccessToaster("Exit assets details has been saved.");
+					$('#dc').modal('hide');
+					$('#tmpAction1').modal('hide');
+					window.location.reload();
+				},
+				error: function (request, status, error) {
+					SuccessToaster(error);
+
+				}
+			});
+		}
+		else {
+			alert('Assets details is empty.');
+		}
+	}
+	function AddOrientationSchedulesArray() {
+		var valid = true;
+		if (checkValidationOnSubmit('Mandatory') == false) {
+			valid = false;
+		}
+		if (checkValidationOnSubmit('Mandatorypld') == false) {
+			valid = false;
+		}
+		debugger
+		if (valid == true) {			
+		var ExitHPID = $('#hddExitHPID').val();
+		var ExitID = $('#hddExitID').val();
+		var AssetID = $('#txtAssetID').val();
+		var DateOfIssue = $('#txtDateOfIssue').val();
+		var Description = $('#txtDescription').val();
+		var Type = $('#txtType').val();
+		var aRemarks = $('#txtaRemarks').val();
+		var Status = document.getElementById("ddlStatus");
+
+			OrientationSchedulesArrayId = OrientationSchedulesArray.length + 1;
+			var loop = OrientationSchedulesArrayId;
+			var objarrayinner =
+			{
+				AssetID: AssetID,
+				DateOfIssue: DateOfIssue,
+				Description: Description,
+				Type: Type,
+				Status: Status.options[Status.selectedIndex].text,
+				Remarks: aRemarks,
+				RowNum: loop,
+				Exit_HP_ID: ExitHPID,
+				Exit_ID: ExitID
+			}
+			OrientationSchedulesArray.push(objarrayinner);
+
+			$('#tblOrientationSchedule1').html('');
+			var newtbblData1 = '<table id="tblAssetsDetails" class="table table-striped m-0" >' +
+				' <thead>' +
+				' <tr>' +
+				' <th class="td-50">S.No</th>' +
+				' <th class="td-100">Asset ID</th>' +
+				' <th class="td-100">Date of issue</th>' +
+				' <th class="td-100">Description</th>' +
+				' <th class="td-100">	Type</th>' +
+				' <th class="td-100">Status</th>' +
+				' <th class="td-100">	Remarks</th>' +
+				' <th style="display:none"> ExitHP ID </th>' +
+				' <th style="display:none">Exit ID </th>' +
+				' <th class="td-50 text-center">Action</th>' +
+				' </tr>' +
+				' </thead>';
+			var html1 = "</table>";
+
+			var tableData = "";
+			for (let i = 0; i < OrientationSchedulesArray.length; i++) {
+				var newtbblData = "<tr><td>" + OrientationSchedulesArray[i].RowNum + "</td><td>" + OrientationSchedulesArray[i].AssetID + "</td><td>" + OrientationSchedulesArray[i].DateOfIssue + "</td><td>" + OrientationSchedulesArray[i].Description + "</td><td>" + OrientationSchedulesArray[i].Type + "</td><td>" + OrientationSchedulesArray[i].Status + "</td><td>" + OrientationSchedulesArray[i].Remarks + "</td><td style='display: none'>" + OrientationSchedulesArray[i].ExitHPID + "</td><td style='display: none'>" + OrientationSchedulesArray[i].ExitID + "</td><td style='align-items:center'><a class='HideClass'  title='Click to Remove' data-toggle='tooltip' data-original-title='Click to Remove' onclick='DeleteMSMEArray(this," + OrientationSchedulesArray[i].Id + ")'><i class='fas fa-window-close m-0 red-clr' aria-hidden='true'></i> </a></td></tr>";
+				var allstring = newtbblData;
+				tableData += allstring;
+			}
+			$('#tblOrientationSchedule1').html(newtbblData1 + tableData + html1);
+
+		$("#txtAssetID").val('');
+		$("#txtDateOfIssue").val('');
+		$("#txtDescription").val('');
+		$("#txtType").val('');
+		$("#txtaRemarks").val('');
+		$('#Status').val('0').trigger('change');
+	}
+	}
+	function BindOrientationSchedulesArray(table) {
+		OrientationSchedulesArray = table;
+		$('#tblOrientationSchedule1').html('');
+		var newtbblData1 = '<table class="table table-striped m-0" >' +
+			' <thead>' +
+			' <tr>' +
+			' <th class="td-50">S.No</th>' +
+			' <th class="td-100">Asset ID</th>' +
+			' <th class="td-100">Date of issue</th>' +
+			' <th class="td-100">Description</th>' +
+			' <th class="td-100">	Type</th>' +
+			' <th class="td-100">Status</th>' +
+			' <th class="td-100">	Remarks</th>' +
+			' <th style="display:none"> ExitHP ID </th>' +
+			' <th style="display:none">Exit ID </th>' +
+			' <th style="display:none"> ID </th>' +
+			' <th class="td-50 text-center">Action</th>' +
+			' </tr>' +
+			' </thead>';
+		var html1 = "</table>";
+		debugger
+		var tableData = "";
+		for (let i = 0; i < OrientationSchedulesArray.length; i++) {
+			//var str = $('#ddlStatus option[value="' + OrientationSchedulesArray[i].Status +'"]').attr("selected", "selected")[0].innerText
+			var newtbblData = "<tr><td>" + OrientationSchedulesArray[i].RowNum + "</td><td>" + OrientationSchedulesArray[i].AssetID + "</td><td>" + OrientationSchedulesArray[i].DateOfIssue + "</td><td>" + OrientationSchedulesArray[i].Description + "</td><td>" + OrientationSchedulesArray[i].Type + "</td><td>" + OrientationSchedulesArray[i].Status + "</td><td>" + OrientationSchedulesArray[i].Remarks + "</td><td style='display: none'>" + OrientationSchedulesArray[i].ExitHPID + "</td><td style='display: none'>" + OrientationSchedulesArray[i].ExitID + "</td><td style='align-items:center'><a class='HideClass'  title='Click to Remove' data-toggle='tooltip' data-original-title='Click to Remove' onclick='DeleteMSMEArray(this," + OrientationSchedulesArray[i].Id + ")'><i class='fas fa-window-close m-0 red-clr' aria-hidden='true'></i> </a></td></tr>";
+			var allstring = newtbblData;
+			tableData += allstring;
+		}
+		$('#tblOrientationSchedule1').html(newtbblData1 + tableData + html1);
+	}
+	function DeleteMSMEArray(obj, id) {
+		ConfirmMsgBox("Are you sure want to delete", '', function () {
+			var data = OrientationSchedulesArray.filter(function (itemParent) { return (itemParent.OriID == id); });
+			//CommonAjaxMethod(virtualPath + 'OnboardingRequest/DeleteOrientationSchedule', { Id: id, inputData: 3 }, 'POST', function (response) {
+				$(obj).closest('tr').remove();
+				OrientationSchedulesArray = OrientationSchedulesArray.filter(function (itemParent) { return (itemParent.OriID != id); });
+			//});
+			//$(obj).closest('tr').remove();
+			//OrientationSchedulesArray = OrientationSchedulesArray.filter(function (itemParent) { return (itemParent.OriID != id); });
+			//RedirectToRegistration();
+		})
+	}
+	function EmpDetails(obj) {debugger
+		if ($("#Approve").val() == '0') {
+			document.getElementById('divHRInstructions').style.display = 'none';
+			$('#btnSubmit')[0].hidden = false;
+			$('#btnAddAssets')[0].hidden = false;
+		}
+		else {
+			document.getElementById('divHRInstructions').style.display = 'block';
+			$('#btnSubmit')[0].hidden = true;
+			$('#btnAddAssets')[0].hidden = true;
+			
+		}
+		 OrientationSchedulesArray = [];
+		var ExitHPID = $(obj).closest("tr").find("input:hidden[name=I]").val();
+		var ExitID = $(obj).closest("tr").find("input:hidden[name=N]").val();
+		 $.ajax({
+			 url: "/Exit/GetExitEmployeeDetails",
+				type: "Get",
+			 data: { src: EncryptQueryStringJSON(@ViewBag.MenuID+"*" + "/Exit/GetExitEmployeeDetails" + "*" + ExitHPID + "*" + ExitID + "*" + $("#Approve").val()) },
+			 async:true,
+			 success: function (data)
+                {
+					document.getElementById('lblRequestedby').innerText = JSON.parse(data).Table[0].emp_name;
+					document.getElementById('lblReqNo').innerText = JSON.parse(data).Table[0].Req_No;
+					document.getElementById('lblLocatiion').innerText = JSON.parse(data).Table[0].location_name;
+					document.getElementById('lblDepartment').innerText = JSON.parse(data).Table[0].EMP_Department;
+					document.getElementById('lblDesignation').innerText = JSON.parse(data).Table[0].DesignationName;
+					document.getElementById('lblLastWorkingDay').innerText = JSON.parse(data).Table[0].RelievingDate;
+					document.getElementById('lblRequestedDate').innerText = JSON.parse(data).Table[0].Req_Date;
+					//if (JSON.parse(data).Table1.length > 0) {
+						BindOrientationOnboard(JSON.parse(data).Table1)
+					//	//for (var i = 0; i < JSON.parse(data).Table1.length; i++) {
+					//	//	var ss = JSON.parse(data).Table1[i].Task;
+					//	//}
+					//}
+					//else {
+					//	$('#TasksTable').html('');
+					//}
+					if (JSON.parse(data).Table2.length > 0) {
+						//OrientationSchedulesArray = [];
+						//OrientationSchedulesArray.push(JSON.parse(data).Table2);
+						BindOrientationSchedulesArray(JSON.parse(data).Table2);
+					}
+					else {
+						$('#tblOrientationSchedule1').html('');
+					}
+					$("#tmpAction1").modal('show');
+				},
+				error: function (er) {
+                    console.log(er);
+                    CloseLoadingDialog();
+				}
+		 });
+	}
+
+	function BindOrientationOnboard(table) {
+		var mArray = "";
+		mArray = table;
+			$('#TasksTable').html('');
+			var newtbblData1 = '<table id="tblOnboardUsers" class="table mt-0" >' +
+				' <thead>' +
+				' <tr>' +
+				' <th class="w-10 text-left" style="display:none">Exit_TaskID</th>' +
+				' <th class="w-10 text-left">S.No</th>' +
+				' <th>Task</th>' +
+				' <th class="w-100">Assignee</th>' +
+				' <th class="w-80">Priority</th>' +
+				' <th class="w-80">Status</th>' +
+				' </tr>' +
+				' </thead>';
+			var html1 = "</table>";
+			var tableData = "";
+			var serialNo = 0;
+			for (let i = 0; i < mArray.length; i++) {
+				serialNo = 0;
+				var Status = mArray[i].Feedback == null ? "Pending" : "Complete";
+				var newtbblData = "<tr><td style='display: none'>" + mArray[i].Exit_TaskID + "</td><td>" + mArray[i].RowNum + "</td><td>" + mArray[i].Task + "</td><td>" + mArray[i].Assignee_ID + "</td><td>" + mArray[i].Priority + "</td><td class=\"green-clr\">" + Status + "</td></tr>";
+
+				var allstring = newtbblData;
+
+				tableData += allstring;
+
+
+			}
+			$('#TasksTable').html(newtbblData1 + tableData + html1);
+		HtmlPaging();
+	}
+	function HtmlPaging() {
+		$('#tblOnboardUsers').after('<div id="divNav" style="text-align:right"></div>');
+		var rowsShown = 10;
+		var rowsTotal = $('#tblOnboardUsers tbody tr').length;
+		var numPages = rowsTotal / rowsShown;
+		for (i = 0; i < numPages; i++) {
+			var pageNum = i + 1;
+			$('#divNav').append('<a class="e-link e-numericitem e-spacing e-currentitem e-active" href="#" rel="' + i + '">' + pageNum + '</a> ');
+		}
+		$('#tblOnboardUsers tbody tr').hide();
+		$('#tblOnboardUsers tbody tr').slice(0, rowsShown).show();
+		$('#divNav a:first').addClass('active');
+		$('#divNav a').bind('click', function () {
+			$('#divNav a').removeClass('active');
+			$(this).addClass('active');
+			var currPage = $(this).attr('rel');
+			var startItem = currPage * rowsShown;
+			var endItem = startItem + rowsShown;
+			$('#tblOnboardUsers tbody tr').css('opacity', '0.0').hide().slice(startItem, endItem).
+				css('display', 'table-row').animate({ opacity: 1 }, 300);
+		});
+	}
+	function CloseEmpDetails(ctrl) {
+		$('#tmpAction1').hide();
+	}
+	var MenuID = Number(129);
+
+	wow = new WOW();
+	wow.init();
+
+
+	function SuccessToaster(Message) {
+		$("#toastMsg").html(Message);
+		$("#toasticon i").addClass("fas fa-check green-clr ");
+		var x = document.getElementById("toast")
+		x.className = "show";
+		setTimeout(function () { x.className = x.className.replace("show", ""); }, 4000);
+	}
+
+	function FailToaster(Message) {
+		$("#toastMsg").html(Message);
+		$("#toasticon i").addClass("fas fa-exclamation-triangle red-clr");
+		var x = document.getElementById("toast")
+		x.className = "show toaster-warning";
+		setTimeout(function () { x.className = x.className.replace("show toaster-warning", ""); }, 4000);
+	}
+</script>
+<script>
+	$(function () {
+		$("#datepicker").datepicker({
+			autoclose: true, todayHighlight: true
+		}).datepicker('update', new Date());
+	});
+
+</script>
+<script>
+	// JavaScript Document
+	$(function () {
+		$('#js-nav-toggle').click(function (e) {
+			e.preventDefault();
+			$("html").toggleClass("is-sideopen");
+			$("#js-nav-toggle").toggleClass("is-active");
+		});
+
+		var $content = $('.l-contents');
+		var $header = $('.l-header');
+
+
+		$content.click(function () {
+			$("html").removeClass("is-sideopen");
+		});
+
+
+		$header.click(function () {
+			$("html").removeClass("is-sideopen");
+		});
+
+
+	});
+
+
+	$(function () {
+
+		var $dropdown = $('.js-dropdown');
+		var $content = $('.l-contents');
+		var $toggle = $('#js-nav-toggle');
+
+
+		$('.js-dropdown-menu').hide();
+		$dropdown.click(function () {
+			$('i').removeClass('is-rotate');
+			$('.js-dropdown-menu').slideUp(200);
+			if ($('+.js-dropdown-menu', this).css('display') == 'none') {
+				$('i', this).addClass('is-rotate');
+				$('+.js-dropdown-menu', this).slideDown(200);
+			}
+		});
+
+
+		$content.click(function () {
+			$('i').removeClass('is-rotate');
+			$('.js-dropdown-menu').slideUp(200);
+			if ($('+.js-dropdown-menu', this).css('display') == 'none') {
+				$('i', this).addClass('is-rotate');
+				$('+.js-dropdown-menu', this).slideDown(200);
+			}
+		});
+
+
+		$toggle.click(function () {
+			$('i').removeClass('is-rotate');
+			$('.js-dropdown-menu').slideUp(200);
+			if ($('+.js-dropdown-menu', this).css('display') == 'none') {
+				$('i', this).addClass('is-rotate');
+				$('+.js-dropdown-menu', this).slideDown(200);
+			}
+		});
+
+	});
+
+	$(function () {
+		$('.is-ac-close').hide();
+		$(".is-ac-click").on("click", function () {
+			if ($(this).children('i').is('.fa-angle-right')) {
+				$(this).children('i')
+					.removeClass('fa-angle-right')
+					.addClass('fa-angle-down');
+			} else {
+				$(this).children('i')
+					.removeClass('fa-angle-down')
+					.addClass('fa-angle-right');
+			}
+			$(this).next().slideToggle(200);
+		});
+
+		$('.is-ac-close').hide();
+		$(".is-ac-bar").on("click", function () {
+
+			if ($(this).find('i').is('.fa-caret-down')) {
+
+				$(this).find('i')
+					.removeClass()
+					.addClass('fa fa-caret-up');
+			} else {
+				$(this).find('i')
+					.removeClass()
+					.addClass('fa fa-caret-down');
+			}
+			$(this).next().slideToggle(200);
+		});
+	});
+
+
+
+
+	//---------------------------------------------------
+	// ▼　tab
+	//---------------------------------------------------
+	$(function () {
+		var rwdTab = $('.c-tab'),
+			switchPoint = 768,
+			fadeSpeed = 300,
+			slideSpeed = 300;
+
+		var tabBtn = rwdTab.children('.c-tab-panel').children('.c-tab-heading'),
+			contentsArea = rwdTab.children('.c-tab-panel').children('.c-tab-body');
+
+		tabBtn.on('click', function () {
+			if (!$(this).hasClass('c-tab-active')) {
+				tabBtn.removeClass('c-tab-active');
+				$(this).addClass('c-tab-active');
+
+				if (window.innerWidth > switchPoint) {
+					contentsArea.fadeOut(fadeSpeed);
+					$(this).next().fadeIn(fadeSpeed);
+				} else {
+					contentsArea.slideUp(slideSpeed);
+					$(this).next().slideDown(slideSpeed);
+				}
+			}
+		});
+
+		tabBtn.first().click();
+	});
+
+
+
+</script>
+<script type="text/javascript">
+	jQuery(document).ready(function ($) {
+		jQuery('.stellarnav').stellarNav({
+			theme: 'dark',
+			breakpoint: 960,
+			position: 'right',
+
+		});
+	});
+</script>
+<script>
+	$("document").ready(function () {
+
+		$('.dropdown-menu').on('click', function (e) {
+			if ($(this).hasClass('dropdown-menu-form')) {
+				e.stopPropagation();
+			}
+		});
+	});
+
+
+</script>
+<script>
+
+	var links = document.querySelectorAll('.ripplelink');
+
+	for (var i = 0, len = links.length; i < len; i++) {
+		links[i].addEventListener('click', function (e) {
+			var targetEl = e.target;
+			var inkEl = targetEl.querySelector('.ink');
+
+			if (inkEl) {
+				inkEl.classList.remove('animate');
+			}
+			else {
+				inkEl = document.createElement('span');
+				inkEl.classList.add('ink');
+				inkEl.style.width = inkEl.style.height = Math.max(targetEl.offsetWidth, targetEl.offsetHeight) + 'px';
+				targetEl.appendChild(inkEl);
+			}
+
+			inkEl.style.left = (e.offsetX - inkEl.offsetWidth / 2) + 'px';
+			inkEl.style.top = (e.offsetY - inkEl.offsetHeight / 2) + 'px';
+			inkEl.classList.add('animate');
+		}, false);
+	}
+</script>
+<script type="text/javascript">
+	$(document).ready(function () {
+		$(".dpselect").select2();
+
+	});
+</script>
+<script type="text/javascript">
+	$(window).scroll(function () {
+		if ($(this).scrollTop() > 50) {
+			$('.scrolltop:hidden').stop(true, true).fadeIn();
+		} else {
+			$('.scrolltop').stop(true, true).fadeOut();
+		}
+	});
+	$(function () { $(".scroll-btm").click(function () { $("html,body").animate({ scrollTop: $(".thetop").offset().top }, ""); return false }) })
+</script>
+<script>
+	$(document).ready(function () {
+		$('[data-toggle="tooltip"]').tooltip();
+	});
+
+	$(function () {
+		$('#finselector').change(function () {
+			$('.finyear').hide();
+			$('#' + $(this).val()).show();
+		});
+	});
+
+</script>
+<script type="text/javascript">
+	function formChoice(x) {
+		if (x == 0) {
+			$('#field1').css('display', 'block');
+			$('#field2').css('display', 'none');
+		} else {
+			$('#field1').css('display', 'none');
+			$('#field2').css('display', 'block');
+		}
+	}
+
+</script>
+<script type="text/javascript">
+	$('[data-toggle="tooltip"]').tooltip();
+
+	$("[data-toggle=popover]").popover({
+		html: true,
+		trigger: 'hover',
+		content: function () {
+			var content = $(this).attr("data-popover-content");
+			return $(content).children(".popover-body").html();
+		}
+	});
+</script>
+@Html.IncludeVersionedJs(Url.Content("~/assets/design/Scripts/SyncScripts.js"))
+
+@(Html.EJS().ScriptManager())

@@ -1,0 +1,208 @@
+﻿@model ListTabs
+@section style{
+    @System.Web.Optimization.Styles.Render("~/bundle/dataTablecss")
+}
+@{
+    string MenuID = "0";
+    if (ViewBag.MenuID != null)
+    {
+        MenuID = ViewBag.MenuID;
+    }
+}
+<div class="inner-main">
+    <div class="right_col" role="main">
+        @*@Html.Partial("ListHeader_Partial", "Leave Balance List")*@
+        <h1 class="heading-one ">Leave Balance List</h1>
+        
+        @using (Ajax.BeginForm("_LeaveBalanceList", "Employee",
+           new { src = clsApplicationSetting.EncryptQueryString(ViewBag.MenuID.ToString() + "*/Employee/_LeaveBalanceList") },
+           new AjaxOptions { HttpMethod = "POST", OnSuccess = "BindTarget" },
+       new { @id = "_LeaveBalanceListFrom" })
+       )
+        {
+
+            <div class="tab-main ">
+                <div class="row text-clr">
+                    
+                    <div class="col-md-4 col-sm-12 col-xs-12">
+                        <input type="file" id="FileAttachment" name="UploadedFile" class="file-inp" accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet/.xls" />
+
+                    </div>
+                    <div class="col-md-4 col-sm-12 col-xs-12 align-self-center">
+                        <button type="button" class="btn mtr-g-grn mb-0" onclick="saveAttachment()"><i class="fas fa-file-alt"></i>Import</button>
+                        @*<button type="submit" class="btn clsbtn"><i class="fas fa-file-alt"></i>Export All</button>*@
+                    </div>
+                    <div class="col-md-12">
+                        <ul id="tabs" class="nav nav-tabs " role="tablist">
+                            <li class="nav-item"> <a tabvalue="0" class="nav-link active ripplelink AnchorApproval" data-toggle="tab" role="tab"><i class="far fa-clock"></i>Pending</a> </li>
+                            <li class="nav-item"> <a tabvalue="1" class="nav-link ripplelink AnchorApproval" data-toggle="tab" role="tab"><i class="fas fa-database"></i>Completed</a> </li>
+                        </ul>
+                    </div>
+                    <div style="display:none">
+                        @Html.HiddenFor(model => model.Approve)
+                        <button type="submit" class="btn mtr-g-grn btn-l ripplelink" id="btnSearch" name="Command" value="Search">
+                            <i class="fas fa-search"></i>Search
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+        }
+
+        <div id="TargetDiv"></div>
+    </div>
+</div>
+<div class="modal fade" id="ViewModal">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+
+            <div class="modal-header blk-gdn-btn">
+                <h4 class="modal-title">Add Leave Balance</h4>              
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+            <!-- Modal body -->
+            <div class="modal-body">
+                <div id="TagetDivAdd"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section scripts    {
+
+    @System.Web.Optimization.Scripts.Render("~/bundle/unobtrusivejs")
+
+    @Html.IncludeVersionedJs(Url.Content("~/assets/design/Scripts/ToolTip.js"))
+
+    @Html.IncludeVersionedJs(Url.Content("~/assets/design/Scripts/SyncScripts.js"))
+<script>
+        $(document).ready(function () {
+            $("#btnSearch").click();
+        });
+        $('.AnchorApproval').on('click', function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+            var att = $(this).attr("tabvalue");
+            $(".AnchorApproval.active").removeClass("active");
+            $(this).addClass("active");
+            $("#Approve").val(att);
+            ShowLoadingDialog();
+            $("#btnSearch").click();
+        });
+
+
+        function BindTarget(args) {
+            CloseLoadingDialog();
+            $("#TargetDiv").empty();
+            $("#TargetDiv").html(args);
+		}
+
+
+		function ListAdd(ID) {
+				$.ajax({
+                    url: "/Employee/_LeaveBalanceAdd",
+				type: "Get",
+                    data: { src: EncryptQueryStringJSON(@ViewBag.MenuID+"*" + "/Employee/_LeaveBalanceAdd" + "*" + ID + "*") },
+                success: function (data)
+                {
+					$("#TagetDivAdd").empty();
+					$("#TagetDivAdd").html(data);
+					$("#ViewModal").modal("show");
+					$(".applyselect").select2();
+                     var form = $("form")
+                .removeData("validator")
+                .removeData("unobtrusiveValidation");
+                    $.validator.unobtrusive.parse(form);
+                    $("#leave_id").select2();
+				},
+				error: function (er) {
+					alert(er);
+
+				}
+			});
+	}
+
+    function OnSuccess(obj) {
+        if (obj.Status) {
+            CloseLoadingDialog();
+            SuccessToaster(obj.SuccessMessage);
+            ListAdd(obj.ID);
+            //$("#ViewModal").modal("hide");
+            //$("#btnSearch").click();
+        }
+        else {
+            CloseLoadingDialog()
+            FailToaster(obj.SuccessMessage);
+        }
+
+    }
+    function Submit() {
+
+        $("#ViewModal").modal("hide");
+        $("#btnSearch").click();
+
+    }
+    function FnEdit(obj)
+    {     
+        
+        $("#opening").val($(obj).closest("tr").find(".opening").text());
+        $("#allotted").val($(obj).closest("tr").find(".allotted").text());
+        $("#emp_id").val($(obj).closest("tr").find(".emp_id").text());
+        $("#ID").val($(obj).closest("tr").find(".ID").text());
+        $("#srno").val($(obj).closest("tr").find(".srno").text());
+        $("#leave_id").val($(obj).closest("tr").find(".leave_id").text()).trigger("change");
+        var startdate = new Date($(obj).closest("tr").find(".start_date").text());
+        startdate = startdate.getFullYear() + "-" + ("0" + (startdate.getMonth() + 1)).slice(-2) + "-" + ("0" + startdate.getDate()).slice(-2);
+        $("#start_date").val(startdate);        
+        $("#btnadd").html('Update');
+
+    }
+    function DeleteRow(obj) {
+        var Response = 0;
+        var ID = $(obj).closest("tr").find(".ID").text();
+        var Table = $(obj).closest('table');
+        var TableID = $(Table).attr('ID');
+        var Doctype = "EMP_DETAIL";
+        ConfirmMsgBox("Are you sure want to delete", '', function () {
+           
+            if (ID) {
+                var data = DelRecord_Common(ID, Doctype);
+                if (data.Status) {
+                    Response = 1;
+                    $(obj).closest('tr').remove();
+                }
+                else {
+                    FailToaster(data.SuccessMessage);
+
+                }
+            }            
+        })
+    }
+    function saveAttachment() {       
+        var fileUpload = $("#FileAttachment").get(0);
+        var files = fileUpload.files;
+        // Create FormData object
+        if (files.length == 0) {
+            // showAndDismissAlert("danger","Please Choose File First.")
+            $("#FileAttachment").focus();
+            return
+        }
+        var fileData = new FormData();
+        if (files.length > 0) {
+            fileData.append("FileAttachment", files[0]);
+            ShowLoadingDialog();
+            $.ajax({               
+                url: "/Employee/UploadLeaveBalance",
+                type: "POST",
+                processData: false,
+                contentType: false,
+                data: fileData,
+                success: function (response) {
+                    $("#FileAttachment").val(null);
+                    window.location.reload();                   
+                }
+            });
+        }
+    }
+</script>
+}

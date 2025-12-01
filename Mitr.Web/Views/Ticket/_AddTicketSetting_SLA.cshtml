@@ -1,0 +1,62 @@
+﻿
+@model IList<Mitr.Models.Helpdesk.TicketSetting_SMA>
+
+@using (Ajax.BeginForm("_AddTicketSetting_SLA", "Ticket",
+        new { src = ViewBag.src },
+        new AjaxOptions { HttpMethod = "POST", OnSuccess = "OnSLASuccess" },
+    new { @id = "_AddTicketSetting_SLAFrom" })
+    )
+{
+
+    @Html.AntiForgeryToken()
+    <div class="divSLA">
+        <table id="datatable" class="table mt-0  table-bordered dt-responsive nowrap tbltick new_width">
+            <thead>
+                <tr>
+                    <th>Priority</th>
+                    <th class="text-right">First Response</th>
+                    <th class="text-right">Follow Up - every</th>
+                    <th class="text-right">Escalation</th>
+                    <th class="text-right">Ticket can be Reopen after</th>
+
+                </tr>
+            </thead>
+            <tbody>
+                @for (int i = 0; i < Model.Count; i++)
+                {
+                    <tr>
+                        <td>
+                            @Html.HiddenFor(model => model[i].SubSettingID)
+                            @Html.TextBoxFor(model => model[i].PolicyPriority, new { @class = "form-control" })
+
+                            @Html.ValidationMessageFor(model => model[i].PolicyPriority, "", new { @class = "text-danger" })
+
+
+                        </td>
+                        <td class="text-right">
+                            @Html.TextBoxFor(model => model[i].FollowUpTime, new { @class = "form-control" })
+                            @Html.ValidationMessageFor(model => model[i].FollowUpTime, "", new { @class = "text-danger" })
+                        </td>
+                        <td class="text-right">
+                            @Html.TextBoxFor(model => model[i].ResponseTime, new { @class = "form-control" })
+                            @Html.ValidationMessageFor(model => model[i].ResponseTime, "", new { @class = "text-danger" })
+                        </td>
+                        <td class="text-right">
+                            @Html.TextBoxFor(model => model[i].EscalationTime, new { @class = "form-control" })
+                            @Html.ValidationMessageFor(model => model[i].EscalationTime, "", new { @class = "text-danger" })
+                        </td>
+                        <td class="text-right">
+                            @Html.TextBoxFor(model => model[i].Reopen, new { @class = "form-control" })
+                            @Html.ValidationMessageFor(model => model[i].Reopen, "", new { @class = "text-danger" })
+                        </td>
+                    </tr>
+                }
+
+            </tbody>
+        </table>
+        <div class="row">
+            <button type="submit" class="btn mtr-o-grn btn-l ripplelink pull-right" name="Command" value="Add"><i class="fa fa-paper-plane" aria-hidden="true"></i> Submit</button>
+        </div>
+    </div>
+}
+

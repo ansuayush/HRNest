@@ -1,0 +1,493 @@
+﻿@using System.Data
+@model Mitr.Models.ProcessTimeSheet
+@{
+    /**/
+
+    ViewBag.Title = "_Timesheet";
+}
+@{
+    bool BtnVisible = false, IsShowSave = false;
+    if (clsApplicationSetting.GetSessionValue("EMPID") == "0")
+    {
+        BtnVisible = true;
+    }
+}
+
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>ProcessTimeSheetNew</title>
+    @Html.IncludeVersionedCss(Url.Content("~/assets/design/css/bootstrap.min.css"))
+    @Html.IncludeVersionedCss(Url.Content("~/assets/design/css/style.css"))
+    @Html.IncludeVersionedCss(Url.Content("~/assets/design/css/custom.css"))
+
+    
+</head>
+<body>
+    <div class="container-fluid mt-2">
+        @Html.Partial("HeaderMsg_Partial")
+        <h1 class="heading-one">Process Activity Log @Convert.ToDateTime(ViewBag.SelectedDate).ToString("MMMM")  @Convert.ToDateTime(ViewBag.SelectedDate).Year</h1>
+
+        @if (Model.EmployeeDetails.Count == 0)
+        {
+
+            @Html.Partial("_NoRecordsFound")
+
+        }
+        else
+        {
+
+            using (Html.BeginForm("ProcessTimeSheet", "Activity",
+            new { src = ViewBag.src }, FormMethod.Post,
+            new
+            {
+                name = "ProcessTimeSheetForm",
+                id = "ProcessTimeSheetForm",
+                enctype = "multipart/form-data"
+            }))
+            {
+
+
+                @Html.AntiForgeryToken()
+
+                @Html.HiddenFor(x => Model.SelectedDate)
+                @Html.HiddenFor(x => Model.TempEMPID)
+                @Html.HiddenFor(x => Model.iCount)
+                @Html.HiddenFor(x => Model.iLock)
+                <div class="inner-main pt-3 mb-5">
+
+                    <div id="table-scroll" >
+                        
+                        <div class="div_maintb">
+                            <table id="main-table" class="table table-small-font table-bordered table-striped processActivity">
+                                <thead>
+                                    <tr>
+                                        <th scope="col"  width="40" class="text-center">SNo.</th>
+                                        <th scope="col"  width="40">
+                                            <input type="checkbox" class="newwidth" id="checkAll" name="ChkAll" value="All" />
+                                            <label for="checkAll"></label>
+                                        </th>
+                                        <th scope="col" ><div class="w-60">Emp Code</div></th>
+                                        <th scope="col" ><div class="w-100">Emp Name</div></th>
+                                        <th scope="col" >Hourly Rate</th>
+                                        <th scope="col" >Adj. Hours</th>
+                                        <th scope="col" >Diff. Hours</th>
+
+                                        @foreach (var item in Model.EmployeeDetails.Select(x => x.ProjectDetails).FirstOrDefault())
+                                        {
+                                            <th scope="col" colspan="3" class="text-center">@item.ProjectName</th>
+                                        }
+
+                                        <th colspan="3" class="text-center">Leave</th>
+                                        <th colspan="5" class="text-center">Monthly Hour</th>
+                                    </tr>
+                                    <tr class="sticky-sbhead">
+                                        <th></th>
+                                        <th></th>
+                                        <th></th>
+                                        <th></th>
+                                        <th></th>
+                                        <th></th>
+                                        <th></th>
+                                        @foreach (var item in Model.EmployeeDetails.Select(x => x.ProjectDetails).FirstOrDefault())
+                                        {
+                                            <th scope="col" rowspan="1" class="rb">BH</th>
+                                            <th rowspan="1" class="rb">WH</th>
+                                            <th scope="col" rowspan="1" class="">Value</th>
+                                        }
+
+                                        <th scope="col" rowspan="2">AL</th>
+                                        <th scope="col" rowspan="2">Other Leave</th>
+                                        <th scope="col" rowspan="2">Holiday</th>
+                                        <th scope="col" rowspan="2">Paid Hours</th>
+                                        <th scope="col" rowspan="2">Gross Salary</th>
+                                        <th scope="col" rowspan="2">LWP</th>
+                                        <th scope="col" rowspan="2">Month Hours</th>
+                                        <th scope="col" rowspan="2">OT</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @{ int count = 0;}
+                                    @for (int i = 0; i < Model.EmployeeDetails.Count; i++)
+                                    {
+                                        count++;
+                                        if (Model.EmployeeDetails[i].Modify == 0)
+                                        {
+                                            <tr>
+                                                <td class="text-center">
+                                                    @count
+                                                    @Html.HiddenFor(x => Model.EmployeeDetails[i].IsDataComingFormTimeSheet)
+                                                    @Html.HiddenFor(x => Model.EmployeeDetails[i].EMPID, new { @class = "E" })
+                                                    @Html.HiddenFor(x => Model.EmployeeDetails[i].EMPName, new { @class = "N" })
+                                                </td>
+                                                <td class="text-center">
+                                                    @if (Model.EmployeeDetails[i].Checkbox != null)
+                                                    {
+                                                        IsShowSave = true;
+                                                    }
+                                                    <input type="checkbox" class="newwidth chksingle" id="Chksingle_@count" name="@Html.NameFor(x => Model.EmployeeDetails[i].Checkbox)" @(Model.EmployeeDetails[i].Checkbox == null ? "" : "checked") />
+                                                    <label for="Chksingle_@count"></label>
+                                                </td>
+                                                <td>
+                                                    @Model.EmployeeDetails[i].EMPCode
+                                                    @Html.HiddenFor(x => Model.EmployeeDetails[i].EMPCode)
+                                                </td>
+                                                <td>
+                                                    <a class="anhorEmployeeTimeSheet">@Model.EmployeeDetails[i].EMPName</a>
+                                                </td>
+                                                <td class="text-right">
+                                                    @Model.EmployeeDetails[i].PerHourRate
+                                                    @Html.HiddenFor(x => Model.EmployeeDetails[i].PerHourRate)
+                                                </td>
+                                                <td class="text-right">
+                                                    @Model.EmployeeDetails[i].AdjHourRate
+                                                    @Html.HiddenFor(x => Model.EmployeeDetails[i].AdjHourRate)
+                                                    @Html.HiddenFor(x => Model.EmployeeDetails[i].hdnAdjHourRate)
+                                                </td>
+                                                <td class="text-right">
+                                                    @Model.EmployeeDetails[i].DiffHourRate
+                                                    @Html.HiddenFor(x => Model.EmployeeDetails[i].DiffHourRate)
+                                                    @Html.ValidationMessageFor(x => Model.EmployeeDetails[i].DiffHourRate, "", new { @class = "text-danger" })
+                                                </td>
+                                                @for (int K = 0; K < Model.EmployeeDetails[i].ProjectDetails.Count; K++)
+                                                {
+                                                    if (Model.EmployeeDetails[i].Checkbox == null)
+                                                    {
+                                                        <td class="text-right">
+                                                            @Html.TextBoxFor(model => Model.EmployeeDetails[i].ProjectDetails[K].TH, new { @class = "form-control text-right", @onkeydown = "if(event.key==='.'){event.preventDefault();}", @oninput = "event.target.value = event.target.value.replace(/[^0-9]*/g,'');" })
+
+                                                        </td>
+                                                        <td class="text-right">
+                                                            @Html.TextBoxFor(model => Model.EmployeeDetails[i].ProjectDetails[K].WH, new { @class = "form-control text-right", @onkeydown = "if(event.key==='.'){event.preventDefault();}", @oninput = "event.target.value = event.target.value.replace(/[^0-9]*/g,'');" })
+
+                                                        </td>
+                                                    }
+                                                    else
+                                                    {
+                                                        <td class="text-right">
+                                                            @Html.TextBoxFor(model => Model.EmployeeDetails[i].ProjectDetails[K].TH, new { @class = "form-control text-right", @readonly = "readonly", @onkeydown = "if(event.key==='.'){event.preventDefault();}", @oninput = "event.target.value = event.target.value.replace(/[^0-9]*/g,'');" })
+
+                                                        </td>
+                                                        <td class="text-right">
+                                                            @Html.TextBoxFor(model => Model.EmployeeDetails[i].ProjectDetails[K].WH, new { @class = "form-control text-right", @readonly = "readonly", @onkeydown = "if(event.key==='.'){event.preventDefault();}", @oninput = "event.target.value = event.target.value.replace(/[^0-9]*/g,'');" })
+
+                                                        </td>
+                                                    }
+                                                    <td class="text-right">
+                                                        @(Model.EmployeeDetails[i].ProjectDetails[K].Value != 0 ? string.Format("{0:#,0}", Model.EmployeeDetails[i].ProjectDetails[K].Value) : "")
+
+                                                        @Html.HiddenFor(model => Model.EmployeeDetails[i].ProjectDetails[K].TravelValue)
+                                                        @Html.HiddenFor(model => Model.EmployeeDetails[i].ProjectDetails[K].WorkValue)
+                                                        @Html.HiddenFor(model => Model.EmployeeDetails[i].ProjectDetails[K].Value)
+                                                        @Html.HiddenFor(model => Model.EmployeeDetails[i].ProjectDetails[K].ProjectID)
+                                                        @Html.HiddenFor(model => Model.EmployeeDetails[i].ProjectDetails[K].ProjectName)
+                                                        @Html.HiddenFor(model => Model.EmployeeDetails[i].ProjectDetails[K].hdnPrAdjsutHours)
+                                                    </td>
+                                                }
+
+                                                <td class="text-right">
+                                                    @Model.EmployeeDetails[i].OT
+                                                    @Html.HiddenFor(model => Model.EmployeeDetails[i].OT)
+                                                </td>
+                                                <td class="text-right">
+                                                    @Model.EmployeeDetails[i].AL
+                                                    @Html.HiddenFor(x => Model.EmployeeDetails[i].AL)
+                                                    @Html.HiddenFor(x => Model.EmployeeDetails[i].hdnAL)
+
+                                                </td>
+                                                <td class="text-right">
+                                                    @Model.EmployeeDetails[i].PaidLeave
+                                                    @Html.HiddenFor(x => Model.EmployeeDetails[i].PaidLeave)
+                                                    @Html.HiddenFor(x => Model.EmployeeDetails[i].hdnPaidLeave)
+                                                </td>
+                                                <td class="text-right">
+                                                    @Model.EmployeeDetails[i].Holiday
+                                                    @Html.HiddenFor(x => Model.EmployeeDetails[i].Holiday)
+                                                    @Html.HiddenFor(x => Model.EmployeeDetails[i].hdnHolidayHours)
+
+                                                </td>
+                                                <td class="text-right">
+                                                    @Model.EmployeeDetails[i].PaidHours
+                                                    @Html.HiddenFor(x => Model.EmployeeDetails[i].PaidHours)
+
+                                                </td>
+                                                <td class="text-right">
+                                                    @(Model.EmployeeDetails[i].GrossSalary != 0 ? string.Format("{0:#,0}", Model.EmployeeDetails[i].GrossSalary) : "")
+                                                    @Html.HiddenFor(x => Model.EmployeeDetails[i].GrossSalary)
+                                                </td>
+                                                <td class="text-right">
+                                                    @Model.EmployeeDetails[i].LWP
+                                                    @Html.HiddenFor(x => Model.EmployeeDetails[i].LWP)
+                                                    @Html.HiddenFor(x => Model.EmployeeDetails[i].hdnLWP)
+
+                                                </td>
+                                                <td class="text-right">
+                                                    @Model.EmployeeDetails[i].MonthHours
+                                                    @Html.HiddenFor(x => Model.EmployeeDetails[i].MonthHours)
+                                                </td>
+                                            </tr>
+                                        }
+                                        else
+                                        {
+                                            <tr>
+                                                <td>@count</td>
+                                                <td>
+                                                    <input type="checkbox" class="newwidth chksingle" id="Chksingle_@count" name="@Html.NameFor(x => Model.EmployeeDetails[i].Checkbox)" checked="checked" readonly="readonly" />
+                                                    <label for="Chksingle_@count"></label>
+                                                </td>
+                                                <td>@Model.EmployeeDetails[i].EMPCode</td>
+                                                <td>@Model.EmployeeDetails[i].EMPName</td>
+                                                <td>@Model.EmployeeDetails[i].PerHourRate</td>
+                                                <td>@Model.EmployeeDetails[i].AdjHourRate</td>
+                                                <td>@Model.EmployeeDetails[i].DiffHourRate</td>
+
+
+                                                @for (int K = 0; K < Model.EmployeeDetails[i].ProjectDetails.Count; K++)
+                                                {
+                                                    <td>
+                                                        @(Model.EmployeeDetails[i].ProjectDetails[K].TH == 0 ? "" : Model.EmployeeDetails[i].ProjectDetails[K].TH.ToString())
+                                                    </td>
+                                                    <td>
+                                                        @(Model.EmployeeDetails[i].ProjectDetails[K].WH == 0 ? "" : Model.EmployeeDetails[i].ProjectDetails[K].WH.ToString())
+
+
+                                                    </td>
+
+                                                    <td>
+                                                        @(Model.EmployeeDetails[i].ProjectDetails[K].Value != 0 ? string.Format("{0:#,0}", Model.EmployeeDetails[i].ProjectDetails[K].Value) : "")
+
+
+                                                    </td>
+                                                }
+
+                                                <td>@Model.EmployeeDetails[i].OT</td>
+                                                <td>@Model.EmployeeDetails[i].AL</td>
+                                                <td>@Model.EmployeeDetails[i].PaidLeave</td>
+                                                <td>@Model.EmployeeDetails[i].Holiday</td>
+                                                <td>@Model.EmployeeDetails[i].PaidHours</td>
+                                                <td>@Model.EmployeeDetails[i].GrossSalary</td>
+                                                <td>@Model.EmployeeDetails[i].LWP</td>
+                                                <td>@Model.EmployeeDetails[i].MonthHours</td>
+                                            </tr>
+                                        }
+                                    }
+
+                                
+                                    <tr class="ttl-bg">
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td  class="text-right"><strong>Total</strong></td>
+                                        <td></td>
+                                        <td class="text-right"><strong>@Model.EmployeeDetails.Sum(x => x.AdjHourRate)</strong></td>
+                                        <td class="text-right"><strong>@Model.EmployeeDetails.Sum(x => x.DiffHourRate)</strong></td>
+
+                                        @foreach (var item in Model.EmployeeDetails.Select(x => x.ProjectDetails).FirstOrDefault())
+                                        {
+                                            var result = Model.EmployeeDetails
+.SelectMany(order => order.ProjectDetails)
+.GroupBy(addon => addon.ProjectID)
+.Select(grouping => new
+{
+Key = grouping.Key,
+TH = grouping.Sum(addon => addon.TH),
+WH = grouping.Sum(addon => addon.WH),
+Value = grouping.Sum(addon => addon.Value),
+ID = grouping.Sum(addon => addon.ProjectID)
+
+});
+
+                    <td class="text-right"> <strong> @(result.Where(x => x.Key == item.ProjectID).Select(x => x.TH).FirstOrDefault() != 0 ? string.Format("{0:#,0}", result.Where(x => x.Key == item.ProjectID).Select(x => x.TH).FirstOrDefault()) : "")</strong> </td>
+                    <td class="text-right"> <strong>@(result.Where(x => x.Key == item.ProjectID).Select(x => x.WH).FirstOrDefault() != 0 ? string.Format("{0:#,0}", result.Where(x => x.Key == item.ProjectID).Select(x => x.WH).FirstOrDefault()) : "") </strong></td>
+                    <td class="text-right"> <strong> @(result.Where(x => x.Key == item.ProjectID).Select(x => x.Value).FirstOrDefault() != 0 ? string.Format("{0:#,0}", result.Where(x => x.Key == item.ProjectID).Select(x => x.Value).FirstOrDefault()) : "") </strong></td>
+
+
+
+                }
+                                        <td class="text-right"><strong>@Model.EmployeeDetails.Sum(x => x.OT)</strong></td>
+                                        <td class="text-right"><strong>@Model.EmployeeDetails.Sum(x => x.AL)</strong></td>
+                                        <td class="text-right"><strong>@Model.EmployeeDetails.Sum(x => x.PaidLeave)</strong></td>
+                                        <td class="text-right"><strong>@Model.EmployeeDetails.Sum(x => x.Holiday)</strong></td>
+                                        <td class="text-right"><strong>@Model.EmployeeDetails.Sum(x => x.PaidHours)</strong></td>
+                                        <td class="text-right"><strong>@Model.EmployeeDetails.Sum(x => x.GrossSalary)</strong></td>
+                                        <td class="text-right"><strong>@Model.EmployeeDetails.Sum(x => x.LWP)</strong></td>
+                                        <td class="text-right"><strong>@Model.EmployeeDetails.Sum(x => x.MonthHours)</strong></td>
+
+
+                                    </tr>
+                                </tbody>
+
+                            </table>
+                        </div>
+                    </div>
+
+                     <div class="row onlyweb pt-3 ">
+                    <div class="col-sm-12 text-center">
+                        @if (BtnVisible)
+                        {
+                            <button type="submit" class="btn mtr-o-grn btn-l ripplelink" name="Command" value="Calculate"><i class="fas fa-calculator"></i> Calculate</button>
+                            @*<button type="submit" class="btn mtr-o-grn btn-l ripplelink" id="btnFinalize" name="Command" value="Finalize">Finalize</button>*@
+                            <button type="submit" class="btn mtr-o-grn btn-l ripplelink" style="display:none" id="btnFinalizeSingle" name="Command" value="Finalize">Finalize</button>
+                            if (IsShowSave)
+                            {
+                                <button type="submit" class="btn mtr-o-grn btn-l ripplelink" id="btnSave" name="Command" value="Save"><i class="fas fa-save"></i> Save</button>
+
+                                if (Model.iCount > 0)
+                                {
+                                    if (Model.iLock == 0)
+                                    {
+                                        <button type="submit" class="btn mtr-o-grn btn-l ripplelink" name="Command" value="Lock"><i class="fas fa-lock"></i>Lock</button>
+                                    }
+
+                                }
+                            }
+                        }
+                        <button type="button" onclick="ShowLoadingDialog(); window.location = '@Url.Action("ActivityReport", new { src = clsApplicationSetting.EncryptQueryString(ViewBag.MenuID + "*/Activity/ActivityReport*" + Model.SelectedDate+"*"+ViewBag.EMPID) })'" class="btn mtr-g-grn  btn-l ripplelink" name="Command" value="GenerateReport"><i class="fas fa-file-alt"></i> Generate Report</button>
+                        <button type="button" onclick="ShowLoadingDialog(); window.location = '@Url.Action("ConsolidateActivityLog", new { src = clsApplicationSetting.EncryptQueryString(ViewBag.MenuID + "*/Activity/ConsolidateActivityLog") })'" class="btn cnl-btn btn-l ripplelink"><i class="fas fa-arrow-left"></i> Back</button>
+
+                    </div>
+                </div>
+
+
+                </div>
+               
+            }
+
+        }
+    </div>
+    <!-- TASK Modal -->
+    <div class="modal fade pop-dgn" id="ModalEmployeetimesheet">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+
+                <!-- Modal Header -->
+                <div class="modal-header blk-gdn-btn">
+                    <h4 class="modal-title"><span id="spnEmployeetimesheet"></span></h4>
+                    <div class="close" data-dismiss="modal">&times;</div>
+                </div>
+
+                <!-- Modal body -->
+                <div class="modal-body p-3 mt-2">
+                    <div id="DivEmployeeTimeSheet"></div>
+                    <div class="p-2">
+                        <div class="row">
+                            <div class="col-sm-12 text-center mt-3">
+                                <button type="button" class="btn cnl-btn ripplelink  " data-dismiss="modal"><i class="fas fa-times"></i>Close</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+
+    @Html.IncludeVersionedJs(Url.Content("~/assets/design/js/jquery-3.4.1.min.js"))
+    @Html.IncludeVersionedJs(Url.Content("~/assets/design/js/popper.min.js"))
+    @Html.IncludeVersionedJs(Url.Content("~/assets/design/js/bootstrap.min.js"))
+
+</body>
+</html>
+@section scripts    {
+
+
+    <script>
+
+      
+
+
+        function OnSuccessAction(objsss) {
+            if (objsss.Status) {
+                SuccessToaster(objsss.SuccessMessage);
+            }
+            else {
+                FailToaster(objsss.SuccessMessage);
+            }
+        }
+
+        $(".chksingle").change(function () {
+            if ($(this).is(":checked")) {
+                $(this).closest('tr').find('input').attr('readonly', true);
+
+            }
+            else {
+                $(this).closest('tr').find('input').removeAttr('readonly');
+            }
+            alert('test');
+            $("#btnFinalizeSingle").click();
+        });
+
+        $("#checkAll").change(function () {
+            if ($(this).is(":checked")) {
+                $(".chksingle").each(function () {
+                    $(this).prop('checked', true);
+                    $(this).closest('tr').find('input').attr('readonly', true);
+                });
+            }
+            else {
+                $(".chksingle").each(function () {
+                    $(this).prop('checked', false);
+                    $(this).closest('tr').find('input').removeAttr('readonly');
+                });
+            }
+        });
+
+        $("#btnFinalize").bind("click", function () {
+            return CheckALL();
+        });
+
+        function CheckALL() {
+            var bool = false;
+            var count = 0;
+            $("#checkAll").prop('checked', true);
+            $(".chksingle").each(function () {
+                $(this).prop('checked', true);
+                $(this).closest('tr').find('input').attr('readonly', true);
+            });
+            $(".chksingle").each(function () {
+                if (!$(this).is(":checked")) {
+                    count++;
+                }
+            });
+
+            if (count == 0) {
+                bool = true;
+            }
+            return bool;
+        }
+
+
+        $(".anhorEmployeeTimeSheet").click(function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+            ShowLoadingDialog();
+            var E = $(this).closest("tr").find(".E").val();
+            var N = $(this).closest("tr").find("N").val();
+            GetEmployeeTimeSheet(E, N);
+        });
+
+        function GetEmployeeTimeSheet(E, N) {
+            var Date = $("#SelectedDate").val();
+            $.ajax({
+                url: "/Activity/_EmployeeTimeSheet",
+                type: "Post",
+                data: { src: EncryptQueryStringJSON(MenuID + "*" + "/Activity/_EmployeeTimeSheet"), Date: Date, EMPID: E, Type: 'C' },
+                success: function (data) {
+                    $("#spnEmployeetimesheet").html(N);
+                    $("#DivEmployeeTimeSheet").html(data);
+                    $("#ModalEmployeetimesheet").modal('show');
+                    CloseLoadingDialog();
+                },
+                error: function (r) {
+                    CloseLoadingDialog();
+                }
+            });
+        }
+    </script>
+}

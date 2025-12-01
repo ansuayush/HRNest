@@ -1,0 +1,405 @@
+﻿
+@model Mitr.Model.OtherBenefitPayment
+
+@{
+	var ComponentList = Model.OtherBenefitPaymentComponentList.GroupBy(x => new { x.ComponentID })
+	.Select(x => new
+	{
+		Componentid = x.Select(ex => ex.ComponentID).FirstOrDefault(),
+		Component = x.Select(ex => ex.Component).FirstOrDefault(),
+		EmpID = x.Select(ex => ex.EmpID).FirstOrDefault(),
+		Entitlement = x.Select(ex => ex.Entitlement).FirstOrDefault(),
+		Paid = x.Select(ex => ex.Paid).FirstOrDefault()
+	}).ToList();
+
+
+}
+<div class="row">
+	<div class="col-md-12 col-sm-12 col-xs-12">
+		<!-- Note: New place of `data-parent` -->
+		<div id="collapse-A" class="collapse show" data-parent="#content" role="tabpanel" aria-labelledby="heading-A">
+			<!--- -->
+			@using (Ajax.BeginForm("OtherBenefitPayment", "EmployeeSalary",
+   new { src = clsApplicationSetting.EncryptQueryString(ViewBag.MenuID + "*" + "/EmployeeSalary/OtherBenefitPayment*") },
+   new AjaxOptions { HttpMethod = "POST", OnSuccess = "OnSuccess", OnBegin = "ShowLoadingDialog()" },
+   new { @id = "OtherBenefitPayment" }))
+			{
+				<div class="card-body p-0">
+					<div class="table-responsive">
+						<table id="OtherBenefitPaymentImport" class="table table-striped table-bordered dt-responsive nowrap tbltick " style="border-collapse: collapse; border-spacing: 0; width: 100%;">
+							<thead>
+								<tr>
+									<th rowspan="2">Sr.No.</th>
+									<th rowspan="2" width="80">Emp Code</th>
+									<th rowspan="2" width="150">Emp Name</th>
+									<th rowspan="2" width="100">Mitr/Non-Mitr</th>
+
+									@if (ComponentList.Count <= 0 || ComponentList == null)
+									{
+										<th colspan="2" class="text-center">Entitlement</th>
+										<th colspan="2" class="text-center">Paid</th>
+										<th colspan="2" class="text-center">Current Month</th>
+										<th colspan="2" class="text-center">Balance</th>
+									}
+									else
+									{
+										<th colspan="@ComponentList.Count" class="text-center">Entitlement</th>
+										<th colspan="@ComponentList.Count" class="text-center">Paid</th>
+										<th colspan="@ComponentList.Count" class="text-center">Current Month</th>
+										<th colspan="@ComponentList.Count" class="text-center">Balance</th>
+									}
+								</tr>
+
+								<tr>
+									@if (ComponentList.Count <= 0 || ComponentList == null)
+									{
+										<th>Mobile Reimbursement</th>
+										<th>Internet Reimbursemen</th>
+										<th>Mobile Reimbursement</th>
+										<th>Internet Reimbursemen</th>
+										<th>Mobile Reimbursement</th>
+										<th>Internet Reimbursemen</th>
+										<th>Mobile Reimbursement</th>
+										<th>Internet Reimbursemen</th>
+									}
+									@foreach (var item in ComponentList)
+									{
+										<th width="200">@item.Component</th>
+									}
+									@foreach (var item in ComponentList)
+									{
+										<th width="200">@item.Component</th>
+									}
+									@foreach (var item in ComponentList)
+									{
+										<th width="200">@item.Component</th>
+									}
+									@foreach (var item in ComponentList)
+									{
+										<th width="200">@item.Component</th>
+									}
+
+								</tr>
+
+								@*<tr class="searchbar">
+								<th rowspan="2" class="searchhide"></th>
+								<th></th>
+								<th></th>
+								<th> </th>
+								<th class="searchhide"> </th>
+								<th class="searchhide"> </th>
+								<th class="searchhide"> </th>
+								<th class="searchhide"></th>
+							</tr>*@
+							</thead>
+
+							<tbody>
+								@{ int Count = 0, k = 0;}
+								@for (int i = 0; i < Model.OtherBenefitPaymentList.Count; i++)
+								{
+									Count++;
+									@Html.HiddenFor(model => model.OtherBenefitPaymentList[i].EmpID)
+									@Html.HiddenFor(model => model.OtherBenefitPaymentList[i].ComponentID)
+									@Html.HiddenFor(model => model.OtherBenefitPaymentList[i].EmpName)
+									@Html.HiddenFor(model => model.OtherBenefitPaymentList[i].Category)
+									@Html.HiddenFor(model => model.OtherBenefitPaymentList[i].fromDate)
+									@Html.HiddenFor(model => model.OtherBenefitPaymentList[i].Todate)
+									@Html.HiddenFor(model => Model.PaidDate)
+
+									<tr class="trrowred">
+										<td>
+											@Count
+											@Html.HiddenFor(x => Model.OtherBenefitPaymentList[i].EmpID, new { @class = "hdfempid" })
+										</td>
+										<td>@Model.OtherBenefitPaymentList[i].EmpCode</td>
+										<td>@Model.OtherBenefitPaymentList[i].EmpName</td>
+										<td>@Model.OtherBenefitPaymentList[i].Category</td>
+										@{Int32 id = 1; }
+										@foreach (var item in ComponentList)
+										{
+											if (Model.OtherBenefitPaymentComponentList.Where(n => n.EmpID == Model.OtherBenefitPaymentList[i].EmpID && n.ComponentID == item.Componentid).ToList().Count > 0)
+											{
+												var list = Model.OtherBenefitPaymentComponentList.Where(n => n.EmpID == Model.OtherBenefitPaymentList[i].EmpID && n.ComponentID == item.Componentid).FirstOrDefault();
+												if ((item.Componentid == list.ComponentID) && (Model.OtherBenefitPaymentList[i].EmpID == list.EmpID))
+												{
+													<td class="hdfEntitlementid_@id text-right">
+
+														@string.Format("{0:0,0}", Convert.ToDecimal(list.Entitlement))
+														<input type="hidden" value="@list.Entitlement" />
+													</td>
+													id++;
+												}
+											}
+										}
+										@foreach (var item in ComponentList)
+										{
+											if (Model.OtherBenefitPaymentComponentList.Where(n => n.EmpID == Model.OtherBenefitPaymentList[i].EmpID && n.ComponentID == item.Componentid).ToList().Count > 0)
+											{
+												var list = Model.OtherBenefitPaymentComponentList.Where(n => n.EmpID == Model.OtherBenefitPaymentList[i].EmpID && n.ComponentID == item.Componentid).FirstOrDefault();
+												if ((item.Componentid == list.ComponentID) && (Model.OtherBenefitPaymentList[i].EmpID == list.EmpID))
+												{
+													<td class="hdfPaidid_@id text-right">
+
+														@string.Format("{0:0,0}", Convert.ToDecimal(list.Paid))
+														<input type="hidden" value="@list.Paid" />
+													</td>
+													id++;
+												}
+											}
+										}
+										@{int j = 0; }
+										@foreach (var item in ComponentList)
+										{
+
+											var comp = item.Componentid;
+											if (Model.OtherBenefitPaymentComponentList.Where(n => n.EmpID == Model.OtherBenefitPaymentList[i].EmpID && n.ComponentID == item.Componentid).ToList().Count > 0)
+											{
+												var list = Model.OtherBenefitPaymentComponentList.Where(n => n.EmpID == Model.OtherBenefitPaymentList[i].EmpID && n.ComponentID == item.Componentid).FirstOrDefault();
+												if ((item.Componentid == list.ComponentID) && (Model.OtherBenefitPaymentList[i].EmpID == list.EmpID))
+												{
+													if (k > 0 && i > 0) { k += 1; }
+													<td>
+														<label style="display:none">
+															@string.Format("{0:0,0}", Model.OtherBenefitPaymentComponentList[k].PaidAmount)
+
+														</label>
+														@Html.TextBoxFor(model => model.OtherBenefitPaymentComponentList[k].PaidAmount, new { @class = "form-control text-right txtval " + Model.OtherBenefitPaymentList[i].EmpID + "" + "_" + "" + comp + "", @placeholder = "0", @maxlength = "20", onkeypress = "if(isNaN(this.value + String.fromCharCode(event.keyCode) )) return false;", @onkeyup = "CalculateSum(this)" })
+														@Html.HiddenFor(model => Model.OtherBenefitPaymentComponentList[k].EmpID)
+														@Html.HiddenFor(model => Model.OtherBenefitPaymentComponentList[k].ComponentID)
+													</td>
+													if (k <= 0) { k += 1; }
+
+												}
+											}
+
+											j++;
+										}
+
+										@foreach (var item in ComponentList)
+										{
+											if (Model.OtherBenefitPaymentComponentList.Where(n => n.EmpID == Model.OtherBenefitPaymentList[i].EmpID && n.ComponentID == item.Componentid).ToList().Count > 0)
+											{
+												var list = Model.OtherBenefitPaymentComponentList.Where(n => n.EmpID == Model.OtherBenefitPaymentList[i].EmpID && n.ComponentID == item.Componentid).FirstOrDefault();
+												if ((item.Componentid == list.ComponentID) && (Model.OtherBenefitPaymentList[i].EmpID == list.EmpID))
+												{
+													<td class="hdfBalanceid_@id text-right">
+														<label class="hdfBalanceid_@id">
+															@string.Format("{0:0,0}", Convert.ToDecimal(list.Balance))
+
+														</label>
+														<input type="hidden" value="@list.Balance" />
+													</td>
+													id++;
+												}
+											}
+										}
+									</tr>
+								}
+							</tbody>
+						</table>
+						@if (Model.OtherBenefitPaymentList.Count > 0)
+						{
+							<div class="col-sm-12 text-center">
+								<button type="submit" class="btn mtr-o-grn"><i class="fas fa-save"></i>Save</button>
+								<button type="button" class="btn cnl-btn ripplelink" data-dismiss="modal"><i class="fas fa-times"></i>Close</button>
+							</div>
+						}
+
+
+
+
+
+
+					</div>
+				</div>
+
+				<div style="display:none">
+					<table id="OtherBenefitPaymentImport1" class="table table-striped table-bordered dt-responsive nowrap tbltick " style="border-collapse: collapse; border-spacing: 0; width: 100%;">
+						<thead>
+							<tr>
+								<th rowspan="2">Sr.No.</th>
+								<th rowspan="2" width="80">Emp Code</th>
+								<th rowspan="2" width="150">Emp Name</th>
+								<th rowspan="2" width="100">Mitr/Non-Mitr</th>
+
+								@if (ComponentList.Count <= 0 || ComponentList == null)
+								{
+									<th colspan="2" class="text-center">Entitlement</th>
+									<th colspan="2" class="text-center">Paid</th>
+									<th colspan="2" class="text-center">Current Month</th>
+									<th colspan="2" class="text-center">Balance</th>
+								}
+								else
+								{
+									<th colspan="@ComponentList.Count" class="text-center">Entitlement</th>
+									<th colspan="@ComponentList.Count" class="text-center">Paid</th>
+									<th colspan="@ComponentList.Count" class="text-center">Current Month</th>
+									<th colspan="@ComponentList.Count" class="text-center">Balance</th>
+								}
+							</tr>
+
+							<tr>
+								@if (ComponentList.Count <= 0 || ComponentList == null)
+								{
+									<th>Mobile Reimbursement</th>
+									<th>Internet Reimbursemen</th>
+									<th>Mobile Reimbursement</th>
+									<th>Internet Reimbursemen</th>
+									<th>Mobile Reimbursement</th>
+									<th>Internet Reimbursemen</th>
+									<th>Mobile Reimbursement</th>
+									<th>Internet Reimbursemen</th>
+								}
+								@foreach (var item in ComponentList)
+								{
+									<th width="200">@item.Component</th>
+								}
+								@foreach (var item in ComponentList)
+								{
+									<th width="200">@item.Component</th>
+								}
+								@foreach (var item in ComponentList)
+								{
+									<th width="200">@item.Component</th>
+								}
+								@foreach (var item in ComponentList)
+								{
+									<th width="200">@item.Component</th>
+								}
+
+							</tr>
+
+							@*<tr class="searchbar">
+							<th rowspan="2" class="searchhide"></th>
+							<th></th>
+							<th></th>
+							<th> </th>
+							<th class="searchhide"> </th>
+							<th class="searchhide"> </th>
+							<th class="searchhide"> </th>
+							<th class="searchhide"></th>
+						</tr>*@
+						</thead>
+
+						<tbody>
+							@{ int Count1 = 0, k1 = 0;}
+							@for (int i = 0; i < Model.OtherBenefitPaymentList.Count; i++)
+							{
+								Count1++;
+								@*@Html.HiddenFor(model => model.OtherBenefitPaymentList[i].EmpID)
+							@Html.HiddenFor(model => model.OtherBenefitPaymentList[i].ComponentID)
+							@Html.HiddenFor(model => model.OtherBenefitPaymentList[i].EmpName)
+							@Html.HiddenFor(model => model.OtherBenefitPaymentList[i].Category)
+							@Html.HiddenFor(model => model.OtherBenefitPaymentList[i].fromDate)
+							@Html.HiddenFor(model => model.OtherBenefitPaymentList[i].Todate)
+							@Html.HiddenFor(model => Model.PaidDate)*@
+
+								<tr class="trrowred">
+									<td>
+										@Count1
+										@*@Html.HiddenFor(x => Model.OtherBenefitPaymentList[i].EmpID, new { @class = "hdfempid" })*@
+									</td>
+									<td>@Model.OtherBenefitPaymentList[i].EmpCode</td>
+									<td>@Model.OtherBenefitPaymentList[i].EmpName</td>
+									<td>@Model.OtherBenefitPaymentList[i].Category</td>
+									@{Int32 id = 1; }
+									@foreach (var item in ComponentList)
+									{
+										if (Model.OtherBenefitPaymentComponentList.Where(n => n.EmpID == Model.OtherBenefitPaymentList[i].EmpID && n.ComponentID == item.Componentid).ToList().Count > 0)
+										{
+											var list = Model.OtherBenefitPaymentComponentList.Where(n => n.EmpID == Model.OtherBenefitPaymentList[i].EmpID && n.ComponentID == item.Componentid).FirstOrDefault();
+											if ((item.Componentid == list.ComponentID) && (Model.OtherBenefitPaymentList[i].EmpID == list.EmpID))
+											{
+												<td class="hdfEntitlementid_@id text-right">
+
+													@string.Format("{0:0,0}", Convert.ToDecimal(list.Entitlement))
+													@*<input type="hidden" value="@list.Entitlement" />*@
+												</td>
+												id++;
+											}
+										}
+									}
+									@foreach (var item in ComponentList)
+									{
+										if (Model.OtherBenefitPaymentComponentList.Where(n => n.EmpID == Model.OtherBenefitPaymentList[i].EmpID && n.ComponentID == item.Componentid).ToList().Count > 0)
+										{
+											var list = Model.OtherBenefitPaymentComponentList.Where(n => n.EmpID == Model.OtherBenefitPaymentList[i].EmpID && n.ComponentID == item.Componentid).FirstOrDefault();
+											if ((item.Componentid == list.ComponentID) && (Model.OtherBenefitPaymentList[i].EmpID == list.EmpID))
+											{
+												<td class="hdfPaidid_@id text-right">
+
+													@string.Format("{0:0,0}", Convert.ToDecimal(list.Paid))
+													@*<input type="hidden" value="@list.Paid" />*@
+												</td>
+												id++;
+											}
+										}
+									}
+									@{int j = 0; }
+									@foreach (var item in ComponentList)
+									{
+
+										var comp = item.Componentid;
+										if (Model.OtherBenefitPaymentComponentList.Where(n => n.EmpID == Model.OtherBenefitPaymentList[i].EmpID && n.ComponentID == item.Componentid).ToList().Count > 0)
+										{
+											var list = Model.OtherBenefitPaymentComponentList.Where(n => n.EmpID == Model.OtherBenefitPaymentList[i].EmpID && n.ComponentID == item.Componentid).FirstOrDefault();
+											if ((item.Componentid == list.ComponentID) && (Model.OtherBenefitPaymentList[i].EmpID == list.EmpID))
+											{
+												if (k1 > 0 && i > 0) { k1 += 1; }
+												<td>
+													<label>
+														@string.Format("{0:0,0}", Model.OtherBenefitPaymentComponentList[k].PaidAmount)
+
+													</label>
+													@*@Html.TextBoxFor(model => model.OtherBenefitPaymentComponentList[k].PaidAmount, new { @class = "form-control text-right txtval " + Model.OtherBenefitPaymentList[i].EmpID + "" + "_" + "" + comp + "", @placeholder = "0", @maxlength = "20", onkeypress = "if(isNaN(this.value + String.fromCharCode(event.keyCode) )) return false;", @onkeyup = "CalculateSum(this)" })
+												@Html.HiddenFor(model => Model.OtherBenefitPaymentComponentList[k].EmpID)
+												@Html.HiddenFor(model => Model.OtherBenefitPaymentComponentList[k].ComponentID)*@
+												</td>
+												if (k1 <= 0) { k1 += 1; }
+
+											}
+										}
+
+										j++;
+									}
+
+									@foreach (var item in ComponentList)
+									{
+										if (Model.OtherBenefitPaymentComponentList.Where(n => n.EmpID == Model.OtherBenefitPaymentList[i].EmpID && n.ComponentID == item.Componentid).ToList().Count > 0)
+										{
+											var list = Model.OtherBenefitPaymentComponentList.Where(n => n.EmpID == Model.OtherBenefitPaymentList[i].EmpID && n.ComponentID == item.Componentid).FirstOrDefault();
+											if ((item.Componentid == list.ComponentID) && (Model.OtherBenefitPaymentList[i].EmpID == list.EmpID))
+											{
+												<td class="hdfBalanceid_@id text-right">
+													<label class="hdfBalanceid_@id">
+														@string.Format("{0:0,0}", Convert.ToDecimal(list.Balance))
+
+													</label>
+													@*<input type="hidden" value="@list.Balance" />*@
+												</td>
+												id++;
+											}
+										}
+									}
+								</tr>
+							}
+						</tbody>
+					</table>
+				</div>
+			}
+
+			<!-- Export-->>
+
+
+
+			<!--- -->
+		</div>
+	</div>
+</div>
+
+
+<script>
+
+
+
+</script>

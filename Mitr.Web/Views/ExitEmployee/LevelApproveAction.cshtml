@@ -1,0 +1,384 @@
+﻿
+@{
+    ViewBag.Title = "LevelApproveAction";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+}
+
+@using (Ajax.BeginForm("LevelApproveAction", "ExitEmployee",
+     new { src = clsApplicationSetting.EncryptQueryString(ViewBag.MenuID.ToString() + "*/ExitEmployee/LevelApproveAction") },
+     new AjaxOptions { HttpMethod = "POST", OnSuccess = "BindTarget", OnFailure = "CloseLoadingDialog()", OnBegin = "ShowLoadingDialog();" },
+ new { @id = "LevelApproveActionFrom" })
+ )
+{
+    <div class="inner-main defult-height pb-0">
+        <input type="hidden" id="hdfid" value="@ViewBag.ID " />
+        <input type="hidden" id="hdfLevelForm" value="@ViewBag.Level " />
+        <input type="hidden" id="hdfLevelId" value="" />
+
+        <div class="row">
+            <div class="inner-main defult-height p-3 pb-0">
+                <h1 class="heading-one mb-3">Resignation Request </h1>
+                <div class="row">
+                    <div class="col-sm-12 form-group">
+                        <ul class="list-unstyled inline-li m-0 rqt-dtl">
+                            <li>
+                                <label>Req No</label>
+                                <label id="labelreq"></label>
+                            </li>
+                            <li>
+                                <label>Requested Date</label>
+                                <label id="labelreqdate"></label>
+                            </li>
+                            <li>
+                                <label>Requested by</label>
+                                <label id="labelreqby"></label>
+                            </li>
+
+
+
+                            <li>
+                                <label>Location</label>
+                                <label id="labelloc"></label>
+                            </li>
+                            <li>
+                                <label>Department</label>
+
+                                <label id="labeldept"></label>
+                            </li>
+                            <li>
+                                <label>Designation</label>
+
+                                <label id="labeldesg"></label>
+                            </li>
+
+                        </ul>
+                    </div>
+                    <div class="col-xl-3 col-lg-4 form-group">
+                        <label>Reason for Resignation</label>
+                        <p id="pReason"></p>
+                    </div>
+                    <div class="col-xl-3 col-lg-4 form-group" data-popover-content="#comment" data-toggle="popover" data-placement="top" data-original-title="" title="">
+                        <label>Employee's Comment on Resignation</label>
+                        <p><span class="ellipsis-text" id="spanComment"></span><span class="cmt-view">View</span></p>
+                        <div id="comment" style="display: none">
+                            <div class="popover-body">
+                                <button type="button" class="popover-close close"> <i class="fas fa-times"></i> </button>
+                                <span id="spanFullComment"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-12"></div>
+                    <div class="col-xl-3 col-lg-4 form-group align-self-end"><strong>Notice Period as per Policy: <span class="red-clr" id="NPAP"></span></strong></div>
+                    <div class="col-xl-3 col-lg-4 form-group align-self-end" id="divEPNP"><strong>Employee proposed notice period: <span class="red-clr" id="EPNP"></span></strong>  </div>
+                    <div class="col-sm-12"></div>
+                    <div class="col-xl-3 col-lg-4 col-sm-6 wh-575 form-group" id="divRDAP">
+                        <label>Relieving date as per policy</label>
+                        <p id="RDateP"></p>
+                    </div>
+                    <div class="col-xl-3 col-lg-4  col-sm-6 wh-575 form-group" id="divEPRD">
+                        <label>Employee Proposed Relieving Date</label>
+                        <p id="ERDate"></p>
+                    </div>
+                    <div class="col-sm-12"></div>
+                    <div class="col-xl-12 col-lg-12 form-group " id="divnComReason" style="display:none">
+                        <div data-popover-content="#comment1" data-toggle="popover" data-placement="top" data-original-title="" title="" >
+                            <label>Reason for not accepting the notice period</label>
+                            <p><span class="ellipsis-text" id="spanReasonNP"></span><span class="cmt-view">View</span></p>
+                            <div id="comment1" style="display: none">
+                                <div class="popover-body">
+                                    <button type="button" class="popover-close close"> <i class="fas fa-times"></i> </button>
+                                    <span id="spanFullReasonNP"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-xl-12 col-lg-12 form-group " id="divlevelComment" style="display:none">
+                        <div data-popover-content="#comment1" data-toggle="popover" data-placement="top" data-original-title="" title="" id="divnCommem">
+                            <label>Reason for not accepting the notice period</label>
+                            <p><span class="ellipsis-text" id="spanReasonNP"></span><span class="cmt-view">View</span></p>
+                            <div id="comment1" style="display: none">
+                                <div class="popover-body">
+                                    <button type="button" class="popover-close close"> <i class="fas fa-times"></i> </button>
+                                    <span id="spanFullReasonNP"></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-12"></div>
+                        <div class="col-xl-6 col-lg-8 form-group ">
+                            <hr>
+                            <span class="hr-aps"><i class="fas fa-check"></i>Approval Comments</span>
+                        </div>
+                        <div class="col-sm-12"></div>
+
+                        <div class="col-xl-6 col-lg-8 form-group">
+
+                            <div class="table-responsive">
+                                <table class="table table-striped  mb-0 mt-0 vt-a" id="TabellevelComment">
+                                    <thead>
+                                        <tr>
+                                            <th width="50">Level</th>
+                                            <th width="150">Name</th>
+                                            <th width="100">Suggested Relieving Date</th>
+                                            <th>Reason for Declining Notice Period</th>
+
+                                            <th>Comment on Resignation</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+
+
+                    </div>
+
+
+
+                    <div class="col-sm-12 form-group" id="divDecline">
+                        <ul class="list-unstyled inline-li m-0">
+                            <li>
+                                <label class="m-0">Decline Notice Period?</label>
+                                <input type="hidden" value="0" id="hdfDNP" />
+                            </li>
+                            <li>
+                                <div class="radio-button">
+                                    <input id="yes11" name="radio" type="radio" onclick="show3();">
+                                    <label for="yes11" class="radio-label mb-0">Yes</label>
+
+                                </div>
+                            </li>
+                            <li>
+                                <div class="radio-button">
+                                    <input id="no11" name="radio" type="radio" onclick="show4();" checked="">
+                                    <label for="no11" class="radio-label mb-0">No</label>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                    @*<div class="col-xl-3 col-lg-4 wh-575 align-self-center">
+                            <button id="toggleMessage" type="button" name="Command" value="Add" class="btn blk-gdn-btn btn-l ripplelink "><i class="fas fa-sticky-note"></i>Decline Notice Period</button>
+                        </div>*@
+                    <div class="col-sm-12"></div>
+                    <div class="col-sm-6  form-group " id="box" style="display: none;">
+                        <div class="hglt-bg">
+                            <div class="row ">
+                                <div class="col-xl-3 col-lg-4 form-group">
+                                    <label>Suggested Relieving Date <sup>*</sup></label>
+                                    <input type="date" class="form-control" id="txtRdate" onchange="HideErrorMessage(this)">
+                                    <span id="sptxtRdate" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+                                </div>
+                                <div class="col-sm-9">
+                                    <label>Reason for not accepting relieving date <sup>*</sup></label>
+                                    <textarea class="form-control h-38" placeholder="Ener Reason" id="txtRNRD" onchange="HideErrorMessage(this)"></textarea>
+                                    <span id="sptxtRNRD" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-12" id="divR" style="display:none">
+                        <div class="row">
+                            <div class="col-xl-6 col-lg-8 form-group ">
+                                <hr>
+                                <span class="hr-aps"><i class="fas fa-list"></i>Reason for Continuing</span>
+                            </div>
+                            <div class="col-sm-12">
+                            </div>
+
+
+
+                            <div class="col-xl-3 col-sm-6 wh-575 form-group">
+                                <label>Attachment</label>
+                                <p class="h-38 p-ctr">
+                                    <button id="btnDownload1" onclick="DownloadFileRFP()" target='_blank' class='green-clr'><i class="fas fa-download float-right" data-toggle="tooltip" title="" data-original-title="Download"></i></button>
+                                </p>
+                                <label id="Pfile"></label>
+                            </div>
+                            <div class="col-xl-3 col-lg-4 form-group " data-popover-content="#comment4" data-toggle="popover" data-placement="top" data-original-title="" title="">
+                                <label>Reason </label>
+                                <p><span class="ellipsis-text" id="spanRReason"></span><span class="cmt-view">View</span></p>
+                                <div id="comment4" style="display: none">
+                                    <div class="popover-body">
+                                        <button type="button" class="popover-close close"> <i class="fas fa-times"></i> </button>
+                                        <span id="spanFullRReason"></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-12"></div>
+                    <div class="col-sm-6 form-group" id="divCommentRes">
+                        <label>Comment on Resignation</label>
+                        <textarea class="form-control h-38" placeholder="Enter Comment" id="txtCommentR"></textarea>
+                    </div>
+
+                    <div class="col-sm-12 text-left">
+                        <button type="button" name="Command" id="btnR" value="Add" class="btn mtr-y-bg btn-l ripplelink " data-toggle="modal" data-target="#rfc"> <i class="fas fa-user-shield"></i> Record Resolution</button>
+                        <button type="button" name="Command" id="btnF" value="Add" class="btn blk-gdn-btn btn-l ripplelink " data-toggle="modal" data-target="#hod2"><i class="fas fa-share"></i> Forward</button>
+                        <button type="button" class="btn cnl-btn btn-l ripplelink" onclick="ShowLoadingDialog();window.location='@Url.Action("levelApproval", new { src = clsApplicationSetting.EncryptQueryString(ViewBag.MenuID.ToString() + "*/ExitEmployee/levelApproval*0")  })';"><i class="fas fa-times"></i>Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+<div class="modal fade" id="hod2">
+    <div class="modal-dialog modal-dialog-centered  modal-lg">
+        <div class="modal-content ">
+
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <h4 class="modal-title">Handover Task</h4>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+
+            <!-- Modal body -->
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-sm-3 form-group">
+                        <label>Task <sup>*</sup></label>
+                        <input type="text" class="form-control" placeholder="Enter Task" name="" id="txttask" onchange="HideErrorMessage(this)">
+                        <span id="sptxttask" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+                    </div>
+                    <div class="col-sm-3 form-group">
+                        <label>Select Employee <sup>*</sup></label>
+                        <select class="form-control applyselect Mandatory" id="ddlEMP" onchange="HideErrorMessage(this)">
+                        </select>
+                        <span id="spddlEMP" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+                    </div>
+
+                    <div class="col-sm-3 form-group">
+                        <label>Priority <sup>*</sup></label>
+                        <select class="form-control applyselect Mandatory" id="ddlP" onchange="HideErrorMessage(this)">
+                            <option>Select</option>
+                            <option>High</option>
+                            <option>Medium</option>
+                            <option>Low</option>
+                        </select>
+                        <span id="spddlP" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+                    </div>
+                    <div class="col-sm-3 form-group align-self-end ">
+                        <button type="button" class="btn green-clr  m-0" onclick="AddHandoverTask();"><i class="fas fa-plus"></i>Add</button>
+                    </div>
+                    <div class="col-sm-12 form-group">
+                        <div class="table-responsive">
+                            <div id="tblHandOvertask">
+
+                            </div>
+
+                        </div>
+                    </div>
+                    <div class="col-sm-12 form-group">
+                        <ul class="list-unstyled inline-li m-0">
+                            <li>
+                                <label class="m-0">Whether this person is fit for rehire?</label>
+                            </li>
+                            <li>
+                                <div class="radio-button">
+                                    <input id="yes1" name="radio" type="radio" onclick="show1();" checked="">
+                                    <label for="yes1" class="radio-label mb-0">Yes</label>
+                                    <input type="hidden" value="1" id="hdfPFHire" />
+                                </div>
+                            </li>
+                            <li>
+                                <div class="radio-button">
+                                    <input id="no1" name="radio" type="radio" onclick="show2();">
+                                    <label for="no1" class="radio-label mb-0">No</label>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                    <div id="divrnfh" class="col-sm-12 form-group" style="display:none">
+                        <label>Mention reason for why this person is not fit for rehire <sup>*</sup></sup></label>
+                        <textarea class="form-control h-38 Mandatory" id="txtreasonnfhire" placeholder="Ener Commet" onchange="HideErrorMessage(this)"></textarea>
+                        <span id="sptxtreasonnfhire" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+                    </div>
+                </div>
+            </div>
+            <!-- Modal footer -->
+            <div class="p-0 text-center ">
+                <button type="button" class="btn cnl-btn ripplelink" data-dismiss="modal"><i class="fas fa-times"></i>Close</button>
+                <button type="button" class="btn mtr-o-grn btn-l " onclick="ForwardRecord()"><i class="fas fa-share"></i>Forward</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="rfc">
+    <div class="modal-dialog modal-dialog-centered modal-md">
+        <div class="modal-content ">
+            <input type="hidden" id="hdnUploadActualFileName" />
+            <input type="hidden" id="hdnUploadNewFileName" />
+            <input type="hidden" id="hdnUploadFileUrl" />
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <h4 class="modal-title">Reason for Continuing</h4>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+
+            <!-- Modal body -->
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-sm-6 form-group">
+                        <label>Attachment</label>
+                        <input type="file" id="txtAttachment" class="form-control " value="" onchange="UploadDocument()">
+                        <input type="text" id="txtAttachmentfile" style="display:none" ; class="form-control Mandatory" value="">
+                        <span id="sptxtAttachmentfile" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+
+                    </div>
+                    <div class="col-sm-12 form-group">
+                        <label>Reason<sup>*<sup></sup></label>
+                        <input type="text" id="txtReason" class="form-control Mandatory" value="" onchange="HideErrorMessage(this)">
+                        <span id="sptxtReason" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+                    </div>
+                </div>
+                <!-- Modal footer -->
+                <div class="p-0 text-center ">
+                    <button type="button" class="btn cnl-btn ripplelink" data-dismiss="modal"><i class="fas fa-times"></i>Close</button>
+                    <button type="button" class="btn mtr-o-grn btn-l" onclick="SaveRecord()"><i class="fas fa-paper-plane"></i>Submit</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@section scripts    {
+    @System.Web.Optimization.Scripts.Render("~/bundle/unobtrusivejs")
+    @System.Web.Optimization.Scripts.Render("~/bundle/dataTablesjs")
+
+    <script src="~/assets/design/scripts/DevScriptExit/levelApprovalAction.js"></script>
+    <script src="~/assets/design/Scripts/AddInit.js?v=@clsApplicationSetting.GetWebConfigValue("Version")"></script>
+    <script>
+        //$("#toggleMessage").click(function () {
+        //    $("#box").show()
+        //});
+        //$("body").on("click", "#toggleMessage", function () {
+        //    $("#box").toggle(); /*shows or hides #box*/
+
+        //});
+        function show1() {
+            $("#divrnfh").css("display", "none");
+            $('#hdfPFHire').val(1);
+            // $("#txtreasonnfhire").removeClass("Mandatory");
+        }
+        function show2() {
+
+            $('#hdfPFHire').val(0);
+            // ("#divrnfh").Show();
+            // $("#txtreasonnfhire").addClass("Mandatory");
+            $("#divrnfh").css("display", "block");
+
+        }
+        function show3() {
+            $("#box").show();
+            $('#hdfDNP').val(1);
+        }
+        function show4() {
+            $("#box").hide();
+            $('#hdfDNP').val(0);
+        }
+    </script>
+}

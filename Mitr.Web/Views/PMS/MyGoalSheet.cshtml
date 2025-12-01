@@ -1,0 +1,245 @@
+﻿@model PMS
+
+<div class="inner-main pb-0">
+
+	<div class="row">
+		<div class="col-sm-5"><h1 class="heading-one ">My Goal Sheet Entry</h1></div>
+	</div>
+
+	@using (Ajax.BeginForm("_MyGoalSheet", "PMS",
+			new { src = clsApplicationSetting.EncryptQueryString(ViewBag.MenuID.ToString() + "*/PMS/_MyGoalSheet") },
+			  new AjaxOptions { HttpMethod = "POST", OnSuccess = "BindTarget", OnBegin = "ShowLoadingDialog()" },
+		new { @id = "_MyGoalSheetFrom" })
+		)
+	{
+		<div class="row">
+
+			<div class="col-lg-2 col-md-2 col-sm-2 slt-srh  form-group">
+				<label class="lbl-abs">Select Year</label>
+				@Html.DropDownListFor(x => Model.FYID, new SelectList(ViewBag.FinYearList, "ID", "Year", Model.FYID), "Select Year",
+		new { @class = "form-control  applyselect ddapplyaction" })
+				@Html.ValidationMessageFor(model => Model.FYID, "", new { @class = "text-danger" })
+			</div>
+			<div style="display:none">
+				<button type="submit" class="btn mtr-g-grn btn-l ripplelink" id="btnSearch" name="Command" value="Search"><i class="fas fa-search"></i>Search</button>
+			</div>
+		</div>
+	}
+
+	<div id="TargetDiv">@Html.Partial("_Loading")</div>
+</div>
+
+
+<div class="modal fade show" id="AddModal" aria-modal="true">
+	<div class="modal-dialog modal-lg">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h4 class="modal-title"><i class="fa fa-plus" aria-hidden="true"></i> <span id="spnHead">Add Goals</span></h4>
+				<button type="button" class="close" data-dismiss="modal">×</button>
+			</div>
+
+			<div class="modal-body">
+				<div class="SectionAdd"></div>
+			</div>
+		</div>
+
+	</div>
+
+</div>
+
+
+
+
+@section scripts    {
+	@System.Web.Optimization.Scripts.Render("~/bundle/unobtrusivejs")
+	@Html.IncludeVersionedJs(Url.Content("~/assets/design/Scripts/ToolTip.js"))
+	@System.Web.Optimization.Scripts.Render("~/assets/design/Scripts/AddInit.js")
+
+	<script>
+		$(document).ready(function(){
+              $("#btnSearch").click();
+          });
+
+			function DeleteAttachmentRow(obj) {
+
+			var count = 0;
+			var ID = parseInt($(obj).closest('tr').find("td.hfNewId input[type='hidden']").val());
+			var TotalRowCount = $('#tableGoalSheetDet').find("tbody tr").length;
+			var srno = TotalRowCount;
+		      if(ID>0){
+	        	ConfirmMsgBox("Are you sure want to delete", '', function () {
+					$(obj).closest('tr').remove();
+					$("#tableGoalSheetDet TBODY TR").each(function (i) {
+						srno = srno - 1;
+						$(this).closest("tr").find("label").each(function () {
+							$(this).attr({
+								'id': function (_, id) { var arr = id.split('_'); return id.replace(arr[1], i); },
+							});
+							$(this).html(i + 1)
+						});
+
+					});
+					var dataObject = JSON.stringify({
+						'ID': ID,
+						'Doctype': 'PMS_GoalSheet_Det',
+					});
+					var data = $.parseJSON($.ajax({
+						url: '/CommonAjax/DelRecord_CommonJson',
+						type: "post",
+						data: dataObject,
+						contentType: 'application/json',
+						async: false
+					}).responseText);
+					return data;
+				});
+
+
+
+
+		}
+	}
+
+
+
+	function blockSpecialChar(e){
+
+        var k;
+        document.all ? k = e.keyCode : k = e.which;
+		if(k==39){
+		event.preventDefault();
+		}
+
+        }
+		$('.ddapplyaction').bind("change", function () {$("#btnSearch").click();});
+		function BindTarget(args) {
+			CloseLoadingDialog();
+			$("#TargetDiv").empty();
+			$("#TargetDiv").html(args);
+			$('[data-toggle="tooltip"]').tooltip();
+			$(".applyselect").select2();
+			$(".btnAdd").on('click', function (e) {
+				e.preventDefault();
+				var I = $(this).closest("tr").find("input:hidden[name=I]").val();
+				AddMyGoalSheetEntry(I);
+			});
+		}
+
+
+		function OnGoalAddSuccess(obj) {
+			CloseLoadingDialog();
+			if (obj.Status) {
+
+				SuccessToaster(obj.SuccessMessage);
+				$("#btnSearch").click();
+				$("#AddModal").modal('hide');
+			}
+			else {
+
+				FailToaster(obj.SuccessMessage);
+			}
+   //         $("#btnSearch").click();
+			//$("#AddModal").modal('hide');
+   //         SuccessToaster("Submitted Successfully");
+		}
+
+
+		function AddMyGoalSheetEntry(ID)
+		{
+
+		   	var FYID = $("#FYID option:selected").val();
+             ShowLoadingDialog();
+                if (ID == undefined)
+                {
+                  ID = 0;
+                }
+		     $.ajax({
+			    url: "/PMS/_AddGoalSheet",
+				type: "Get",
+			    data: { src: EncryptQueryStringJSON(@ViewBag.MenuID+"*" + "/PMS/_AddGoalSheet" + "*" + FYID + "*" + ID) },
+                success: function (data)
+                {
+                    $(".SectionAdd").empty();
+					$(".SectionAdd").html(data);
+		            var Utype = $("#UOMID").find("option:selected").attr("uomtype");
+		            if (Utype == "Text") {
+			    	$("#Target").prop("type", Utype);
+	            	$('#Target').attr('readonly', true);
+                     }
+                    else {
+					$('#Target').attr('readonly', false);
+                      $("#Target").prop("type", Utype);
+                       }
+					$("#AddModal").modal('show');
+                     var form = $("form")
+                   .removeData("validator")
+                  .removeData("unobtrusiveValidation");
+                    $.validator.unobtrusive.parse(form);
+                    $(".applyselect").select2();
+                    CloseLoadingDialog();
+				},
+				 error: function (er) {
+                    console.log(er);
+                    CloseLoadingDialog();
+
+				}
+			});
+		}
+
+		function FillUOM(obj) {
+
+			var uom = $(obj).find("option:selected").attr("uom");
+			var Utype = $(obj).find("option:selected").attr("uomtype");
+            var Uomid = $(obj).find("option:selected").attr("uomid");
+			//$("#spnUOM").html(uom);
+			//$("#spnUOMType").html(Utype);
+            $("#UOMID").val(Uomid).trigger('change');
+			 debugger;	
+			if (Utype == "Text") {
+				$("#Target").val('');
+			}
+			else
+			{
+                $("#Target").val('');
+			}
+
+		}
+		function FillTarget(obj) {
+
+            var Utype = $(obj).find("option:selected").attr("uomtype");
+            if (Utype == "Text") {
+				debugger;
+				$("#Target").val('0');
+				$("#Target").prop("type", Utype);
+		        $('#Target').attr('readonly', true);
+		         $("#UOMType").val(Utype);
+			
+            }
+            else {
+		       $('#Target').attr('readonly', false);
+				$("#Target").val('');
+                $("#Target").prop("type", Utype);
+		     	$("#UOMType").val('Utype');
+		       
+		    
+		     
+            }
+        }
+
+
+		function SubmitGoalSheetSuccess(obj) {
+			CloseLoadingDialog();
+			if (obj.Status) {
+				SuccessToaster(obj.SuccessMessage);
+				$("#btnSearch").click();
+			}
+			else {
+
+				FailToaster(obj.SuccessMessage);
+			}
+            //SuccessToaster("Submitted Successfully");
+            //$("#btnSearch").click();
+		}
+
+	</script>
+
+}

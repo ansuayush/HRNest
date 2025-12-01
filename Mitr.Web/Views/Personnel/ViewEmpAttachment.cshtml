@@ -1,0 +1,83 @@
+﻿
+@model DataSet
+@using System.Data
+@{
+    ViewBag.Title = "ViewEmpAttachment";
+}
+@section style{
+    @System.Web.Optimization.Styles.Render("~/bundle/dataTablecss")
+}
+<div class="row">
+    <div class="col-md-9">
+        <h1 class="heading-one">View Employee Attachment</h1>
+    </div>
+    <div class="col-md-3 text-right">
+        <button type="button" class="btn cnl-btn ripplelink  pull-right" onclick="ShowLoadingDialog();window.location='@Url.Action("EssPortal",new { src = clsApplicationSetting.EncryptQueryString(ViewBag.MenuID.ToString() + "*/Personnel/EssPortal")})';"><i class="fas fa-times"></i> Cancel</button>
+    </div>
+</div>
+
+<div class="x_content table-currency">
+    <div class="table-responsive">
+
+        <table id="datatable-buttons" class="table table-striped table-bordered dt-responsive nowrap tbltick new_width">
+            <thead>
+                <tr>
+                    <th class="td-10">S.no</th>
+                    <th>Doc No.</th>
+                    <th>Employee Code</th>
+                    <th>Effective Date</th>
+                    <th>Employee Name</th>
+                    <th>Location</th>
+                    <th>Designation</th>
+                    <th>Hourly Rate</th>
+                    <th>Yearly Salary</th>
+                    <th>Attachment</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                @{ int Count = 0;}
+                @foreach (DataRow item in Model.Tables[0].Rows)
+                {
+                    Count++;
+                    <tr>
+                        <td>@Count</td>
+                        <td>@item["Doc_no"]</td>
+                        <td>@item["emp_code"]</td>
+                        <td>@Convert.ToDateTime(item["doc_Date"]).ToString("dd-MMM-yyyy")</td>
+
+                        <td>@item["emp_name"]</td>
+                        <td>@item["location_name"]</td>
+                        <td>@item["design_name"]</td>
+                        <td>@item["hourly_rate"]</td>
+                        <td>@item["salary_yearly"]</td>
+                        <td>
+                            @if (Convert.ToInt32(item["attachment_ID"]) != 0)
+                            {
+                                <a class="lb" href="/attachments/@item["attachment_ID"]@item["content_type"]" target="_blank">
+                                    <strong>
+                                        @item["AttachmentName"]
+                                    </strong>
+                                </a>
+                            }
+                            else
+                            {
+                                <span>NA</span>
+                            }
+
+                        </td>
+                    </tr>
+                }
+
+
+
+
+            </tbody>
+
+        </table>
+    </div>
+</div>
+@section scripts    {
+    @System.Web.Optimization.Scripts.Render("~/bundle/dataTablesjs")
+
+}

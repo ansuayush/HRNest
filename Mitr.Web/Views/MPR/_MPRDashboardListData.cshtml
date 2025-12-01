@@ -1,0 +1,139 @@
+﻿@model IList<MPRDashboard.List>
+@{
+	long Lock = 0;
+	string MenuID = ViewBag.MenuID.ToString();
+	if (Model.Any(x => x.Lock == 1))
+	{
+		Lock = 1;
+	}
+	string lblName = string.Empty;
+}
+<div id="content" class="tab-content shadow-box p-0" role="tablist">
+	<div id="Tab1" class="card tab-pane fade active show" role="tabpanel" aria-labelledby="tab-A">
+		<div class="card-header" role="tab" id="heading-A">
+			<h5 class="mb-0">
+				<!-- Note: `data-parent` removed from here -->
+				@if (ViewBag.Type == "Executor")
+				{
+					lblName = "Pending at Executor";
+				}
+				else if (ViewBag.Type == "SectionApproval")
+				{
+					lblName = "Pending at Section Approver";
+				}
+				else if (ViewBag.Type == "Level1")
+				{
+					lblName = "Pending at Level1";
+				}
+				else if (ViewBag.Type == "Level2")
+				{
+					lblName = "Pending at Level2";
+				}
+				else 
+				{
+					lblName = "Completed";
+				}
+				<a data-toggle="collapse" href="#collapse-A" aria-expanded="true" aria-controls="collapse-A">@lblName</a>
+			</h5>
+		</div>
+
+		<!-- Note: New place of `data-parent` -->
+		<div id="collapse-A" class="collapse show" data-parent="#content" role="tabpanel" aria-labelledby="heading-A">
+			<div class="card-body p-0">
+
+				<!-- Start -->
+				<div class="row mt-0">
+					<div class="col-sm-6 align-self-center"><h2 class="hd-md d-none-767 ">@lblName</h2></div>
+					<div class="col-sm-6 text-right">
+						@if (Lock == 1)
+						{
+							@Html.CreateAnchor(MenuID, "/MPR/SMPRLockUnlockList", "Lock Unlock SMPR", "btn add-btn white-btn ripplelink", "Click to Lock/Unlock Screen", "fas fa-user-lock", "")
+						}
+						else
+						{
+							if (Model.Count > 0)
+							{
+								<a class="btn mtr-o-grn AMonthlyCloser"><i class="fas fa-calendar-alt"></i>Month Closure </a>
+							}
+						}
+
+					</div>
+				</div>
+
+				<div class="table-responsive">
+					<table class="table mt-0">
+						<thead>
+							<tr>
+								<th>Project</th>
+								<th>MPR Name</th>
+								<th class="w-100">Due on</th>
+								<th class="w-50">State</th>
+								@if (ViewBag.Type != "Completed")
+								{
+									<th class="w-100 text-center">Completed by</th>
+								}
+
+							</tr>
+						</thead>
+						<tbody>
+
+							@if (Model.Count > 0)
+							{
+								foreach (var item in Model)
+								{
+									<tr>
+										<td>
+											<input type="hidden" name="SMPRID" value="@item.SMPRID" />
+											<input type="hidden" name="ProName" value="@item.ProjectName" />
+											@item.ProjectName
+
+										</td>
+										<td>@item.MPRName</td>
+										<td>@item.DueOn</td>
+										<td>@item.StateName</td>
+										@if (ViewBag.Type == "Executor")
+										{
+											<td class="text-center">
+												<a tt="Executor" class="aStatus badge badge-mtr-o" onclick="GetSMPRStatus(this)">@item.ExecCompleted / @item.TotalExec  </a>
+
+											</td>
+										}
+										else if (ViewBag.Type == "SectionApproval")
+										{
+											<td class="text-center">
+												<a tt="Approver" class="aStatus badge badge-mtr-o" onclick="GetSMPRStatus(this)">@item.AppCompleted / @item.AppTotal  </a>
+											</td>
+
+										}
+										else if (ViewBag.Type == "Level1")
+										{
+											<td class="text-center"><a tt="Level" class="aStatus mtr-o-clr" onclick="GetSMPRStatus(this)"><i class="fas fa-eye"></i>View</a></td>
+
+										}
+										else if (ViewBag.Type == "Level2")
+										{
+											<td class="text-center"><a tt="Level" class="aStatus mtr-o-clr" onclick="GetSMPRStatus(this)"><i class="fas fa-eye"></i>View</a></td>
+
+										}
+									</tr>
+								}
+							}
+							else
+							{
+								<tr>
+									<td colspan="4" class="h-200">
+										@Html.Partial("_NoRecordsFound")
+									</td>
+								</tr>
+							}
+
+						</tbody>
+					</table>
+				</div>
+
+				<!-- End -->
+			</div>
+		</div>
+	</div>
+
+</div>

@@ -1,0 +1,1266 @@
+﻿@model PMS.TeamAppraisal.Add
+
+@{
+    string MenuID = ViewBag.MenuID.ToString();
+    int AppraisalKPACount = 0;
+    if (Model.KPAL != null)
+    {
+        AppraisalKPACount = Model.KPAL.Count();
+    }
+    if (Model.QAL != null)
+    {
+        Model.QALEmp = Model.QAL.Where(n => n.QuestionFor.Contains("Confirmed") || n.QuestionFor == "" || n.QuestionFor == "Confirmed,Appraiser" || n.QuestionFor == "Appraiser,Confirmed").ToList();
+        Model.QAL = Model.QAL.Where(n => n.QuestionFor == "Appraiser,Commenter" || n.QuestionFor == "Appraiser").ToList();
+    }
+}
+@if (!Model.Status)
+{
+    <div class="row">
+        <div class="col-md-12">
+            <h2>@Model.StatusMessage</h2>
+        </div>
+    </div>
+}
+else
+{
+
+    using (Ajax.BeginForm("SetTeamAppraisal", "PMS",
+                new { src = clsApplicationSetting.EncryptQueryString(ViewBag.MenuID.ToString() + "*/PMS/SetTeamAppraisal") },
+              new AjaxOptions { HttpMethod = "POST", OnSuccess = "TeamAppraisalSuccess", OnBegin = "ShowLoadingDialog()" },
+        new { @id = "_SetTeamAppraisalFrom", enctype = "multipart/form-data" })
+        )
+    {
+        @Html.ValidationSummary(true)
+        @Html.HiddenFor(x => Model.FYID)
+        @Html.HiddenFor(x => Model.Approved)
+        @Html.HiddenFor(x => Model.PMS_AID)
+        @Html.HiddenFor(x => Model.EMPID)
+        @Html.HiddenFor(x => Model.IsBtnVisible)
+        <div class="row">
+            <div class="col-md-8 mx-auto">
+
+                <div class="inner-main">
+                    <div class=" table-currency mt-0">
+
+                        <div class="row">
+                            <div class="col-md-10 text-center">
+                                <h1 class="heading-one pt-2">@Model.EMPName <!----(@Model.EMPCode)----></h1>
+                            </div>
+
+                            <div class="col-md-2 text-left">
+                                <strong>Status</strong><br><b class="red-clr">@Model.ApproveStatus</b>
+                            </div>
+                            <div class="col-md-12 mt-2 mb-2 text-center">
+
+
+                                <div class="emp-ifno mb-3" id="toggle">
+                                    <ul class="list-unstyled ">
+                                        <li>
+                                            <strong>Designation</strong><br>
+                                            @Model.DesignationName
+                                        </li>
+                                        <li>
+                                            <strong>Department </strong><br>
+                                            @Model.Department
+                                        </li>
+
+                                        <li>
+                                            <strong>Location </strong><br>
+                                            @Model.LocationName
+                                        </li>
+                                        <li>
+                                            <strong>Appraisal Period</strong><br>
+                                            @Model.FYName
+                                        </li>
+
+                                    </ul>
+                                </div>
+
+                            </div>
+                        </div>
+
+                        <div class="row">
+
+                            <div class="col-sm-12 text-right align-self-center">
+                                <a class="btn mtr-g-grn bbtn mtr-g-grn btn-l ripplelink" id="btnFillAppraisal" data-toggle="modal" data-target="#achievement">
+                                    <i class="fas fa-plus"></i>View
+                                </a>
+                            </div>
+                            <div class=" col-sm-12">
+                                <div class="table-responsive">
+                                    <table id="tableKPA" class="table table-scroll tv-top mb-3 act-table table-striped">
+                                        <thead>
+                                            <tr>
+                                                <th class="w-10">S.No</th>
+                                                <th width="200">Key Performance Area</th>
+                                                <th width="200">Key Performance Indicator</th>
+                                                <th width="200">Achievements</th>
+                                                <th width="50">UOM</th>
+                                                <th width="50">Weightage</th>
+                                                <th width="50">Target</th>
+                                                <th class="text-right" width="50">Appraiser’s Score</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @if (Model.KPAL.Count > 0)
+                                            {
+                                                int KPCount = 0;
+                                                decimal TotalWeight = 0;
+                                                foreach (var item in Model.KPAL)
+                                                {
+                                                    KPCount++;
+                                                    decimal sum = 0;
+                                                    decimal.TryParse(item.KPA_Weight, out sum);
+                                                    TotalWeight += sum;
+                                                    <tr>
+                                                        <td class="text-center">@KPCount</td>
+                                                        <td>@item.KPA_Area </td>
+                                                        <td>@item.KPA_PIndicator </td>
+                                                        <td>@item.Self_Achievement</td>
+                                                        <td>@item.UOM_Name</td>
+                                                        <td class="text-right">@item.KPA_Weight</td>
+                                                        <td class="text-right">@item.kPA_Target</td>
+                                                        <td class="text-right">
+                                                            <span id="spnHodScore_@KPCount"> @item.HOD_Score </span>
+
+                                                    </tr>
+                                                }
+
+
+                                                <tr>
+                                                    <td colspan="5" class="text-right"><strong>Total</strong></td>
+                                                    <td class="text-right">
+
+                                                        <strong> @TotalWeight</strong>
+
+                                                    </td>
+                                                    <td></td>
+                                                    <td></td>
+
+                                                </tr>
+                                            }
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+
+                            @if (Model.AttachmentsL.Count > 0)
+                            {
+                                <div class="col-md-12">
+                                    <h3 class="subheading">Attachment</h3>
+                                </div>
+                                <div class="col-md-12">
+                                    <table id="tableAttachment" class="table table-scroll mb-2 act-table table-striped">
+                                        <thead>
+                                            <tr>
+                                                <th class="td-10">S.No</th>
+                                                <th width="200">Attachment Type</th>
+                                                <th width="200">Document</th>
+                                                <th>Description of Document</th>
+
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @{
+                                                int AttachCount = 0;
+                                            }
+                                            @for (int i = 0; i < Model.AttachmentsL.Count; i++)
+                                            {
+                                                AttachCount++;
+                                                <tr>
+                                                    <td>
+                                                        <label id="span_@AttachCount" name="span_@AttachCount">@AttachCount </label>
+                                                        @Html.HiddenFor(model => model.AttachmentsL[i].AttachmentID)
+                                                        @Html.HiddenFor(model => model.AttachmentsL[i].Descrip)
+                                                    </td>
+                                                    <td>
+                                                        @Model.AttachmentsL[i].FileName
+                                                    </td>
+                                                    <td>
+                                                        @Html.ShowAttachment(Model.AttachmentsL[i].AttachmentID.ToString(), "achor-link")
+
+                                                    </td>
+                                                    <td>
+                                                        @Model.AttachmentsL[i].Descrip
+                                                    </td>
+                                                </tr>
+                                            }
+                                        </tbody>
+                                    </table>
+                                </div>
+                            }
+                            @if (Model.TrainingL.Count > 0)
+                            {
+                                <div class="col-md-12">
+                                    <h3 class="subheading">Training Desired, if any</h3>
+                                </div>
+
+                                <div class="col-md-12">
+                                    <div class="table-responsive">
+                                        <table id="tblTraining" class="table mb-2 act-table table-striped">
+                                            <thead>
+                                                <tr>
+                                                    <th class="td-10">S.No</th>
+                                                    <th class="w-100">Training Name</th>
+                                                    <th>Description</th>
+                                                    <th>Reason for Declining</th>
+                                                    <th width="60">Action</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @if (Model.TrainingL.Count > 0)
+                                                {
+                                                    int TCount = 0;
+                                                    for (int i = 0; i < Model.TrainingL.Count; i++)
+                                                    {
+                                                        TCount++;                                                     
+                                                        if (Model.TrainingL[i].Doctype.ToLower() == "training")
+                                                        {
+                                                            <tr class="@(Model.TrainingL[i].isdeleted == 1 ? "trrowred" : "myTraining")">
+                                                                <td class="text-center">
+                                                                    <label id="span_@TCount" name="span_@TCount">@TCount</label>
+                                                                    @Html.HiddenFor(model => model.TrainingL[i].PMS_ADID)
+                                                                    @Html.HiddenFor(model => model.TrainingL[i].TrainingType, new { @class = "hdnTrainingType" })
+                                                                    @Html.HiddenFor(model => model.TrainingL[i].TrainingTypeID)
+                                                                    @Html.HiddenFor(model => model.TrainingL[i].TrainingRemarks)
+                                                                    @Html.HiddenFor(model => model.TrainingL[i].isdeleted)
+                                                                    <input type="hidden" name="I" value="@Model.TrainingL[i].PMS_ADID" />
+                                                                    <input type="hidden" name="N" value="@Model.TrainingL[i].TrainingType" />
+                                                                </td>
+                                                                <td>@Model.TrainingL[i].TrainingType</td>
+                                                                <td>@Model.TrainingL[i].TrainingRemarks</td>
+                                                                <td>@Model.TrainingL[i].RejectReason</td>
+                                                                <td class="text-center">
+                                                                    @if (Model.TrainingL[i].isdeleted == 0)
+                                                                    {
+                                                                        if (Model.IsBtnVisible)
+                                                                        {
+                                                                            <a data-toggle="tooltip" title="Click to Decline" onclick="RemoveTraining(this)">
+                                                                                <i class='fa fa-trash-alt red-clr' aria-hidden='true'></i>
+                                                                            </a>
+                                                                        }
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        <span class="red-clr">Rejected</span>
+                                                                    }
+                                                                </td>
+                                                            </tr>
+                                                        }
+                                                        else
+                                                        {
+                                                            if (Model.IsBtnVisible)
+                                                            {
+                                                                <tr class="myTraining">
+                                                                    <td class="text-center">
+                                                                        <label id="span_@TCount" name="span_@TCount">@TCount</label>
+                                                                        @Html.HiddenFor(model => model.TrainingL[i].isdeleted)
+                                                                        @Html.HiddenFor(model => model.TrainingL[i].PMS_ADID)
+                                                                        @Html.HiddenFor(model => model.TrainingL[i].TrainingType, new { @class = "hdnTrainingType" })
+                                                                    </td>
+                                                                    <td>
+                                                                        @Html.DropDownListFor(x => Model.TrainingL[i].TrainingTypeID, new SelectList(Model.TrainingType, "ID", "Type", Model.TrainingL[i].TrainingTypeID), "Select Type", new { @class = "form-control applyselect", onchange = "FillTrainingType(this)" })
+                                                                        @Html.ValidationMessageFor(model => model.TrainingL[i].TrainingTypeID, "", new { @class = "text-danger" })
+                                                                    </td>
+                                                                    <td>
+                                                                        @Html.TextAreaFor(model => model.TrainingL[i].TrainingRemarks, new { @class = "form-control h-50", @placeholder = "Enter Comment" })
+                                                                        @Html.ValidationMessageFor(model => model.TrainingL[i].TrainingRemarks, "", new { @class = "text-danger" })
+                                                                    </td>
+                                                                    <td class="text-center"></td>
+                                                                    <td class="text-center">
+                                                                        <a class="disabled"><i class="fas fa-window-close" aria-hidden="true"></i></a>
+                                                                    </td>
+                                                                </tr>
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                                if (Model.TrainingL.Where(x => x.isdeleted == 0).Count() < 5 && Model.IsBtnVisible)
+                                {
+                                    <div class="col-sm-12 text-right">
+                                        <a id="ATrainingAdd" class="btn mtr-g-grn bbtn mtr-g-grn btn-l ripplelink"><i class="fas fa-plus"></i>Add Row</a>
+                                    </div>
+                                }
+                            }
+                            @if (Model.CommentsL.Count > 0)
+                            {
+
+                                for (int i = 0; i < Model.CommentsL.Count; i++)
+                                {
+                                    <div class="col-sm-12 form-group">
+                                        @if (Model.CommentsL[i].TableName == "Self Comment 1")
+                                        {
+                                            <label>Anything else  you want to share with your Appraiser</label>
+                                            <p>@Model.CommentsL[i].Comment</p>
+                                            @Html.HiddenFor(model => model.CommentsL[i].Comment)
+                                        }
+                                        else if (Model.CommentsL[i].TableName == "Self Comment 2")
+                                        {
+                                            <label>Final Response</label>
+                                            <p>@Model.CommentsL[i].Comment</p>
+                                            @Html.HiddenFor(model => model.CommentsL[i].Comment)
+                                        }
+                                        @*else if (Model.CommentsL[i].Doctype.ToLower() == "team")
+                    {
+                        <label>Assessment </label>
+                    }
+                    else if (Model.CommentsL[i].Doctype.ToLower() == "group")
+                    {
+                        <label>Confirmer's Overall Comment</label>
+                    }*@
+
+                                    </div>
+                                }
+                            }
+
+                            <!----<div class="col-sm-12 form-group">
+        <hr>
+        <span class="hr-aps"><i class="fas fa-hand-holding-usd"></i>Employee</span>
+    </div>---->
+
+                            <div class="col-md-12">
+                                <table class="table tv-top table-scroll act-table mb-3  table-striped">
+                                    <thead>
+                                        <tr>
+                                            <th class="td-10">S.No</th>
+                                            <th class="w-200">Additional Questions</th>
+                                            <th class="w-200">Employee's Response</th>
+                                            <th class="w-200">Appraiser's Response [1200 Characters max]</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @if (Model.QALEmp.Count > 0)
+                                        {
+                                            int Qcount = 0;
+
+                                            for (int i = 0; i < Model.QALEmp.Count; i++)
+                                            {
+                                                Qcount++;
+
+                                                <tr>
+                                                    <td>
+                                                        @Qcount
+                                                        @Html.HiddenFor(model => model.QALEmp[i].PMS_QAID)
+                                                        @Html.HiddenFor(model => model.QALEmp[i].Question)
+                                                        @Html.HiddenFor(model => model.QALEmp[i].QuestionFor)
+                                                    </td>
+                                                    <td>
+                                                        @Model.QALEmp[i].Question
+                                                    </td>
+                                                    <td>
+                                                        @Model.QALEmp[i].Answer
+                                                    </td>
+                                                    <td>
+                                                        @if (Model.QALEmp[i].QuestionFor.ToLower().Contains("appraiser") && Model.Approved < 3)
+                                                        {
+
+                                                            @Html.TextAreaFor(model => model.QALEmp[i].FinalComment, new { @class = "form-control maxSize[1200]", @placeholder = "Enter Comment", @maxlength = "1200", onkeypress = "return blockSpecialChar(event)" })
+                                                            @Html.ValidationMessageFor(model => model.QALEmp[i].FinalComment, "", new { @class = "text-danger" })
+                                                            <div class="countshow"></div>
+
+                                                        }
+                                                        else if (Model.QALEmp[i].QuestionFor.ToLower().Contains("appraiser") && Model.Approved >= 3)
+                                                        {
+                                                            @Html.HiddenFor(model => model.QALEmp[i].FinalComment)
+                                                            @Html.TextAreaFor(model => model.QALEmp[i].FinalComment, new { @class = "form-control", @placeholder = "Enter Comment", @disabled = "", onkeypress = "return blockSpecialChar(event)" })
+                                                            @Html.ValidationMessageFor(model => model.QALEmp[i].FinalComment, "", new { @class = "text-danger" })
+                                                        }
+                                                    </td>
+
+                                                </tr>
+                                            }
+                                        }
+                                    </tbody>
+                                </table>
+
+                            </div>
+                            <div class="col-sm-12 form-group">
+                                <hr>
+                                <span class="hr-aps"><i class="fas fa-hand-holding-usd"></i>Appraiser's Response </span>
+                            </div>
+
+                            <div class="col-md-12">
+
+                                <table class="table tv-top table-scroll act-table mb-3  table-striped">
+                                    <thead>
+                                        <tr>
+                                            <th width="10">S.No</th>
+                                            <th width="220">Additional Questions</th>
+                                            <th width="200">Response [1200 Characters max]<sup class="red-clr">*</sup> </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @if (Model.QAL.Count > 0)
+                                        {
+                                            int Qcount = 0;
+
+                                            for (int i = 0; i < Model.QAL.Count; i++)
+                                            {
+                                                Qcount++;
+
+                                                <tr>
+                                                    <td class="text-center">
+                                                        @Qcount
+                                                        @Html.HiddenFor(model => model.QAL[i].PMS_QAID)
+                                                        @Html.HiddenFor(model => model.QAL[i].Question)
+                                                        @Html.HiddenFor(model => model.QAL[i].QuestionFor)
+                                                    </td>
+                                                    <td>
+                                                        @Model.QAL[i].Question
+                                                    </td>
+                                                    <td>
+                                                        @if (Model.QAL[i].QuestionFor.ToLower().Contains("appraiser") && Model.Approved < 3)
+                                                        {
+                                                            @Html.TextAreaFor(model => model.QAL[i].FinalComment, new { @class = "form-control maxSize[1200]", @placeholder = "Enter Comment", @maxlength = "1200" })
+                                                            @Html.ValidationMessageFor(model => model.QAL[i].FinalComment, "", new { @class = "text-danger" })
+                                                            <div class="countshow"></div>
+                                                        }
+                                                        else if (Model.QAL[i].QuestionFor.ToLower().Contains("appraiser") && Model.Approved >= 3)
+                                                        {
+                                                            @Html.HiddenFor(model => model.QAL[i].FinalComment)
+                                                            @Html.TextAreaFor(model => model.QAL[i].FinalComment, new { @class = "form-control", @placeholder = "Enter Comment", @disabled = "" })
+                                                            @Html.ValidationMessageFor(model => model.QAL[i].FinalComment, "", new { @class = "text-danger" })
+                                                        }
+                                                    </td>
+                                                </tr>
+                                            }
+                                        }
+                                    </tbody>
+                                </table>
+
+                            </div>
+
+                            @if (Model.CommentsL.Count > 0)
+                            {
+
+                                for (int i = 0; i < Model.CommentsL.Count; i++)
+                                {
+                                    <div class="col-sm-12 form-group">
+                                        @if (Model.CommentsL[i].Doctype.ToLower() == "team" && Model.Approved > 3)
+                                        {
+                                            <label>Assessment </label>
+                                            <p>@Model.CommentsL[i].Comment</p>
+                                            @Html.HiddenFor(model => model.CommentsL[i].Comment)
+                                        }
+                                        else if (Model.CommentsL[i].Doctype.ToLower() == "group")
+                                        {
+                                            <label>Confirmer's Overall Comment</label>
+                                            <p>@Model.CommentsL[i].Comment</p>
+                                            @Html.HiddenFor(model => model.CommentsL[i].Comment)
+                                        }
+
+                                    </div>
+                                }
+                            }
+
+                            @if (Model.TeamCommentL != null)
+                            {
+
+                                if (Model.Approved == 3)
+                                {
+                                    <div class="col-md-4 form-group">
+                                        <label>Recommendation, if any</label>
+                                        @{
+                                            List<SelectListItem> DropDownList = new List<SelectListItem>
+                                                                                                                                                                            {
+                                                new SelectListItem{Text="Promotion to next level",Value="Promotion to next level" },
+                                                new SelectListItem{Text="Put on Probation",Value="Put on Probation" },
+                                                new SelectListItem{Text="Termination of Services",Value="Termination of Services" }
+                                            };
+                                        }
+                                        @Html.DropDownListFor(model => model.TeamRecommendation, new SelectList(DropDownList, "Value", "text", Model.TeamRecommendation), "Select", new { @class = "form-control applyselect" })
+                                        @Html.ValidationMessageFor(model => model.TeamRecommendation, "", new { @class = "text-danger" })
+                                    </div>
+
+
+
+
+                                    <div class="col-sm-2 form-group">
+                                        <label>Final Score <i class="fas fa-info-circle" data-popover-content="#unique-id1" data-toggle="popover" data-placement="top"></i></label>
+                                        <!--- Popover--->
+                                        <div id="unique-id1" style="display: none">
+                                            <div class="popover-body">
+                                                <button type="button" class="popover-close close"><i class="fas fa-times"></i></button>
+                                                <h2>Score Card</h2>
+                                                <div class="statulistpophvr ">
+                                                    <ul class="list-unstyled">
+                                                        <li><strong>96-100</strong></li>
+                                                        <li class="text-right">0</li>
+                                                        <li><strong>90-95	</strong></li>
+                                                        <li class="text-right">A+</li>
+                                                        <li><strong>85-89	</strong></li>
+                                                        <li class="text-right">A</li>
+                                                        <li><strong>70-84	</strong></li>
+                                                        <li class="text-right">B</li>
+                                                        <li><strong>60-69	</strong></li>
+                                                        <li class="text-right">C</li>
+                                                        <li><strong>50-59	</strong></li>
+                                                        <li class="text-right">D</li>
+                                                        <li><strong>0-50	</strong></li>
+                                                        <li class="text-right">E</li>
+                                                    </ul>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <!------>
+                                        <div class="input-group">
+                                            @Html.TextBoxFor(model => model.Team_Score, new { @class = "form-control" })
+                                            @Html.ValidationMessageFor(model => model.Team_Score, "", new { @class = "text-danger" })
+                                            <div class="input-group-prepend"> <span class="input-group-text" id="basic-addon1">100</span> </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-2 form-group">
+                                        <label>System Score</label>
+                                        <p><strong>@Model.SystemScore</strong></p>
+                                    </div>
+                                }
+                                else
+                                {
+                                    @Html.HiddenFor(model => model.Team_Score)
+                                    @Html.HiddenFor(model => model.TeamRecommendation)
+                                }
+
+                                <div class="col-md-12 form-group">
+
+                                    @for (int i = 0; i < Model.TeamCommentL.Count; i++)
+                                    {
+                                        if (Model.TeamCommentL[i].Doctype == "Team Comment 1")
+                                        {
+                                            <label>Assessment [1200 Characters max]<sup>*</sup></label>
+                                            @Html.HiddenFor(model => model.TeamCommentL[i].PMS_CommentID)
+                                            @Html.HiddenFor(model => model.TeamCommentL[i].Doctype)
+                                            if (Model.Approved == 0)
+                                            {
+                                                @Html.TextAreaFor(model => model.TeamCommentL[i].Comment, new { @class = "form-control maxSize[1200]", @placeholder = "Enter Comment", @maxlength = "1200" })
+                                            }
+                                            else
+                                            {
+                                                @Html.HiddenFor(model => model.TeamCommentL[i].Comment)
+                                                @Model.TeamCommentL[i].Comment
+                                            }
+
+                                        }
+                                        else
+                                        {
+                                            <label>Final Assessment [1200 Characters max]<sup>*</sup></label>
+                                            @Html.HiddenFor(model => model.TeamCommentL[i].PMS_CommentID)
+                                            @Html.HiddenFor(model => model.TeamCommentL[i].Doctype)
+                                            @Html.TextAreaFor(model => model.TeamCommentL[i].Comment, new { @class = "form-control maxSize[1200]", @placeholder = "Enter Comment", @maxlength = "1200" })
+                                            @*@Html.ValidationMessageFor(model => model.TeamCommentL[i].Comment, "", new { @class = "text-danger" })*@
+                                        }
+
+
+                                        <div class="countshow"></div>
+                                    }
+                                </div>
+
+                            }
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="col-sm-12 text-center">
+                        @if (Model.IsBtnVisible)
+                        {
+                            if (Model.Approved == 3)
+                            {
+
+
+                                <button type="submit" name="Command" value="Approved" class="btn  mtr-o-grn btn-l ripplelink Btnsubmit"><i class="fas fa-check"></i>Submit</button>
+                            }
+                            else
+                            {
+                                <button type="submit" name="Command" value="Save" class="btn mtr-o-grn btn-l ripplelink "> <i class="fas fa-save"></i>Save</button>
+                                <button type="button" class="btn blk-gdn-btn btn-l ripplelink" data-toggle="modal" data-target="#Resubmitpup">  <i class="fa fa-ban" aria-hidden="true"></i> Resubmit</button>
+                                <button type="submit" name="Command" value="Submit" class="btn mtr-o-grn btn-l ripplelink Btnsubmit "><i class="fas fa-paper-plane"></i>Submit</button>
+                            }
+                        }
+                        @Html.CreateAnchor(MenuID, "/PMS/TeamAppraisalList", "Back", "btn cnl-btn btn-l ripplelink", "Click to go back", "fas fa-arrow-left", "")
+                    </div>
+
+                </div>
+
+                <div id="achievement" class="modal fade" role="dialog">
+                    <div class="modal-dialog modal-xl">
+
+                        <!-- Modal content-->
+                        <div class="modal-content">
+                            <div class="modal-body vert-tab p-0">
+                                <div class="row">
+                                    <div class="col-md-3">
+                                        <ul class="nav nav-tabs  vrt-tab-leftside m-0 p-0" id="myTab" role="tablist">
+                                            @if (Model.KPAL.Count > 0)
+                                            {
+                                                int AKPCount = 0;
+                                                foreach (var item in Model.KPAL)
+                                                {
+                                                    AKPCount++;
+                                                    <li class="nav-item">
+                                                        <a class="nav-link @(AKPCount==1?"active":"")" id="home-tab" data-toggle="tab" href="#tab_@(item.PMS_ADID)" role="tab" aria-controls="home" aria-selected="true">
+                                                            <h2>
+                                                                <div class="blockellipsis">@item.KPA_Area </div>
+                                                                <!--<small> @item.KPA_PIndicator</small>-->
+                                                            </h2>
+
+                                                        </a>
+                                                    </li>
+                                                }
+                                            }
+                                        </ul>
+                                    </div>
+                                    <div class="col-md-9">
+                                        <button type="button" class="clse-rgt" data-dismiss="modal">×</button>
+                                        <div class="vrt-tab-rightside">
+                                            <div class="tab-content" id="myTabContent">
+                                                @if (Model.KPAL.Count > 0)
+                                                {
+                                                    int MKPACount = 0;
+                                                    decimal AchScrore = 0;
+                                                    for (int i = 0; i < Model.KPAL.Count; i++)
+                                                    {
+                                                        MKPACount++;
+                                                        @Html.HiddenFor(model => model.KPAL[i].KPAID)
+                                                        @Html.HiddenFor(model => model.KPAL[i].EMPID)
+                                                        @Html.HiddenFor(model => model.KPAL[i].UOMID)
+                                                        @Html.HiddenFor(model => model.KPAL[i].kPA_Target)
+                                                        @Html.HiddenFor(model => model.KPAL[i].KPA_Area)
+                                                        @Html.HiddenFor(model => model.KPAL[i].KPA_AutoRating)
+                                                        @Html.HiddenFor(model => model.KPAL[i].KPA_IncType)
+                                                        @Html.HiddenFor(model => model.KPAL[i].GoalSheetID)
+                                                        @Html.HiddenFor(model => model.KPAL[i].GoalSheet_DetID)
+                                                        @Html.HiddenFor(model => model.KPAL[i].KPA_PIndicator)
+                                                        @Html.HiddenFor(model => model.KPAL[i].KPA_Weight)
+                                                        @Html.HiddenFor(model => model.KPAL[i].PMS_ADID)
+                                                        @Html.HiddenFor(model => model.KPAL[i].PMS_AID)
+                                                        @Html.HiddenFor(model => model.KPAL[i].KPA_IsMonitoring)
+                                                        @Html.HiddenFor(model => model.KPAL[i].KPA_IsMandatory)
+                                                        @Html.HiddenFor(model => model.KPAL[i].UOM_Name)
+                                                        @Html.HiddenFor(model => model.KPAL[i].Self_Achievement)
+                                                        @Html.HiddenFor(model => model.KPAL[i].Self_Comment)
+                                                        try
+                                                        {
+                                                            //decimal Self_Achievement = 0, kPA_Target = 0;
+
+                                                            //decimal.TryParse(Model.KPAL[i].Self_Achievement, out Self_Achievement);
+                                                            //decimal.TryParse(Model.KPAL[i].kPA_Target, out kPA_Target);
+                                                            //if (Model.KPAL[i].KPA_AutoRating != "No")
+                                                            //{
+                                                            //	if (Model.KPAL[i].KPA_IncType.ToLower() == "postive")
+                                                            //	{
+                                                            //		AchScrore = (Self_Achievement / kPA_Target) * 100;
+                                                            //	}
+                                                            //	else
+                                                            //	{
+                                                            //		AchScrore = (kPA_Target - (Self_Achievement - kPA_Target)) / kPA_Target * 100;
+                                                            //	}
+                                                            //}
+
+                                                            decimal TargetAchieved = 0, kPA_Target = 0;
+
+                                                            decimal.TryParse(Model.KPAL[i].KPA_TargetAchieved, out TargetAchieved);
+                                                            decimal.TryParse(Model.KPAL[i].kPA_Target, out kPA_Target);
+                                                            if (Model.KPAL[i].KPA_AutoRating != "No" && Convert.ToInt32(Model.KPAL[i].kPA_Target) > 0)
+                                                            {
+                                                                if (Model.KPAL[i].KPA_IncType.ToLower() == "postive")
+                                                                {
+                                                                    AchScrore = (TargetAchieved / kPA_Target) * 100;
+                                                                }
+                                                                else
+                                                                {
+                                                                    //AchScrore = (kPA_Target - (TargetAchieved - kPA_Target)) / kPA_Target * 100;
+                                                                    AchScrore = (TargetAchieved / kPA_Target) * 100; //  Changed by nand 11 mar 2024
+                                                                }
+                                                            }
+                                                            else
+                                                            {
+                                                                AchScrore = 0;
+                                                            }
+                                                        }
+
+                                                        catch (Exception ex)
+                                                        {
+
+                                                        }
+
+                                                        <div class="tab-pane fade show @(MKPACount==1?"active":"")" id="tab_@Model.KPAL[i].PMS_ADID" role="tabpanel" aria-labelledby="home-tab">
+                                                            <div class="row">
+                                                                <div class="col-sm-12 form-group">
+                                                                    <label>Key Performance Area</label>
+                                                                    <p>@Model.KPAL[i].KPA_Area </p>
+                                                                </div>
+                                                                <div class="col-sm-12 form-group">
+                                                                    <label>Key Performance Indicator</label>
+                                                                    <p>@Model.KPAL[i].KPA_PIndicator </p>
+                                                                </div>
+
+                                                                <div class="col-sm-12 form-group">
+                                                                    <label>Achievement</label>
+                                                                    <p>@Model.KPAL[i].Self_Achievement</p>
+                                                                </div>
+
+                                                                <div class="col-sm-3 form-group">
+                                                                    <label>UOM </label>
+                                                                    <p>@Model.KPAL[i].UOM_Name</p>
+                                                                </div>
+                                                                <div class="col-sm-3 form-group">
+                                                                    <label>Target </label>
+                                                                    <p>@Model.KPAL[i].kPA_Target</p>
+                                                                </div>
+                                                                <div class="col-sm-3 form-group">
+                                                                    <label>Weightage</label>
+                                                                    <p>@Model.KPAL[i].KPA_Weight</p>
+                                                                </div>
+
+                                                                <div class="col-sm-3 form-group">
+                                                                    <label>Target Achieved<i class="fas fa-info-circle" data-toggle="tooltip" data-original-title="System Generated @Decimal.Round(AchScrore) %"></i></label>
+                                                                    @*<p> @Decimal.Round(AchScrore)</p>*@
+                                                                    <p>@Model.KPAL[i].KPA_TargetAchieved</p>
+                                                                </div>
+                                                                <div class="col-sm-12 form-group">
+                                                                    <label>Remark, if any</label>
+                                                                    <p>@Model.KPAL[i].Self_Comment</p>
+                                                                </div>
+
+                                                                <div class="col-md-12 form-group">
+                                                                    <hr>
+                                                                    <span class="hr-aps"><i class="fas fa-hand-holding-usd"></i> Appraiser </span>
+                                                                </div>
+                                                                <div class="col-sm-10 form-group">
+                                                                    <label>Appraiser's Assessment</label>
+                                                                    @if (Model.Approved >= 3)
+                                                                    {
+                                                                        <p>@Model.KPAL[i].HOD_Comment</p>
+                                                                        @Html.HiddenFor(x => Model.KPAL[i].HOD_Comment)
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        @Html.TextAreaFor(model => model.KPAL[i].HOD_Comment, new { @class = "form-control h-100", @placeholder = "Enter Comment" })
+                                                                        @Html.ValidationMessageFor(model => model.KPAL[i].HOD_Comment, "", new { @class = "text-danger" })
+                                                                    }
+                                                                </div>
+                                                                <div class="col-sm-2 align-self-top form-group">
+                                                                    <label>Appraiser’s Score <i class="fas fa-info-circle" data-popover-content="#unique-id1" data-toggle="popover" data-placement="top"></i> </label>
+
+                                                                    <!--- Popover--->
+                                                                    <div id="unique-id1" style="display: none">
+                                                                        <div class="popover-body">
+
+                                                                            <button type="button" class="popover-close close"><i class="fas fa-times"></i></button>
+                                                                            <h2>Score Card</h2>
+                                                                            <div class="statulistpophvr ">
+                                                                                <ul class="list-unstyled">
+                                                                                    <li><strong>96-100</strong></li>
+                                                                                    <li class="text-right">0</li>
+                                                                                    <li><strong>90-95	</strong></li>
+                                                                                    <li class="text-right">A+</li>
+                                                                                    <li><strong>85-90	</strong></li>
+                                                                                    <li class="text-right">A</li>
+                                                                                    <li><strong>70-84	</strong></li>
+                                                                                    <li class="text-right">B</li>
+                                                                                    <li><strong>60-70	</strong></li>
+                                                                                    <li class="text-right">C</li>
+                                                                                    <li><strong>50-60	</strong></li>
+                                                                                    <li class="text-right">D</li>
+                                                                                    <li><strong>0-50	</strong></li>
+                                                                                    <li class="text-right">E</li>
+                                                                                </ul>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                    <!------>
+                                                                    <div class="input-group">
+                                                                        <input type="hidden" id="hdnC" name="hdnC" value="@MKPACount" />
+                                                                        @if (Model.Approved >= 3)
+                                                                        {
+                                                                            <p>@Model.KPAL[i].HOD_Score</p>
+                                                                            @Html.HiddenFor(x => Model.KPAL[i].HOD_Score)
+                                                                        }
+                                                                        else
+                                                                        {
+                                                                            @Html.TextBoxFor(model => model.KPAL[i].HOD_Score, new { @class = "form-control h-50 txtScore", onkeypress = "return blockSpecialChar(event)" })
+                                                                            @Html.ValidationMessageFor(model => model.KPAL[i].HOD_Score, "", new { @class = "text-danger" })
+                                                                        }
+                                                                        <div class="input-group-prepend">
+                                                                            <span class="input-group-text" id="basic-addon1">100</span>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+
+                                                                <div class="col-sm-12 text-right">
+                                                                    <input type="hidden" class="hdhRow" value="@i" />
+                                                                    <input type="hidden" class="hdhPMS_ADID" value="@Model.KPAL[i].PMS_ADID" />
+                                                                    <input type="hidden" class="hdhPMS_AID" value="@Model.KPAL[i].PMS_AID" />
+                                                                    @if (MKPACount > 1)
+                                                                    {
+                                                                        <a class="btn btn-danger blk-gdn-btn btnPrevious"><i class="fas fa-angle-double-left"></i>Previous</a>
+                                                                    }
+                                                                    @if (MKPACount != Model.KPAL.Count)
+                                                                    {
+                                                                        <a class="btn blk-gdn-btn btnNext">Next <i class="fas fa-angle-double-right m-0"></i></a>
+                                                                    }
+                                                                    @if (MKPACount == Model.KPAL.Count)
+                                                                    {
+                                                                        <a class="btn blk-gdn-btn btnClose">Close <i class="fas fa-angle-double-right m-0"></i></a>
+                                                                    }
+
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    }
+
+                                                }
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal fade" id="Resubmitpup" tabindex="-1" role="dialog" aria-labelledby="ResubmitpupLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-lg">
+                        <div class="modal-content">
+                            <!-- Modal Header -->
+                            <div class="modal-header">
+                                <h4 class="modal-title">
+                                    <i class="fa fa-plus" aria-hidden="true"></i> Resubmitted
+                                </h4>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="row">
+                                    <div class="col-sm-12 form-group">
+                                        <label>Please share the reason for resubmission<sup>*</sup></label>
+                                        <textarea class="form-control h-100 maxSize[1200] Resubmission" placeholder="Explain Here" name="Reason" id="txtResubmitReason" onchange="HideErrorMessage(this)"></textarea>
+                                        <span id="sptxtResubmitReason" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+                                    </div>
+                                    <div class="col-sm-12 text-center">
+                                        <button type="submit" name="Command" value="Resubmit" class="btn mtr-o-grn btn-l ripplelink" onclick="validateForm(event)">
+                                            <i class="fas fa-share"></i> Submit
+                                        </button>
+                                        <button type="button" class="btn cnl-btn ripplelink" data-dismiss="modal">
+                                            <i class="fas fa-times"></i> Close
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div id="cancelpopup" class="modal fade" role="dialog">
+                    <div class="modal-dialog modal-md">
+                        <!-- Modal content-->
+                        <div class="modal-content">
+                            <div class="modal-body p-0">
+                                <div class="swal-icon swal-icon--warning text-center m-0">
+                                    <span class="swal-icon--warning__body">
+                                        <span class="swal-icon--warning__dot"></span>
+                                    </span>
+                                </div>
+                                <div class="pt-0 pl-3 pr-3 pb-3">
+                                    <div class="row">
+
+                                        <div class="col-sm-12 form-group ">
+                                            <div class="swal-title" style="">Are you sure want to remove training type</div>
+                                            <label>Reason</label>
+                                            <textarea class="form-control mb-3 h-80" placeholder="Enter" id="txtReason" name="txtReason"></textarea>
+                                        </div>
+                                        <div class="col-sm-12 text-center">
+                                            <a onclick="fnRemoveTraining(this)" class="btn btn-danger mtr-o-grn btnCanYes">Yes</a>
+                                            <a class="btn red-clr-bg" data-dismiss="modal">No</a>
+                                            @*<button type="button" class="clse-rgt" data-dismiss="modal">×</button>*@
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+}
+
+@section scripts    {
+    @System.Web.Optimization.Scripts.Render("~/bundle/unobtrusivejs")
+    @Html.IncludeVersionedJs(Url.Content("~/assets/design/Scripts/ToolTip.js"))
+    <script>
+
+
+
+		$(document).ready(function () {
+			$(".applyselect").select2();
+		});
+		function blockSpecialChar(e){
+
+        var k;
+        document.all ? k = e.keyCode : k = e.which;
+		if(k==39){
+		event.preventDefault();
+		}
+
+        }
+		$(".Btnsubmit").on('click', function (e) {
+			return IsFillAllAchievement();
+		});
+
+		function IsFillAllAchievement() {
+			var ret = false;
+			var count = 0;
+			$('.txtScore').each(function (index) {
+				if ($(this).val() == 0) {
+					$("#achievement").modal('show');
+					FailToaster("Fill All Score");
+					count++;
+					return false;
+				}
+			});
+			if (count == 0) {
+				ret = true;
+			}
+
+			return ret
+		}
+
+		function TeamAppraisalSuccess(obj) {
+
+			if (obj.Status) {
+
+				SuccessToaster(obj.SuccessMessage);
+				window.location = obj.RedirectURL;
+			}
+			else {
+				CloseLoadingDialog();
+				FailToaster(obj.SuccessMessage);
+				if (obj.StatusCode == 2) {
+					$("#achievement").modal('show');
+				}
+
+			}
+
+		}
+
+		$("#ATrainingAdd").click(function (e) {
+			e.preventDefault();
+			AddTrainingRow();
+		});
+
+		// add new Row
+		function AddTrainingRow() {
+
+			var LastTRCount = parseInt($('#tblTraining').find("tbody tr").length) - 1;
+			var myTraining = parseInt($('#tblTraining').find("tbody tr.myTraining").length);
+
+			if (myTraining >= 5) {
+				FailToaster("5 training allowed");
+			}
+			else {
+				$('.applyselect').select2("destroy");
+				var $tableBody = $('#tblTraining').find("tbody"),
+					$trLast = $tableBody.find("tr:last"),
+					$trNew = $trLast.clone();
+				  $trNew.find("td:last").html('<a onclick="DeleteTrainingRow(this)" class="remove" data-toggle="tooltip" data-original-title="Remove"><i class="fas fa-window-close red-clr" aria-hidden="true"></i></a>');
+
+
+				$trNew.find("div").each(function () {
+					$(this).attr({
+						'id': function (_, id) { var arr = id.split('_'); return id.replace(arr[1], LastTRCount + 1); }
+					});
+
+				});
+
+				$trNew.find("label").each(function () {
+					$(this).attr({
+						'id': function (_, id) { var arr = id.split('_'); return id.replace(arr[1], LastTRCount + 1); },
+					});
+					$(this).html(parseInt($('#tblTraining').find("tbody tr").length) + 1);
+				});
+
+				$trNew.find("input").each(function (i) {
+					$(this).attr({
+						'id': function (_, name) { return name.replace('_' + LastTRCount + '_', '_' + (parseInt(LastTRCount) + 1) + '_'); },
+						'name': function (_, name) { return name.replace('[' + LastTRCount + ']', '[' + (parseInt(LastTRCount) + 1) + ']'); },
+					});
+					$(this).val('0');
+				});
+				$trNew.find("textarea").each(function (i) {
+					$(this).attr({
+						'id': function (_, name) { return name.replace('_' + LastTRCount + '_', '_' + (parseInt(LastTRCount) + 1) + '_'); },
+						'name': function (_, name) { return name.replace('[' + LastTRCount + ']', '[' + (parseInt(LastTRCount) + 1) + ']'); },
+					});
+					$(this).val('');
+				});
+				$trNew.find("select").each(function (i) {
+					$(this).attr({
+						'id': function (_, name) { return name.replace('_' + LastTRCount + '_', '_' + (parseInt(LastTRCount) + 1) + '_'); },
+						'name': function (_, name) { return name.replace('[' + LastTRCount + ']', '[' + (parseInt(LastTRCount) + 1) + ']'); },
+					});
+					$(this).val('');
+				});
+
+				$trNew.find("span").each(function (i) {
+					if ($(this).attr("data-valmsg-for")) {
+						$(this).attr({
+							'data-valmsg-for': function (_, name) { return name.replace('[' + LastTRCount + ']', '[' + (parseInt(LastTRCount) + 1) + ']'); }
+						});
+					}
+					if ($(this).attr("for")) {
+						$(this).attr({
+							'for': function (_, name) { return name.replace('_' + LastTRCount + '_', '_' + (parseInt(LastTRCount) + 1) + '_'); }
+						});
+					}
+				});
+
+				$trLast.after($trNew);
+				var form = $("#_SetTeamAppraisalFrom").closest("form");
+				form.removeData('validator');
+				form.removeData('unobtrusiveValidation');
+				$.validator.unobtrusive.parse(form);
+				$('[data-toggle="tooltip"]').tooltip();
+				$(".applyselect").select2();
+			}
+		}
+
+		function DeleteTrainingRow(obj) {
+			var count = 0;
+			var TotalRowCount = $('#tblTraining').find("tbody tr").length;
+			ConfirmMsgBox("Are you sure want to delete", '', function () {
+
+				$(obj).closest('tr').remove();
+				$("#tblTraining TBODY TR").each(function (i) {
+					$(this).closest("tr").find("label").each(function () {
+						$(this).attr({
+							'id': function (_, id) { var arr = id.split('_'); return id.replace(arr[1], i); },
+						});
+						$(this).html(i + 1)
+					});
+
+					$(this).closest("tr").find("div").each(function () {
+						$(this).attr({
+							'id': function (_, id) { var arr = id.split('_'); return id.replace(arr[1], i); },
+						});
+					});
+
+
+					$(this).closest("tr").find("input").each(function () {
+						$(this).attr({
+							'id': function (_, id) { return id.replace('_' + (parseInt(i) + 1) + '_', '_' + i + '_'); },
+							'name': function (_, name) { return name.replace('[' + (parseInt(i) + 1) + ']', '[' + i + ']'); },
+						});
+
+					});
+
+					$(this).closest("tr").find("select").each(function () {
+						$(this).attr({
+							'id': function (_, id) { return id.replace('_' + (parseInt(i) + 1) + '_', '_' + i + '_'); },
+							'name': function (_, name) { return name.replace('[' + (parseInt(i) + 1) + ']', '[' + i + ']'); },
+						});
+
+					});
+
+					$(this).closest("tr").find("textarea").each(function () {
+						$(this).attr({
+							'id': function (_, id) { return id.replace('_' + (parseInt(i) + 1) + '_', '_' + i + '_'); },
+							'name': function (_, name) { return name.replace('[' + (parseInt(i) + 1) + ']', '[' + i + ']'); },
+						});
+
+					});
+
+
+					$(this).closest("tr").find("span").each(function () {
+						if ($(this).attr("data-valmsg-for")) {
+							$(this).attr({
+								'data-valmsg-for': function (_, name) { return name.replace('[' + (parseInt(i) + 1) + ']', '[' + i + ']'); },
+							});
+						}
+						if ($(this).attr("for")) {
+							$(this).attr({
+								'for': function (_, id) { return id.replace('_' + (parseInt(i) + 1) + '_', '_' + i + '_'); },
+							});
+						}
+					});
+				});
+				var form = $("#_SetTeamAppraisalFrom").closest("form");
+				form.removeData('validator');
+				form.removeData('unobtrusiveValidation');
+				$.validator.unobtrusive.parse(form);
+
+			})
+		}
+
+		function RemoveTraining(obj) {
+			var I = $(obj).closest("tr").find("input:hidden[name=I]").val();
+			var N = $(obj).closest("tr").find("input:hidden[name=N]").val();
+			var aMsg = '';
+			aMsg = 'Are you sure want to Remove ' + N;
+
+			swal(aMsg, {
+				text: "Reason for Rejection",
+				content: "input",
+			})
+			.then((value) => {
+				if ($.trim(value) != "") {
+					fnRemoveTrainingWithRemark(I, value)
+				}
+				else {
+					FailToaster('Reason for rejection can not be blank')
+				}
+			});
+			//ConfirmMsgBox(aMsg, '', function () {
+			//	ShowLoadingDialog();
+			//	$.ajax({
+			//		url: "/CommonAjax/RemoveAppraisalJSON",
+			//		type: "Get",
+			//		async: true,
+			//		data: { TrainingID: I },
+			//		success: function (args) {
+			//			if (args.Status) {
+			//				SuccessToaster(args.SuccessMessage);
+			//				window.location.reload();
+			//				CloseLoadingDialog();
+			//			} else {
+			//				FailToaster(args.SuccessMessage);
+			//				CloseLoadingDialog();
+			//			}
+			//		},
+			//		error: function (er) {
+			//			console.log(er);
+			//			CloseLoadingDialog();
+			//		}
+			//	});
+			//})
+		}
+		function fnRemoveTrainingWithRemark(I, result) {
+			$.ajax({
+					url: "/CommonAjax/RemoveAppraisalJSON",
+					type: "Get",
+					async: true,
+					data: { TrainingID: I, Reason: result },
+					success: function (args) {
+						if (args.Status) {
+		                   debugger;
+							SuccessToaster(args.SuccessMessage);
+		                     window.location =	obj.RedirectURL;
+							//window.location.reload();
+							CloseLoadingDialog();
+						} else {
+							FailToaster(args.SuccessMessage);
+							CloseLoadingDialog();
+						}
+					},
+					error: function (er) {
+						console.log(er);
+						CloseLoadingDialog();
+					}
+				});
+		}
+		function fnRemoveTraining(obj) {
+			var I = $(obj).closest("tr").find("input:hidden[name=I]").val();
+			var N = $(obj).closest("tr").find("input:hidden[name=N]").val();
+			var test = $("#txtReason").val();
+			alert(test);
+			alert(I);
+			$.ajax({
+				url: "/CommonAjax/RemoveAppraisalJSON",
+				type: "Get",
+				async: true,
+				data: { TrainingID: I },
+				success: function (args) {
+					if (args.Status) {
+						SuccessToaster(args.SuccessMessage);
+						window.location.reload();
+						CloseLoadingDialog();
+					} else {
+						FailToaster(args.SuccessMessage);
+						CloseLoadingDialog();
+					}
+				},
+				error: function (er) {
+					console.log(er);
+					CloseLoadingDialog();
+				}
+			});
+		}
+
+		$('.btnNext').click(function () {
+			SaveTeamComments(this);
+			$('.nav-tabs .active').parent().next('li').find('a').trigger('click');
+			$('.nav-tabs .active').parent().prev('li').find('a').addClass("prvactive");
+		});
+
+		$('.btnPrevious').click(function () {
+			SaveTeamComments(this);
+			$('.nav-tabs .active').parent().prev('li').find('a').trigger('click');
+		});
+		$('.btnClose').click(function () {
+			SaveTeamComments(this);
+			$("#achievement").modal('hide');
+		});
+
+		function SaveTeamComments(obj) {
+			var vRow = $(obj).closest("div").find(".hdhRow").val();
+			var vPMS_ADID = $(obj).closest("div").find(".hdhPMS_ADID").val();
+			var vPMS_AID = $(obj).closest("div").find(".hdhPMS_AID").val();
+			var vHOD_Score = $("#KPAL_" + vRow + "__HOD_Score").val();
+			var vHOD_Comment = $("#KPAL_" + vRow + "__HOD_Comment").val();
+			$.ajax({
+				url: "/CommonAjax/UpdateKPATeamJSON",
+				type: "Get",
+				async: true,
+				data: { PMS_ADID: vPMS_ADID, PMS_AID: vPMS_AID, HOD_Score: vHOD_Score, HOD_Comment: vHOD_Comment },
+				success: function (args) {
+					if (args.Status) {
+						//SuccessToaster(args.SuccessMessage);
+					} else {
+						//FailToaster(args.SuccessMessage);
+					}
+				},
+				error: function (er) {
+					console.log(er);
+				}
+			});
+		}
+
+		$(".txtScore").on('keyup keypress', function (e) {
+			DisplayHodScore(this);
+		});
+
+		function DisplayHodScore(obj) {
+			var C = $(obj).closest("div").find("input:hidden[name=hdnC]").val();
+			$("#spnHodScore_" + C).html($(obj).val());
+		}
+
+		function FillTrainingType(obj) {
+			$(obj).closest("tr").find(".hdnTrainingType").val($(obj).find("option:selected").text());
+		}
+    </script>
+
+    <script>
+    function validateForm(event) {
+        var reason = document.getElementById('txtResubmitReason');
+        var errorMessage = document.getElementById('sptxtResubmitReason');
+        if (reason.value.trim() === "") {
+              event.preventDefault();
+            errorMessage.style.display = 'block';
+        } else {
+             errorMessage.style.display = 'none';
+        }
+    }
+    function HideErrorMessage(element) {
+         var errorMessage = document.getElementById('sptxtResubmitReason');
+        if (element.value.trim() !== "") {
+            errorMessage.style.display = 'none';
+        }
+    }
+    </script>
+}

@@ -1,0 +1,271 @@
+﻿
+@{
+    ViewBag.Title = "ComplianceMaster";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+
+@using (Ajax.BeginForm("ComplianceMaster", "Compliance",
+     new { src = clsApplicationSetting.EncryptQueryString(ViewBag.MenuID.ToString() + "*/Compliance/ComplianceMaster") },
+     new AjaxOptions { HttpMethod = "POST", OnSuccess = "BindTarget", OnFailure = "CloseLoadingDialog()", OnBegin = "ShowLoadingDialog();" },
+ new { @id = "ComplianceMasterFrom" })
+ )
+{
+    <div class="inner-main defult-height pb-0">
+
+        <div class="row">
+            <div class="col-sm-5 align-self-center"><h1 class="heading-one mb-0">Compliance Master</h1></div>
+            <div class="col-sm-7 text-right">
+                <a class="btn mtr-g-grn btn-l ripplelink" onclick="HrefCompliance()"><i class="fa fa-plus"></i> <span class="sbAtext">Add</span></a>
+            </div>
+            <div class="col-sm-12">
+
+                <div class="tab-main">
+
+                    <ul id="tabs" class="nav nav-tabs " role="tablist">
+                        <li class="nav-item"> <a id="tab-A" href="#live" class="nav-link active ripplelink" data-toggle="tab" role="tab"><i class="fas fa-database"></i>Live</a> </li>
+                        <li class="nav-item"> <a id="tab-B" href="#legacy" class="nav-link ripplelink" data-toggle="tab" role="tab"><i class="fas fa-check"></i>Legacy</a> </li>
+
+                    </ul>
+
+                    <div id="content" class="tab-content p-0" role="tablist">
+
+                        <div id="live" class="card tab-pane fade show   active" role="tabpanel" aria-labelledby="tab-A">
+                            <div class="card-header" role="tab" id="heading-A">
+                                <h5 class="mb-0"> <a data-toggle="collapse" href="#collapse-A" aria-expanded="true" aria-controls="collapse-A">Legacy <i class="fas fa-clock"></i></a> </h5>
+                            </div>
+                            <div id="collapse-A" class="collapse show" data-parent="#content" role="tabpanel" aria-labelledby="heading-A">
+                                <div class="table-responsive">
+                                    <table id="tableCompliance" class="table table-striped table-bordered dt-responsive nowrap tbltick new_width" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
+                                        <thead>
+                                            <tr>
+                                                <th width="20">S.No.</th>
+                                                <th width="100">Doc No</th>
+                                                <th width="100">Doc Date </th>
+                                                <th >Category Name</th>
+                                                <th width="150">Sub Category</th>
+                                                <th>Compliance Name</th>
+                                                <th width="250">Primary User</th>
+                                                <th width="100">Risk Type</th>
+                                                <th width="100">Frequency</th>
+                                                <th width="100">Effective Date</th>
+                                                <th width="40">Status</th>
+                                                <th width="230" class="text-center">Action</th>
+                                            </tr>
+                                            <tr class="searchbar" role="row">
+                                                <th class="searchhide"></th>
+                                                <th></th>
+                                                <th></th>
+                                                <th></th>
+                                                <th></th>
+
+                                                <th></th>
+                                                <th></th>
+                                                <th></th>
+                                                <th></th>
+                                                <th></th>
+                                                <th class="searchhide"></th>
+                                                <th class="searchhide"></th>
+
+
+                                            </tr>
+
+                                        </thead>
+                                        <tbody>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="legacy" class="card tab-pane fade " role="tabpanel" aria-labelledby="tab-b">
+                            <div class="card-header" role="tab" id="heading-A">
+                                <h5 class="mb-0"> <a data-toggle="collapse" href="#collapse-b" aria-expanded="true" aria-controls="collapse-b">Legacy <i class="fas fa-receipt"></i></a> </h5>
+                            </div>
+                            <div id="collapse-b" class="collapse " data-parent="#content" role="tabpanel" aria-labelledby="heading-b">
+                                <div class="table-responsive">
+                                    <table id="tableLegacy" class="table table-striped table-bordered dt-responsive nowrap tbltick new_width" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
+                                        <thead>
+                                            <tr>
+                                                <th width="20">S.No.</th>
+                                                <th width="100">Doc No</th>
+                                                <th width="100">Doc Date </th>
+                                                <th width="150">Category Name</th>
+                                                <th width="150">Sub Category</th>
+                                                <th><div style="width:300px">Compliance Name</div></th>
+                                                <th width="200">Primary User</th>
+                                                <th width="100">Risk Type</th>
+                                                <th width="100">Frequency</th>
+                                                <th width="100">Effective Date</th>
+                                                <th width="40">Status</th>
+                                                <th width="50" class="text-center">Action</th>
+                                            </tr>
+                                            <tr class="searchbar" role="row">
+                                                <th class="searchhide"></th>
+                                                <th></th>
+                                                <th></th>
+                                                <th></th>
+
+                                                <th></th>
+                                                <th></th>
+                                                <th></th>
+                                                <th></th>
+                                                <th></th>
+                                                <th></th>
+                                                <th class="searchhide"></th>
+                                                <th class="searchhide"></th>
+
+
+                                            </tr>
+
+                                        </thead>
+                                        <tbody>
+
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+
+
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+    </div>
+    <div class="modal fade confirmmsg" id="confirmmsg">
+        <div class="modal-dialog modal-md ">
+            <div class="modal-content">
+                <!-- Modal Header -->
+                <div class="swal-icon swal-icon--warning">
+                    <span class="swal-icon--warning__body">
+                        <span class="swal-icon--warning__dot"></span>
+                    </span>
+                </div>
+
+                <div class="modal-body ">
+                    <input type="hidden" id="hiddenCateId" />
+                    <div class="swal-title text-center mb-3">Are you sure want to <enum id="acti">Deactivate</enum>?</div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" data-dismiss="modal" data-toggle="modal" class="btn cnl-btn">No</button>
+                    <button type="button" class="btn mtr-o-grn" onclick="ChangeStatus()">Yes</button>
+                </div>
+
+            </div>
+
+
+
+        </div>
+
+    </div>
+
+    <div class="modal fade pop-dgn" id="cancel">
+        <div class="modal-dialog modal-md">
+            <div class="modal-content">
+
+
+                <!-- Modal body -->
+                <div class="modal-body p-0">
+                    <div class="swal-icon swal-icon--warning text-center">
+                        <span class="swal-icon--warning__body">
+                            <span class="swal-icon--warning__dot"></span>
+                        </span>
+                    </div>
+                    <div class="swal-title">Are You Sure want to delete?</div>
+
+                    <div class="swal-footer">
+
+
+                        <button class="swal-button swal-button--cancel" tabindex="0" data-dismiss="modal">Cancel</button>
+
+                        <button class="swal-button swal-button--confirm swal-button--danger" onclick="ChangeDelete()">OK</button>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    @section scripts    {
+        @System.Web.Optimization.Scripts.Render("~/bundle/unobtrusivejs")
+        @System.Web.Optimization.Scripts.Render("~/bundle/dataTablesjs")
+        <script src="~/assets/design/Scripts/AddInit.js?v=@clsApplicationSetting.GetWebConfigValue("Version")"></script>
+        <script src="~/Areas/Compliance/DevScript/ComplianceMaster.js"></script>
+
+        <script>
+
+            var baseUrl;
+
+           function HrefCompliance() {
+            ShowLoadingDialog();
+
+                // Generate the base URL
+               baseUrl = '@Url.Action("Compliance", "AddCompliance", new { src = clsApplicationSetting.EncryptQueryString(ViewBag.MenuID.ToString() + "*/Compliance/AddCompliance") })';
+
+
+                // Redirect to the generated URL
+                window.location = baseUrl;
+
+                setTimeout(function () {
+                    CloseLoadingDialog();
+                }, 4000);
+            }
+
+            function HrefCompMaster() {
+                 ShowLoadingDialog();
+
+                // Redirect to the generated URL
+                  var comp = '@Url.Action("Compliance", "ComplianceMaster", new { src = clsApplicationSetting.EncryptQueryString(ViewBag.MenuID.ToString() + "*/Activity/ActivityLogApproval") })';
+
+                    window.location = comp;
+
+                    setTimeout(function () {
+                           CloseLoadingDialog();
+                    }, 4000);
+
+            }
+
+
+
+            function EditCompliance(id) {
+
+                ShowLoadingDialog();
+
+               // var menuId = "@ViewBag.MenuID";
+                var mId = "@clsApplicationSetting.EncryptQueryString(ViewBag.MenuID.ToString()+ "*/Compliance/AddCompliance")";
+                var url = "/Compliance/AddCompliance?src=" +mId + "&id=" + id;
+                       window.location.href = url;
+
+
+                setTimeout(function () {
+                    CloseLoadingDialog();
+                }, 4000);
+            }
+
+            function ViewCompliance(id) {
+
+                ShowLoadingDialog();
+
+               // var menuId = "@ViewBag.MenuID";
+                var mId = "@clsApplicationSetting.EncryptQueryString(ViewBag.MenuID.ToString()+ "*/Compliance/ViewCompliance")";
+                var url = "/Compliance/ViewCompliance?src=" +mId + "&id=" + id;
+                       window.location.href = url;
+
+
+                setTimeout(function () {
+                    CloseLoadingDialog();
+                }, 4000);
+            }
+        </script>
+
+    }
+
+}
+
+
+

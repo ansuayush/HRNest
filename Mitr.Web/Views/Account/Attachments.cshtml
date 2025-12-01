@@ -1,0 +1,404 @@
+﻿@model Employee.Attachments
+@{
+	string MenuID = ViewBag.MenuID.ToString();
+	string src = ViewBag.src;
+	if (ViewBag.Mobile == "Mobile")
+	{
+		Layout = "~/Views/Shared/_MLayoutPage.cshtml";
+	}
+}
+@Html.Partial("_EmployeeHeader")
+
+<div class="mb-100" id="divMain">
+	@Html.Hidden("hdfsrc", src)
+	<div class="inner-main mb-5">
+		<div class="row">
+			<div class="col-sm-12">
+				<div class="table-responsive mb-lst">
+					<table class="table mt-0 " id="tableUpload">
+						<thead>
+							<tr>
+								<th class="w-200"></th>
+								<th class="w-250">Attach</th>
+								<th>Download</th>
+								<th>Remark</th>
+							</tr>
+						</thead>
+						<tbody>
+							@{ int count = 0;}
+							@for (int i = 0; i < Model.EMPAttachmentsList.Count; i++)
+							{
+								count += 1;
+
+								<tr>
+									<td class="btm-m">
+										<strong class="hd-wm f-width">
+											@Model.EMPAttachmentsList[i].OfficialName
+											@if (Model.EMPAttachmentsList[i].IsOpted == 1)
+											{
+												<sup class="red-clr">*</sup>
+											}
+										</strong>
+									</td>
+									<td>
+										@Html.HiddenFor(model => Model.EMPAttachmentsList[i].EAttachID, new { @class = "hdnID" })
+										@Html.HiddenFor(model => Model.EMPAttachmentsList[i].AttachmentID, new { @class = "hdnAttachID" })
+										@Html.HiddenFor(model => Model.EMPAttachmentsList[i].OfficialName, new { @class = "hdnOfficialName" })
+										@Html.HiddenFor(model => Model.EMPAttachmentsList[i].IsOpted, new { @class = "hdnOpted" })
+
+										@Html.TextBoxFor(model => Model.EMPAttachmentsList[i].Upload, new { @class = "form-control uploadfile", @type = "file" })
+										@Html.ValidationMessageFor(model => Model.EMPAttachmentsList[i].Upload, "", new { @class = "text-danger" })
+										@if (Model.EMPAttachmentsList[i].OfficialName == "Voter ID" && Model.VLockStatus == "Pending")
+										{
+											if (Model.AVId == 0)
+											{
+												<button type="button" class="btn m-0 mtr-g-grn clc-35 mt-13" data-toggle="tooltip" title="Update" id="btnv" onclick="UpdateVoterFile_Update(this)"><i class="fas fa-edit m-0"></i></button>
+											}
+											else
+											{
+												<button type="button" class="btn mtr-g-grn isDisabled " data-toggle="tooltip" title="Your previous request is pending on HR, please obtain approval from HR" id="btnv"><i class="fas fa-edit"></i>Updated</button>
+											}
+
+										}
+										else if (Model.EMPAttachmentsList[i].OfficialName == "Passport" && Model.PLockStatus == "Pending")
+										{
+
+											if (Model.ApId == 0)
+											{
+												<button type="button" class="btn m-0 mtr-g-grn clc-35 mt-13" data-toggle="tooltip" title="Update" id="btnp" onclick="UpdatePassportFile_Update(this)"><i class="fas fa-edit m-0"></i></button>
+											}
+											else
+											{
+												<button type="button" class="btn mtr-g-grn isDisabled " data-toggle="tooltip" title="Your previous request is pending on HR, please obtain approval from HR" id="btnp"><i class="fas fa-edit"></i>Updated</button>
+											}
+										}
+										else if (Model.EMPAttachmentsList[i].OfficialName == "Driving License" && Model.DlLockStatus == "Pending")
+										{
+
+											if (Model.ADLId == 0)
+											{
+												<button type="button" class="btn m-0 mtr-g-grn clc-35 mt-13" data-toggle="tooltip" title="Update" id="btnd" onclick="UpdateDlFile_Update(this)"><i class="fas fa-edit m-0"></i></button>
+											}
+											else
+											{
+												<button type="button" class="btn mtr-g-grn isDisabled " data-toggle="tooltip" title="Your previous request is pending on HR, please obtain approval from HR" id="btnd"><i class="fas fa-edit"></i>Updated</button>
+											}
+										}
+										else if (Model.EMPAttachmentsList[i].OfficialName == "Director Identification Number" && Model.DlLockStatus == "Pending")
+										{
+											if (Model.ADinId == 0)
+											{
+												<button type="button" class="btn m-0 mtr-g-grn clc-35 mt-13" data-toggle="tooltip" title="Update" id="dbtndin" onclick="UpdateDinFile_Update(this)"><i class="fas fa-edit m-0"></i></button>
+											}
+											else
+											{
+												<button type="button" class="btn mtr-g-grn isDisabled " data-toggle="tooltip" title="Your previous request is pending on HR, please obtain approval from HR" id="dbtndin"><i class="fas fa-edit"></i>Updated</button>
+											}
+
+										}
+										else if (Model.EMPAttachmentsList[i].OfficialName == "Aadhaar")
+										{
+											if (Model.AdharId == 0)
+											{
+												<button type="button" class="btn m-0 mtr-g-grn clc-35 mt-13" data-toggle="tooltip" title="Update" id="btnadhar" onclick="UpdateAdharFile_Update(this)"><i class="fas fa-edit m-0"></i></button>
+											}
+											else
+											{
+												<button type="button" class="btn mtr-g-grn isDisabled " data-toggle="tooltip" title="Your previous request is pending on HR, please obtain approval from HR" id="btnv"><i class="fas fa-edit"></i>Updated</button>
+											}
+										}
+										else if (Model.EMPAttachmentsList[i].OfficialName == "PAN")
+										{
+											if (Model.PanId == 0)
+											{
+												<button type="button" class="btn m-0 mtr-g-grn clc-35 mt-13" data-toggle="tooltip" title="Update" id="btnpan" onclick="UpdatePanFile_Update(this)"><i class="fas fa-edit m-0"></i></button>
+											}
+											else
+											{
+												<button type="button" class="btn mtr-g-grn isDisabled " data-toggle="tooltip" title="Your previous request is pending on HR, please obtain approval from HR" id="btnv"><i class="fas fa-edit"></i>Updated</button>
+											}
+										}
+
+
+
+
+									</td>
+									<td>
+										@if (Model.EMPAttachmentsList[i].AttachmentID > 0)
+										{
+											<a href="@Model.EMPAttachmentsList[i].AttachmentURL" target="_blank" class="checkgreen">Download</a>
+											<a class="remove" onclick="DeleteAttachment(this)">
+												<i class="fa fa-trash red-clr" aria-hidden="true"></i>
+											</a>
+										}
+									</td>
+									<td>
+										@Html.TextAreaFor(model => Model.EMPAttachmentsList[i].UploadRemarks, new { @class = "form-control" })
+										@Html.ValidationMessageFor(model => Model.EMPAttachmentsList[i].UploadRemarks, "", new { @class = "text-danger" })
+									</td>
+								</tr>
+							}
+						</tbody>
+					</table>
+				</div>
+			</div>
+			<div class="col-sm-12 form-group">
+				<hr>
+				<span class="hr-aps lgt-text font-sm">Attach Any Other Document</span>
+			</div>
+			<div class="col-sm-12 form-group">
+				<div class="table-responsive">
+					<table id="TableOtherList" class="table table-striped m-0">
+						<thead>
+							<tr>
+								<th class="w-50">S.No.</th>
+								<th class="w-150">File</th>
+								<th>Download</th>
+								<th>Remarks </th>
+								<th class="w-33 text-center"></th>
+							</tr>
+						</thead>
+						<tbody>
+							@if (Model.EMPOtherAttachmentsList != null)
+							{
+								int QCount = 0;
+								for (int i = 0; i < Model.EMPOtherAttachmentsList.Count; i++)
+								{
+									QCount++;
+									<tr>
+										<td>
+											@Html.HiddenFor(model => Model.EMPOtherAttachmentsList[i].EAttachID, new { @class = "hdnID" })
+											@Html.HiddenFor(model => Model.EMPOtherAttachmentsList[i].OfficialName)
+											@Html.HiddenFor(model => Model.EMPOtherAttachmentsList[i].AttachmentID, new { @class = "hdnAttachID" })
+											<label id="span_@QCount" name="span_@QCount">@QCount </label>
+										</td>
+										<td>
+											@Html.TextBoxFor(model => Model.EMPOtherAttachmentsList[i].Upload, new { @class = "form-control", @type = "file" })
+											@Html.ValidationMessageFor(model => Model.EMPOtherAttachmentsList[i].Upload, "", new { @class = "text-danger" })
+										</td>
+
+										<td>
+											@if (Model.EMPOtherAttachmentsList[i].AttachmentID > 0)
+											{
+												<a href="@Model.EMPOtherAttachmentsList[i].AttachmentURL" target="_blank" class="checkgreen anhordowload">Download</a>
+
+												<a class="remove" onclick="DeleteAttachment(this)">
+													<i class="fa fa-trash red-clr" aria-hidden="true"></i>
+												</a>
+											}
+										</td>
+										<td>
+											@Html.TextAreaFor(model => Model.EMPOtherAttachmentsList[i].UploadRemarks, new { @class = "form-control" })
+											@Html.ValidationMessageFor(model => Model.EMPOtherAttachmentsList[i].UploadRemarks, "", new { @class = "text-danger" })
+										</td>
+										<td>
+											@if (QCount > 1)
+											{
+												<a onclick="DeleteRow(this)" class="remove"><i class="fas fa-window-close red-clr" aria-hidden="true"></i></a>
+											}
+											else
+											{
+												<a class="disabled"><i class="fas fa-window-close" aria-hidden="true"></i></a>
+											}
+										</td>
+									</tr>
+								}
+							}
+
+						</tbody>
+					</table>
+					<div class="col-sm-12 text-right">
+						@*<a class="green-clr" onclick="AddNewRow(this)"><strong><i class="fas fa-plus"></i>Add Row</strong></a>*@
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	@*<div class="ftr-btn">
+			<button type="submit" class="btn mtr-o-grn " name="Command" value="Add"><i class="fas fa-paper-plane"></i>Submit</button>
+
+			@Html.CreateAnchor(MenuID, "/Employee/GeneralInfo*" + Model.id, "Previous", "btn blk-gdn-btn", "Click to go back", "fas fa-angle-double-left m-0", "")
+			@Html.CreateAnchor(MenuID, "/Employee/Attachments*" + Model.id, "Next", "btn blk-gdn-btn", "Click to Next", "fas fa-angle-double-right m-0", "")
+		</div>*@
+
+
+</div>
+
+
+@section scripts    {
+	@System.Web.Optimization.Scripts.Render("~/bundle/unobtrusivejs")
+	@Html.IncludeVersionedJs(Url.Content("~/assets/design/scripts/AddInit.js"))
+	@Html.IncludeVersionedJs(Url.Content("~/assets/design/scripts/PagesJS/EmployeeMasterUpdate.js"))
+	<script>
+		$(document).ready(function () {
+			$('#divMain :input').attr('disabled', true);
+			$('#EMPAttachmentsList_0__Upload').removeAttr('disabled');
+			$('#EMPAttachmentsList_1__Upload').removeAttr('disabled');
+			$('#EMPAttachmentsList_2__Upload').removeAttr('disabled');
+			$('#EMPAttachmentsList_3__Upload').removeAttr('disabled');
+			$('#EMPAttachmentsList_6__Upload').removeAttr('disabled');
+		    $('#btnadhar').removeAttr('disabled');
+		    $('#btnpan').removeAttr('disabled');
+			$('#btnv').removeAttr('disabled');
+			$('#btnp').removeAttr('disabled');
+			$('#btnd').removeAttr('disabled');
+			$('#btndin').removeAttr('disabled');
+		});
+		$(document).ready(function () {
+			ValidateUploadFiles();
+		});
+
+		function ValidateUploadFiles() {
+			$('#tableUpload tbody tr').each(function (i) {
+				var hdnAttachID = $(this).closest("tr").find(".hdnAttachID").val();
+				var hdnOpted = $(this).closest("tr").find(".hdnOpted").val();
+				if (hdnOpted == 1 && hdnAttachID == 0) {
+					$(this).closest("tr").find(".uploadfile").rules('add', {
+						required: true,
+						messages: {
+							required: "Hey! You missed this field."
+						}
+					});
+				}
+			});
+		}
+
+
+		function AddNewRow(obj) {
+			var Table = $(obj).parent("div").parent('div').find('table');
+			var TableID = $(Table).attr('ID');
+			var LastTRCount = parseInt($('#' + TableID + '').find("tbody tr").length) - 1;
+			var $tableBody = $('#' + TableID + '').find("tbody"),
+				$trLast = $tableBody.find("tr:last"),
+				$trNew = $trLast.clone();
+			$trNew.find("td:last").html('<a onclick="DeleteRow(this)" class="remove"><i class="fas fa-window-close red-clr" aria-hidden="true"></i></a>')
+			$trNew.find("label").each(function () {
+				$(this).attr({
+					'id': function (_, id) { var arr = id.split('_'); return id.replace(arr[1], LastTRCount + 1); },
+				});
+				$(this).html(parseInt($('#' + TableID + '').find("tbody tr").length) + 1)
+			});
+			$trNew.find("a.anhordowload").each(function (i) {
+				$(this).text('')
+			});
+			$trNew.find("input").each(function (i) {
+				$(this).attr({
+					'id': function (_, name) { return name.replace('_' + LastTRCount + '_', '_' + (parseInt(LastTRCount) + 1) + '_'); },
+					'name': function (_, name) { return name.replace('[' + LastTRCount + ']', '[' + (parseInt(LastTRCount) + 1) + ']'); },
+				});
+				$(this).val('')
+			});
+
+			$trNew.find("textarea").each(function (i) {
+				$(this).attr({
+					'id': function (_, name) { return name.replace('_' + LastTRCount + '_', '_' + (parseInt(LastTRCount) + 1) + '_'); },
+					'name': function (_, name) { return name.replace('[' + LastTRCount + ']', '[' + (parseInt(LastTRCount) + 1) + ']'); },
+				});
+				$(this).val('')
+			});
+			$trNew.find("span").each(function (i) {
+				if ($(this).attr("data-valmsg-for")) {
+					$(this).attr({
+						'data-valmsg-for': function (_, name) { return name.replace('[' + LastTRCount + ']', '[' + (parseInt(LastTRCount) + 1) + ']'); }
+					});
+				}
+				if ($(this).attr("for")) {
+					$(this).attr({
+						'for': function (_, name) { return name.replace('_' + LastTRCount + '_', '_' + (parseInt(LastTRCount) + 1) + '_'); }
+					});
+				}
+			});
+
+			$trLast.after($trNew);
+
+		}
+
+
+		function DeleteRow(obj) {
+			var Response = 0;
+			var ID = $(obj).closest('tr').find('.hdnID').val();
+			var Table = $(obj).closest('table');
+			var TableID = $(Table).attr('ID');
+
+			ConfirmMsgBox("Are you sure want to delete", '', function () {
+				if (ID) {
+					var data = DelRecord_Common(ID, '');
+					if (data.Status) {
+						Response = 1;
+					}
+					else {
+						FailToaster(data.SuccessMessage);
+
+					}
+				}
+				if (Response == 1 || !ID) {
+					var TotalRowCount = $('#' + TableID + '').find("tbody tr").length;
+
+					$(obj).closest('tr').remove();
+					$('#' + TableID + ' TBODY TR').each(function (i) {
+						$(this).closest("tr").find("label").each(function () {
+							$(this).attr({
+								'id': function (_, id) { var arr = id.split('_'); return id.replace(arr[1], i); },
+							});
+							$(this).html(i + 1)
+						});
+
+
+						$(this).closest("tr").find("input").each(function () {
+							$(this).attr({
+								'id': function (_, id) { return id.replace('_' + (parseInt(i) + 1) + '_', '_' + i + '_'); },
+								'name': function (_, name) { return name.replace('[' + (parseInt(i) + 1) + ']', '[' + i + ']'); },
+							});
+						});
+
+						$(this).closest("tr").find("span").each(function () {
+							if ($(this).attr("data-valmsg-for")) {
+								$(this).attr({
+									'data-valmsg-for': function (_, name) { return name.replace('[' + (parseInt(i) + 1) + ']', '[' + i + ']'); },
+								});
+							}
+							if ($(this).attr("for")) {
+								$(this).attr({
+									'for': function (_, id) { return id.replace('_' + (parseInt(i) + 1) + '_', '_' + i + '_'); },
+								});
+							}
+						});
+					});
+				}
+			})
+		}
+
+
+		function OnSuccess(obj) {
+			if (obj.Status) {
+				SuccessToaster(obj.SuccessMessage);
+				window.location.href = obj.RedirectURL;
+			}
+			else {
+				CloseLoadingDialog();
+				FailToaster(obj.SuccessMessage);
+
+			}
+		}
+
+		function DeleteAttachment(obj) {
+			var ID = $(obj).closest('tr').find('.hdnID').val();
+			if (ID) {
+				ConfirmMsgBox("Are you sure want to delete", '', function () {
+					ShowLoadingDialog();
+					var data = DelRecord_Common(ID, 'EMP_Attachments');
+					if (data.Status) {
+						window.location.reload();
+					}
+					else {
+						FailToaster(data.SuccessMessage);
+						CloseLoadingDialog();
+
+					}
+				})
+			}
+		}
+
+	</script>
+}

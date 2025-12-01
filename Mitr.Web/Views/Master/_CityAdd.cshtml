@@ -1,0 +1,67 @@
+﻿
+@model Mitr.Models.City
+
+
+
+@using (Ajax.BeginForm("_CityAdd", "Master",
+        new { src = ViewBag.src },
+        new AjaxOptions { HttpMethod = "POST", OnSuccess = "OnSuccess" },
+    new { @id = "_CityAddFrom" })
+    )
+{
+
+    @Html.AntiForgeryToken()
+    @Html.HiddenFor(x => Model.CityID)
+    <div class="row">
+        <div class="col-lg-6 col-md-6 col-sm-6 form-group">
+            <label>State <sup>*</sup></label>
+            @Html.DropDownListFor(model => model.StateID, new SelectList(ViewBag.StateList, "StateID", "StateName", Model.StateID), "select", new { @class = "form-control " })
+            @Html.ValidationMessageFor(model => model.StateID, "", new { @class = "text-danger" })
+        </div>
+
+        <div class="col-lg-6 col-md-6 col-sm-6 form-group">
+            <label>Name<sup>*</sup></label>
+            @Html.TextBoxFor(model => model.CityName, new { @class = "form-control" })
+            @Html.ValidationMessageFor(model => model.CityName, "", new { @class = "text-danger" })
+        </div>
+        <div class="col-lg-6 col-md-6 col-sm-6 form-group">
+            <label>Category<sup>*</sup></label>
+            @{
+                List<SelectListItem> DropDownList = new List<SelectListItem>
+    {
+            new SelectListItem{Text="A",Value="A" },
+            new SelectListItem{Text="B",Value="B" } ,
+            new SelectListItem{Text="C",Value="C" }
+            };
+            }
+            @Html.DropDownListFor(model => model.Category, new SelectList(DropDownList, "Value", "text", Model.Category), "Select", new { @class = "form-control " })
+            @Html.ValidationMessageFor(model => model.Category, "", new { @class = "text-danger" })
+        </div>
+        <div class="col-lg-6 col-md-6 col-sm-6 form-group">
+            <label>Priority<sup>*</sup></label>
+            @Html.TextBoxFor(model => model.Priority, new { @class = "form-control" })
+            @Html.ValidationMessageFor(model => model.Priority, "", new { @class = "text-danger" })
+        </div>
+        <div class="col-lg-12 col-md-12 col-sm-12 form-group">
+            <label>Description</label>
+            @Html.TextBoxFor(model => model.Description, new { @class = "form-control" })
+            @Html.ValidationMessageFor(model => model.Description, "", new { @class = "text-danger" })
+        </div>
+
+
+
+    </div>
+
+    <div class="row">
+
+        @if (Model.CityID > 0)
+        {
+            <button type="submit" class="btn mtr-o-grn btn-l ripplelink pull-right" name="Command" value="Add"><i class="fa fa-paper-plane" aria-hidden="true"></i> Update</button>
+        }
+        else
+        {
+            <button type="submit" class="btn mtr-o-grn btn-l ripplelink pull-right" name="Command" value="Add"><i class="fa fa-paper-plane" aria-hidden="true"></i> Submit</button>
+        }
+    </div>
+
+}

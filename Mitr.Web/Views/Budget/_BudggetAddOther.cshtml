@@ -1,0 +1,47 @@
+﻿@model Mitr.Models.MasterAll.Add
+@using (Ajax.BeginForm("_BudggetAddOther", "Budget",
+        new { src = clsApplicationSetting.EncryptQueryString(ViewBag.MenuID + "*" + "/Budget/_BudggetAddOther*" + ViewBag.ID) },
+         new AjaxOptions { HttpMethod = "POST", OnSuccess = "OnSuccess", OnBegin = "ShowLoadingDialog()" },
+            new { @id = "_BudggetAddOther" })
+    )
+{
+
+  
+
+
+        @Html.HiddenFor(x => Model.ID)
+        @Html.HiddenFor(x => Model.table_name)
+        <div class="row">
+            <div class="col-lg-6 col-md-6 col-sm-6 form-group">
+                <label>Ledger Name<sup>*</sup></label>
+                <select class="form-control" id="@Html.IdFor(model => model.field_value)" name="@Html.NameFor(model => model.field_value)">
+                    <option @(Model.field_value == "OtherDirectCost" ? "selected" : "") value="OtherDirectCost">OtherDirectCost</option>
+                    <option @(Model.field_value == "Other" ? "selected" : "") value="Other">Other</option>
+                </select>
+
+                @*@Html.DropDownListFor(model => model.field_value, EnumHelper.GetSelectList(typeof(AllEnum.Other_BudgetType)), "select", new { @class = "form-control" })*@
+
+            </div>
+            <div class="col-lg-12 col-md-6 col-sm-6 form-group">
+                <label>Category Name</label>
+                @Html.TextAreaFor(model => model.field_name, new { @class = "form-control h-80", @placeholder = "Enter" })
+                @Html.ValidationMessageFor(model => model.field_name, "", new { @class = "text-danger" })
+            </div>
+
+        </div>
+
+        <div class="text-center">
+            @if (Model.ID > 0)
+            {
+                <button type="submit" class="btn mtr-g-grn btn-l ripplelink pull-right" name="Command" value="Add"><i class="fa fa-paper-plane" aria-hidden="true"></i> Update</button>
+            }
+            else
+            {
+                <button type="submit" class="btn mtr-o-grn btn-l ripplelink pull-right" name="Command" value="Add"><i class="fa fa-paper-plane" aria-hidden="true"></i> Submit</button>
+            }
+            <button type="button" class="btn cnl-btn ripplelink" data-dismiss="modal"><i class="fas fa-times"></i>Close</button>
+
+
+        </div>
+
+    }

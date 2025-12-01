@@ -1,0 +1,76 @@
+﻿
+@{
+    ViewBag.Title = "ContentBulkUpload";
+}
+
+<div class="inner-main defult-height">
+    <div class="row">
+    <div class="col-sm-2 form-group" id="dvFileUpload">
+        <label>Attachment <sup>*</sup></label>
+        <input type="file" class="form-control" accept=".xls,.xlsx" name="" id="emFileUpload" multiple>
+    </div>
+    <div class="col-md-3 col-sm-3 form-group wh-575 align-self-end text-left">
+        <button type="button" class="btn green-clr m-0 ripplelink mb-2 mt-0" onclick="BulkUpload()"> <i class="fas fa-plus"></i> Bulk Upload </button>
+    </div>
+
+    <div class="col-sm-9">
+        <label><b>Success Records</b></label>
+        <table class="table table-striped tblwobdr" id="emSuccess">
+            <thead>
+                <tr>
+                    <th>SN</th>
+                    <th>Category</th>
+                    <th>SubCategory</th>
+                    <th>ProjectCode</th>
+                    <th>Author</th>
+                </tr>
+            </thead>
+        </table>
+    </div>
+
+    <div class="col-sm-9">
+        <label><b>Failled Records</b> </label>
+        <table class="table table-striped tblwobdr" id="emFailled">
+            <thead>
+                <tr>
+                    <th>SN</th>
+                    <th>Category</th>
+                    <th>SubCategory</th>
+                    <th>ProjectCode</th>
+                    <th>Author</th>
+                    <th>ErrorMessage</th>
+                </tr>
+            </thead>
+        </table>
+    </div>
+    </div>
+</div>
+@section scripts    {
+    <script type='text/javascript' src='~/assets/design/js/jquery-3.4.1.min.js?v=1.6'></script>
+    <script type='text/javascript' src='~/assets/design/js/popper.min.js?v=1.6'></script>
+    <script type='text/javascript' src='~/assets/design/js/bootstrap.min.js?v=1.6'></script>
+    <script type='text/javascript' src='~/assets/design/js/stellarnav.min.js?v=1.6'></script>
+    <script type='text/javascript' src='~/assets/design/js/notify.js?v=1.6'></script>
+    <script type='text/javascript' src='~/assets/design/js/sweetalert.js?v=1.6'></script>
+    <script type='text/javascript' src='~/assets/design/js/wow.min.js?v=1.6'></script>
+    <script type='text/javascript' src='~/assets/design/js/select2.min.js?v=1.6'></script>
+    <script type='text/javascript' src='~/assets/design/js/bootstrap-multiselect.js?v=1.6'></script>
+
+    <script type='text/javascript' src='~/assets/design/Scripts/ToolTip.js?v=1.6'></script>
+
+    <script type='text/javascript' src='~/assets/design/js/jquery.sidebar.js?v=1.6'></script>
+    @System.Web.Optimization.Scripts.Render("~/bundle/unobtrusivejs")
+    @System.Web.Optimization.Scripts.Render("~/bundle/dataTablesjs")
+    <script src="~/assets/design/Scripts/AddInit.js?v=@clsApplicationSetting.GetWebConfigValue("Version")"></script>
+    <script src="~/Areas/DigitalLibrary/DevScript/ContentBulkUpload.js"></script>
+
+    <script>
+        var IsEDUser = '@ViewBag.IsED';
+       var loggedinUserid = '@ViewBag.UserId';
+        var loggedinUserName = '@ViewBag.UserName';
+        var UserGrade = '@ViewBag.Grade';
+        	var IsPM = '@ViewBag.IsPM';
+    </script>
+}
+
+

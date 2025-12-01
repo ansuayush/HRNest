@@ -1,0 +1,166 @@
+﻿
+@{
+    ViewBag.Title = "AuthorisedSignatoryApproval";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+<!-- Start -->
+<div class="inner-main defult-height p-3 pb-0">
+    <h1 class="heading-one">Authorised Signatory Approval</h1>
+
+    <div class="row">
+
+        <div class="col-sm-12">
+            <div class="tab-main mb-3">
+
+                <ul id="tabs" class="nav nav-tabs " role="tablist">
+                    <li class="nav-item"> <a id="tab-A" href="#pending" class="nav-link active ripplelink" data-toggle="tab" role="tab"><i class="fas fa-clock"></i>Pending</a> </li>
+                    <li class="nav-item"> <a id="tab-B" href="#underprocessed" class="nav-link ripplelink" data-toggle="tab" role="tab"><i class="fas fa-cogs"></i>Process</a> </li>
+                    <li class="nav-item"> <a id="tab-B" href="#Rejected" class="nav-link ripplelink" data-toggle="tab" role="tab"><i class="fas fa-cogs"></i>Rejected</a> </li>
+
+
+                </ul>
+
+                <div id="content" class="tab-content p-0" role="tablist">
+                    <!-- --->
+                    <div id="pending" class="card tab-pane fade show   active" role="tabpanel" aria-labelledby="tab-A">
+                        <div class="card-header" role="tab" id="heading-A">
+                            <h5 class="mb-0"> <a data-toggle="collapse" href="#collapse-A" aria-expanded="true" aria-controls="collapse-A">Pending <i class="fas fa-clock"></i></a> </h5>
+                        </div>
+                        <div id="collapse-A" class="collapse show" data-parent="#content" role="tabpanel" aria-labelledby="heading-A">
+                            <div class="table-responsive">
+                                <table class="table mt-4" id="tblPending">
+                                    <thead>
+                                        <tr>
+                                            <th width="10">S.No</th>
+                                            <th width="80">Request No</th>
+                                            <th width="100">Request Date</th>
+                                            <th width="150">Process By</th>
+                                            <th width="150">Point of Contact</th>
+                                            <th>Project Code</th>
+                                            <th>Contract/Agreement Type </th>
+                                            <th width="100">Req. Amount</th>
+                                            <th width="140">Status</th>
+                                            <th width="70">Action</th>
+                                            <th width="10" class="text-center">
+                                                <input type="checkbox" id="selectall" class="sltchk" name="AdvanceRequired" onchange="valueChanged()">
+                                                <label for="selectall" class="selectall  m-0"></label>
+                                            </th>
+                                        </tr>
+                                    </thead>
+
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="underprocessed" class="card tab-pane fade " role="tabpanel" aria-labelledby="tab-b">
+                        <div class="card-header" role="tab" id="heading-A">
+                            <h5 class="mb-0"> <a data-toggle="collapse" href="#collapse-b" aria-expanded="true" aria-controls="collapse-b">Under Processed <i class="fas fa-cog"></i></a> </h5>
+                        </div>
+                        <div id="collapse-b" class="collapse " data-parent="#content" role="tabpanel" aria-labelledby="heading-b">
+                            <div class="table-responsive">
+                                <table class="table mt-4" id="tblUnderprocessed">
+                                    <thead>
+                                        <tr>
+                                            <th width="10">S.No</th>
+                                            <th width="80">Request No</th>
+                                            <th width="100">Request Date</th>
+                                            <th width="150">Process By</th>
+                                            <th width="150">Point of Contact</th>
+                                            <th>Project Code</th>
+                                            <th>Contract/Agreement Type </th>
+                                            <th width="100">Req. Amount</th>
+                                            <th width="140">Status</th>
+                                            <th width="70">Action</th>
+                                        </tr>
+                                    </thead>
+
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <div id="Rejected" class="card tab-pane fade " role="tabpanel" aria-labelledby="tab-b">
+                        <div class="card-header" role="tab" id="heading-A">
+                            <h5 class="mb-0"> <a data-toggle="collapse" href="#collapse-b" aria-expanded="true" aria-controls="collapse-b">Rejected <i class="fas fa-cog"></i></a> </h5>
+                        </div>
+                        <div id="collapse-b" class="collapse " data-parent="#content" role="tabpanel" aria-labelledby="heading-b">
+                            <div class="table-responsive">
+                                <table class="table mt-4" id="tblRejected">
+                                    <thead>
+                                        <tr>
+                                            <th width="10">S.No</th>
+                                            <th width="80">Request No</th>
+                                            <th width="100">Request Date</th>
+                                            <th width="150">Process By</th>
+                                            <th width="150">Point of Contact</th>
+                                            <th>Project Code</th>
+                                            <th>Contract/Agreement Type </th>
+                                            <th width="100">Req. Amount</th>
+                                            <th width="120">Status</th>
+                                            <th width="70">Action</th>
+                                        </tr>
+                                    </thead>
+
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="text-center ">
+                    <a href="#" class="btn mtr-g-grn hide" type="button" onclick="ApproveReject(1)"><i class="fa fa-check" aria-hidden="true"></i>Approve</a>
+                    <button type="submit" class="btn rjt-btn btn-l hide"  name="Command" value="Add" onclick="ApproveReject(2)"><i class="fa fa-ban" aria-hidden="true"></i>Reject</button>
+                    <button type="button" class="btn cnl-btn ripplelink  pull-right"><i class="fas fa-times"></i> Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- ENd -->
+
+ 
+
+@section scripts    {
+    @System.Web.Optimization.Scripts.Render("~/bundle/unobtrusivejs")
+    @System.Web.Optimization.Scripts.Render("~/bundle/dataTablesjs")
+    <script src="~/assets/design/Scripts/AddInit.js?v=@clsApplicationSetting.GetWebConfigValue("Version")"></script>
+
+
+    <script src="~/Areas/Procurement/DevScript/AuthorisedSignatoryApproval.js"></script>
+    <script>
+		 var IsEDUser = '@ViewBag.IsED';
+       var loggedinUserid = '@ViewBag.UserId';
+		var loggedinUserName = '@ViewBag.UserName';
+		var UserGrade = '@ViewBag.Grade';
+        var IsPM = '@ViewBag.IsPM';
+
+
+
+    </script>
+}
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('#selectall').click(function () {
+            $('.selectedId').prop('checked', this.checked);
+        });
+
+        $('.selectedId').change(function () {
+            var check = ($('.selectedId').filter(":checked").length == $('.selectedId').length);
+            $('#selectall').prop("checked", check);
+        });
+    });
+</script>
+<script>
+    function valueChanged() {
+        if ($('.sltchk').is(":checked"))
+            $(".hide").show();
+        else
+            $(".hide").hide();
+    };
+</script>
+

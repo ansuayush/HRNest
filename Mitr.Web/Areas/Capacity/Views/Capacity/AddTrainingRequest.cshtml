@@ -1,0 +1,139 @@
+﻿
+@{
+	ViewBag.Title = "AddTrainingRequest";
+	Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<script src="~/assets/design/js/wow.js"></script>
+<script src="~/assets/design/js/wow.min.js"></script>
+@section scripts    {
+	@System.Web.Optimization.Scripts.Render("~/bundle/unobtrusivejs")
+	@System.Web.Optimization.Scripts.Render("~/bundle/dataTablesjs")
+	<script src="~/assets/design/Scripts/AddInit.js?v=@clsApplicationSetting.GetWebConfigValue("Version")"></script>
+
+	<script src="~/Areas/Capacity/DevScript/AddUserTrainingRequest.js"></script>
+	<script>
+        var IPAddress = '@ViewBag.IPAddress';
+		 var IsEDUser = '@ViewBag.IsED';
+       var loggedinUserid = '@ViewBag.UserId';
+		var loggedinUserName = '@ViewBag.UserName';
+		var UserGrade = '@ViewBag.Grade';
+		var IsPM = '@ViewBag.IsPM';
+		var EMPID = '@ViewBag.EMPID';
+        var TraingReqID =   '@ViewBag.Id';
+		
+	</script>
+}
+<input type="hidden" id="hdnLoggedInUser" />
+
+<!-- Start -->
+<div class="inner-main defult-height" id="mainpnl">
+	<h1 class="heading-one mb-3">New Training Request</h1>
+
+	<div class="row">
+		<div class="col-sm-8 ">
+			<div class="row">
+				<div class="col-md-4 col-sm-4  form-group">
+					<label>Req.No</label>
+					<p id="lblReqNo"></p>
+
+				</div>
+				<div class="col-md-4 col-sm-4  form-group">
+					<label>Req.Date</label>
+					<p id="lblReqDate"></p>
+
+				</div>
+				<div class="col-md-4 col-sm-4  form-group">
+					<label> Req.By</label>
+					<p id="lblReqBy"></p>
+
+				</div>
+
+				<div class="col-md-4 col-md-4 form-group">
+					<label>Skill to be Earned  <sup>*</sup></label>
+					<select id="ddlSkills" class="form-control applyselect Mandatory" onchange="HideErrorMessage(this)">
+					</select>
+					<span id="spddlSkills" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+				</div>
+				<div class="col-md-4 col-md-4 form-group">
+					<label>Training Type <sup>*</sup></label>
+					<select id="ddlTrainingType" class="form-control applyselect Mandatory" onchange="HideErrorMessage(this)"></select>
+					<span id="spddlTrainingType" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+				</div>
+
+				<div id="other" style="display: none;" class="col-md-4 col-sm-4 form-group">
+					<label>Please specify (Other)<sup>*</sup> </label>
+					<textarea id="TrainingTypeOther" class="form-control maxSize[200]" onchange="HideErrorMessage(this)" value="" placeholder="Enter" spellcheck="false"></textarea>
+					<span id="spTrainingTypeOther" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+				</div>
+
+				<div class="col-md-4 col-md-4 form-group" id="resulttm">
+					<label>Training Name <sup>*</sup></label>
+					<select class="form-control applyselect Mandatory" onchange="HideErrorMessage(this)" id="ddltrainingName">
+					</select>
+					<span id="spddltrainingName" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+
+				</div>
+				<div class="col-sm-4 form-group " data-popover-content="#comment1" data-toggle="popover" data-placement="right" data-original-title="" title="">
+					<label>Training Description</label>
+					<p class="d-flex justify-content-between"><a id="lblTrainingDesc" class="ellipsis"  ></a><a href=""> View</a></p>
+					<div id="comment1" style="display: none">
+						<div class="popover-body">
+							<p id="lblToolTipTrainingDesc"></p>
+							@*<button type="button" class="popover-close close"> <i class="fas fa-times"></i> </button>*@
+						</div>
+					</div>
+				</div>
+				@*<div class="col-sm-4 form-group " data-popover-content="#comment1" data-toggle="popover" data-placement="right">
+					<label>Training Description</label>
+					<p id="lblTrainingDesc"> </p>
+					<div id="comment1" style="display: none">
+						<div class="popover-body">
+							<button type="button" class="popover-close close"> <i class="fas fa-times"></i> </button>
+
+						</div>
+					</div>
+				</div>*@
+            <div class="col-md-12 form-group">
+                <label>Request Description @*<sup>*</sup>*@</label>
+                <textarea id="ReqDesc" class="form-control maxSize[200]" placeholder="Enter"></textarea>
+                @*<span id="spReqDesc" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>*@
+            </div>
+
+				<div class="col-md-4 col-md-4 form-group">
+					<label>Requested for <sup>*</sup></label>
+					<select id="ddlRequestedFor" class="form-control applyselect Mandatory" onchange="HideErrorMessage(this)">
+						<option value="0">Select </option>
+						@*<option value="1">Self</option>
+				<option value="Fail">Team</option>*@
+					</select>
+					<span id="spddlRequestedFor" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+				</div>
+
+				<div id="divEmployee" style="display:none" class="col-md-8 col-md-4 form-group">
+					<div class="row">
+						<div class="col-md-12 col-sm-12">
+							<label>Select Employee <sup>*</sup></label>
+							<select onchange="HideErrorMessage(this)" class="form-control applyselect" id="ddlEmplist" multiple="" tabindex="-1" aria-hidden="true">
+							</select>
+							<span id="spddlEmplist" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+						</div>
+					</div>
+				</div>
+				<div class="text-center col-md-12 mt-2">
+					<button type="submit" class="btn mtr-o-grn" name="Command" value="Add" onclick=" ShowandCloseLoader();SaveTrainingRequest();"><i class="fas fa-paper-plane"></i>Submit</button>
+					<button type="button" class="btn cnl-btn" id="btncancel" data-dismiss="modal" onclick=" ShowandCloseLoader();ShowLoadingDialog();window.location='/Capacity/TrainingRequest';"><i class="fas fa-times"></i> Cancel</button>
+
+				</div>
+			</div>
+		</div>
+	</div>
+
+</div>
+
+
+
+
+
+
+

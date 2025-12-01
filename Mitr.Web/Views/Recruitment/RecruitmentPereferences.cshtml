@@ -1,0 +1,203 @@
+﻿@model Mitr.Models.RecruitmentRequest
+@{
+    ViewBag.Title = "RecruitmentPereferences";
+}
+
+@using (Ajax.BeginForm("RecruitmentPereferences", "Recruitment",
+       new { src = clsApplicationSetting.EncryptQueryString(ViewBag.MenuID.ToString() + "*/Recruitment/RecruitmentPereferences*" + ViewBag.RecruitmentRequestID ) },
+          new AjaxOptions { HttpMethod = "POST", OnSuccess = "PereferencesActionOnSuccess", OnFailure = "PereferencesActionOnSuccess" },
+      new { @id = "RecruitmentPereferencesFrom", enctype = "multipart/form-data" })
+      )
+{
+    @Html.AntiForgeryToken()
+
+    <h2 class="header-two">Recruitment Pereferences</h2>
+    <div class="row">
+        <div class="col-lg-3 col-md-4 col-sm-6  form-group">
+            <label>Project Name</label>
+            <p>@Model.ProjectName</p>
+        </div>
+        <div class="col-lg-3 col-md-4 col-sm-6  form-group">
+            <label>Project Manager</label>
+            <p>@Model.ManagerName</p>
+        </div>
+        <div class="col-lg-3 col-md-4 col-sm-6  form-group">
+            <label>Start Date</label>
+            <p>@Model.StartDate</p>
+        </div>
+        <div class="col-lg-3 col-md-4 col-sm-6  form-group">
+            <label>End Date</label>
+            <p>@Model.EndDate</p>
+        </div>
+    </div>
+    <h2 class="header-two"><i class="fas fa-users"></i>Hiring Details</h2>
+    <div class="row">
+        <div class="col-lg-3 col-md-4 col-sm-6  form-group">
+            <label>Job Title</label>
+            <p>@Model.JobTitle</p>
+        </div>
+        <div class="col-lg-3 col-md-4 col-sm-6  form-group">
+            <label>Due Date</label>
+            <p>@Model.DueDate</p>
+        </div>
+        <div class="col-lg-3 col-md-4 col-sm-6  form-group">
+            <label>%Time</label>
+            <p>20</p>
+        </div>
+
+        <div class="col-lg-3 col-md-4 col-sm-6  form-group">
+            <label>Location</label>
+            <p>@Model.Location</p>
+        </div>
+    </div>
+    <h2 class="header-two"><i class="fas fa-file-alt"></i>JD Details</h2>
+    <div class="row">
+        <div class="col-lg-12  form-group">
+            <label>Job Description</label>
+            <p>@Model.JobDescription</p>
+        </div>
+        <div class="col-lg-3 col-md-4 col-sm-6  form-group">
+            <label>Qualification</label>
+            <p>@Model.Qualification</p>
+        </div>
+        <div class="col-lg-3 col-md-4 col-sm-6  form-group">
+            <label>Skills</label>
+            <p>@Model.Skills</p>
+        </div>
+        <div class="col-lg-3 col-md-4 col-sm-6  form-group">
+            <label>Experience</label>
+            <p>@Model.Experience</p>
+        </div>
+        <div class="col-lg-3 col-md-4 col-sm-6  form-group">
+            <label>Staff Category</label>
+            <p>@Model.StaffCategory</p>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm-12">
+            <label for="ric"> Recommend Internal Candidate </label>
+        </div>
+        <div class="col-sm-12">
+            <strong>Staff List</strong>
+            <table class="table mt-2">
+                <thead>
+                    <tr>
+                        <th scope="col" rowspan="2">Name</th>
+                        <th scope="col" class="text-center" colspan="3">Impacts</th>
+                        <th rowspan="2">April</th>
+                        <th rowspan="2">May</th>
+                        <th rowspan="2">June</th>
+                        <th rowspan="2">July</th>
+                        <th rowspan="2">Aug</th>
+                        <th rowspan="2">Sept</th>
+                        <th rowspan="2">Details</th>
+                        <th rowspan="2">Preference</th>
+                    </tr>
+                    <tr>
+                        <th scope="col" rowspan="1">Relocation</th>
+                        <th scope="col" rowspan="1">Job Title</th>
+                        <th scope="col" rowspan="1">Pillar</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @{ int Count = 0;
+                        List<SelectListItem> DropDownPrefrence = new List<SelectListItem>();
+                        DropDownPrefrence.Add(new SelectListItem { Text = "Select Preference", Value = "" });
+                        for (int i = 1; i <= Model.RecruitmentPreferenceList.Count; i++)
+                        {
+                            DropDownPrefrence.Add(new SelectListItem { Text = i.ToString(), Value = i.ToString() });
+                        }
+
+                    }
+                    @for (int i = 0; i < Model.RecruitmentPreferenceList.Count; i++)
+                    {
+                        Count++;
+                        <tr>
+                            <td>
+                                @Count
+                                @Html.HiddenFor(x => Model.RecruitmentPreferenceList[i].EmpID)
+                                @Html.HiddenFor(x => Model.RecruitmentPreferenceList[i].DocType)
+                                @Html.HiddenFor(x => Model.RecruitmentPreferenceList[i].CanLevelMapID)
+                                @Html.HiddenFor(x => Model.RecruitmentPreferenceList[i].RecruitmentRequestID)
+                            </td>
+                            <td>@Model.RecruitmentPreferenceList[i].EmpName </td>
+                            <td>
+                                @Model.RecruitmentPreferenceList[i].RelocationByHR
+                                @if (Model.RecruitmentPreferenceList[i].Relocation != Model.RecruitmentPreferenceList[i].RelocationByHR)
+                                {
+                                    <i class="fas fa-info-circle"></i>
+                                }
+                            </td>
+                            <td>
+                                @Model.RecruitmentPreferenceList[i].JobTitleByHR
+                                @if (Model.RecruitmentPreferenceList[i].JobTitle != Model.RecruitmentPreferenceList[i].JobTitleByHR)
+                                {
+                                    <i class="fas fa-info-circle"></i>
+                                }
+                            </td>
+                            <td>
+                                @Model.RecruitmentPreferenceList[i].PillarByHR
+                                @if (Model.RecruitmentPreferenceList[i].Pillar != Model.RecruitmentPreferenceList[i].PillarByHR)
+                                {
+                                    <i class="fas fa-info-circle"></i>
+                                }
+                            </td>
+                            <td>20%</td>
+                            <td>10%</td>
+                            <td>15%</td>
+                            <td>50%</td>
+                            <td>5%</td>
+                            <td>10%</td>
+                            <td>
+                                @Html.DropDownListFor(model => model.RecruitmentPreferenceList[i].Preference, new SelectList(DropDownPrefrence, "Value", "text", Model.RecruitmentPreferenceList[i].Preference), new { @class = "form-control applyselect ddpreference" })
+                                @Html.ValidationMessageFor(model => model.RecruitmentPreferenceList[i].Preference, "", new { @class = "text-danger" })
+
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+
+            </table>
+        </div>
+        <div class="col-lg-12 text-center mt-2">
+            <button type="submit" class="btn mtr-o-grn btn-l ripplelink pull-right" name="Command" value="Submit"><i class="fa fa-paper-plane" aria-hidden="true"></i>Submit</button>
+            <button type="button"  onclick="ShowLoadingDialog();window.location='@Url.Action("PendingForPereferencesList", new { src = clsApplicationSetting.EncryptQueryString(ViewBag.MenuID.ToString() + "*/Recruitment/PendingForPereferencesList") })';" class="btn cnl-btn ripplelink  pull-right"><i class="fas fa-times"></i> Cancel</button>
+        </div>
+    </div>
+}
+
+@section scripts    {
+
+    @System.Web.Optimization.Scripts.Render("~/bundle/unobtrusivejs")
+    <script src="~/assets/design/Scripts/AddInit.js?v=@clsApplicationSetting.GetWebConfigValue("Version")"></script>
+
+    <script>
+        $('.ddpreference').bind("change", function () {
+            var currentthis = this;
+            var a = $(currentthis).find("option:selected").val();
+            $(".ddpreference").each(function (index) {
+                if (currentthis != this) {
+                    var b = $(this).find("option:selected").val();
+                    if (b && a == b) {
+                        $(currentthis).val('');
+                        swal("can not use same preference for others", "");
+
+                    }
+                }
+            });
+
+        });
+
+    function PereferencesActionOnSuccess(obj) {
+            if (obj.Status) {
+                 SuccessToaster(obj.SuccessMessage);
+                window.location = obj.RedirectURL;
+            }
+            else {
+                FailToaster(obj.SuccessMessage);
+            }
+
+        }
+
+    </script>
+}

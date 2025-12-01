@@ -1,0 +1,132 @@
+﻿@model PTC
+
+<div class="inner-main p-3 defult-height">
+	<div class="row">
+		<div class="col-sm-5"><h1 class="heading-one mb-3">My Group Probation Appraisal </h1></div>
+	
+	
+		@using (Ajax.BeginForm("_ConfimerAppraisal", "ProbationtoConfirmation",
+				new { src = clsApplicationSetting.EncryptQueryString(ViewBag.MenuID.ToString() + "*/ProbationtoConfirmation/_ConfimerAppraisal") },
+				  new AjaxOptions { HttpMethod = "POST", OnSuccess = "BindTarget", OnBegin = "ShowLoadingDialog()" },
+			new { @id = "___ConfimerAppraisal" })
+			)
+		{
+			<div class="row">
+				@Html.HiddenFor(modal => modal.Approved)
+
+				<div class="col-sm-10 align-self-center text-right">
+
+				</div>
+				<div style="display:none">
+					<button type="submit" class="btn mtr-g-grn btn-l ripplelink" id="btnSearch" name="Command" value="Search"><i class="fas fa-search"></i>Search</button>
+				</div>
+			</div>
+		}
+
+		<div id="TargetDiv">@Html.Partial("_Loading")</div>
+	
+</div>	
+
+<div class="modal fade pop-dgn" id="AddModal">
+	<div class="modal-dialog modal-md">
+		<div class="modal-content">
+
+			<div class="modal-header blk-gdn-btn">
+				<h4 class="modal-title">
+					<i class="fas fa-user-tie"></i><span id="spnHead"></span>
+				</h4>
+				<div class="close" data-dismiss="modal">&times;</div>
+			</div>
+			<!-- Modal body -->
+			<div class="modal-body">
+				<div id="TagetDivAdd"></div>
+			</div>
+		</div>
+	</div>
+</div>
+
+
+@section scripts    {
+	@System.Web.Optimization.Scripts.Render("~/bundle/unobtrusivejs")
+	@Html.IncludeVersionedJs(Url.Content("~/assets/design/Scripts/ToolTip.js"))
+	@Html.IncludeVersionedJs(Url.Content("~/assets/design/scripts/AddInit.js"))
+
+<script>
+		function showtable(tabname) {
+		debugger;
+		if(tabname==1){
+		$("#Approved").val(0);
+			$("#btnSearch").click();
+		}
+		else if(tabname==2){
+		$("#Approved").val(1);
+			$("#btnSearch").click();
+		}
+		else if(tabname==3){
+		$("#Approved").val(2);
+			$("#btnSearch").click();
+		}
+		else if(tabname==4){
+		$("#Approved").val(3);
+			$("#btnSearch").click();
+		}
+		}
+		$(document).ready(function () {
+			$("#btnSearch").click();
+		});
+
+
+
+		function BindTarget(args) {
+			CloseLoadingDialog();
+			$("#TargetDiv").empty();
+			$("#TargetDiv").html(args);
+			$('[data-toggle="tooltip"]').tooltip();
+			$(".applyselect").select2();
+		}
+
+		function OnSuccessApproveHierarchy(obj) {
+			CloseLoadingDialog();
+			if (obj.Status) {
+				SuccessToaster(obj.SuccessMessage);
+				$("#btnSearch").click();
+			}
+			else {
+				FailToaster(obj.SuccessMessage);
+			}
+		}
+
+
+
+		function _ModifyHierarchy(obj) {
+
+			var I = $(obj).closest("tr").find("input:hidden[name=I]").val();
+			var A = $(obj).closest("tr").find("input:hidden[name=A]").val();
+			var N = $(obj).closest("tr").find("input:hidden[name=E]").val();
+	    	var EID = $(obj).closest("tr").find("input:hidden[name=EID]").val();
+
+			if (EID)
+			{
+	                   var url = "/ProbationtoConfirmation/ReviewConfimerAppraisal?src=" + EncryptQueryStringJSON(@ViewBag.MenuID + "*" + "/ProbationtoConfirmation/ReviewConfimerAppraisal" + "*" + I+"*"+A+"*"+0+"*"+EID);
+                       window.location.href = url;
+
+			}
+		}
+		function OnSuccessModifyHierarchy(obj) {
+			CloseLoadingDialog();
+			if (obj.Status) {
+				SuccessToaster(obj.SuccessMessage);
+				$("#AddModal").modal("hide");
+				$("#btnSearch").click();
+			}
+			else {
+				FailToaster(obj.SuccessMessage);
+			}
+		}
+
+
+
+
+</script>
+
+}

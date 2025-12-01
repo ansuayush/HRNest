@@ -1,0 +1,94 @@
+﻿@model IList<Mitr.Models.InternalStaff>
+
+@using (Ajax.BeginForm("_InternalStaffList", "Recruitment",
+      new { src =  ViewBag.src},
+      new AjaxOptions { HttpMethod = "POST", OnSuccess = "InternalStaffSuccess", OnFailure = "InternalStaffSuccess" },
+  new { @id = "InternalStaffSuccessFrom", enctype = "multipart/form-data" })
+  )
+{
+    <div class="row">
+        <div class="col-md-12">
+            <input type="text" class="form-control txtSearch" placeholder="Search Employee" />
+
+        </div>
+    </div>
+    <div class="table-responsive">
+        <table class="table mt-0" id="tblInternalStaff">
+            <thead>
+                <tr>
+                    <th scope="col" rowspan="2">Sno.</th>
+                    <th scope="col" rowspan="2">Name</th>
+                    <th scope="col" class="text-center" colspan="3">Impacts</th>
+                    <th rowspan="2">April</th>
+                    <th rowspan="2">May</th>
+                    <th rowspan="2">June</th>
+                    <th rowspan="2">July</th>
+                    <th rowspan="2">Aug</th>
+                    <th rowspan="2">Sept</th>
+                    <th scope="col" rowspan="2">Action</th>
+                </tr>
+                <tr>
+                    <th scope="col" rowspan="1">Relocation</th>
+                    <th scope="col" rowspan="1">Job</th>
+                    <th scope="col" rowspan="1">Title Pillar</th>
+                </tr>
+            </thead>
+            <tbody>
+                @{ int Cunt = 0;}
+                @for (int i = 0; i < Model.Count; i++)
+                {
+                    Cunt++;
+                    <tr>
+                        <td>@Cunt</td>
+                        <td>
+                            <a> @Model[i].EmpName</a>
+                            @Html.HiddenFor(x => Model[i].EmpID)
+                            @Html.HiddenFor(x => Model[i].EmpName)
+                            @Html.HiddenFor(x => Model[i].EMPCode)
+                            @Html.HiddenFor(x => Model[i].Relocation)
+                            @Html.HiddenFor(x => Model[i].JobTitle)
+                            @Html.HiddenFor(x => Model[i].Pillar)
+                        </td>
+                        <td>
+                            <select id="@Html.IdFor(x => Model[i].RelocationByHR)" name="@Html.NameFor(x => Model[i].RelocationByHR)" class="applyselect">
+                                <option @(Model[i].Relocation == "Yes" ? "selected" : "")>Yes</option>
+                                <option @(Model[i].Relocation == "No" ? "selected" : "")>No</option>
+                            </select>
+                        </td>
+                        <td>
+                            <select id="@Html.IdFor(x => Model[i].JobTitleByHR)" name="@Html.NameFor(x => Model[i].JobTitleByHR)" class="applyselect">
+                                <option @(Model[i].JobTitle == "Yes" ? "selected" : "")>Yes</option>
+                                <option @(Model[i].JobTitle == "No" ? "selected" : "")>No</option>
+                            </select>
+                        </td>
+                        <td>
+                            <select id="@Html.IdFor(x => Model[i].PillarByHR)" name="@Html.NameFor(x => Model[i].PillarByHR)" class="applyselect">
+                                <option @(Model[i].Pillar == "Yes" ? "selected" : "")>Yes</option>
+                                <option @(Model[i].Pillar == "No" ? "selected" : "")>No</option>
+                            </select>
+                        </td>
+                      
+                        <td>0%</td>
+                        <td>0%</td>
+                        <td>0%</td>
+                        <td>0%</td>
+                        <td>0%</td>
+                        <td>0%</td>
+                        <td class="text-center">
+                            <input type="checkbox" id="slt_@Cunt" name="@Html.NameFor(x => Model[i].Chck)">
+                            <label for="slt_@Cunt"></label>
+                        </td>
+                    </tr>
+                }
+
+            </tbody>
+        </table>
+    </div>
+    <div class="row">
+        <div class="col-lg-12 text-center mt-2">
+            <button type="submit" class="btn mtr-o-grn btn-l ripplelink pull-right" name="Command" value="Add"><i class="fas fa-user-check"></i>Select</button>
+            <button type="button" class="btn cnl-btn ripplelink  pull-right"><i class="fas fa-times"></i> Cancel</button>
+        </div>
+    </div>
+
+}

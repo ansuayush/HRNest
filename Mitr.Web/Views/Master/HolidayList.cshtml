@@ -1,0 +1,119 @@
+﻿@model Personnels.FinYearList
+
+@{
+	string MenuID = "0";
+	if (ViewBag.MenuID != null)
+	{
+		MenuID = ViewBag.MenuID;
+	}
+}
+@section style{
+	@System.Web.Optimization.Styles.Render("~/bundle/dataTablecss")
+}
+<div class="inner-main mb-5 pb-0">
+	@Html.Partial("ListHeader_Partial", "Holiday List")
+	@using (Ajax.BeginForm("_HolidayList", "Master",
+			new { src = clsApplicationSetting.EncryptQueryString(ViewBag.MenuID.ToString() + "*/Master/_HolidayList") },
+			new AjaxOptions { HttpMethod = "POST", OnSuccess = "BindTarget" },
+		new { @id = "_HolidayListFrom" })
+		)
+	{
+		<div class="col-md-2 form-group">
+			<label> Financial Year</label>
+			<select id="@Html.IdFor(n => n.ID)" name="@Html.NameFor(n => n.ID)" class="form-control  applyselect">
+				@foreach (var item in ViewBag.FYList)
+				{
+					<option value="@item.FinYearID">@item.Year</option>
+				}
+			</select>
+		</div>
+		<div style="display:none">
+			<button type="submit" class="btn mtr-g-grn btn-l ripplelink" id="btnSearch" name="Command" value="Search"><i class="fas fa-search"></i>Search</button>
+		</div>
+	}
+	<div id="TargetDiv"></div>
+</div>
+<div class="modal fade pop-dgn" id="ViewModal">
+	<div class="modal-dialog modal-md">
+		<div class="modal-content">
+
+			<div class="modal-header blk-gdn-btn">
+				<h4 class="modal-title"><i class="fas fa-print"></i>Add Holiday </h4>
+				<div class="close" data-dismiss="modal">&times;</div>
+			</div>
+			<!-- Modal body -->
+			<div class="modal-body">
+				<div id="TagetDiv"></div>
+			</div>
+		</div>
+	</div>
+</div>
+
+@section scripts    {
+	@System.Web.Optimization.Scripts.Render("~/bundle/dataTablesjs")
+
+	@System.Web.Optimization.Scripts.Render("~/bundle/unobtrusivejs")
+
+	@Html.IncludeVersionedJs(Url.Content("~/assets/design/Scripts/AddInit.js"))
+	@Html.IncludeVersionedJs(Url.Content("~/assets/design/Scripts/ToolTip.js"))
+
+	<script type="text/javascript">
+	$(document).ready(function () {
+	   $("#btnSearch").click();
+	});
+	$('#ID').bind("change", function () {
+	    ShowLoadingDialog();
+	    $("#btnSearch").click();
+	});
+
+	function ListHeaderAdd(CMSID) {
+	if (CMSID == undefined)
+	{
+	      CMSID = 0;
+	}
+	$.ajax({
+	      url: "/Master/_HolidayAdd",
+	      type: "Get",
+	      data: { src: EncryptQueryStringJSON(@ViewBag.MenuID+"*" + "/Master/_HolidayAdd" + "*" + CMSID) },
+	    success: function (data)
+	   {
+	      $("#TagetDiv").empty();
+	      $("#TagetDiv").html(data);
+	      $("#ViewModal").modal("show");
+    	  var form = $("form")
+	     .removeData("validator")
+	     .removeData("unobtrusiveValidation");
+	     $.validator.unobtrusive.parse(form);
+	     $(".applyselect").select2();
+	},
+	error: function (er) {
+	      alert(er);
+	}
+	});
+	}
+
+	function BindTarget(args) {
+	       CloseLoadingDialog();
+	       $("#TargetDiv").empty();
+	       $("#TargetDiv").html(args);
+	       $('[data-toggle="tooltip"]').tooltip();
+	       DatatableScriptsWithColumnSearch("tableApprove");
+	       var form = $("form")
+	       .removeData("validator")
+	       .removeData("unobtrusiveValidation");
+	       $.validator.unobtrusive.parse(form);
+
+	   }
+	function OnSuccess(obj)
+	{
+	if (obj.Status) {
+	       window.location.reload();
+	}
+	else {
+	      FailToaster("Can't Update There is some problem");
+	}
+
+	}
+	</script>
+}
+

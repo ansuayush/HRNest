@@ -1,0 +1,87 @@
+﻿@using System.Data
+@model DataSet
+
+@{ Mitr.Models.Question Viewmodal = new Mitr.Models.Question();
+    if (ViewBag.QuestionDetails != null)
+    {
+
+        Viewmodal = ViewBag.QuestionDetails;
+    }
+
+    int OptionCount1 = 0, OptionCount2 = 0, OptionCount3 = 0, OptionCount4 = 0;
+}
+@if (Viewmodal.QuestionID != 0)
+{
+    <div class="qtn-list row">
+        <div class="col-lg-3 col-md-6 col-sm-6"><div class="shadow-two qtn-ans">Option1 @Viewmodal.Option1 Correct Answer is <span id="spn1"></span></div></div>
+        <div class="col-lg-3 col-md-6 col-sm-6"><div class="shadow-two qtn-ans">Option2 @Viewmodal.Option2 Correct Answer is <span id="spn2"></span></div></div>
+        <div class="col-lg-3 col-md-6 col-sm-6"><div class="shadow-two qtn-ans">Option3 @Viewmodal.Option3 Correct Answer is <span id="spn3"></span></div></div>
+        <div class="col-lg-3 col-md-6 col-sm-6"><div class="shadow-two qtn-ans">Option4 @Viewmodal.Option4 Correct Answer is <span id="spn4"></span></div></div>
+
+    </div>
+}
+
+<div class="x_content table-currency">
+    <div class="table-responsive">
+        <table id="tableQuestion" class="table table-striped table-bordered dt-responsive nowrap tbltick new_width" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
+            <thead>
+                <tr>
+                    <th>S.no.</th>
+                    <th><div style="width:400px;">Question</div></th>
+                    <th>Option 1</th>
+                    <th>Option 2</th>
+                    <th>Option 3</th>
+                    <th>Option 4</th>
+                    <th>User Name</th>
+
+                </tr>
+                <tr class="searchbar">
+                    <th class="searchhide">S No.</th>
+                    <th><div style="width:400px;">Question</div></th>
+                    <th>Option 1</th>
+                    <th>Option 2</th>
+                    <th>Option 3</th>
+                    <th>Option 4</th>
+                    <th>User Name</th>
+                </tr>
+            </thead>
+            <tbody>
+                @{ int Count = 0;}
+                @foreach (DataRow item in Model.Tables[0].Rows)
+                {
+                    Count++;
+                    <tr>
+                        <td>@Count</td>
+                        <td> @item["Question"]</td>
+                        <td> @item["Option1"] </td>
+                        <td> @item["Option2"]</td>
+                        <td> @item["Option3"]</td>
+                        <td> @item["Option4"]</td>
+                        <td> @item["User_Name"]</td>
+
+                        @if (item["Option1"].ToString() == "True")
+                        {
+                            OptionCount1++;
+                        }
+                        @if (item["Option2"].ToString() == "True")
+                        {
+                            OptionCount2++;
+                        }
+                        @if (item["Option3"].ToString() == "True")
+                        {
+                            OptionCount3++;
+                        }
+                        @if (item["Option4"].ToString() == "True")
+                        {
+                            OptionCount4++;
+                        }
+                    </tr>
+                }
+            </tbody>
+        </table>
+        <input type="hidden" id="hdnOptionCount1" value="@OptionCount1" />
+        <input type="hidden" id="hdnOptionCount2" value="@OptionCount2" />
+        <input type="hidden" id="hdnOptionCount3" value="@OptionCount3" />
+        <input type="hidden" id="hdnOptionCount4" value="@OptionCount4" />
+    </div>
+</div>

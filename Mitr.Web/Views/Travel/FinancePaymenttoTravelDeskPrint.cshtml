@@ -1,0 +1,228 @@
+﻿@model Mitr.Models.TravelDeskToFinaceCardView
+@{
+	Layout = null;
+	string MenuID = ViewBag.MenuID.ToString();
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>MITR</title>
+	<meta name="title" content="Mitr: ConsolidateActivityLog" />
+	<meta name="keywords" content="Mitr: ConsolidateActivityLog" />
+	<meta name="description" content="Mitr: ConsolidateActivityLog" />
+	<link href="https://fonts.googleapis.com/css?family=Roboto:300,400,700&display=swap" rel="stylesheet">
+	<link rel="shortcut icon" href="/assets/design/images/favicon.png" type="image/x-icon">
+	<link rel="icon" href="/assets/design/images/favicon.png" type="image/png" sizes="50x50">
+	<link href='https://mitr2.sahajapps.com/assets/design/css/icons.css?v=1.6' rel='stylesheet' />
+	<link href='https://mitr2.sahajapps.com/assets/design/css/bootstrap.min.css?v=1.6' rel='stylesheet' />
+	<link href='https://mitr2.sahajapps.com/assets/design/css/style.css?v=1.6' rel='stylesheet' />
+	<link href='https://mitr2.sahajapps.com/assets/design/css/custom.css?v=1.6' rel='stylesheet' />
+	<link href='https://mitr2.sahajapps.com/assets/design/css/responsive.css?v=1.6' rel='stylesheet' />
+	<link href="print.css" rel="stylesheet" type="text/css" media="print">
+</head>
+<body>
+	<div class="print-header">
+		<div class="container">
+			<div class="row">
+				<div class="col-md-12 col-sm-12 mx-auto text-right">
+					<a onclick="window.print()" class="btn mtr-g-grn btn-l ripplelink "> <i class="fa fa-print"></i>Print </a>
+					@*<a href="../finance-payment-to-travel-desk.html" class="btn cnl-btn ripplelink "> <i class="fas fa-times"></i>Close </a>*@
+					@Html.CreateAnchor(MenuID, "/Travel/FinancePaymenttoTravelDesk", "Back", "btn cnl-btn btn-l ripplelink", "Close", "fas fa-arrow-left", "")
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="container mt-5 pt-5">
+		<div class="row">
+			<div class="col-sm-12 mx-auto">
+				<div class="inner-main">
+					<div class="bgbox">
+						<div class="row">
+							<div class="col-sm-2 mb-0 align-self-center">
+								<img src="https://mitr2.sahajapps.com/assets/design/images/c3.png" alt="">
+							</div>
+							<div class="col-sm-8 mb-0 text-center align-self-center">
+								<strong class="cntitle">Centre for Catalyzing Change</strong><br>
+								<small class="fn-md">C-27, 2nd Floor Qutab Institutional Area, New Delhi - 110 016</small>
+							</div>
+
+							<div class="col-sm-2 mb-0 align-self-center text-right">
+								<img src="https://mitr2.sahajapps.com/assets/design/images/mitr-logo.png" alt="Mitr LogoEW">
+							</div>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col-sm-12 text-center">
+							<h2 class="heading-one mb-0"><u>Employee Details</u></h2>
+						</div>
+						<div class="col-sm-8 mx-auto">
+							<table class="table tdbrd-none">
+								<tbody>
+									<tr>
+										<td>Employee Name</td>
+										<td>@Model.traveller_name</td>
+										<td width="200">Supervisor's  Name</td>
+										<td>@Model.HODName</td>
+									</tr>
+									<tr>
+
+										<td>Travel Request No </td>
+										<td>@Model.req_no</td>
+
+										<td>Date of Submission</td>
+										<td>@Model.Req_Date</td>
+									</tr>
+									<tr>
+
+										<td>Date of Approval</td>
+										<td>@Model.app_date</td>
+										<td>Project Code</td>
+										<td>
+
+											@Model.ProjectCode
+										</td>
+									</tr>
+
+									<tr>
+
+										<td>Purpose of Travel</td>
+										<td colspan="4">@Model.purpofvisit</td>
+
+									</tr>
+
+
+								</tbody>
+							</table>
+						</div>
+						<div class="col-sm-12">
+							<h2 class="heading-one">Travel Details</h2>
+							<div class="table-responsive">
+								<table id="tblActivity" class="table scd-tbl-bg table-stripted mb-0 mt-0">
+									<thead>
+										<tr>
+											<th width="10">SR.No</th>
+											<th width="100">Travel Date		</th>
+											<th width="200">From</th>
+											<th>To</th>
+											<th width="150">Mode</th>
+											<th>Ticket as per rule</th>
+											<th>Hotel</th>
+											<th>Travel Desk Name</th>
+											<th with="10">Select</th>
+										</tr>
+									</thead>
+									<tbody>
+										@{ int count = 0;}
+										@foreach (var item in Model.travelRequestDetailsViews)
+										{
+											count++;
+
+											<tr>
+												<td>@count</td>
+												<td>@item.travel_Newdate</td>
+												<td>@item.fromCity</td>
+												<td>@item.toCity </td>
+												<td>@item.TravelMode </td>
+												<td>No </td>
+												<td>@item.HotelName </td>
+												<td>@item.TravelDeskName </td>
+												<td class="text-center">
+													@if (item.isbooked == 1)
+													{
+														<input type="checkbox" id="ChkUseForOffice" disabled class="trigger" checked>
+														<label for="ChkUseForOffice"> </label>
+													}
+													else
+													{
+														<input type="checkbox" id="ChkUseForOffice" class="trigger">
+														<label for="ChkUseForOffice"> </label>
+													}
+
+												</td>
+											</tr>
+										}
+									</tbody>
+								</table>
+							</div>
+						</div>
+						<div class="col-sm-12">
+							<h2 class="heading-one">Transaction Details</h2>
+							<table class="table tdbrd-none">
+								<thead>
+									<tr>
+										<th rowspan="2" width="150">Transaction Date		</th>
+										<th rowspan="2" width="150">Mode of Transaction	</th>
+										<th rowspan="2">Description</th>
+										<th colspan="2" class="text-center">Amount</th>
+									</tr>
+									<tr>
+										<th width="120">Payable	</th>
+										<th width="120">Refund</th>
+									</tr>
+
+								</thead>
+								<tbody>
+									<tr>
+										<td>@Model.TransactionDate</td>
+										<td>@Model.BookBy</td>
+										<td>@Model.DocumentType</td>
+										<td>@Model.Amount</td>
+										<td>@Model.RefundAmount</td>
+									</tr>
+
+								</tbody>
+							</table>
+						</div>
+
+						<div class="col-sm-12">
+							<h2 class="heading-one">Payment Details</h2>
+							<table class="table tdbrd-none">
+								<tbody>
+									<tr>
+										<td width="150">Finance Entry</td>
+										@if (Model.FinanceAmount > 0)
+										{
+											<td>@Model.FinanceAmount</td>
+										}
+										else
+										{
+											<td></td>
+										}
+
+										<td width="150">Finance Entry Date	</td>
+										@if (Model.Financeentrydate != "01/01/1900")
+										{
+											<td>@Model.Financeentrydate</td>
+										}
+										else
+										{
+											<td></td>
+										}
+									</tr>
+
+								</tbody>
+							</table>
+						</div>
+						@if (!string.IsNullOrEmpty(Model.reason))
+						{
+							<div class="col-md-12 form-group">
+								<hr>
+								<span class="hr-aps"><i class="fas fa-ban"></i>Rejected</span>
+							</div>
+							<div class="col-md-12 form-group">
+								<label>Reason</label>
+								<p>@Model.reason</p>
+							</div>
+						}
+
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</body>
+</html>

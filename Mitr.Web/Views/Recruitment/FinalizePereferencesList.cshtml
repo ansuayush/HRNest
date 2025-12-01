@@ -1,0 +1,158 @@
+﻿@model IList<Mitr.Models.RecruitmentRequest>
+
+@section style{
+    @System.Web.Optimization.Styles.Render("~/bundle/dataTablecss")
+}
+    <div>
+        @Html.Partial("ListHeader_Partial", "Finalize Pereferences")
+
+
+        <div class="tab-main mb-5">
+            <ul id="tabs" class="nav nav-tabs " role="tablist">
+                <li class="nav-item"> <a id="tab-A" href="#active-log"  class="nav-link active ripplelink" data-toggle="tab" role="tab"><i class="fal fa-envelope-open"></i>Open Requests</a> </li>
+                <li class="nav-item"> <a id="tab-B" href="#leaves"  class="nav-link ripplelink" data-toggle="tab" role="tab"><i class="fa fa-check" aria-hidden="true"></i>Approved</a></li>
+               
+
+            </ul>
+            <div id="content" class="tab-content p-0" role="tablist">
+                <div id="active-log" class="card tab-pane fade show active" role="tabpanel" aria-labelledby="tab-A">
+                    <div class="card-header" role="tab" id="heading-A">
+                        <h5 class="mb-0">
+                            <!-- Note: `data-parent` removed from here -->
+                            <a data-toggle="collapse" href="#collapse-A"   aria-expanded="true" aria-controls="collapse-A"> <i class="fal fa-envelope-open"></i> Open Requests</a>
+                        </h5>
+                    </div>
+
+                    <!-- Note: New place of `data-parent` -->
+                    <div id="collapse-A" class="collapse show" data-parent="#content" role="tabpanel" aria-labelledby="heading-A">
+                        <!--- -->
+                        <div class="card-body p-0">
+                            <div class="x_content table-currency">
+                                <div class="table-responsive">
+
+                                    <table id="Table1" class="table table-striped table-bordered dt-responsive nowrap tbltick new_width" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
+                                        <thead>
+                                            <tr>
+                                                <th>S.no.</th>
+                                                <th>Request No</th>
+                                                <th>Recruitment Type</th>
+                                                <th>Project Name</th>
+                                                <th>Job Title</th>
+                                                <th>Due Date</th>
+                                                <th>Action</th>
+
+                                            </tr>
+                                            <tr class="searchbar">
+                                                <th class="searchhide"> </th>
+                                                <th></th>
+                                                <th></th>
+                                                <th></th>
+                                                <th></th>
+                                                <th></th>
+                                                <th></th>
+
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @{ int Count = 0;}
+                                            @foreach (Mitr.Models.RecruitmentRequest item in Model.Where(x => x.ApprovedCandidateID ==0))
+                                            {
+                                                Count++;
+                                            <tr>
+                                                <td>@Count</td>
+                                                <td> @item.RecruitmentRequestID</td>
+                                                <td> @item.RecruitmentType</td>
+                                                <td> @item.ProjectName</td>
+                                                <td> @item.JobTitle</td>
+                                                <td> @item.DueDate</td>
+                                                <td> <a title="Edit" href="@Url.Action("RecruitmentFinalize", new { src = clsApplicationSetting.EncryptQueryString(ViewBag.MenuID.ToString() + "*/Recruitment/RecruitmentFinalize*" +@item.RecruitmentRequestID) })" data-toggle='tooltip'>Set Finalize </a></td>
+                                            </tr>
+                                            }
+                                        </tbody>
+                                    </table>
+
+
+                                </div>
+                            </div>
+                        </div>
+                        <!--- -->
+                    </div>
+                </div>
+                <div id="leaves" class="card tab-pane fade" role="tabpanel" aria-labelledby="tab-B">
+                    <div class="card-header" role="tab" id="heading-B">
+                        <h5 class="mb-0"> <a class="collapsed" data-toggle="collapse"  href="#collapse-B" aria-expanded="false" aria-controls="collapse-B"><i class="fa fa-check" aria-hidden="true"></i> Approved</a> </h5>
+                    </div>
+                    <div id="collapse-B" class="collapse" data-parent="#content" role="tabpanel" aria-labelledby="heading-B">
+                        <div class="card-body p-0">
+                            <div class="x_content table-currency">
+                                <div class="table-responsive">
+
+                                    <table id="Table2" class="table table-striped table-bordered dt-responsive nowrap tbltick new_width" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
+                                        <thead>
+                                            <tr>
+                                                <th>S.no.</th>
+                                                <th>Request No</th>
+                                                <th>Recruitment Type</th>
+                                                <th>Project Name</th>
+                                                <th>Job Title</th>
+                                                <th>Due Date</th>
+                                               
+
+                                            </tr>
+                                            <tr class="searchbar">
+                                                <th class="searchhide"> </th>
+                                                <th></th>
+                                                <th></th>
+                                                <th></th>
+                                                <th></th>
+                                                <th></th>
+                                               
+
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @{ int aCount = 0;}
+                                            @foreach (Mitr.Models.RecruitmentRequest item in Model.Where(x=>x.ApprovedCandidateID>0))
+                                            {
+                                                aCount++;
+                                                <tr>
+                                                    <td>@aCount</td>
+                                                    <td> @item.RecruitmentRequestID</td>
+                                                    <td> @item.RecruitmentType</td>
+                                                    <td> @item.ProjectName</td>
+                                                    <td> @item.JobTitle</td>
+                                                    <td> @item.DueDate</td>
+                                                   
+                                                </tr>
+                                            }
+                                        </tbody>
+                                    </table>
+
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+              
+
+            </div>
+        </div>
+
+
+        
+    </div>
+
+
+
+@section scripts    {
+    @System.Web.Optimization.Scripts.Render("~/bundle/dataTablesjs")
+    <script src="~/assets/design/Scripts/AddInit.js?v=@clsApplicationSetting.GetWebConfigValue("Version")"></script>
+    @System.Web.Optimization.Scripts.Render("~/bundle/unobtrusivejs")
+<script>
+    $(document).ready(function () {
+    DatatableScriptsWithColumnSearch("Table1");
+         DatatableScriptsWithColumnSearch("Table2");
+});
+    </script>
+}

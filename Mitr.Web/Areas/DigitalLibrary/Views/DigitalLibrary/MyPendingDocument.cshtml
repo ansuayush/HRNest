@@ -1,0 +1,559 @@
+﻿
+@{
+    ViewBag.Title = "TeamContentRequest";
+}
+<link href="~/Areas/DigitalLibrary/assets/css/tagsinput.css" rel="stylesheet" />
+<script src="~/Areas/DigitalLibrary/assets/js/tagsinput.js"></script>
+
+ 
+<div class="inner-main pb-0">
+    <div class="row">
+        <div class="col-sm-5"><h1 class="heading-one ">My Documents</h1></div>
+        <a href="#" id="btnOpenEditPopup" style="display:none;" data-toggle="modal" data-target="#scUpdateView">View</a>
+        <input type="hidden" id="hdnContentId" />
+          <input type="hidden" id="hdnRequestId" />
+
+    </div>
+
+    <div class="tab-main mb-3">
+        <ul id="tabs" class="nav nav-tabs " role="tablist">
+            <li class="nav-item"> <a id="tab-C" href="#asset" class="nav-link ripplelink active" data-toggle="tab" role="tab"><i class="fas fa-clock"></i>Pending</a> </li>
+
+            <li class="nav-item"> <a id="tab-A" href="#active-log" class="nav-link ripplelink " data-toggle="tab" role="tab" aria-selected="true"><i class="fas fa-check"></i>Approved</a> </li>
+ 
+            <li class="nav-item"> <a id="tab-D" href="#rejected" class="nav-link ripplelink " data-toggle="tab" role="tab" aria-selected="true"><i class="fas fa-ban"></i>Rejected</a> </li>
+
+
+        </ul>
+        <div id="content" class="tab-content shadow-box p-0" role="tablist">
+
+            <div id="asset" class="card tab-pane active show fade" role="tabpanel" aria-labelledby="tab-C">
+                <div class="card-header" role="tab" id="heading-C">
+                    <h5 class="mb-0"> <a class="collapsed" data-toggle="collapse" href="#collapse-C" aria-expanded="false" aria-controls="collapse-C">Pending<i class="fas fa-cogs"></i></a> </h5>
+                </div>
+                <div id="collapse-C" class="collapse" role="tabpanel" data-parent="#content" aria-labelledby="heading-C">
+                    <!-- Start -->
+
+                    <div class="table-responsive">
+                        <table class="table mt-0" id="tblPendingContent">
+                            <thead>
+                                <tr>
+                                     
+                                    <th width="10">Req.No </th>
+                                    <th width="70">Req Date</th>
+                                    <th>Req. By</th>
+                                    <th>Category</th>
+                                    <th>Sub Category</th>
+                                    <th>Project Code</th>
+                                    <th>Project Name</th>
+                                    <th>Title</th>
+                                    <th>Tag</th>
+                                    <th>Status</th>
+                                    <th class="text-center" width="120"> Action</th>
+
+                                </tr>
+                            </thead>
+                        </table>
+
+                    </div>
+                    <div class="text-center hide">
+                        <button onclick="ApproveSelectContent()" class="btn mtr-g-grn" type="button"><i class="fas fa-check"></i>Approve</button>
+                    </div>
+                </div>
+                <!-- End -->
+            </div>
+
+
+            <div id="active-log" class="card tab-pane fade " role="tabpanel" aria-labelledby="tab-A">
+                <div class="card-header" role="tab" id="heading-A">
+                    <h5 class="mb-0">
+                        <!-- Note: `data-parent` removed from here -->
+                        <a data-toggle="collapse" href="#collapse-A" aria-expanded="true" aria-controls="collapse-A">Approved <i class="fas fa-clock"></i></a>
+                    </h5>
+                </div>
+
+                <!-- Note: New place of `data-parent` -->
+                <div id="collapse-A" class="collapse show" data-parent="#content" role="tabpanel" aria-labelledby="heading-A">
+                    <div class="card-body p-0">
+                        <!-- Start -->
+
+                        <div class="table-responsive">
+                            <table class="table mt-0" id="tblApprovedContent">
+                                <thead>
+                                    <tr>
+                                        <th width="10">Req.No </th>
+                                        <th width="70">Req Date</th>
+                                        <th>Req. By</th>
+                                        <th>Category</th>
+                                        <th>Sub Category</th>
+                                        <th>Project Code</th>
+                                        <th>Project Name</th>
+                                        <th>Title</th>
+                                        <th>Tag</th>
+                                        <th>Status</th>
+                                        <th class="text-center" width="120"> Action</th>
+
+                                    </tr>
+                                </thead>
+
+                            </table>
+
+                        </div>
+                    </div>
+                    <!-- End -->
+                </div>
+            </div>
+
+          
+
+            <div id="rejected" class="card tab-pane fade " role="tabpanel" aria-labelledby="tab-D">
+                <div class="card-header" role="tab" id="heading-A">
+                    <h5 class="mb-0">
+                        <!-- Note: `data-parent` removed from here -->
+                        <a data-toggle="collapse" href="#collapse-A" aria-expanded="true" aria-controls="collapse-A">Rejected <i class="fas fa-clock"></i></a>
+                    </h5>
+                </div>
+
+                <!-- Note: New place of `data-parent` -->
+                <div id="collapse-A" class="collapse show" data-parent="#content" role="tabpanel" aria-labelledby="heading-A">
+                    <div class="card-body p-0">
+                        <!-- Start -->
+
+                        <div class="table-responsive">
+                            <table class="table mt-0" id="tblRejectedContent">
+                                <thead>
+                                    <tr>
+                                        <th width="10">Req.No </th>
+                                        <th width="70">Req Date</th>
+                                        <th>Req. By</th>
+                                        <th>Category</th>
+                                        <th>Sub Category</th>
+                                        <th>Project Code</th>
+                                        <th>Project Name</th>
+                                        <th>Title</th>
+                                        <th>Tag</th>
+                                        <th>Status</th>
+                                        <th>Reason</th>
+                                        <th class="text-center" width="120"> Action</th>
+
+                                    </tr>
+                                </thead>
+
+                            </table>
+
+                        </div>
+                    </div>
+                    <!-- End -->
+                </div>
+
+
+
+
+            </div>
+        </div>
+
+
+    </div>
+
+
+    <div class="modal fade" id="scUpdateView" role="dialog" aria-modal="flase">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+
+                <div class="modal-header blk-gdn-btn">
+                    <h4 class="modal-title"><i class="fa fa-plus"></i>Update Content</h4>
+                    <div class="close" data-dismiss="modal">&times;</div>
+
+                </div>
+                <!-- Modal body -->
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-sm-3 form-group">
+                            <label>Category</label>
+                            <input type="text" disabled="" placeholder="Enter" name="" id="pdCategory">
+                        </div>
+                        <div class="col-sm-3 form-group">
+                            <label>Req. No.</label>
+                            <input type="text" disabled="" placeholder="Enter" name="" id="pdReqNo">
+                        </div>
+                        <div class="col-sm-3 form-group">
+                            <label>Req. Date.</label>
+                            <input disabled="" placeholder="Enter" name="" id="pdReqDate">
+                        </div>
+                        <div class="col-sm-3 form-group">
+                            <label>Req. By</label>
+                            <input type="text" disabled="" placeholder="Enter" name="" id="pdReqBy">
+                        </div>
+
+
+                        <div class="col-md-12 form-group">
+                            <hr>
+                            <span class="hr-aps"><i class="fas fa-info-circle"></i>Details</span>
+                        </div>
+
+                        <div class="col-sm-3 form-group">
+                            <label>Sub Category </label>
+                            <input type="text" disabled="" placeholder="Enter" name="" id="pdSubCategory">
+                        </div>
+
+                        <div class="col-sm-3 form-group">
+                            <label>Project Code <sup>*</sup></label>
+                            <select class="form-control applyselect Mandatorypld" id="pdProjectCode" onchange="FillProjectDetails(this)">
+                            </select>
+                            <span id="sppdProjectCode" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+                        </div>
+                        <div class="col-sm-6 form-group">
+                            <label>Project Name <sup>*</sup></label>
+                            <input type="text" disabled="" placeholder="Enter" name="" id="pdProjectName">
+                        </div>
+                        <div class="col-sm-6 form-group">
+                            <label>Thematic Area<sup>*</sup></label>
+                            <input type="text" disabled="" placeholder="Enter" name="" id="pdThematicArea">
+                        </div>
+                        <div class="col-sm-3 form-group">
+                            <label>Funded By</label>
+
+                            <input type="text" disabled="" placeholder="Enter" name="" id="pdFundedBy">
+                        </div>
+                        <div class="col-sm-3 form-group">
+                            <label>Place of Origin<sup>*</sup></label>
+                            <select class="form-control applyselect Mandatorypld" multiple="" id="pdPlaceOfOrigin" onchange="HideErrorMessage(this)">
+                            </select>
+                            <span id="sppdPlaceOfOrigin" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+                        </div>
+                        <div class="col-sm-3 form-group pd" style="display:none;">
+                            <label>Report No</label>
+                            <input type="text" value="" placeholder="Enter" name="" id="pdReportNo">
+                        </div>
+                        <div class="col-sm-3 form-group pld" style="display:none;">
+                            <label>Proposal No</label>
+                            <input type="text" value="" placeholder="Enter" name="" id="pldProposalNo">
+                        </div>
+
+                        <div class="col-sm-3 form-group cnts" style="display:none;" id="dvcntsContactNo">
+                            <label>Contract No</label>
+                            <input type="text" class="form-control Mandatorypld" placeholder="Enter" id="cntsContactNo" onchange="HideErrorMessage(this)">
+                            <span id="spcntsContactNo" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+                        </div>
+
+                        <div class="col-sm-3 form-group cnts" style="display:none;" id="dvcntsPartyName">
+                            <label>Party Name<sup>*</sup></label>
+                            <input type="text" class="form-control Mandatorypld" placeholder="Enter" id="cntsPartyName">
+                        </div>
+
+                        <div class="col-sm-3 form-group cnts" style="display:none;" id="dvcntsEffectiveDate">
+                            <label>Effective Date<sup>*</sup></label>
+                            <input class="form-control Mandatorypld datepicker" placeholder="dd-mm-yyyy" id="cntsEffectiveDate" onchange="HideErrorMessage(this)">
+
+
+                            <span id="spcntsEffectiveDate" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+                        </div>
+
+                        <div class="col-sm-3 form-group cnts" style="display:none;" id="dvcntsExperiDate">
+                            <label>Expiry/Renewable Date<sup>*</sup></label>
+                            <input class="form-control Mandatorypld datepicker" placeholder="dd-mm-yyyy" id="cntsExperiDate" onchange="HideErrorMessage(this)">
+                            <span id="spcntsExperiDate" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+                        </div>
+                        <div class="col-sm-3 form-group eb" style="display:none;" id="dvebProjectLead">
+                            <label>Project Lead</label>
+                            <select class="form-control applyselect" id="pdProjectLead">
+                            </select>
+                        </div>
+                        <div class="col-sm-3 form-group tm" style="display:none;" id="dvtmCopyRights">
+                            <label>Copyright</label>
+                            <textarea placeholder="Enter" class="form-control" id="tmCopyRights"></textarea>
+                        </div>
+                        <div class="col-md-12 form-group">
+                            <hr>
+                            <span class="hr-aps"><i class="fas fa-info-circle"></i>Content Detail</span>
+                        </div>
+
+                        <div class="col-sm-12 form-group">
+                            <label>Title <sup>*</sup></label>
+                            <input type="text" value="" placeholder="Enter" class="Mandatorypld" name="" id="pdTitle" onchange="HideErrorMessage(this)">
+                            <span id="sppdTitle" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+                        </div>
+                        <div class="col-sm-6 form-group">
+                            <label>Sub Title</label>
+                            <input type="text" value="" placeholder="Enter" name="" id="pdSubTitle">
+                        </div>
+                        <div class="col-sm-6 form-group">
+                            <label>Tag <sup>*</sup></label>
+                            <select class="form-control applyselect Mandatorypld" multiple="" id="pdTag" onchange="HideErrorMessage(this)">
+                            </select>
+                            <span id="sppdTag" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+                        </div>
+
+                        <div class="col-sm-6 form-group">
+                            <label>Abstract/Summary <sup>*</sup></label>
+                            <textarea class="form-control Mandatorypld" placeholder="Enter" id="pdSummary" onchange="HideErrorMessage(this)"></textarea>
+                            <span id="sppdSummary" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+                        </div>
+                        <div class="col-sm-6 form-group">
+                            <label>Remarks</label>
+                            <textarea class="form-control" placeholder="Enter" id="pdRemarks"></textarea>
+                        </div>
+                        <div class="col-sm-3 form-group">
+                            <label>Document(Confidential/Critical) <sup>*</sup></label>
+                            <select class="form-control applyselect Mandatorypld" id="pdDocument" onchange="HideErrorMessage(this)">
+                                
+                            </select>
+                            <span id="sppdDocument" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+                        </div>
+
+                        <div class="col-sm-3 form-group">
+                            <label>Author</label>
+                            <select class="form-control applyselect" id="pdAuther">
+                            </select>
+                            <div id="dvAutherList"></div>
+                        </div>
+                        <div class="col-sm-3 form-group pld" style="display:none;" id="dvpldAccepted">
+                            <label>Accepted <sup>*</sup></label>
+                            <select class="form-control applyselect Mandatorypld" id="pldAccepted" onchange="HideErrorMessage(this)">
+                                <option>Select</option>
+                                <option>Yes</option>
+                                <option>No</option>
+                            </select>
+                            <span id="sppldAccepted" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+                        </div>
+                        <div class="col-sm-3 form-group pbn" style="display:none;">
+                            <label>Source</label>
+                            <select class="form-control applyselect" id="pbnSource">
+                                <option>Journal name</option>
+                                <option>Vol/Issues</option>
+                            </select>
+                        </div>
+
+                    </div>
+                    <div id="FileAttachmentContent">
+                        <div class="row">
+                            <div class="col-md-12 form-group">
+                                <hr>
+                                <span class="hr-aps"><i class="fas fa-paperclip"></i>Attach Content</span>
+                            </div>
+
+                            <div class="col-sm-3 form-group">
+                                <label>Document Uploaded By <sup>*</sup></label>
+                                <input type="text" disabled="" placeholder="Enter" name="" id="emUploadedBy">
+                            </div>
+                            <div class="col-sm-2 form-group">
+                                <label>File Name <sup>*</sup></label>
+                                <input type="text" placeholder="Enter" class="MandatoryEMAttachemnt" maxlength="100" name="" id="emFileName" onchange="HideErrorMessage(this)">
+                                <span id="spemFileName" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+                            </div>
+
+                            <div class="col-sm-2 form-group">
+                                <label>Attachment Type <sup>*</sup></label>
+                                <select class="form-control applyselect MandatoryEMAttachemnt" id="emAttachementType" onchange="AttachmentTypeChange(this);">
+                                    <option>Select</option>
+                                    <option>Photo</option>
+                                    <option>Document</option>
+                                    <option>Video</option>
+
+                                </select>
+                                <span id="spemAttachementType" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+                            </div>
+                            <div class="col-sm-2 form-group" id="dvVedioFileName" style="display:none;">
+                                <label>Vedio File Url <sup>*</sup></label>
+                                <input type="text" placeholder="Enter" maxlength="500" name="" id="VedioFileName" class="MandatoryEMAttachemnt" onchange="HideErrorMessage(this)">
+                                <span id="spVedioFileName" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+                            </div>
+                            <div class="col-sm-2 form-group" id="dvFileUpload">
+                                <label>Attachment <sup>*</sup></label>
+                                <input type="file" class="form-control" name="" id="emFileUpload" multiple>
+                            </div>
+                            <div class="col-md-3 col-sm-3 form-group wh-575 align-self-end text-left" id="submitAdd">
+                                <button type="button" class="btn green-clr m-0 ripplelink mb-2 mt-0" onclick="UploadDocument('MandatoryEMAttachemnt')"> <i class="fas fa-plus"></i> Add </button>
+                            </div>
+                            <div class="col-sm-9">
+                                <div id="DivDocumentListUpdate">
+                                    <table class="table table-striped tblwobdr" id="emDocumentListUpdate">
+                                        <thead>
+                                            <tr>
+                                                <th>Name</th>
+                                                <th>Document Uploaded By</th>
+                                                <th>Attachment Type</th>
+                                                <th>File Size</th>
+                                                <th></th>
+                                            </tr>
+                                        </thead>
+
+                                    </table>
+                                </div>
+                                <div id="DivDocumentListView">
+                                    <table class="table table-striped tblwobdr" id="emDocumentListView">
+                                        <thead>
+                                            <tr>
+                                                <th>Name</th>
+                                                <th>Document Uploaded By</th>
+                                                <th>Attachment Type</th>
+                                                <th>File Size</th>
+                                            </tr>
+                                        </thead>
+
+                                    </table>
+                                </div>
+                            </div>
+
+
+                        </div>
+                        <div id="submitView" style="display: none;">
+                             
+                            
+
+                            <div class="col-sm-12" id="Div3" style="display: none;">
+                                <div class="row">
+                                    <div class="col-md-12 form-group">
+                                        <hr>
+                                        <span class="hr-aps"><i class="fas fa-ban"></i>Reject</span>
+                                    </div>
+
+                                    <div class="col-sm-12 form-group">
+                                        <label>Mention Reason<sup>*</sup></label>
+                                        <textarea class="form-control" placeholder="Enter" id="txtRejectReason"></textarea>
+                                        <span id="sptxtRejectReason" class="text-danger field-validation-error errorValidation" style="display:none;">Hey, You missed this field!!</span>
+                                    </div>
+                                    <div class="col-sm-12 text-center">
+                                        <button type="submit"   class="btn mtr-o-grn btn-l ripplelink pull-right" name="Command" value="Add" onclick="SaveData(false)"><i class="fa-solid fa-paper-plane"></i>Submit</button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-sm-12 text-center">
+                                <input type="hidden" id="hdnType" />
+
+                                <button type="submit" class="btn mtr-g-grn btn-l ripplelink pull-right" onclick="SaveData(true)" name="Command" value="Add"><i class="fas fa-check"></i> Approve</button>
+              
+                                <button type="submit" class="btn rjt-btn btn-l ripplelink pull-right" name="Command" value="Add" onclick="divVisibility('Div3');"><i class="fa fa-ban" aria-hidden="true"></i> Reject</button>
+                                <button type="button" id="UpdateButtonClose" class="btn cnl-btn ripplelink" data-dismiss="modal"><i class="fas fa-times"></i>Close</button>
+
+
+                                <button type="button" id="btnrjModel" style="display:none;" data-toggle="modal" data-target="#mailer-rj" data-dismiss="modal" value="Add"> </button>
+                                 <button type="button" id="btnapproveModel" style="display:none;" data-toggle="modal" data-target="#mailerTeam" data-dismiss="modal" value="Add"> </button>
+ 
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="mailerTeam">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <!-- Modal Header -->
+                <div style="position: relative;">
+                    <button type="button" class="close m-close" data-dismiss="modal">&times;</button>
+                </div>
+                <div class="modal-body " style="background: #f8f8f8; padding: 20px">
+                    <table style=" width: 100%; display: table;  margin:0px auto">
+                        <tbody>
+                            <tr>
+                                <td>
+                                    <table style="width: 100%; background: #fff; border:1px solid #d8d8d8; padding: 10px 10px 10px 10px">
+                                        <tbody>
+                                            <tr>
+                                                <td style=" padding:10px"><img src="~/assets/design/images/mitr-logo-2.jpg" alt="Mitr Logo" title="Mitr" width="80" height="22"></td>
+                                                <td align="right" style="padding:10px"><img src="~/assets/design/images/logo.jpg" alt="Centre for Catalyzing Change Logo" title="Centre for Catalyzing Change" width="80" height="34"></td>
+                                            </tr>
+                                            <tr>
+                                                <td colspan="2" style="border-top: 1px solid #d8d8d8; padding: 10px">
+                                                    <p style="color: #848484; font-size: 12px; font-family: arial">
+                                                        To:<label id="lblAprReqByEmail" ></label><br />
+                                                        CC:<label id="lblAprCC"></label> <br />
+                                                        Subject: Content  Approved
+                                                    </p>
+                                                    <p style="color: #848484; font-size: 12px; font-family: arial">
+                                                        <strong>Dear <label id="lblAprReqBy"></label>,</strong>
+                                                    </p>
+                                                    <p style="margin: 0px 0px 20px 0px; padding: 0px; font-size:12px; font-family: arial">
+                                                        <label id="lblAprAprName"></label>  has approved the <label id="lblAprCategory"></label> for <label id="lblAprProjectName"></label> of <label id="lblAprLocation"></label> on  <label id="lblAprDate"></label> which is <label id="lblAprDocumentCategory"></label> for upload.
+                                                    </p>
+                                                    <div style="font-size: 12px; font-family: arial; color: #848484; margin-top:20px;">
+                                                        <strong style="color: #848484; font-family: arial">Best Regards,</strong><br>
+                                                        Mitr
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <h2 style="font-size:18px; " class="pt-4 text-center"><label id="lblAprCategoryMessage"></label> approved successfully </h2>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+    <div class="modal fade" id="mailer-rj">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <!-- Modal Header -->
+                <div style="position: relative;">
+                    <button type="button" class="close m-close" data-dismiss="modal">&times;</button>
+                </div>
+                <div class="modal-body " style="background: #f8f8f8; padding: 20px">
+                    <table style=" width: 100%; display: table;  margin:0px auto">
+                        <tbody>
+                            <tr>
+                                
+                                <td>
+                                    <table style="width: 100%; background: #fff; border:1px solid #d8d8d8; padding: 10px 10px 10px 10px">
+                                        <tbody>
+                                            <tr>
+                                                <td style=" padding:10px"><img src="~/assets/design/images/mitr-logo-2.jpg" alt="Mitr Logo" title="Mitr" width="80" height="22"></td>
+                                                <td align="right" style="padding:10px"><img src="~/assets/design/images/logo.jpg" alt="Centre for Catalyzing Change Logo" title="Centre for Catalyzing Change" width="80" height="34"></td>
+                                            </tr>
+                                            <tr>
+                                                <td colspan="2" style="border-top: 1px solid #d8d8d8; padding: 10px">
+                                                    <p style="color: #848484; font-size: 12px; font-family: arial">
+                                                        To:   <label id="lblRJReqBy"></label><br />
+                                                        CC: <label id="lblRJCC"></label> <br />
+                                                        Subject: Your request rejected
+                                                    </p>
+                                                    <p style="color: #848484; font-size: 12px; font-family: arial">
+                                                        <strong>Dear  <label id="lblRJReqByName"></label> ,</strong>
+                                                    </p>
+                                                    <p style="margin: 0px 0px 20px 0px; padding: 0px; font-size:12px; font-family: arial">
+                                                        <label id="lblRJApprovarName"></label> has rejected/deleted of the  <label id="lblRJCategory"></label>   for  <label id="lblRJProjectName"></label>  of   <label id="lblRJLocation"></label>   on  <label id="lblRJDate"></label> due to following reason:  <label id="lblRJReason"></label>  which is <label id="lblRJDocumentCategory"></label>
+                                                    </p>
+                                                    <div style="font-size: 12px; font-family: arial; color: #848484; margin-top:20px;">
+                                                        <strong style="color: #848484; font-family: arial">Best Regards,</strong><br>
+                                                        Mitr
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <h2 style="font-size:18px; " class="pt-4 text-center"> <label id="lblRJCategoryMessage"></label>  Rejected successfully </h2>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section scripts    {
+    @System.Web.Optimization.Scripts.Render("~/bundle/unobtrusivejs")
+    @System.Web.Optimization.Scripts.Render("~/bundle/dataTablesjs")
+    <script src="~/assets/design/Scripts/AddInit.js?v=@clsApplicationSetting.GetWebConfigValue("Version")"></script>
+    <script src="~/Areas/DigitalLibrary/DevScript/MyPendingDocument.js"></script>
+
+    <script>
+        var IsEDUser = '@ViewBag.IsED';
+       var loggedinUserid = '@ViewBag.UserId';
+        var loggedinUserName = '@ViewBag.UserName';
+        var UserGrade = '@ViewBag.Grade';
+        var IsPM = '@ViewBag.IsPM';
+         var TabId='@ViewBag.TabId';
+    </script>
+}

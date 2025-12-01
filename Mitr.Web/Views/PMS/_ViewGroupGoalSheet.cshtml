@@ -1,0 +1,183 @@
+﻿@model PMS.GoalSheet.EMPGoalSheet
+
+@using (Ajax.BeginForm("SubmitGroupSheet", "PMS",
+			new { src = clsApplicationSetting.EncryptQueryString(ViewBag.MenuID.ToString() + "*/PMS/SubmitGroupSheet") },
+			new AjaxOptions { HttpMethod = "POST", OnSuccess = "SubmitGroupSheetSuccess" },
+		new { @id = "SubmitGroupSheetFrom" })
+		)
+{
+	@Html.HiddenFor(x => Model.FYID)
+	@Html.HiddenFor(x => Model.PMS_GSID)
+
+	
+<div class="row">
+    <div class="col-sm-4 form-group">
+        <label>Year</label>
+        <p>@Model.FYName</p>
+    </div>
+    <div class="col-sm-4 form-group">
+        <label>Department</label>
+        <p>@Model.Department</p>
+    </div>
+    <div class="col-sm-4 form-group">
+        <label>Designation </label>
+        <p>@Model.DesignationName</p>
+    </div>
+    <div class="col-sm-4 form-group">
+        <label>Location</label>
+        <p>@Model.LocationName</p>
+    </div>
+    <div class="col-sm-4 form-group">
+        <label>Appraiser</label>
+        <p>@Model.HODName</p>
+    </div>
+    <div class="col-sm-4 form-group">
+        <label>Status</label>
+        @if (Model.Approved == 0)
+        {
+            <p class="blue-clr"><strong>@Model.Status</strong></p>
+        }
+        else if (Model.Approved == 1)
+        {
+            <p class="green-clr"><strong>@Model.Status</strong></p>
+        }
+        else
+        {
+            <p class="red-clr"><strong>@Model.Status</strong></p>
+        }
+    </div>
+</div>
+	<div class="table-responsive">
+
+		@if (Model.GoalSheetDet != null)
+		{
+			<div class="table-responsive">
+				<table id="datatable" class="table mb-0  table-bordered dt-responsive nowrap tbltick new_width">
+					<thead>
+						<tr>
+							<th class="td-10">S.No</th>
+							<th class="td-150">Key Performance Area	</th>
+							<th class="td-150">Key Performance Indicator</th>
+							<th class="tw-100">UOM</th>
+							<th class="tw-100 text-right">Target</th>
+							<th class="tw-100 text-right">Weightage</th>
+						</tr>
+					</thead>
+					<tbody>
+						@{ int count = 0;}
+						@for (int i = 0; i < Model.GoalSheetDet.Count; i++)
+						{
+							count++;
+							<tr>
+
+								<td>
+									@count
+									@Html.HiddenFor(x => Model.GoalSheetDet[i].KPAID)
+									@Html.HiddenFor(x => Model.GoalSheetDet[i].GoalSheetID)
+									@Html.HiddenFor(x => Model.GoalSheetDet[i].PMS_GSDID)
+									@Html.HiddenFor(x => Model.GoalSheetDet[i].UOMID)
+									@Html.HiddenFor(model => Model.GoalSheetDet[i].Weight)
+								</td>
+								<td>@Model.GoalSheetDet[i].Area <sup class="red-clr" style="font-size: 10px"></sup></td>
+								<td>
+									<p class="wb-spc-rgt" >@Model.GoalSheetDet[i].PIndicator</p>
+									<i class="fas fa-info-circle td-info" data-toggle="tooltip" data-placement="right" data-original-title="@Model.GoalSheetDet[i].DetRemarks"></i>
+								</td>
+								<td>@Model.GoalSheetDet[i].UOMName</td>
+								<td class="text-right">@Model.GoalSheetDet[i].Target</td>
+								<td class="text-right">@Model.GoalSheetDet[i].Weight </td>
+
+
+							</tr>
+						}
+
+					</tbody>
+				</table>
+			</div>
+		}
+
+
+	</div>
+
+	<div class="row mt-3">
+		<div class="col-md-8 mx-auto form-group">
+			@if (!string.IsNullOrEmpty(Model.Comment))
+			{
+				<div class="form-group">
+					<h3 class="subheading">Employee Overall Comment</h3>
+
+					<p>@Model.Comment</p>
+				</div>
+			}
+			@if (Model.CommentList.Count > 0)
+			{<div class="row">
+					<div class="col-md-12">
+						<h3 class="subheading"> Resubmission Comment</h3>
+						<table id="datatable" class="table  table-bordered table-scroll nowrap tbltick mb-0 new_width dataTable" role="grid" aria-describedby="datatable_info">
+							<tbody>
+								<tr>
+									<th class="tw-100">Date</th>
+									<th>Comment By</th>
+									<th class="tw-100">Name</th>
+									<th>Comment</th>
+
+								</tr>
+								@foreach (var item in Model.CommentList)
+								{
+									<tr>
+										<td>@item.createdat</td>
+										<td>
+											@item.Doctype
+										</td>
+
+										<td>@item.Name		</td>
+										<td>
+											@item.Comment
+										</td>
+									</tr>
+
+								}
+							</tbody>
+						</table>
+					</div>
+
+				</div>
+			}
+		</div>
+	</div>
+	if (Model.Approved == 1)
+	{
+		<div id="divres" style="display:none">
+			<div class="row">
+				<div class="col-sm-8 mx-auto form-group">
+					<h3 class="subheading">Reason for Resubmission </h3>
+
+					@Html.TextAreaFor(model => model.Reason, new { @class = "form-control", @placeholder = "Enter", onkeypress = "return blockSpecialChar(event)" })
+					@Html.ValidationMessageFor(model => model.Reason, "", new { @class = "text-danger" })
+					<div class="text-right">
+						<button type="submit" name="Command" value="Resubmit" class="btn mt-2 mtr-o-grn ripplelink"><i class="fas fa-paper-plane"></i> Submit</button>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div class="pb-4 text-center ">
+			<button type="button" class="btn cnl-btn ripplelink" data-dismiss="modal"><i class="fas fa-times"></i>Close</button>
+			<button type="submit" name="Command" value="Approve" class="btn mtr-g-grn btn-l ripplelink btnApprove"> <i class="fas fa-check"></i> Approve</button>
+			<a class="btn mtr-o-grn btn-l ripplelin" id="btnResubmit"><i class="fas fa-share"></i> Resubmit</a>
+
+		</div>
+	}
+	else
+	{
+		<div class="pb-4 text-center ">
+			<button type="button" class="btn cnl-btn ripplelink" data-dismiss="modal"><i class="fas fa-times"></i>Close</button>
+		</div>
+	}
+
+
+}
+
+
+
+

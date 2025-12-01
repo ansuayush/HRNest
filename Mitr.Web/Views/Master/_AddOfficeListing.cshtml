@@ -1,0 +1,100 @@
+﻿@model Mitr.Models.OfficeListing
+@using System.Data
+
+
+@using (Ajax.BeginForm("_AddOfficeListing", "Master",
+		new { src = ViewBag.src },
+		new AjaxOptions { HttpMethod = "POST", OnSuccess = "OnSuccess", OnBegin = "ShowLoadingDialog()" },
+	new { @id = "_AddOfficeListingFrom" })
+	)
+{
+
+	@Html.HiddenFor(x => Model.Id)
+	@Html.AntiForgeryToken()
+	<div class="row" data-select2-id="16">
+		<div class="col-sm-6 form-group">
+			<label for="">Branch Office<sup>*</sup></label>
+			@Html.TextBoxFor(model => model.BranchOffice, new { @class = "form-control" })
+			@Html.ValidationMessageFor(model => model.BranchOffice, "", new { @class = "text-danger" })
+		</div>
+
+
+
+		<div class="col-sm-12 form-group">
+			<label for="fileUpload">Description</label>
+			@Html.TextBoxFor(model => model.Description, new { @class = "form-control h-100" })
+
+		</div>
+
+		<div class="col-sm-12 form-group">
+			<label for="">Tag Work Location<sup>*</sup></label>
+			@Html.HiddenFor(model => model.LocationIds)
+		<select class="applyselect" multiple="multiple" id="dd_LocationIds" onchange="BindDropDown(this)">
+			@if (ViewBag.LocationList != null)
+			{
+				<option>Select</option>
+				foreach (var item in ViewBag.LocationList)
+				{
+					if (string.IsNullOrEmpty(Model.LocationIds))
+					{
+						<option value="@item.LocationID"> @item.Name</option>
+					}
+					else
+					{
+						<option @(("@" + Model.LocationIds.Replace(",", "@") + "@").Contains("@" + item.LocationID.ToString() + "@") ? "selected" : "") value="@item.LocationID">@item.Name</option>
+
+						
+					}
+				}
+			}
+		</select>
+			@Html.ValidationMessageFor(model => model.LocationIds, "", new { @class = "text-danger" })
+		</div>
+
+		<div class="col-sm-12 form-group ">
+			<hr>
+			<span class="hr-aps"><i class="fas fa-plus"></i>Add HOD for Exit</span>
+		</div>
+
+		<div class="col-sm-3 form-group">
+			<label for="">Admin <sup>*</sup></label>
+			@Html.DropDownListFor(model => model.Admin, new SelectList(ViewBag.EmpList, "EMPID", "EMP", Model.Admin), "select", new { @class = "form-control applyselect " })
+			@Html.ValidationMessageFor(model => model.Admin, "", new { @class = "text-danger" })
+
+		</div>
+
+		<div class="col-sm-3 form-group">
+			<label for="">IT <sup>*</sup></label>
+			@Html.DropDownListFor(model => model.IT, new SelectList(ViewBag.EmpList, "EMPID", "EMP", Model.IT), "select", new { @class = "form-control applyselect " })
+			@Html.ValidationMessageFor(model => model.IT, "", new { @class = "text-danger" })
+		</div>
+
+
+		<div class="col-sm-3 form-group">
+			<label for="">HR <sup>*</sup></label>
+			@Html.DropDownListFor(model => model.HR, new SelectList(ViewBag.EmpList, "EMPID", "EMP", Model.HR), "select", new { @class = "form-control applyselect " })
+			@Html.ValidationMessageFor(model => model.HR, "", new { @class = "text-danger" })
+		</div>
+
+
+		<div class="col-sm-3 form-group">
+			<label for="">Finance <sup>*</sup></label>
+			@Html.DropDownListFor(model => model.Finance, new SelectList(ViewBag.EmpList, "EMPID", "EMP", Model.Finance), "select", new { @class = "form-control applyselect " })
+			@Html.ValidationMessageFor(model => model.Finance, "", new { @class = "text-danger" })
+		</div>
+
+		<div class="col-sm-12 form-group text-center">
+			<button type="submit" name="Command" value="Add" class="btn mtr-o-grn btn-l ripplelink pull-right"><i class="fas fa-save"></i> Save</button>
+			<button type="button" class="btn cnl-btn ripplelink  pull-right" data-dismiss="modal"><i class="fas fa-times"></i> Close</button>
+		</div>
+
+	</div>
+}
+<script>
+
+		          $(document).ready(function () {
+                    $(".applyselect").select2();
+
+                    });
+	
+</script>

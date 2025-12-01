@@ -1,0 +1,49 @@
+﻿@model MPRSetting
+
+<div class="inner-main" role="main">
+	<h1 class="heading-one">
+		MPR Setting
+	</h1>
+
+	@using (Ajax.BeginForm("MPRSetting", "MPR",
+			new { src = clsApplicationSetting.EncryptQueryString(ViewBag.MenuID.ToString() + "*/MPR/MPRSetting") },
+			  new AjaxOptions { HttpMethod = "POST", OnSuccess = "BindTarget", OnBegin = "ShowLoadingDialog()" },
+		new { @id = "MPRSettingFrom" })
+		)
+	{
+		@Html.AntiForgeryToken()
+		@Html.HiddenFor(x => Model.MPRSettingID)
+		<div class="row">
+			<div class="col-sm-3 form-group">
+				<label>Select Day<sup>*</sup></label>
+				@Html.TextBoxFor(model => Model.MPRDueDate, new { @class = "form-control" })
+				@Html.ValidationMessageFor(model => model.MPRDueDate, "", new { @class = "text-danger" })
+			</div>
+			<div class="col-sm-4 form-group pt-4">
+				of Every Month
+			</div>
+
+		</div>
+		<div class="row">
+			<button type="submit" class="btn mtr-o-grn btn-l ripplelink pull-right" name="Command" value="Add"><i class="fa fa-paper-plane" aria-hidden="true"></i> Submit</button>
+		</div>
+
+	}
+
+
+</div>
+
+
+
+@section scripts    {
+	@System.Web.Optimization.Scripts.Render("~/bundle/unobtrusivejs")
+	@Html.IncludeVersionedJs(Url.Content("~/assets/design/Scripts/ToolTip.js"))
+	@Html.IncludeVersionedJs(Url.Content("~/assets/design/scripts/AddInit.js"))
+
+	<script>
+		function BindTarget(obj) {
+			CloseLoadingDialog()
+			SuccessToaster(obj.SuccessMessage);
+		}
+	</script>
+}

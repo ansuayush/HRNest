@@ -1,0 +1,224 @@
+﻿@model Personnels.ReimbursementBooking.ReimbursementHead
+
+
+@{
+	var Modify = clsApplicationSetting.GetSessionValue("Modify");
+}
+@{
+	string MenuID = "0";
+	if (ViewBag.MenuID != null)
+	{
+		MenuID = ViewBag.MenuID;
+	}
+
+	
+}
+<div class="inner-main defult-height pb-0">
+	@*@Html.Partial("ListHeader_Partial", "Reimbursement Load Voucher")*@
+	<h1 class="heading-one">@Model.claimhead[0].HeadName Load Voucher</h1>
+
+	<div class="row">
+		<div class="col-sm-8 form-group">
+			@Html.HiddenFor(x => Model.FYId)
+			@Html.HiddenFor(x => Model.claimhead[0].HeadId)
+			<div class="row">
+				<div class="col-sm-3 form-group">
+					<label>Employee Name </label>
+					<p>@Model.EmployeeName</p>
+				</div>
+				<div class="col-sm-3 form-group">
+					<label>Employee Code </label>
+					<p>@Model.EmployeeCode</p>
+				</div>
+				<div class="col-sm-3 form-group">
+					<label>Location </label>
+					<p>@Model.Location</p>
+				</div>
+				<div class="col-sm-3 form-group">
+					<label>Designation </label>
+					<p>@Model.Designation</p>
+				</div>
+				<div class="col-md-12 col-sm-12 col-xs-12">
+					@Html.EJS().Grid("Grid").DataSource((List<Personnels.ReimbursementBooking.ClaimVoucher>)Model.claimhead[0].claimvoucher).GridLines(Syncfusion.EJ2.Grids.GridLine.Both).Columns(col =>
+			   {
+				   col.Field("FYId").Visible(false).Add();
+				   col.Field("EmpId").Visible(false).Add();
+				   col.Field("HeadId").Visible(false).Add();
+				   col.Field("ClaimId").Visible(false).Add();
+				   col.Field("RequestNo").HeaderText("Request No").Width("100").Add();
+				   col.Field("RequestDate").HeaderText("Request Date").Width("90").Add();
+				   col.Field("TotalAmount").HeaderText("Requested Amount").TextAlign(Syncfusion.EJ2.Grids.TextAlign.Right).Width("90").Format("n").Add();
+				   col.Field("PaidAmount").HeaderText("Amount Paid").TextAlign(Syncfusion.EJ2.Grids.TextAlign.Right).Width("90").Format("n").Add();
+				   col.Field("PaidDate").HeaderText("Date of Payment").Width("90").Add();
+				   col.Field("Status").HeaderText("Status").Width("90").Add();
+				   col.HeaderText("Action").TextAlign(Syncfusion.EJ2.Grids.TextAlign.Center).Template("#tmpAction").Width("50").Add();
+				   col.HeaderText("Print").TextAlign(Syncfusion.EJ2.Grids.TextAlign.Center).Template("#tmpAction1").Width("50").Add();
+				}).Aggregates(
+					agg =>
+					{
+						agg.Columns(new List<Syncfusion.EJ2.Grids.GridAggregateColumn>() {
+							new Syncfusion.EJ2.Grids.GridAggregateColumn() { Field = "TotalAmount", Format ="n" , Type = "Sum", FooterTemplate = "Total: ${Sum}" }
+							}).Add();
+					}
+					).Toolbar(new List<string>() { "Search" }).Render()
+				</div>
+				@if (Model.FYId == Model.CFYId)
+				{
+			<div class="col-sm-12 form-group text-right ">
+				@if (@Model.claimhead[0].claimvoucher.Count == 0 || @Model.claimhead[0].claimvoucher.Count > 0)
+				{
+
+					if (Convert.ToInt64(Model.claimhead[0].Entitlement) != Convert.ToInt64(Model.claimhead[0].PaidAmount))
+					{
+						<a class="btn green-clr " id="btnAddVoucher"><i class="fas fa-plus"></i> Add Voucher</a>
+					}
+
+				}
+				else
+				{
+					<p class="text-center fn-bold">Cannot submit as your entitlement for the current financial year is over. </p>
+				}
+			</div>
+				}
+				<div class="col-sm-12 form-group text-center ">
+					<a class="btn cnl-btn" href="@Url.Action("ReimbursementHead",new { src = clsApplicationSetting.EncryptFriendly(ViewBag.MenuID+"*"+"/Personnel/ReimbursementHead*"+ Model.FYId) })"><i class="fas fa-arrow-left"></i>Back</a>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div class="modal fade pop-dgn" id="loadvoucher">
+	<div class="modal-dialog modal-xl">
+		<div class="modal-content">
+			<div class="modal-header blk-gdn-btn">
+				<h4 class="modal-title"> <i class="fas fa-plus"></i> <span class="spnhead">View</span> @Model.claimhead[0].HeadName Entry Form </h4>
+				<div class="close" data-dismiss="modal">&times;</div>
+			</div>
+			<div id="LoadVoucerDiv"></div>
+		</div>
+	</div>
+</div>
+
+<div class="modal fade modalprintdgn pop-dgn " id="printvoucher">
+	<div class="modal-dialog modal-xl">
+		<div class="modal-content p-3">
+			<div class="bgbox">
+				<div class="row">
+					<div class="col-sm-2 mb-0 align-self-center">
+						<img src="https://mitr2.c3india.org/assets/design/images/c3.png" alt="">
+					</div>
+					<div class="col-sm-8 mb-0 text-center align-self-center">
+						<strong class="cntitle">Centre for Catalyzing Change</strong><br>
+						<small class="fn-md">C-27, 2nd Floor Qutab Institutional Area, New Delhi - 110 016</small>
+					</div>
+
+					<div class="col-sm-2 mb-0 align-self-center text-right">
+						<img src="https://mitr2.c3india.org/assets/design/images/mitr-logo.png" alt="">
+					</div>
+				</div>
+			</div>
+			<div id="printVoucerDiv"></div>
+		</div>
+	</div>
+</div>
+
+<script id="tmpAction" type="text/x-template">
+	${if('@Modify' === 'True')}
+	<input type="hidden" name="I" value="${FYId},${HeadId},${ClaimId}" />
+	<a onclick="BindEdit(this)"><i class="fas fa-eye"></i>View</a>
+	${/if}
+</script>
+
+<script id="tmpAction1" type="text/x-template">
+	<input type="hidden" name="P" value="${FYId},${EmpId},${HeadId},${ClaimId},3" />
+	${if(IsDeleted === 0)}
+	<a onclick="BindPrint(this)" class="green-clr"><i class="fas fa-print"></i>Print</a>
+	${/if}
+</script>
+<script>
+	function created() {
+		var grid = document.getElementById("Grid").ej2_instances[0];
+		document.getElementById(grid.element.id + "_searchbar").addEventListener('keyup', () => {
+			grid.search(event.target.value)
+		});
+	}
+</script>
+@Html.IncludeVersionedJs(Url.Content("~/assets/design/Scripts/SyncScripts.js"))
+@Html.IncludeVersionedCss(Url.Content("~/assets/design/css/modelprint.css"))
+
+@(Html.EJS().ScriptManager())
+
+@section scripts    {
+	@System.Web.Optimization.Scripts.Render("~/bundle/unobtrusivejs")
+
+	@Html.IncludeVersionedJs(Url.Content("~/assets/design/Scripts/ToolTip.js"))
+
+	@Html.IncludeVersionedJs(Url.Content("~/assets/design/Scripts/SyncScripts.js"))
+	@Html.IncludeVersionedJs(Url.Content("~/assets/tableToExcel.js"))
+	<script type="text/javascript">
+
+		$("#btnAddVoucher").click(function () {
+			var ID = @Model.FYId + ',' + @Model.claimhead[0].HeadId + ',0'
+			ListAdd(ID);
+			var mdtitle = 'Add';
+			$("#loadvoucher span.spnhead").html(mdtitle);
+		});
+
+		function ListAdd(ID) {
+			var ID = ID;
+			var MenuID = Number('@MenuID');
+			var mdtitle = 'View';
+			$("#loadvoucher span.spnhead").html(mdtitle);
+            //ShowLoadingDialog();
+			//var url = "/Personnel/AddReimbVoucher?src=" + EncryptQueryStringJSON(MenuID + "*" + "/Personnel/AddReimbVoucher" + "*" + ID);
+			$.ajax({
+				url: "/Personnel/ReimbAddVoucher",
+				type: "Get",
+				data: {
+					src: EncryptQueryStringJSON(MenuID + "*" + "/Personnel/ReimbAddVoucher" + "*" + ID)
+				},
+				success: function (data) {
+					$("#LoadVoucerDiv").html(data)
+					$("#loadvoucher").modal('show');
+					var form = $("form")
+						.removeData("validator")
+						.removeData("unobtrusiveValidation");
+					$.validator.unobtrusive.parse(form);
+				}
+			});
+		}
+
+		function ListPrint(ID) {
+			var ID = ID;
+			var MenuID = Number('@MenuID');
+			$.ajax({
+				url: "/Personnel/_FinanceViewVoucher",
+				type: "Get",
+				data: {
+					src: EncryptQueryStringJSON(MenuID + "*" + "/Personnel/_FinanceViewVoucher" + "*" + ID)
+				},
+				success: function (data) {
+					$("#printVoucerDiv").html(data)
+					$("#printvoucher").modal('show');
+					var form = $("form")
+						.removeData("validator")
+						.removeData("unobtrusiveValidation");
+					$.validator.unobtrusive.parse(form);
+				}
+			});
+		}
+
+		function OnSuccess(obj) {
+			if (obj.Status) {
+				window.location.reload();
+				SuccessToaster(obj.SuccessMessage);
+			}
+			else {
+				CloseLoadingDialog();
+				FailToaster(obj.SuccessMessage);
+			}
+		}
+
+	</script>
+}

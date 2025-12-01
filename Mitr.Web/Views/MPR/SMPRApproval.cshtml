@@ -1,0 +1,88 @@
+﻿@model SMPR.Action
+
+
+<div class="inner-main" role="main">
+    <h1 class="heading-one">
+        SMPR Approval
+    </h1>
+
+    @using (Ajax.BeginForm("_SMPRApproval", "MPR",
+            new { src = clsApplicationSetting.EncryptQueryString(ViewBag.MenuID.ToString() + "*/MPR/_SMPRApproval") },
+              new AjaxOptions { HttpMethod = "POST", OnSuccess = "BindTarget", OnBegin = "ShowLoadingDialog()" },
+        new { @id = "_SMPRApprovalFrom" })
+        )
+    {
+        @Html.HiddenFor(model => model.Submitted)
+
+        <div class="col-lg-2 col-md-2 col-sm-2  form-group">
+            <label class="lbl-abs">Select Month</label>
+            @Html.TextBoxFor(model => model.Month, new { @class = "form-control actdate ddapplyaction", @type = "month" })
+            @Html.ValidationMessageFor(model => model.Month, "", new { @class = "text-danger" })
+        </div>
+        <div class="tab-main ">
+            <div class="row text-clr">
+                <div class="col-md-12">
+                    <ul id="tabs" class="nav nav-tabs " role="tablist">
+                        <li class="nav-item"> <a tabvalue="0" class="nav-link active ripplelink AnchorApproval" data-toggle="tab" role="tab"><i class="fal fa-envelope-open"></i>Pending</a> </li>
+                        <li class="nav-item"> <a tabvalue="2,4" class="nav-link ripplelink AnchorApproval" data-toggle="tab" role="tab"><i class="fas fa-share"></i>Resubmit</a></li>
+                        <li class="nav-item"> <a tabvalue="1" class="nav-link ripplelink AnchorApproval" data-toggle="tab" role="tab"><i class="fa fa-check" aria-hidden="true"></i>Processed</a></li>
+                    </ul>
+                </div>
+                <div style="display:none">
+                    <button type="submit" class="btn mtr-g-grn btn-l ripplelink" id="btnSearch" name="Command" value="Search"><i class="fas fa-search"></i>Search</button>
+                </div>
+
+            </div>
+        </div>
+        <div id="TargetDiv">@Html.Partial("_Loading")</div>
+    }
+
+
+</div>
+
+
+
+@section scripts    {
+	@System.Web.Optimization.Scripts.Render("~/bundle/unobtrusivejs")
+	@Html.IncludeVersionedJs(Url.Content("~/assets/design/Scripts/ToolTip.js"))
+	@Html.IncludeVersionedJs(Url.Content("~/assets/design/scripts/AddInit.js"))
+
+	<script>
+		$(document).ready(function () {
+			$("#btnSearch").click();
+		});
+		$('.AnchorApproval').on('click', function (e) {
+			e.preventDefault();
+			e.stopPropagation();
+			var att = $(this).attr("tabvalue");
+			$(".AnchorApproval.active").removeClass("active");
+			$(this).addClass("active");
+			$("#Submitted").val(att);
+			$("#btnSearch").click();
+		});
+
+		$('#Month').bind("change", function () {
+			debugger;
+			$("#btnSearch").click();
+		});
+		function BindTarget(args)
+		{
+			debugger;
+			CloseLoadingDialog();
+			$("#TargetDiv").empty();
+			$("#TargetDiv").html(args);
+		}
+
+		function BindSMPREdit(obj) {
+			var I = $(obj).closest("tr").find("input:hidden[name=I]").val();
+			var URL = "/MPR/SetSMPRApproval?src=" + EncryptQueryStringJSON(@ViewBag.MenuID+"*" + "/MPR/SetSMPRApproval*" + I);
+			ShowLoadingDialog();
+			window.location = URL;
+		}
+
+
+	</script>
+}
+
+
+

@@ -1,0 +1,384 @@
+﻿@model MonthlyLogNonMitr
+@{
+    ViewBag.Title = "ActivityLogApprovalEMPNonMITR";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    int A = 0;
+    DateTime SelectedDate = ViewBag.SelectedDate;
+    DateTime StartDate = new DateTime(SelectedDate.Year, SelectedDate.Month, 1);
+    DateTime EndDate = StartDate.AddMonths(1).AddDays(-1);
+
+    string[] COlor = new string[32];
+    string[] HolidayType = new string[32];
+    string[] Description = new string[32];
+    string[] ClassName = new string[32];
+    string[] ValidHours = new string[32];
+    string[] FixHoliday = new string[32];
+}
+<div class="inner-main" role="main">
+    <h1 class="heading-one">Activity Log Approval</h1>
+    @if (Model.LstMonthlyLog.Count > 0)
+    {
+        using (Ajax.BeginForm("ActivityLogApprovalEMPNonMITR", "Activity",
+    new { src = clsApplicationSetting.EncryptQueryString(ViewBag.MenuID.ToString() + "*/Activity/ActivityLogApprovalEMPNonMITR") },
+    new AjaxOptions { HttpMethod = "POST", OnSuccess = "OnSuccess", OnBegin = "ShowLoadingDialog();", OnFailure = "CloseLoadingDialog();" },
+    new { @id = "FrmActivityLogApprovalEMPNonMITR", @autocomplete = "Off", @enctype = "multipart/form-data" })
+    )
+        {
+
+            <input type="hidden" id="hdnSelectedDate" name="hdnSelectedDate" value="@ViewBag.SelectedDate" />
+
+            <div>
+
+                <div class="col-sm-12 form-group">
+                    <div class="table-responsive">
+
+                        <table class="table table-scroll act-table">
+                            <thead>
+                                <tr>
+                                    <th class="text-center" width="33" data-toggle="tooltip" data-placement="right" title="" data-original-title="Select All" aria-describedby="tooltip21
+                                        4">
+                                        <input type="checkbox" id="lg0_MA" class="selectall" name="AdvanceRequired">
+                                        <label for="lg0_MA" class="selectall"></label>
+                                    </th>
+                                    <th width="150">Employee Name</th>
+                                    <th class="text-left"> Project</th>
+                                    <th class="text-left">Activity</th>
+                                    <th class="text-left">Leave Type</th>
+                                    @for (DateTime date = StartDate; date <= EndDate; date = date.AddDays(1))
+                                    {
+                                        <th class="text-center">@Convert.ToInt32(date.ToString("dd")) <span> @date.ToString("ddd") </span></th>
+                                    }
+                                    <th><div class="w-30 text-right">Total</div></th>
+                                </tr>
+
+                            </thead>
+                            <tbody>
+                                @if (Model.LstMonthlyLog.Count > 0)
+                                {
+                                    int count = 0, EmpidOld = 0, EmpidNew = 0, rowspan = 1;
+                                    for (int i = 0; i < Model.LstMonthlyLog.Count; i++)
+                                    //foreach (var item in Model.LstMonthlyLog)
+                                    {
+                                        EmpidNew = Model.LstMonthlyLog[i].emp_id;
+                                        count++;
+                                        <tr>
+                                            @Html.HiddenFor(x => x.LstMonthlyLog[i].Doctype)
+                                            @Html.HiddenFor(x => x.LstMonthlyLog[i].emp_id)
+                                            @Html.HiddenFor(x => x.LstMonthlyLog[i].ActivityID)
+                                            @Html.HiddenFor(x => x.LstMonthlyLog[i].proj_id)
+                                            @Html.HiddenFor(x => x.LstMonthlyLog[i].month)
+                                            @Html.HiddenFor(x => x.LstMonthlyLog[i].year)
+                                            @Html.HiddenFor(x => x.LstMonthlyLog[i].FixHoliday)
+                                            @Html.HiddenFor(x => x.LstMonthlyLog[i].DailyLogID)
+                                            @if (EmpidNew != EmpidOld)
+                                            {
+                                                for (DateTime date = StartDate; date <= EndDate; date = date.AddDays(1))
+                                                {
+                                                    ClassName[Convert.ToInt32(date.ToString("dd"))] = (Model.LstMonthlyLog[i].FixHoliday.Contains(date.ToString("dddd")) ? "fixholidaycolor" : "");
+
+                                                    if (Model.LstHoliday.Any(x => x.Date == date.ToString("dd/MM/yyyy") && (x.Empid == EmpidNew || x.Empid == 0)))
+                                                    {
+                                                        COlor[Convert.ToInt32(date.ToString("dd"))] = Model.LstHoliday.Where(x => x.Date == date.ToString("dd/MM/yyyy") && (x.Empid == EmpidNew || x.Empid == 0)).Select(x => x.Color).FirstOrDefault();
+                                                        //HolidayType[Convert.ToInt32(date.ToString("dd"))] = LeaveList.Where(x => x.Date == date.ToString("dd/MM/yyyy")).Select(x => x.HolidayType).FirstOrDefault();
+                                                        //Description[Convert.ToInt32(date.ToString("dd"))] = LeaveList.Where(x => x.Date == date.ToString("dd/MM/yyyy")).Select(x => x.Description).FirstOrDefault();
+                                                        ClassName[Convert.ToInt32(date.ToString("dd"))] = ClassName[Convert.ToInt32(date.ToString("dd"))] + " " + Model.LstHoliday.Where(x => x.Date == date.ToString("dd/MM/yyyy") && (x.Empid == EmpidNew || x.Empid == 0)).Select(x => x.ClassName).FirstOrDefault();
+                                                        // ValidHours[Convert.ToInt32(date.ToString("dd"))] = (string.IsNullOrEmpty(LeaveList.Where(x => x.Date == date.ToString("dd/MM/yyyy")).Select(x => x.ClassName).FirstOrDefault()) ? "validatehours" : "");
+                                                    }
+
+                                                }
+                                                rowspan = Model.LstMonthlyLog.Where(n => n.emp_id == EmpidNew).ToList().Count;
+                                                <td class="text-center top" rowspan="@rowspan">
+                                                    @Html.HiddenFor(x => x.LstMonthlyLog[i].isSelect, new { @Class = "isSelect" })
+                                                    <input type="checkbox" id="dlMA_@i" name="dl_@i" class="selectedId">
+                                                    <label for="dlMA_@i" class="m-0"></label>
+                                                </td>
+                                                <td rowspan="@rowspan" class="top"><strong>@Model.LstMonthlyLog[i].EmpName.</strong></td>
+                                            }
+                                            <td>
+                                                @if (Model.LstMonthlyLog[i].Doctype == "A")
+                                                {
+                                                    @Model.LstMonthlyLog[i].proj_name
+                                                }
+                                            </td>
+
+                                            <td>
+                                                @if (Model.LstMonthlyLog[i].Doctype == "A")
+                                                {
+                                                    @Model.LstMonthlyLog[i].Activity
+                                                }
+
+                                            </td>
+                                            <td>
+                                                @if (Model.LstMonthlyLog[i].Doctype != "A")
+                                                {
+                                                    @Model.LstMonthlyLog[i].proj_name
+                                                }
+                                            </td>
+                                            <td data-toggle="tooltip" data-original-title="@Html.Raw(Description[1])" class="@ClassName[1] text-center  workclass workclass_1 @COlor[1] ">
+                                                @Model.LstMonthlyLog[i].Day1
+                                                @Html.HiddenFor(x => x.LstMonthlyLog[i].Day1)
+                                            </td>
+                                            <td data-toggle="tooltip" data-original-title="@Html.Raw(Description[2])" class="@ClassName[2] text-center  workclass workclass_1 @COlor[2] ">
+                                                @Model.LstMonthlyLog[i].Day2
+                                                @Html.HiddenFor(x => x.LstMonthlyLog[i].Day2)
+                                            </td>
+                                            <td data-toggle="tooltip" data-original-title="@Html.Raw(Description[3])" class="@ClassName[3] text-center  workclass workclass_1 @COlor[3] ">
+                                                @Model.LstMonthlyLog[i].Day3
+                                                @Html.HiddenFor(x => x.LstMonthlyLog[i].Day3)
+                                            </td>
+                                            <td data-toggle="tooltip" data-original-title="@Html.Raw(Description[4])" class="@ClassName[4] text-center  workclass workclass_1 @COlor[4] ">
+                                                @Model.LstMonthlyLog[i].Day4
+                                                @Html.HiddenFor(x => x.LstMonthlyLog[i].Day4)
+                                            </td>
+                                            <td data-toggle="tooltip" data-original-title="@Html.Raw(Description[5])" class="@ClassName[5] text-center  workclass workclass_1 @COlor[5] ">
+                                                @Model.LstMonthlyLog[i].Day5
+                                                @Html.HiddenFor(x => x.LstMonthlyLog[i].Day5)
+                                            </td>
+                                            <td data-toggle="tooltip" data-original-title="@Html.Raw(Description[6])" class="@ClassName[6] text-center  workclass workclass_1 @COlor[6] ">
+                                                @Model.LstMonthlyLog[i].Day6
+                                                @Html.HiddenFor(x => x.LstMonthlyLog[i].Day6)
+                                            </td>
+                                            <td data-toggle="tooltip" data-original-title="@Html.Raw(Description[7])" class="@ClassName[7] text-center  workclass workclass_1 @COlor[7] ">
+                                                @Model.LstMonthlyLog[i].Day7
+                                                @Html.HiddenFor(x => x.LstMonthlyLog[i].Day7)
+                                            </td>
+                                            <td data-toggle="tooltip" data-original-title="@Html.Raw(Description[8])" class="@ClassName[8] text-center  workclass workclass_1 @COlor[8] ">
+                                                @Model.LstMonthlyLog[i].Day8
+                                                @Html.HiddenFor(x => x.LstMonthlyLog[i].Day8)
+                                            </td>
+                                            <td data-toggle="tooltip" data-original-title="@Html.Raw(Description[9])" class="@ClassName[9] text-center  workclass workclass_1 @COlor[9] ">
+                                                @Model.LstMonthlyLog[i].Day9
+                                                @Html.HiddenFor(x => x.LstMonthlyLog[i].Day9)
+                                            </td>
+                                            <td data-toggle="tooltip" data-original-title="@Html.Raw(Description[10])" class="@ClassName[10] text-center  workclass workclass_1 @COlor[10] ">
+                                                @Model.LstMonthlyLog[i].Day10
+                                                @Html.HiddenFor(x => x.LstMonthlyLog[i].Day10)
+                                            </td>
+                                            <td data-toggle="tooltip" data-original-title="@Html.Raw(Description[11])" class="@ClassName[11] text-center  workclass workclass_1 @COlor[11] ">
+                                                @Model.LstMonthlyLog[i].Day11
+                                                @Html.HiddenFor(x => x.LstMonthlyLog[i].Day11)
+                                            </td>
+                                            <td data-toggle="tooltip" data-original-title="@Html.Raw(Description[12])" class="@ClassName[12] text-center  workclass workclass_1 @COlor[12] ">
+                                                @Model.LstMonthlyLog[i].Day12
+                                                @Html.HiddenFor(x => x.LstMonthlyLog[i].Day12)
+                                            </td>
+                                            <td data-toggle="tooltip" data-original-title="@Html.Raw(Description[13])" class="@ClassName[13] text-center  workclass workclass_1 @COlor[13] ">
+                                                @Model.LstMonthlyLog[i].Day13
+                                                @Html.HiddenFor(x => x.LstMonthlyLog[i].Day13)
+                                            </td>
+                                            <td data-toggle="tooltip" data-original-title="@Html.Raw(Description[14])" class="@ClassName[14] text-center  workclass workclass_1 @COlor[14] ">
+                                                @Model.LstMonthlyLog[i].Day14
+                                                @Html.HiddenFor(x => x.LstMonthlyLog[i].Day14)
+                                            </td>
+                                            <td data-toggle="tooltip" data-original-title="@Html.Raw(Description[15])" class="@ClassName[15] text-center  workclass workclass_1 @COlor[15] ">
+                                                @Model.LstMonthlyLog[i].Day15
+                                                @Html.HiddenFor(x => x.LstMonthlyLog[i].Day15)
+                                            </td>
+                                            <td data-toggle="tooltip" data-original-title="@Html.Raw(Description[16])" class="@ClassName[16] text-center  workclass workclass_1 @COlor[16] ">
+                                                @Model.LstMonthlyLog[i].Day16
+                                                @Html.HiddenFor(x => x.LstMonthlyLog[i].Day16)
+                                            </td>
+                                            <td data-toggle="tooltip" data-original-title="@Html.Raw(Description[17])" class="@ClassName[17] text-center  workclass workclass_1 @COlor[17] ">
+                                                @Model.LstMonthlyLog[i].Day17
+                                                @Html.HiddenFor(x => x.LstMonthlyLog[i].Day17)
+                                            </td>
+                                            <td data-toggle="tooltip" data-original-title="@Html.Raw(Description[18])" class="@ClassName[18] text-center  workclass workclass_1 @COlor[18] ">
+                                                @Model.LstMonthlyLog[i].Day18
+                                                @Html.HiddenFor(x => x.LstMonthlyLog[i].Day18)
+                                            </td>
+                                            <td data-toggle="tooltip" data-original-title="@Html.Raw(Description[19])" class="@ClassName[19] text-center  workclass workclass_1 @COlor[19] ">
+                                                @Model.LstMonthlyLog[i].Day19
+                                                @Html.HiddenFor(x => x.LstMonthlyLog[i].Day19)
+                                            </td>
+                                            <td data-toggle="tooltip" data-original-title="@Html.Raw(Description[20])" class="@ClassName[20] text-center  workclass workclass_1 @COlor[20] ">
+                                                @Model.LstMonthlyLog[i].Day20
+                                                @Html.HiddenFor(x => x.LstMonthlyLog[i].Day20)
+                                            </td>
+                                            <td data-toggle="tooltip" data-original-title="@Html.Raw(Description[21])" class="@ClassName[21] text-center  workclass workclass_1 @COlor[21] ">
+                                                @Model.LstMonthlyLog[i].Day21
+                                                @Html.HiddenFor(x => x.LstMonthlyLog[i].Day21)
+                                            </td>
+                                            <td data-toggle="tooltip" data-original-title="@Html.Raw(Description[22])" class="@ClassName[22] text-center  workclass workclass_1 @COlor[22] ">
+                                                @Model.LstMonthlyLog[i].Day22
+                                                @Html.HiddenFor(x => x.LstMonthlyLog[i].Day22)
+                                            </td>
+                                            <td data-toggle="tooltip" data-original-title="@Html.Raw(Description[23])" class="@ClassName[23] text-center  workclass workclass_1 @COlor[23] ">
+                                                @Model.LstMonthlyLog[i].Day23
+                                                @Html.HiddenFor(x => x.LstMonthlyLog[i].Day23)
+                                            </td>
+                                            <td data-toggle="tooltip" data-original-title="@Html.Raw(Description[24])" class="@ClassName[24] text-center  workclass workclass_1 @COlor[24] ">
+                                                @Model.LstMonthlyLog[i].Day24
+                                                @Html.HiddenFor(x => x.LstMonthlyLog[i].Day24)
+                                            </td>
+                                            <td data-toggle="tooltip" data-original-title="@Html.Raw(Description[25])" class="@ClassName[25] text-center  workclass workclass_1 @COlor[25] ">
+                                                @Model.LstMonthlyLog[i].Day25
+                                                @Html.HiddenFor(x => x.LstMonthlyLog[i].Day25)
+                                            </td>
+                                            <td data-toggle="tooltip" data-original-title="@Html.Raw(Description[26])" class="@ClassName[26] text-center  workclass workclass_1 @COlor[26] ">
+                                                @Model.LstMonthlyLog[i].Day26
+                                                @Html.HiddenFor(x => x.LstMonthlyLog[i].Day26)
+                                            </td>
+                                            <td data-toggle="tooltip" data-original-title="@Html.Raw(Description[27])" class="@ClassName[27] text-center  workclass workclass_1 @COlor[27] ">
+                                                @Model.LstMonthlyLog[i].Day27
+                                                @Html.HiddenFor(x => x.LstMonthlyLog[i].Day27)
+                                            </td>
+                                            <td data-toggle="tooltip" data-original-title="@Html.Raw(Description[28])" class="@ClassName[28] text-center  workclass workclass_1 @COlor[28] ">
+                                                @Model.LstMonthlyLog[i].Day28
+                                                @Html.HiddenFor(x => x.LstMonthlyLog[i].Day28)
+                                            </td>
+                                            @if (EndDate.Day >= 29)
+                                            {
+                                                <td data-toggle="tooltip" data-original-title="@Html.Raw(Description[29])" class="@ClassName[29] text-center  workclass workclass_1 @COlor[29] ">
+                                                    @Model.LstMonthlyLog[i].Day29
+                                                    @Html.HiddenFor(x => x.LstMonthlyLog[i].Day29)
+                                                </td>
+                                            }
+                                            @if (EndDate.Day >= 30)
+                                            {
+                                                <td data-toggle="tooltip" data-original-title="@Html.Raw(Description[30])" class="@ClassName[30] text-center  workclass workclass_1 @COlor[30] ">
+                                                    @Model.LstMonthlyLog[i].Day30
+                                                    @Html.HiddenFor(x => x.LstMonthlyLog[i].Day30)
+                                                </td>
+                                            }
+                                            @if (EndDate.Day == 31)
+                                            {
+                                                <td data-toggle="tooltip" data-original-title="@Html.Raw(Description[31])" class="@ClassName[31] text-center  workclass workclass_1 @COlor[31] ">
+                                                    @Model.LstMonthlyLog[i].Day31
+                                                    @Html.HiddenFor(x => x.LstMonthlyLog[i].Day31)
+                                                </td>
+                                            }
+
+
+                                            @*@for (DateTime date = StartDate; date <= EndDate; date = date.AddDays(1))
+                                                {
+                                                    int.TryParse(date.ToString("dd"), out A);
+                                                    <td data-toggle="tooltip" data-original-title="@Html.Raw(Description[A])" class="@ClassName[A] text-center  workclass workclass_1 @COlor[A] ">
+                                                        @item["day" + Convert.ToInt32(date.ToString("dd"))]
+                                                        @if (item["doc_type"].ToString() == "G")
+                                                        {
+                                                            <input type="hidden" id="hdnGrandTotal_@A" name="hdnGrandTotal_@A" value="@item["day" + A]" />
+                                                        }
+                                                    </td>
+                                                }*@
+
+
+                                            <td class="text-right"><strong>@Model.LstMonthlyLog[i].Total</strong> </td>
+                                        </tr>
+                                        EmpidOld = EmpidNew;
+                                    }
+
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+
+            </div>
+
+            if (Model.LstHoursSummary.Count > 0)
+            {
+                for (int i = 0; i < Model.LstHoursSummary.Count; i++)
+                {
+                    @Html.HiddenFor(x => x.LstHoursSummary[i].Empid)
+                    @Html.HiddenFor(x => x.LstHoursSummary[i].EMailCC)
+                    @Html.HiddenFor(x => x.LstHoursSummary[i].EmpType)
+                    @Html.HiddenFor(x => x.LstHoursSummary[i].MWHrs)
+                    @Html.HiddenFor(x => x.LstHoursSummary[i].TCAHrs)
+                    @Html.HiddenFor(x => x.LstHoursSummary[i].TLAHrs)
+                    @Html.HiddenFor(x => x.LstHoursSummary[i].TLPHrs)
+                    @Html.HiddenFor(x => x.LstHoursSummary[i].WorkingHours)
+                }
+
+            }
+
+
+            <div class="row mt-3">
+                @if (!string.IsNullOrEmpty(ViewBag.ResubmitRemarks))
+                {
+                    <div class="col-md-8 mx-auto">
+                        <strong class="heading-three"><i class="fas fa-comments"></i>Supervisor Remarks</strong>
+                        @ViewBag.ResubmitRemarks
+                    </div>
+
+                }
+            </div>
+
+            <div class="mt-1  text-center">
+                @*<button type="submit" class="btn blk-gdn-btn" name="Command" value="Resubmit"><i class="fas fa-share"></i>Resubmit</button>*@
+                @if (ViewBag.Approve == "0")
+                {
+                    <button type="button" class="btn blk-gdn-btn" data-toggle="modal" data-target="#rbt"><i class="fas fa-share"></i>Resubmit</button>
+                    <button type="submit" class="btn btn mtr-g-grn" name="Command" value="Approve"><i class="fas fa-check" aria-hidden="true"></i>Approve</button>
+                }
+
+
+                <a href="/Dashboard" onclick="ShowLoadingDialog();" class="btn cnl-btn ripplelink btnNext"><i class="fas fa-times"></i>Close</a>
+            </div>
+            <div class="modal " id="rbt">
+                <div class="modal-dialog modal-lg">
+                    <div class="modal-content ">
+                        <!-- Modal Header -->
+                        <div class="modal-header">
+                            <h4 class="modal-title">Resubmit Remarks</h4>
+                            <button type="button" class="close" data-dismiss="modal">&times;</button>
+                        </div>
+
+                        <!-- Modal body -->
+                        <div class="modal-body ">
+                            <!---->
+                            <div class="row">
+                                <div class="col-lg-12 form-group">
+
+                                    <label>Reason</label>
+                                    <textarea id="txtRemark" name="txtRemark" class="form-control h-80" placeholder="Enter"></textarea>
+                                </div>
+                            </div>
+                            <div class="col-sm-12 text-center mt-2">                               
+                                <button type="submit" class="btn mtr-o-grn" name="Command" value="Resubmit"><i class="fa fa-paper-plane"></i>Submit</button>
+                                <button type="button" class="btn cnl-btn ripplelink" data-dismiss="modal"><i class="fas fa-times"></i> Cancel</button>
+                            </div>
+                        </div>
+                        <!---->
+
+                    </div>
+                </div>
+            </div>
+        }
+
+    }
+</div>
+@section scripts    {
+    @System.Web.Optimization.Scripts.Render("~/bundle/unobtrusivejs")
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('.selectall').click(function () {
+                var ischecked = 0;
+                if (this.checked) { ischecked = 1; }
+                $('.isSelect').val(ischecked);
+                $('.selectedId').prop('checked', this.checked);
+            });
+
+            $('.selectedId').change(function () {
+                var ischecked = 0;
+                if (this.checked) { ischecked = 1; }
+                $(this).closest("tr").find(".isSelect").val(ischecked);
+                var check = ($('.selectedId').filter(":checked").length == $('.selectedId').length);
+                $('.selectall').prop("checked", check);
+            });
+
+        });
+        function OnSuccess(ogb) {
+
+            if (ogb.Status) {
+                window.location = ogb.RedirectURL;
+
+            }
+            else {
+                FailToaster(ogb.SuccessMessage);
+                CloseLoadingDialog();
+            }
+        }
+    </script>
+}
+

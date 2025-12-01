@@ -1,0 +1,124 @@
+﻿@model PMS
+
+<div class="inner-main mb-5 pb-0">
+	@Html.Partial("ListHeader_Partial", "Organisational Standard Question")
+
+	@using (Ajax.BeginForm("_OSQuestion", "PMS",
+			new { src = clsApplicationSetting.EncryptQueryString(ViewBag.MenuID.ToString() + "*/PMS/_OSQuestion") },
+			  new AjaxOptions { HttpMethod = "POST", OnSuccess = "BindTarget", OnBegin = "ShowLoadingDialog()" },
+		new { @id = "_OSQuestionFrom" })
+		)
+	{
+		<div class="row">
+			<div class="col-lg-2 col-md-2 col-sm-2 slt-srh mb-0  form-group">
+				<label class="lbl-abs">Select Appraisal Period</label>
+				@Html.DropDownListFor(x => Model.FYID, new SelectList(ViewBag.FinYearList, "ID", "Year", Model.FYID), "Select Appraisal Period",
+		new { @class = "form-control  applyselect ddapplyaction" })
+				@Html.ValidationMessageFor(model => Model.FYID, "", new { @class = "text-danger" })
+			</div>
+			<div style="display:none">
+				<button type="submit" class="btn mtr-g-grn btn-l ripplelink" id="btnSearch" name="Command" value="Search"><i class="fas fa-search"></i>Search</button>
+			</div>
+		</div>
+	}
+
+	<div id="TargetDiv">@Html.Partial("_Loading")</div>
+</div>
+
+
+<div class="modal fade pop-dgn" id="AddModal">
+	<div class="modal-dialog modal-lg">
+		<div class="modal-content">
+
+			<div class="modal-header blk-gdn-btn">
+				<h4 class="modal-title">
+					<i class="fa fa-plus"></i><span id="spnHead">Organisational Standard Question</span>
+
+				</h4>
+				<div class="close" data-dismiss="modal">&times;</div>
+			</div>
+			<!-- Modal body -->
+			<div class="modal-body">
+				<div id="TagetDivAdd"></div>
+			</div>
+		</div>
+	</div>
+</div>
+
+@section scripts    {
+	@System.Web.Optimization.Scripts.Render("~/bundle/unobtrusivejs")
+	@Html.IncludeVersionedJs(Url.Content("~/assets/design/Scripts/ToolTip.js"))
+	@System.Web.Optimization.Scripts.Render("~/assets/design/Scripts/AddInit.js")
+
+	<script>
+		$(document).ready(function () {
+			$("#btnSearch").click();
+		});
+
+		$('.ddapplyaction').bind("change", function () {
+			$("#btnSearch").click();
+		});
+
+
+		function BindTarget(args) {
+			CloseLoadingDialog();
+			$("#TargetDiv").empty();
+			$("#TargetDiv").html(args);
+			$('[data-toggle="tooltip"]').tooltip();
+			$(".applyselect").select2();
+		}
+
+		function OnSuccessAddOSQuestion(obj) {
+			CloseLoadingDialog();
+			if (obj.Status) {
+				SuccessToaster(obj.SuccessMessage);
+				$("#btnSearch").click();
+				$("#AddModal").modal("hide");
+			}
+			else {
+				FailToaster(obj.SuccessMessage);
+			}
+		}
+
+		
+    function ListHeaderAdd(CMSID) {
+        if (CMSID == undefined)
+        {
+            CMSID = 0;
+		}
+		var FYID = Number($("#FYID option:selected").val());
+			$.ajax({
+				url: "/PMS/_AddOSQuestion",
+				type: "Get",
+				data: { src: EncryptQueryStringJSON(@ViewBag.MenuID+"*" + "/PMS/_AddOSQuestion" + "*" + FYID+"*" + CMSID) },
+                success: function (data)
+                {
+					$("#TagetDivAdd").empty();
+					$("#TagetDivAdd").html(data);
+					$("#AddModal").modal("show");
+					$(".applyselect").select2();
+                     var form = $("form")
+                .removeData("validator")
+                .removeData("unobtrusiveValidation");
+                    $.validator.unobtrusive.parse(form);
+				},
+				error: function (er) {
+					alert(er);
+
+				}
+			});
+		}
+
+		function ApplyShowhide(obj) {
+			var a = $(obj).find("option:selected").val();
+			if (a === "Specific") {
+				$("#ddSelectedDesig").show();
+			}
+			else {
+				$("#ddSelectedDesig").hide();
+			}
+		}
+
+	</script>
+
+}

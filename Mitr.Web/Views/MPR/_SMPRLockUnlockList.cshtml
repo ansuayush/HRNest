@@ -1,0 +1,100 @@
+﻿@model IList<LockUnlock.List>
+
+
+@if (Model.Count > 0)
+{
+	if (Model.Any(x => x.Lock==0))
+	{
+		<a id="AMonthlyCloser" class="btn mtr-o-grn"><i class="fas fa-calendar-alt"></i>Month Closure </a>
+	}
+
+	<div class="mb-2 table-responsive" >
+		@if (!string.IsNullOrEmpty(Model.Select(x => x.LastLockedDate).FirstOrDefault()))
+		{
+			<div class="col-sm-12">
+				<strong class="red-clr">Last closed month:<u> @Model.Select(x => x.LastLockedDate).FirstOrDefault() </u></strong>
+			</div>
+		}
+		<table class="table mt-1">
+			<thead>
+				<tr>
+					<th >Project </th>
+					<th class="w-100">State </th>
+					<th class="w-100">Due On </th>
+					<th class="w-100">MPR version </th>
+					<th class="w-100">No. of times updated</th>
+					<th class="w-100"> Last updated on </th>
+					<th class="w-100">Status</th>
+					<th class="w-100">Action</th>
+				</tr>
+			</thead>
+			<tbody>
+
+				@foreach (var item in Model.Select(x => x.ProjectName).Distinct())
+				{
+					<tr>
+						<td colspan="6"><strong> @item</strong></td>
+					</tr>
+					foreach (var ssitem in Model.Where(x => x.ProjectName == item).ToList())
+					{
+					<tr>
+						<td>
+							<input type="hidden" name="Lock" value="@ssitem.Lock" />
+							<input type="hidden" name="SMPRID" value="@ssitem.SMPRID" />
+							<input type="hidden" name="ProjectName" value="@ssitem.ProjectName" />
+						</td>
+						<td>@ssitem.StateName </td>
+						<td>@ssitem.DueOn </td>
+						<td>@ssitem.Version </td>
+						<td>
+							@if (ssitem.UpdatedCount != 0)
+							{
+								@ssitem.UpdatedCount
+								<a class="AShowHistory float-right"><i class="fas fa-history"></i></a>
+							}
+						</td>
+
+						<td>@ssitem.LastUpdatedOn</td>
+						<td>
+							@if (ssitem.Status == "Completed")
+							{
+								<strong class="green-clr">@ssitem.Status</strong>
+
+							}
+							else if (ssitem.Status == "Not Started")
+							{
+								<strong class="red-clr">@ssitem.Status</strong>
+							}
+							else
+							{
+								<strong class="blue-clr">@ssitem.Status</strong>
+							}
+						</td>
+						<td>
+							@if (ssitem.Status != "Completed")
+							{
+								if (ssitem.Lock == 0)
+								{
+									<a data-toggle='tooltip' data-original-title="Click For Lock" class="ALockUnlock green-clr"><i class="fas fa-unlock" aria-hidden="true"></i> Unlock</a>
+								}
+								else
+								{
+									<a data-toggle='tooltip' data-original-title="Click For Unlock" class="ALockUnlock red-clr"><i class="fas fa-lock" aria-hidden="true"></i>Lock</a>
+								}
+							}
+
+						</td>
+					</tr>
+					}
+				}
+
+			</tbody>
+		</table>
+	</div>
+}
+else
+{
+
+	@Html.Partial("_NoRecordsFound")
+
+}

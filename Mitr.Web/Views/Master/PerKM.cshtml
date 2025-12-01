@@ -1,0 +1,144 @@
+﻿
+@model Mitr.Models.PerKM
+
+
+@section style{
+	@System.Web.Optimization.Styles.Render("~/bundle/dataTablecss")
+}
+
+<div class="inner-main mb-5 pb-0">
+	@Html.Partial("ListHeader_Partial", "KM List")
+
+	<div class="row">
+		<div class="col-md-12 col-sm-12 col-xs-12">
+
+			<div class="x_content table-currency m-0">
+
+				<div class="table-responsive">
+					<table id="datatable-buttons" class="table table-striped table-bordered dt-responsive nowrap tbltick new_width" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
+						<thead>
+							<tr>
+								<th>S.no.</th>
+								<th>KM</th>
+								<th>Vechile Type</th>
+								<th>KM Rate</th>
+								<th>From KM</th>
+								<th>To KM</th>
+								<th>Action</th>
+
+							</tr>
+							<tr class="searchbar">
+								<th class="searchhide"></th>
+								<th> </th>
+								<th> </th>
+								<th> </th>
+								<th> </th>
+								<th> </th>
+								<th class="searchhide"></th>
+							</tr>
+						</thead>
+						<tbody>
+							@{ int Count = 0;}
+							@if (Model.objkmlist == null)
+							{
+								List
+								<Mitr.Models.PerKM>
+									List = new List<Mitr.Models.PerKM>
+										();
+								List.Add(new Mitr.Models.PerKM());
+								Model.objkmlist = List;
+							}
+							@for (int i = 0; i < Model.objkmlist.Count; i++)
+							{
+								Count++;
+							<tr>
+								<td>@Count</td>
+
+								<td> @Model.objkmlist[i].KM</td>
+								<td>@Model.objkmlist[i].VehicleType</td>
+								<td>@Model.objkmlist[i].KMRate</td>
+								<td>@Model.objkmlist[i].FromKm</td>
+								<td>@Model.objkmlist[i].ToKm</td>
+								<td><a title="Edit" onclick="ListHeaderAdd(@Model.objkmlist[i].Id);" data-toggle='tooltip'><i class="fas fa-edit checkgreen" aria-hidden="true"></i> </a></td>
+								
+							</tr>
+							}
+						</tbody>
+					</table>
+				</div>
+
+			</div>
+		</div>
+
+	</div>
+</div>
+<div class="modal fade pop-dgn" id="ViewModal">
+	<div class="modal-dialog modal-lg">
+		<div class="modal-content">
+
+			<div class="modal-header blk-gdn-btn">
+				<h4 class="modal-title"><i class="fas fa-print"></i>Add KM </h4>
+				<div class="close" data-dismiss="modal">&times;</div>
+			</div>
+			<!-- Modal body -->
+			<div class="modal-body">
+				<div id="TagetDiv"></div>
+			</div>
+		</div>
+	</div>
+</div>
+
+@section scripts    {
+	@System.Web.Optimization.Scripts.Render("~/bundle/dataTablesjs")
+	@System.Web.Optimization.Scripts.Render("~/bundle/unobtrusivejs")
+	@Html.IncludeVersionedJs(Url.Content("~/assets/design/Scripts/AddInit.js"))
+	@Html.IncludeVersionedJs(Url.Content("~/assets/design/Scripts/ToolTip.js"))
+	@Html.IncludeVersionedJs(Url.Content("~/assets/design/Scripts/ckeditor.js"))
+	<script>
+
+		function ListHeaderAdd(CMSID) {
+			ShowLoadingDialog();
+        if (CMSID == undefined)
+        {
+            CMSID = 0;
+        }
+			$.ajax({
+				url: "/Master/_AddPerKM",
+				type: "Get",
+				data: { src: EncryptQueryStringJSON(@ViewBag.MenuID+"*" + "/Master/_AddPerKM" + "*" + CMSID) },
+                success: function (data)
+                {
+					$("#TagetDiv").empty();
+                    $("#TagetDiv").html(data);
+					$("#ViewModal").modal("show");
+					$(".applyselect").select2();
+					CloseLoadingDialog();
+
+
+					var form = $("form")
+						.removeData("validator")
+						.removeData("unobtrusiveValidation");
+					$.validator.unobtrusive.parse(form);
+
+				},
+				error: function (er) {
+					CloseLoadingDialog();
+
+				}
+			});
+            }
+
+    function OnSuccess(obj)
+    {
+		if (obj.Status) {
+			SuccessToaster(obj.SuccessMessage);
+            window.location.reload();
+        }
+        else {
+            FailToaster(obj.SuccessMessage);
+			CloseLoadingDialog();
+        }
+
+    }
+	</script>
+}

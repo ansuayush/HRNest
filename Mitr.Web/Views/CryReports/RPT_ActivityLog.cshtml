@@ -1,0 +1,249 @@
+﻿@using System.Data
+@model Mitr.Models.ConsolidateActivityLog
+
+@section style{
+    @System.Web.Optimization.Styles.Render("~/bundle/dataTablecss")
+}
+<link href="~/assets/design/css/printtimesheet.css" media="print" rel="stylesheet" />
+
+<div class="right_col" role="main">
+    <div class="inner-main">
+        @Html.Partial("HeaderMsg_Partial")
+        <h1 class="heading-one"> Consolidate Activity Log    </h1>
+
+        @using (Ajax.BeginForm("_ConsolidateActivityLog", "Activity",
+                new { src = clsApplicationSetting.EncryptQueryString(ViewBag.MenuID.ToString() + "*/Activity/_ConsolidateActivityLog") },
+                new AjaxOptions { HttpMethod = "POST", OnSuccess = "BindTarget", OnBegin = "ShowLoadingDialog()" },
+            new { @id = "_ConsolidateActivityLogFrom" })
+            )
+        {
+            @Html.AntiForgeryToken()
+            <div class="tab-main">
+                <div class="row text-clr">
+                    <div class="col-md-2 form-group">
+                        <label> Month</label>
+                        @Html.TextBoxFor(model => model.Date, new { @class = "form-control", @type = "month" })
+                        @Html.ValidationMessageFor(model => model.Date, "", new { @class = "text-danger" })
+                    </div>
+                    <div class="col-md-2 form-group">
+                        <label> Name </label>
+                        <select id="@Html.IdFor(model => model.EMPID)" name="@Html.NameFor(model => model.EMPID)" multiple class="form-control applyselect">
+                            <option value="0">All</option>
+                            @foreach (var item in Model.EMPList)
+                            {
+                                <option value="@item.EMPID">@item.EMPName</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="col-md-8 pt-13">
+                        <button type="submit" style="display:none" class="btn mtr-g-grn btn-l ripplelink btnsubmit" name="Command" value="Submit"><i class="fas fa-save"></i>Submit</button>
+                        <button type="button" id="btnCollate" class="btn mtr-g-grn btn-l ripplelink" name="Command" value="Collate"><i class="fas fa-search"></i>Collate</button>
+                        <button type="button" class="btn mtr-g-grn btn-l ripplelink btncheckStatus"><i class="fas fa-receipt"></i>Check Status</button>
+                        <button type="button" id="BtnProcess" class="btn mtr-g-grn btn-l ripplelink " name="Command" value="Process"><i class="fas fa-copy"></i>Process</button>
+
+                    </div>
+
+                </div>
+            </div>
+        }
+        <div id="TargetDiv"></div>
+
+    </div>
+
+
+    <!-- Check Status Modal -->
+    <div class="modal fade pop-dgn" id="ChkStatusModal">
+        <div class="modal-dialog popw--md">
+            <div class="modal-content">
+                <div class="modal-header blk-gdn-btn">
+                    <h4 class="modal-title"><i class="fas fa-receipt"></i><span id="spnStatusHeader"></span> </h4>
+                    <div class="close" data-dismiss="modal">&times;</div>
+                </div>
+                <div class="modal-body p-3">
+                    <div id="DivChkStatusModal"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- TASK Modal -->
+<div class="modal fade pop-dgn" id="ModalEmployeetimesheet">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+
+            <!-- Modal Header -->
+            <div class="modal-header blk-gdn-btn">
+                <h4 class="modal-title"><span id="spnEmployeetimesheet"></span></h4>
+                <div class="close" data-dismiss="modal">&times;</div>
+            </div>
+
+            <!-- Modal body -->
+            <div class="modal-body p-3 mt-2">
+                <div id="DivEmployeeTimeSheet"></div>
+                <div class="p-2">
+                    <div class="row">
+                        <div class="col-sm-12 text-center mt-3">
+                            <button type="button" class="btn tooltip-btn Printbtn " data-dismiss="modal"><i class="fas fa-print"></i>Print</button>
+                            <button type="button" class="btn cnl-btn ripplelink  " data-dismiss="modal"><i class="fas fa-times"></i>Close</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@section scripts    {
+    @System.Web.Optimization.Scripts.Render("~/bundle/dataTablesjs")
+    <script src="~/assets/design/Scripts/AddInit.js?v=@clsApplicationSetting.GetWebConfigValue("Version")"></script>
+    @System.Web.Optimization.Scripts.Render("~/bundle/unobtrusivejs");
+    <script src="~/assets/design/js/freeze-table.js?v=@clsApplicationSetting.GetWebConfigValue("Version")"></script>
+    <script src="~/assets/design/Scripts/PagesJS/ConsolidateActivity.js?v=@clsApplicationSetting.GetWebConfigValue("Version")"></script>
+
+
+    <script>
+
+        $(document).ready(function () {
+            $(".btnsubmit").click();
+        });
+
+        $("#btnCollate").bind("click", function () {
+            ShowLoadingDialog()
+            var Date = $("#Date").val();
+            var E = $("#EMPID option:selected").val();
+            $.ajax({
+                url: "/Activity/_ConsolidateCollate",
+                type: "Post",
+                data: { src: EncryptQueryStringJSON(MenuID + "*" + "/Activity/_ConsolidateCollate"), Date: Date, EMPID: E },
+                success: function (data) {
+                    if (data) {
+                        SuccessToaster(data.SuccessMessage);
+                        $(".btnsubmit").click();
+                    }
+                    else {
+                        FailToaster(data.SuccessMessage);
+                    }
+                    CloseLoadingDialog();
+                },
+                error: function (er) {
+                    CloseLoadingDialog()
+                }
+            });
+        });
+
+        $(".Printbtn").click(function () {
+            window.print();
+
+            return false;
+        });
+
+        $('#Date').bind("change", function () {
+            FillEMP();
+            $(".btnsubmit").click();
+
+        });
+
+        $('#EMPID').bind("change", function () {
+            ManageTableRecord(this);
+
+        });
+
+        function FillEMP() {
+            var SelectedDate = $("#Date").val();
+            $.ajax({
+                url: "/CommonAjax/GetConsolidateEMPjson",
+                type: "Get",
+                data: { Date: SelectedDate },
+                success: function (data) {
+                    $("#EMPID").empty();
+                    $("#EMPID").append($("<option     />").val("0").text("All"));
+                    $(data).each(function () {
+                        $("#EMPID").append($("<option />").val(this.EMPID).text(this.EMPName));
+                        $("#EMPID").select2();
+                    });
+                },
+                error: function (er) {
+                    console.log(er);
+                }
+            });
+
+
+        }
+
+        function ManageTableRecord(obj) {
+            var htmj = $('#TargetDiv').html();
+            var str = $(obj).val();
+            var myArray = str.toString().split(',');
+            if (htmj != "") {
+                if ($(obj).val() != "0") {
+                   // $('#TargetDiv table tbody tr').show();
+                   $('#TargetDiv table tbody tr').hide();
+
+                    for (var i = 0; i < myArray.length; i++) {
+                        myArray[i] = myArray[i].replace(/^\s*/, "").replace(/\s*$/, "");
+                       // $('#TargetDiv table tbody tr').not('#Tr_' + myArray[i]).hide();
+                        $('#Tr_' + myArray[i]).show();
+                    }
+                }
+                else {
+                    $('#TargetDiv table tbody tr').show();
+                }
+            }
+
+        }
+
+
+        function BindTarget(args) {
+            CloseLoadingDialog();
+            $("#TargetDiv").empty();
+            $("#TargetDiv").html(args);
+            $(".anhorEmployeeTimeSheet").click(function (e) {
+                e.preventDefault();
+                e.stopPropagation();
+                var E = $(this).closest("tr").find("input:hidden[name=E]").val();
+                var N = $(this).closest("tr").find("input:hidden[name=N]").val();
+                GetEmployeeTimeSheet(E, N);
+            });
+            FreezTable();
+
+        }
+
+
+
+
+
+        $("#BtnProcess").bind("click", function () {
+            var SelectedDate = $("#Date").val();
+          //  var DDEmployee = $("#EMPID option:selected").val();
+            var DDEmployee = $("#EMPID").val();
+            if (SelectedDate != "") {
+                ShowLoadingDialog();
+                var src = "";
+                if (DDEmployee == "" || DDEmployee == undefined) {
+
+                    // src= EncryptQueryStringJSON(MenuID + "*" + "/Activity/ProcessConsolidateActivity*" + SelectedDate+"*0");
+                    //window.location = "/Activity/ProcessConsolidateActivity?src="+src;
+                    src = EncryptQueryStringJSON(MenuID + "*" + "/Activity/ProcessTimeSheet*" + SelectedDate + "*0");
+                    window.location = "/Activity/ProcessTimeSheet?src=" + src;
+
+                }
+                else {
+                    //src= EncryptQueryStringJSON(MenuID + "*" + "/Activity/ProcessConsolidateActivity*" + SelectedDate+"*"+DDEmployee);
+                    //window.location = "/Activity/ProcessConsolidateActivity?src="+src;
+                    src = EncryptQueryStringJSON(MenuID + "*" + "/Activity/ProcessTimeSheet*" + SelectedDate + "*" + DDEmployee);
+                    window.location = "/Activity/ProcessTimeSheet?src=" + src;
+                }
+            }
+        });
+        function FreezTable() {
+            $(".table-scrollable").freezeTable({
+                'scrollable': true,
+                'columnNum': 4,
+            });
+
+        }
+    </script>
+}

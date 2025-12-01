@@ -1,0 +1,45 @@
+﻿@using System.Data
+@model DataSet
+
+<div class="table-responsive mt-0">
+	<table cellspacing="0" class="table table-scroll mt-0 mb-0">
+		<thead>
+			<tr>
+				@foreach (DataColumn item in Model.Tables[0].Columns)
+				{
+					<th scope="col" >@item.ColumnName.Split('#')[0]</th>
+				}
+			</tr>
+		</thead>
+		<tbody>
+
+			@{ int count = 0;}
+			@foreach (DataRow dtRow in Model.Tables[0].Rows)
+			{
+				count++;
+				<tr>
+					@foreach (DataColumn dc in Model.Tables[0].Columns)
+					{
+						
+							<td>
+								@if (dtRow[dc].ToString().ToUpper() == "RESUBMIT")
+								{
+									<span class='blue-clr'><i class='far fa-clock'></i>Resubmit</span>
+								}
+								else if (dtRow[dc].ToString().ToUpper() == "APPROVED")
+								{
+									<span class='green-clr'><i class='far fa-clock'></i>Completed</span>
+								}
+								else
+								{
+									<span class='red-clr'><i class='far fa-clock'></i>@dtRow[dc].ToString()</span>
+								}
+							</td>
+						
+					}
+				</tr>
+			}
+		</tbody>
+
+	</table>
+</div>

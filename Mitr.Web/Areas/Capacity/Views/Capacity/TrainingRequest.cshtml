@@ -1,0 +1,195 @@
+﻿
+@{
+	ViewBag.Title = "TrainingRequest";
+	Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@section scripts    {
+	@System.Web.Optimization.Scripts.Render("~/bundle/unobtrusivejs")
+	@System.Web.Optimization.Scripts.Render("~/bundle/dataTablesjs")
+	<script src="~/assets/design/Scripts/AddInit.js?v=@clsApplicationSetting.GetWebConfigValue("Version")"></script>
+	<script>
+	var UserId ='@ViewBag.UserId';
+	var UserName='@ViewBag.UserName';
+	var Grade='@ViewBag.Grade';
+	var IsPM='@ViewBag.IsPM';
+	var IsED = '@ViewBag.IsED';
+	var EMPID='@ViewBag.EMPID';
+	var Id='@ViewBag.Id';
+	</script>
+	<script src="~/Areas/Capacity/DevScript/TrainingRequest.js"></script>
+
+}
+<script>
+
+	function ViewApplication(obj) {
+		var ReqID = obj;
+		window.location.href = virtualPath + 'Capacity/ViewTrainingRequest?id=' + ReqID;
+	}
+	function ViewPendingApplication(obj) {
+		var ReqID = obj;
+		window.location.href = virtualPath + 'Capacity/ViewTrainingRequest?id=' + ReqID;
+	}
+</script>
+<input type="hidden" id="hdnLoggedInUser" />
+<!-- Start -->
+<div class="inner-main  defult-height">
+
+	<div class="row">
+		<div class="col-sm-4 align-self-center"><h1 class="heading-one mb-3">Training Request</h1></div>
+		<div class="col-sm-8 text-right">
+			<a href="AddTrainingRequest" class="btn mtr-g-grn "><i class="fas fa-plus"></i>Add </a>
+		</div>
+	</div>
+
+	<!-- tab--->
+	<div class="tab-main mb-3">
+		<ul id="tabs" class="nav nav-tabs " role="tablist">
+			<li class="nav-item"> <a id="tab-A" onclick="GetAllPending();" href="#pending" class="nav-link active ripplelink" data-toggle="tab" role="tab"><i class="far fa-clock"></i>Pending </a> </li>
+			<li class="nav-item"> <a id="tab-B" onclick="GetAllProcess();" href="#process" class="nav-link ripplelink" data-toggle="tab" role="tab"><i class="fas fa-cogs"></i>Process</a> </li>
+			<li class="nav-item"> <a id="tab-B" onclick="GetAllCompleted();" href="#completed" class="nav-link ripplelink" data-toggle="tab" role="tab"><i class="fas fa-check"></i>Completed</a> </li>
+		</ul>
+		<div id="divPending" style="display:block;" class="table-responsive">
+			<table id="tblTrainingRequestPending" class="table mt-0">
+				<thead>
+					<tr>
+						<th width='30'>S.No </th>
+						<th width='100'>Req. No</th>
+						<th width='100'>Req. Date </th>
+						<th width='150'>Requested By</th>
+						@*<th width='100'>Source</th>*@
+						<th width='200'>Type of Training</th>
+						<th width='200'>Name of Training</th>
+						<th width='60'>Status</th>
+						<th width='60'>Action</th>
+						<th width='30' style='display:none'></th>
+					</tr>
+				</thead>
+			</table>
+			
+		</div>
+		<div id="divProcess" style="display:none;" class="table-responsive">
+			<table class="table mt-0" id="tblTrainingRequestProcess">
+				<thead>
+					<tr>
+						<th width='30'>S.No </th>
+						<th width='100'>Req. No</th>
+						<th width='100'>Req. Date </th>
+						<th>Requested By</th>
+						<th>Type of Training</th>
+						<th>Name of Training</th>
+						<th width='80'>Status</th>
+						<th width='100'>Action</th>
+					</tr>
+				</thead>				
+			</table>
+		</div>
+		<div id="divCompleted" style="display:none;" class="table-responsive">
+			<table class="table mt-2 " id="tblTrainingRequestCompleted">
+				<thead>
+					<tr>
+						<th width="30">S.No </th>
+						<th width="100">Req. No</th>
+						<th width="100">Req. Date </th>
+						<th>Requested By</th>
+						<th width='200'>Tpye of Training</th>
+						<th width='200'>Name of Training</th>
+						<th width="80">Status</th>
+						<th width="100">Action</th>
+					</tr>
+				</thead>				
+			</table>
+			
+		</div>
+	</div>
+
+	<!--- close tab --->
+
+</div>
+
+<!----- add slot ---->
+<!-- TASK Modal -->
+<div class="modal fade pop-dgn" id="ViewAppModal">
+	<div class="modal-dialog modal-lg">
+		<div class="modal-content">
+
+			<div class="modal-header blk-gdn-btn">
+				<h4 class="modal-title">Training Request</h4>
+				<div class="close" data-dismiss="modal">&times;</div>
+			</div>
+			<div class="modal-body">
+				<div id="DivViewApp"></div>
+			</div>
+		</div>
+	</div>
+</div>
+<div class="modal fade pop-dgn" id="tc">
+	<div class="modal-dialog mdl-lg">
+		<div class="modal-content">
+
+			<!-- Modal Header -->
+			<div class="modal-header blk-gdn-btn">
+				<h4 class="modal-title">Add Training Calendar </h4>
+				<div class="close" data-dismiss="modal">&times;</div>
+			</div>
+
+			<!-- Modal body -->
+			<div class="modal-body p-2">
+				<div class="row">
+					<div class="col-md-4 col-sm-4 form-group">
+						<label>Training Type</label>
+						<select class="form-control dpselect">
+							<option>Select </option>
+							<option>Training Type 1</option>
+							<option>Training Type 2</option>
+							<option>Training Type 3</option>
+							<option>Training Type 4</option>
+						</select>
+					</div>
+					<div class="col-md-4 col-sm-4 form-group">
+						<label>Training Name  </label>
+						<input type="text" class="form-control" placeholder="Enter Title" value="Enter Name">
+					</div>
+					<div class="col-md-4 col-sm-4 form-group">
+						<label>Month</label>
+						<select class="form-control dpselect">
+							<option>Select </option>
+							<option>January</option>
+							<option>February  </option>
+							<option>March</option>
+							<option>April</option>
+						</select>
+					</div>
+					<div class="col-md-4 col-sm-4 form-group">
+						<label>Project  </label>
+						<select class="form-control dpselect">
+							<option>Select </option>
+							<option>Project 1</option>
+							<option>Project 2 </option>
+							<option>Project 3</option>
+							<option>Project 4</option>
+						</select>
+					</div>
+					<div class="col-md-4 col-sm-4 form-group">
+						<label>Project Line </label>
+						<input type="text" class="form-control" placeholder="Enter Title" value="Enter ">
+					</div>
+					<div class="col-md-4 col-sm-4 form-group">
+						<label>Budget</label>
+						<input type="text" class="form-control" placeholder="Enter Title" value="Enter ">
+					</div>
+
+					<div class="col-sm-12  text-center mt-2">
+						<button type="button" class="btn cnl-btn ripplelink  pull-right" data-dismiss="modal"><i class="fas fa-times"></i> Close</button>
+						<button type="button" class="btn mtr-o-grn"><i class="fa fa-paper-plane" aria-hidden="true"></i> Submit</button>
+					</div>
+
+				</div>
+
+
+
+			</div>
+		</div>
+	</div>
+</div>
+

@@ -1,0 +1,351 @@
+﻿@model IList<Mitr.Models.MyTravelRequest>
+
+<h2 class="heading-grd heading-btn  blk-gdn-btn m-0">My Request</h2>
+
+<!-- tab--->
+<div class="tab-main ">
+	<ul id="tabs" class="nav nav-tabs " role="tablist">
+		<li class="nav-item"> <a id="tab-A" href="#active-log" class="nav-link active ripplelink" data-toggle="tab" role="tab"><i class="fas fa-envelope-open"></i>Pending Requests</a> </li>
+		<li class="nav-item"> <a id="tab-B" href="#leaves" class="nav-link ripplelink" data-toggle="tab" role="tab"><i class="fas fa-database"></i>Live Data</a> </li>
+		<li class="nav-item"> <a id="tab-B" href="#Legacy" class="nav-link ripplelink" data-toggle="tab" role="tab"><i class="fas fa-database"></i>Legacy Data</a> </li>
+	</ul>
+	<div id="content" class="tab-content p-0" role="tablist">
+		<!-- --->
+		<div id="active-log" class="card tab-pane fade show active" role="tabpanel" aria-labelledby="tab-A">
+			<div class="card-header" role="tab" id="heading-A">
+				<h5 class="mb-0"> <a data-toggle="collapse" href="#collapse-A" aria-expanded="true" aria-controls="collapse-A">Pending Requests <i class="fas fa-envelope-open"></i></a> </h5>
+			</div>
+			<div id="collapse-A" class="collapse show" data-parent="#content" role="tabpanel" aria-labelledby="heading-A">
+
+
+				<ul class="list-unstyled rqt-list list-rsp trldsklst surrqts fourrclm scroll mrhght">
+					@{ int copunt = 0;}
+					@foreach (var item in Model.Where(x => x.Approved == 0).OrderByDescending(x => x.ID).ToList())
+					{
+						copunt++;
+						<li>
+							<div class="row d-flex">
+								<div class="col-sm-2 align-self-center">
+									<div class="left-dtl-r"> <small><strong>Req#@item.ReqNo</strong></small></div>
+									<input type="hidden" name="TRI" value="@item.ID" />
+									<input type="hidden" name="TRNO" value="@item.ReqNo" />
+									<input type="hidden" name="Approved" value="@item.Approved" />
+								</div>
+								<div class="col-sm-5 align-self-center">
+									<div class="cntr-dtl-r">
+										<!----<small class="trldte">@item.RequestDate</small><br>---->
+										<!----<strong>@item.PurposeOfVisit</strong> <br>--->
+										<strong>@Html.Raw(@item.TravelDetails)</strong><br />
+										<small class="trldte">Domestic</small>
+										<!----<small><strong>@item.TravelType</strong></small>---->
+									</div>
+								</div>
+
+
+								<div class="col-sm-2 align-self-center">
+									<div class="cntr-dtl-pst">
+										@*<strong class="trvlstatusclr">
+												<a onclick="ShowLoadingDialog();window.location='@Url.Action("CreateRequest",new { src = clsApplicationSetting.EncryptQueryString(ViewBag.MenuID.ToString() + "*/Travel/CreateRequest*"+@item.ID+"*"+item.RequestTypeChar +"")})';">
+													@item.Status
+												</a>
+											</strong>*@
+										@if (item.Status == "Re-Submit")
+										{
+											<strong class="trvlstatusclr">
+												<a onclick="ShowLoadingDialog();window.location='@Url.Action("CreateRequest",new { src = clsApplicationSetting.EncryptQueryString(ViewBag.MenuID.ToString() + "*/Travel/CreateRequest*"+@item.ID+"*"+item.RequestTypeChar +"")})';">
+													@item.Status
+												</a>
+											</strong>
+										}
+										else if (item.Status == "Draft")
+										{
+
+											<strong class="trvlstatusclr">
+												<a onclick="ShowLoadingDialog();window.location='@Url.Action("CreateRequest",new { src = clsApplicationSetting.EncryptQueryString(ViewBag.MenuID.ToString() + "*/Travel/CreateRequest*"+@item.ID+"*"+"D" +"")})';">
+													@item.Status
+												</a>
+											</strong>
+
+										}
+										else
+										{
+											<strong class="trvlstatusclr">
+												<a onclick="#">
+													@item.Status
+												</a>
+											</strong>
+										}
+
+
+									</div>
+								</div>
+								<div class="col-sm-3 align-self-center">
+									<div class="right-dtl-r pt-0">
+
+										@if (item.CountTravelDocID > 0)
+										{
+											<a class="btn-c viewTravelDocument" data-toggle="tooltip" data-original-title="Travel Documents"><i class="darkclr fas fa-book"></i></a>
+										}
+										else
+										{
+											<a class="btn-c isDisabled " data-toggle="tooltip" data-original-title="Travel Documents"><i class="darkclr fas fa-book"></i></a>
+										}
+
+										@if (item.Approved == 0)
+										{
+											<strong class="trvlstatusclr">
+												@*<a data-toggle="tooltip" data-original-title="Amendment" class="btn-c" onclick="ShowLoadingDialog();window.location='@Url.Action("CreateRequest",new { src = clsApplicationSetting.EncryptQueryString(ViewBag.MenuID.ToString() + "*/Travel/CreateRequest*"+@item.ID+"*"+"Amendment" +"")})';">
+													<i class="fas fa-edit green-clr"></i>
+													  </a>*@
+												<a data-toggle="tooltip" data-original-title="Amendment" class="btn-c viewTravelAmendment">
+													<i class="fas fa-edit green-clr"></i>
+												</a>
+											</strong>
+											<a title="Delete" data-toggle="tooltip" data-original-title="Delete" class="btn-c  deleteRequest red-clr"><i class="fa fa-times"></i></a>
+										}
+
+										<a class="btn-g @( ViewBag.Type==0?"viewRequest":"viewRequestExpense")" data-toggle="tooltip" data-original-title="View"><i class="fas fa-ellipsis-h"></i></a>
+									</div>
+								</div>
+							</div>
+						</li>
+					}
+				</ul>
+
+			</div>
+		</div>
+
+		<!-- --->
+		<!-- --->
+		<div id="leaves" class="card tab-pane fade" role="tabpanel" aria-labelledby="tab-B">
+			<div class="card-header" role="tab" id="heading-B">
+				<h5 class="mb-0"> <a class="collapsed" data-toggle="collapse" href="#collapse-B" aria-expanded="false" aria-controls="collapse-B">Live Data <i class="fas fa-database"></i></a> </h5>
+			</div>
+			<div id="collapse-B" class="collapse" data-parent="#content" role="tabpanel" aria-labelledby="heading-B">
+
+				<ul class="list-unstyled rqt-list scroll mrhght">
+					@{ int copunst = 0;}
+
+					@*@foreach (var item in Model.Where(x => Convert.ToDateTime(x.ReturnDate) >= DateTime.Now && x.Approved != 0).OrderByDescending(x => x.ID).ToList())*@
+					@foreach (var item in Model.Where(x => x.Approved != 0 && x.TerApproved == 0).OrderByDescending(x => x.ID).ToList())
+					{
+						copunst++;
+						<li>
+							<div class="row d-flex">
+								<div class="col-sm-2 align-self-center">
+									<div class="left-dtl-r"><small><strong>Req#@item.ReqNo</strong></small> </div>
+									<input type="hidden" name="TRI" value="@item.ID" />
+									<input type="hidden" name="TRNO" value="@item.ReqNo" />
+									<input type="hidden" name="Approved" value="@item.Approved" />
+								</div>
+								<div class="col-sm-5 align-self-center">
+									<div class="cntr-dtl-r">
+										<!----<small class="trldte">@item.RequestDate</small><br>---->
+										<!----<strong>@item.PurposeOfVisit</strong> <br>---->
+										<strong>@Html.Raw(@item.TravelDetails)</strong>
+
+										<!---- <small><strong>@item.TravelType</strong></small>---->
+
+									</div>
+								</div>
+								@if (item.Status == "Travel Approved - Pending at Travel Desk" || item.Status == "Bookings Completed")
+								{
+									<div class="col-sm-2 align-self-center">
+										<div class="cntr-dtl-pst">
+											<strong class="green-clr">@item.Status </strong>
+										</div>
+									</div>
+								}
+								else
+								{
+									<div class="col-sm-2 align-self-center">
+										<div class="cntr-dtl-pst">
+											<strong class="green-clr">@item.Status </strong>
+										</div>
+									</div>
+									@*<strong class="trvlstatusclr">
+											<a onclick="#">
+												@item.Status
+											</a>
+										</strong>*@
+								}
+
+								<div class="col-sm-3 align-self-center">
+									<div class="right-dtl-r pt-0">
+										@if (item.Approved == 1 && item.RFC == 0 && item.isbooked == 0 && item.createdby == Convert.ToInt64(clsApplicationSetting.GetSessionValue("LoginID")) && item.Status!= "Rejected by exceptional approval")
+										{
+
+											<a href="#" class="rct-clr RFCRequest" data-toggle="modal" data-target="#rjct1"><i class="fa fa-ban" aria-hidden="true"></i>RFC</a>
+										}
+										else
+										{
+											<a href="#" class="rct-clr isDisabled" data-toggle="modal"><i class="fa fa-ban" aria-hidden="true"></i>RFC</a>
+										}
+
+										@*@if (item.Approved == 1 && item.isbooked == 0)*@
+										@if (item.Approved == 1 && item.RFC == 0 && ((item.TerSubmited == 2 && item.CountTravelExpenseData>0) || (item.TerSubmited == 0 && item.CountTravelExpenseData == 0)) && item.Status != "Rejected by exceptional approval")
+										{
+											<strong class="trvlstatusclr">
+												@*<a data-toggle="tooltip" data-original-title="Amendment" class="btn-c" onclick="ShowLoadingDialog();window.location='@Url.Action("CreateRequest",new { src = clsApplicationSetting.EncryptQueryString(ViewBag.MenuID.ToString() + "*/Travel/CreateRequest*"+@item.ID+"*"+"Amendment" +"")})';">
+													<i class="fas fa-edit green-clr"></i>
+																  </a>*@
+												<a data-toggle="tooltip" data-original-title="Amendment" class="btn-c viewTravelAmendment">
+													<i class="fas fa-edit green-clr"></i>
+												</a>
+											</strong>
+										}
+										else
+										{
+											<strong class="trvlstatusclr">
+
+												<a data-toggle="tooltip" data-original-title="Amendment" class="btn-c isDisabled">
+													<i class="fas fa-edit green-clr"></i>
+												</a>
+											</strong>
+										}
+
+										@if (item.CountTravelDocID > 0)
+										{
+											<a class="btn-c viewTravelDocument" data-toggle="tooltip" data-original-title="Travel Documents"><i class="darkclr fas fa-book"></i></a>
+										}
+										else
+										{
+											<a class="btn-c isDisabled " data-toggle="tooltip" data-original-title="Travel Documents"><i class="darkclr fas fa-book"></i></a>
+										}
+										@if (item.Approved == 0)
+										{
+											<a title="Delete" data-toggle="tooltip" data-original-title="Delete" class="btn-c deleteRequest red-clr"><i class="fa fa-times"></i></a>
+										}
+										<a class="btn-g @( ViewBag.Type==0?"viewRequest":"viewRequestExpense")" data-toggle="tooltip" data-original-title="View"><i class="fas fa-ellipsis-h"></i></a>
+										@*@if (item.Status == "Travel Approved - Pending at Travel Desk")
+											{
+												<a class="btn-a ApproveRFC" data-toggle="tooltip" data-original-title="RFC"><i class="fa fa-times"></i></a>
+											}*@
+									</div>
+								</div>
+							</div>
+						</li>
+					}
+				</ul>
+
+
+
+			</div>
+		</div>
+		<div id="Legacy" class="card tab-pane fade" role="tabpanel" aria-labelledby="tab-c">
+			<div class="card-header" role="tab" id="heading-c">
+				<h5 class="mb-0"> <a class="collapsed" data-toggle="collapse" href="#collapse-c" aria-expanded="false" aria-controls="collapse-c">Legacy Data <i class="fas fa-database"></i></a> </h5>
+			</div>
+			<div id="collapse-c" class="collapse" data-parent="#content" role="tabpanel" aria-labelledby="heading-c">
+
+				<ul class="list-unstyled rqt-list scroll mrhght">
+					@{ int copunlt = 0;}
+
+					@*@foreach (var item in Model.Where(x => Convert.ToDateTime(x.ReturnDate) < DateTime.Now && x.Approved != 0).OrderByDescending(x => x.ID).ToList())*@
+					@foreach (var item in Model.Where(x => x.Approved != 0 && x.TerApproved > 0).OrderByDescending(x => x.ID).ToList())
+					{
+						var itemtest = Model.Where(x => Convert.ToDateTime(x.ReturnDate) < DateTime.Now && x.Approved != 0).OrderByDescending(x => x.ReqNo).ToList();
+
+						copunlt++;
+						<li>
+							<div class="row d-flex">
+								<div class="col-sm-2 align-self-center">
+									<div class="left-dtl-r"><small><strong>Req#@item.ReqNo</strong></small> </div>
+									<input type="hidden" name="TRI" value="@item.ID" />
+									<input type="hidden" name="TRNO" value="@item.ReqNo" />
+									<input type="hidden" name="Approved" value="@item.Approved" />
+								</div>
+								<div class="col-sm-5 align-self-center">
+									<div class="cntr-dtl-r">
+
+										<!----<small class="trldte">@item.RequestDate</small><br>---->
+										<!----<strong>@item.PurposeOfVisit</strong> <br>---->
+										<strong>@Html.Raw(@item.TravelDetails)</strong>
+
+
+
+										<!---- <small><strong>@item.TravelType</strong></small>---->
+
+									</div>
+								</div>
+
+								<div class="col-sm-2 align-self-center">
+									<div class="cntr-dtl-pst">
+										<strong class="green-clr">@item.Status </strong>
+									</div>
+								</div>
+								<div class="col-sm-3 align-self-center">
+									<div class="right-dtl-r pt-0">
+										@if (item.Approved == 1 && item.isbooked == 0 && item.TerSubmited == 2)
+										{
+											<strong class="trvlstatusclr">
+												<a data-toggle="tooltip" data-original-title="Amendment" class="btn-c viewTravelAmendment">
+													<i class="fas fa-edit green-clr"></i>
+												</a>
+											</strong>
+										}
+										else
+										{
+											<strong class="trvlstatusclr">
+
+												<a data-toggle="tooltip" data-original-title="Amendment" class="btn-c isDisabled">
+													<i class="fas fa-edit green-clr"></i>
+												</a>
+											</strong>
+										}
+										@if (item.CountTravelDocID > 0 && item.CountTravelExpenseData == 0)
+										{
+											<a class="btn-c viewTravelDocument" data-toggle="tooltip" data-original-title="Travel Documents"><i class="darkclr fas fa-book"></i></a>
+										}
+										else
+										{
+											<a class="btn-c isDisabled " data-toggle="tooltip" data-original-title="Travel Documents"><i class="darkclr fas fa-book"></i></a>
+										}
+										@if (item.Approved == 0)
+										{
+											<a title="Delete" data-toggle="tooltip" data-original-title="Delete" class="btn-c deleteRequest red-clr"><i class="fa fa-times"></i></a>
+										}
+										<a class="btn-g @( ViewBag.Type==0?"viewRequest":"viewRequestExpense")" data-toggle="tooltip" data-original-title="View"><i class="fas fa-ellipsis-h"></i></a>
+									</div>
+								</div>
+							</div>
+						</li>
+					}
+				</ul>
+
+
+
+			</div>
+		</div>
+	</div>
+</div>
+<div class="modal fade pop-dgn" id="rjct1">
+	<div id="divreject" class="modal-dialog ">
+		<div class="modal-content">
+
+			<!-- Modal Header -->
+			<div class="modal-header blk-gdn-btn">
+				<h4 class="modal-title"><i class="fas fa-ban"></i> RFC </h4>
+				<div class="close" data-dismiss="modal">&times;</div>
+			</div>
+
+			<!-- Modal body -->
+			<div class="modal-body">
+				<form>
+					<div class="row">
+						<div class="col-sm-12 form-group">
+							<label>Reason<sup>*</sup></label>
+							<input type="hidden" value="0" id="TravelID" />
+							<textarea class="form-group h-100" id="txtResion" placeholder="Enter"></textarea>
+						</div>
+						<div class="col-sm-12 mt-3 text-center">
+							<button type="submit" class="btn mtr-o-grn btn-l ripplelink RejectRequest  " name="Command" value="Add"> <i class="fa fa-paper-plane" aria-hidden="true"></i> Submit</button>
+							<button type="button" class="btn cnl-btn ripplelink  " data-dismiss="modal"><i class="fas fa-times"></i> Close</button>
+						</div>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+</div>
+

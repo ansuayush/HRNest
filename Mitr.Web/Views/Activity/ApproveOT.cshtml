@@ -1,0 +1,65 @@
+﻿@using System.Data
+@model Mitr.Models.CompensatoryOffApproval
+
+@section style{
+    @System.Web.Optimization.Styles.Render("~/bundle/dataTablecss")
+}
+
+
+<div class="inner-main" role="main">
+    @Html.Partial("HeaderMsg_Partial")
+    <h1 class="heading-one">
+        Approve Overtime
+    </h1>
+
+    @using (Ajax.BeginForm("_ApproveOT", "Activity",
+            new { src = clsApplicationSetting.EncryptQueryString(ViewBag.MenuID.ToString() + "*/Activity/_ApproveOT") },
+            new AjaxOptions { HttpMethod = "POST", OnSuccess = "BindTarget" },
+        new { @id = "_ApproveOTFrom" })
+        )
+    {
+
+        <div class="tab-main ">
+            <div class="row text-clr">
+                <div class="col-md-12">
+                    <ul id="tabs" class="nav nav-tabs " role="tablist">
+                        <li class="nav-item"> <a tabvalue="0" class="nav-link active ripplelink AnchorApproval" data-toggle="tab" role="tab"><i class="fal fa-envelope-open"></i>Pending For Approval</a> </li>
+                        <li class="nav-item"> <a tabvalue="1" class="nav-link ripplelink AnchorApproval" data-toggle="tab" role="tab"><i class="fa fa-check" aria-hidden="true"></i>Approved</a></li>
+                        <li class="nav-item"> <a tabvalue="2" class="nav-link ripplelink AnchorApproval" data-toggle="tab" role="tab"><i class="fas fa-ban"></i>Resubmit</a> </li>
+                    </ul>
+                </div>
+                <div class="col-md-2 form-group">
+                    <label> Month</label>
+                    @Html.HiddenFor(model => model.Approve)
+                    @Html.TextBoxFor(model => model.Date, new { @class = "form-control", @type = "month" })
+                    @Html.ValidationMessageFor(model => model.Date, "", new { @class = "text-danger" })
+                </div>
+                <div class="col-md-2 form-group">
+                    <label> Name</label>
+                    <select id="@Html.IdFor(n => n.EMPID)" name="@Html.NameFor(n => n.EMPID)" class="form-control  applyselect">
+                        <option value="0">All</option>
+                        @foreach (var item in Model.CompensatoryEmployee)
+                        {
+                            <option value="@item.EMPID">@item.EMPName</option>
+                        }
+                    </select>
+                    @Html.ValidationMessageFor(model => model.EMPID, "", new { @class = "text-danger" })
+                </div>
+                <div style="display:none">
+                    <button type="submit" class="btn mtr-g-grn btn-l ripplelink" id="btnSearch" name="Command" value="Search"><i class="fas fa-search"></i>Search</button>
+                </div>
+
+            </div>
+        </div>
+    }
+    <div id="TargetDiv"></div>
+
+</div>
+
+
+@section scripts    {
+    @System.Web.Optimization.Scripts.Render("~/bundle/dataTablesjs")
+    @System.Web.Optimization.Scripts.Render("~/bundle/unobtrusivejs")
+<script src="~/assets/design/Scripts/PagesJS/OTCOApprove.js?v=@clsApplicationSetting.GetWebConfigValue("Version")"></script>
+   
+}

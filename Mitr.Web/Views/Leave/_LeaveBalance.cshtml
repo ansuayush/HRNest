@@ -1,0 +1,44 @@
+﻿@model IList<Mitr.Models.LeaveBalanceDetails>
+
+<div class="table-responsive">
+    <table border="0" class="table text-right mt-1" id="LeaveStatus" width="100%">
+        <thead>
+			<tr>
+				<th class="text-left w-200" scope="col">Leave Type</th>
+				<th class="text-right">Opening (Hrs)</th>
+				<th>Accrued (Hrs)</th>
+				<th>Availed (Hrs)</th>
+				<th>To be Approved (Hrs)</th>
+				<th>Balance (Hrs)</th>				
+				<th class="w-100">Balance <br />(Days)</th>
+			</tr>
+        </thead>
+        <tbody>
+
+
+            @foreach (var item in Model)
+            {
+			<tr>
+				<td class="text-left"><strong>@item.LeaveType</strong></td>
+				<td>@item.Opening </td>
+				<td>@item.MonthlyAccured</td>
+				<td>@item.Availed</td>
+				<td>@item.PendingLeave</td>
+				<td><strong>@item.Balance</strong></td>
+			
+				<td><strong>@item.BInGraph</strong></td>
+			</tr>
+            }
+
+
+
+        </tbody>
+    </table>
+
+</div>
+
+<script>
+$(document).ready(function(){
+  $('[data-toggle="tooltip"]').tooltip();
+});
+</script>

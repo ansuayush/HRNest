@@ -1,0 +1,649 @@
+﻿@model IList<Mitr.Models.Interview.Round>
+@using System.Data
+
+@{
+	string MenuID = ViewBag.MenuID.ToString();
+}
+<div class="inner-main mb-5 pb-0">
+	<h1 class="heading-one ">Interview Process</h1>
+
+	@{ Html.RenderAction("_EViewRequests", "Recruit", new { src = clsApplicationSetting.EncryptQueryString(MenuID + " */Recruit/_EViewRequests*" + ViewBag.REC_ReqID + "*Y") }); }
+
+
+
+	<div class="row">
+		<div class="col-sm-12 text-right ">
+			<a class="btn mtr-g-grn btnAddRound"><i class="fas fa-plus"></i>Add Round</a>
+			<a class="btn blk-gdn-btn btnSyncRound "><i class="fas fa-plus"></i>Sync Round</a>
+		</div>
+	</div>
+	<h2 class="header-two"><i class="fas fa-info-circle"></i>Round Configuration</h2>
+
+	<div class="tab-main tab-main-scd mb-3">
+		<ul id="tabs" class="nav nav-tabs mb-2" role="tablist">
+			@{ int countA = 0;}
+			@foreach (var item in Model)
+			{
+				countA++;
+				<li class="nav-item">
+					<a id="tab-B" href="#A_@countA" class="nav-link @(countA==1?"active":"") ripplelink"  data-toggle="tab" role="tab">
+						<strong>@item.RoundName</strong>
+					</a>
+				</li>
+			}
+		</ul>
+		<div id="content" class="tab-content shadow-box p-0" role="tablist">
+			@{ int countB = 0;}
+			@foreach (var item in Model)
+			{
+				countB++;
+				<div id="A_@countB" class="card tab-pane fade @(countB==1?"show active":"")" role="tabpanel" aria-labelledby="tab-B">
+					<div class="card-header" role="tab" id="heading-B">
+						<h5 class="mb-0"> <a class="collapsed" data-toggle="collapse" href="#collapse-1" aria-expanded="false" aria-controls="collapse-B">@item.RoundName</a> </h5>
+					</div>
+					<div id="collapse-1" class="collapse" data-parent="#content" role="tabpanel" aria-labelledby="heading-B">
+						<div class="card-body">
+							<div class="row">
+
+								<div class="col-sm-12">
+									<div class="tabact">
+										<input type="hidden" name="I" value="@item.REC_InterviewSetID" />
+										<input type="hidden" name="N" value="@item.RoundName" />
+										<a class="btnEdit"><i class="fas fa-edit checkgreen" aria-hidden="true"></i></a>
+										<a class="btnDelete"><i class="fas fa-trash red-clr" aria-hidden="true"></i></a>
+									</div>
+								</div>
+								<div class="col-sm-12">
+									<strong>Description</strong>
+									<p>@item.RoundDesc</p>
+								</div>
+								<div class="col-sm-12">
+									<strong class="green-clr">Panel Setting</strong>
+									@if (item.MemberList != null)
+									{
+										<div class="table-responsive">
+											<table class="table  mt-2">
+												<thead>
+													<tr>
+														<th>Member Type</th>
+														<th class="w-100">Member Type</th>
+														<th class="w-100">Email ID</th>
+
+													</tr>
+												</thead>
+												<tbody>
+													@foreach (var item12 in item.MemberList)
+													{
+														<tr>
+															<td>@item12.Name</td>
+															<td>@item12.RoundMemberType</td>
+															<td>@item12.Email</td>
+
+														</tr>
+													}
+
+												</tbody>
+											</table>
+										</div>
+									}
+								</div>
+							</div>
+							<div class="row">
+
+								<div class="col-sm-12">
+									<strong class="green-clr">Slot Setting</strong>
+									@if (item.SlotList != null)
+									{
+										<div class="table-responsive">
+											<table class="table fixedth gry-tbl mt-2">
+												<thead>
+													<tr>
+														<th>Date</th>
+														<th class="w-80">From Time</th>
+														<th class="w-80">To Time</th>
+														<th class="w-80">Max CV</th>
+
+													</tr>
+												</thead>
+												<tbody>
+													@foreach (var item12 in item.SlotList)
+													{
+														<tr>
+															<td>@item12.SlotDate</td>
+															<td>@item12.FromTime</td>
+															<td>@item12.ToTime</td>
+															<td class="text-right">@item12.MAXCV CV</td>
+														</tr>
+													}
+												</tbody>
+											</table>
+										</div>
+									}
+								</div>
+							</div>
+
+						</div>
+						<div class="col-lg-12 text-center mt-2">
+							@*<button type="button" class="btn mtr-g-grn btnaddslot" id="btnAddSlot"  onclick="AddInterviewSlot();"> Add Slot Setting</button>*@
+							<button type="button" class="btn mtr-o-grn btn-l ripplelink pull-right" name="Command" value="Add" onclick="SendEmailConfirmation(@item.REC_InterviewSetID, '@item.RoundName.ToString()');"><i class="fas fa-envelope"></i>Send Confirmation</button>
+                            <a href="/Recruit/InterviewSetting?src=FF891A8726DEB7CF7F9572BE92BB01972B0ECA3753DCA9B7F48E61A86B" class="btn cnl-btn ripplelink  pull-right"> Close</a>
+						</div>
+					</div>
+				</div>
+				
+			}
+
+
+		</div>
+
+	</div>
+	
+</div>
+
+<div class="modal fade pop-dgn" id="addround">
+	<div class="modal-dialog modal-lg">
+		<div class="modal-content">
+
+			<div class="modal-header blk-gdn-btn">
+				<h4 class="modal-title"><i class="fas fa-plus"></i>Add Round </h4>
+				<div class="close" data-dismiss="modal">&times;</div>
+			</div>
+
+			<div class="modal-body">
+				<div id="TargetDiv"></div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div class="modal fade pop-dgn " id="addslot" aria-modal="true" style="padding-right: 6.98843px;">
+	<div class="modal-dialog mdl-sm">
+		<div class="modal-content">
+
+			<!-- Modal Header -->
+			<div class="modal-header blk-gdn-btn">
+				<h4 class="modal-title"><i class="fas fa-plus"></i>Add Slot Setting</h4>
+				<div class="close" data-dismiss="modal">×</div>
+			</div>
+
+			<!-- Modal body -->
+			<div class="modal-body">
+				<div class="row">
+					<div class="col-lg-4 col-md-4 col-sm-6  form-group">
+						<label>Date</label>
+						<input type="date" id="txtSlotDate" name="SlotDate" placeholder="" class="form-control">
+					</div>
+					<div class="col-lg-4 col-md-4 col-sm-6  form-group">
+						<label>From Time</label>
+						<input type="time" id="txtSlotFromTime" name="FromTime" placeholder="" class="form-control">
+					</div>
+					<div class="col-lg-4 col-md-4 col-sm-6  form-group">
+						<label>To Time</label>
+						<input type="time" id="txtSlotToTime" name="ToTime" placeholder="" class="form-control">
+					</div>
+
+					<div class="col-lg-12  form-group">
+						<label>Max CV</label>
+						<input type="Number" id="txtSlotMaxCV" name="MaxCV" placeholder="Enter Max CV" class="form-control">
+					</div>
+
+					<div class="col-lg-12 text-center mt-4">
+						<button type="submit" onclick="SlotSave();"  class="btn mtr-o-grn btn-l ripplelink pull-right" name="Command" value="Add"><i class="fas fa-save"></i>Save</button>
+						<button type="button" class="btn cnl-btn ripplelink  pull-right" data-dismiss="modal"><i class="fas fa-times"></i> Cancel</button>
+					</div>
+
+				</div>
+
+
+			</div>
+		</div>
+	</div>
+</div>
+
+@section scripts    {
+
+	@System.Web.Optimization.Scripts.Render("~/bundle/unobtrusivejs")
+	@Html.IncludeVersionedJs(Url.Content("~/assets/design/Scripts/AddInit.js"))
+	<script src="~/assets/design/Scripts/AddInit.js?v=@clsApplicationSetting.GetWebConfigValue("Version")"></script>
+	<script>
+		function SendEmailConfirmation(REC_InterviewSetID, RoundName) {
+			debugger
+			//var RoundName = $('input[name=N]').val();;
+			$.ajax({
+				url: "/Recruit/SendEmailConfirmation",
+				type: "POST",
+				data: { src: EncryptQueryStringJSON(@ViewBag.MenuID+"*" + "/Recruit/SendEmailConfirmation" + "*" + @ViewBag.REC_ReqID+"*" + REC_InterviewSetID + "*" + RoundName) },
+                success: function (data)
+                {
+					FailToaster("Action Taken Successfully");
+				},
+				error: function (er) {
+					alert(er);
+
+				}
+			});
+		}
+		function SlotSave() {
+			$("#txtSlotDate").val();
+			$("#txtSlotFromTime").val();
+			$("#txtSlotToTime").val();
+			$("#txtSlotMaxCV").val();
+
+		}
+		function AddInterviewSlot() {
+			console.log($('ul li.a').prevObject[0].activeElement.innerText);
+			//alert($('#tabs li.a.active').prevObject[0].activeElement.innerText);
+			$("#addslot").modal("show");
+		}
+		$(".btnAddRound").click(function (e) {
+			ShoAddRound(0);
+		});
+
+		$(".btnEdit").click(function (e) {
+			var I = $(this).closest("div").find("input:hidden[name=I]").val();
+			ShoAddRound(I);
+		});
+
+
+			$(".btnDelete").click(function (e) {
+			var I = $(this).closest("div").find("input:hidden[name=I]").val();
+			var Name = $(this).closest("div").find("input:hidden[name=N]").val();
+			DeleteRound(I, Name);
+		});
+		function DeleteRound(ID, Name) {
+			ConfirmMsgBox('Are you sure want to delete ' + Name, '', function () {
+				ShowLoadingDialog();
+				$.ajax({
+					url: "/CommonAjax/DeleteInterviewRoundJSON",
+					type: "Get",
+					async: true,
+					data: { REC_InterviewSetID: ID },
+					success: function (data) {
+						if (data.Status) {
+							window.location.reload();
+						}
+						else {
+							CloseLoadingDialog();
+							FailToaster(data.SuccessMessage);
+						}
+					},
+					error: function (er) {
+						alert(er);
+					}
+				});
+			});
+		}
+
+		function ShoAddRound(ID) {
+			ShowLoadingDialog();
+			$.ajax({
+				url: "/Recruit/_AddInterviewRound",
+				type: "Get",
+				data: { src: EncryptQueryStringJSON(@ViewBag.MenuID+"*" + "/Recruit/_AddInterviewRound" + "*" + @ViewBag.REC_ReqID+"*" + ID) },
+                success: function (data)
+                {
+					$("#TargetDiv").empty();
+                    $("#TargetDiv").html(data);
+                    $("#addround").modal("show");
+					CloseLoadingDialog();
+
+                     $(".btnAddRowMember").click(function (e) {
+						   AddNewRow();
+                     });
+					$(".btnAddRowSlot").click(function (e) {
+						AddNewRowSlot();
+					});
+                    var form = $("form")
+                .removeData("validator")
+                .removeData("unobtrusiveValidation");
+                    $.validator.unobtrusive.parse(form);
+                    $(".applyselect").select2();
+
+                     $(".ddmembertype").change(function () {
+							HideShowmemberTD(this);
+					  });
+
+				$(".ddEmpList").change(function () {
+						FillEmpName(this);
+				});
+
+
+				},
+				error: function (er) {
+					alert(er);
+
+				}
+			});
+    }
+		function AddNewRow() {
+			var LastTRCount = parseInt($('#tblmember').find("tbody tr").length) - 1;
+			$('.applyselect').select2("destroy");
+			var $tableBody = $('#tblmember').find("tbody"),
+				$trLast = $tableBody.find("tr:last"),
+				$trNew = $trLast.clone();
+			$trNew.find("td:last").html('<a onclick="DeleteRow(this)" class="remove" data-toggle="tooltip" title="Remove"><i class="fas fa-window-close red-clr m-0" aria-hidden="true"></i></a>')
+
+
+			$trNew.find("div").each(function () {
+				$(this).attr({
+					'id': function (_, id) { var arr = id.split('_'); return id.replace(arr[1], LastTRCount + 1); },
+				});
+
+			});
+
+			$trNew.find("label").each(function () {
+				$(this).attr({
+					'id': function (_, id) { var arr = id.split('_'); return id.replace(arr[1], LastTRCount + 1); },
+				});
+				$(this).html(parseInt($('#tblmember').find("tbody tr").length) + 1)
+			});
+
+			$trNew.find("select").each(function (i) {
+				$(this).attr({
+					'id': function (_, name) { return name.replace('_' + LastTRCount + '_', '_' + (parseInt(LastTRCount) + 1) + '_'); },
+					'name': function (_, name) { return name.replace('[' + LastTRCount + ']', '[' + (parseInt(LastTRCount) + 1) + ']'); },
+				});
+
+				if ($(this).find("option:selected").val() === "Internal") {
+					$(this).closest("tr").find("td.Internal").show();
+					$(this).closest("tr").find("td.External").hide();
+				}
+				else if ($(this).find("option:selected").val() === "External") {
+					$(this).closest("tr").find("td.Internal").hide();
+					$(this).closest("tr").find("td.External").show();
+				}
+				else {
+					$(this).val('');
+				}
+
+
+
+
+
+			});
+			$trNew.find("input").each(function (i) {
+				$(this).attr({
+					'id': function (_, name) { return name.replace('_' + LastTRCount + '_', '_' + (parseInt(LastTRCount) + 1) + '_'); },
+					'name': function (_, name) { return name.replace('[' + LastTRCount + ']', '[' + (parseInt(LastTRCount) + 1) + ']'); },
+				});
+				$(this).val('')
+			});
+
+
+			$trNew.find("span").each(function (i) {
+				if ($(this).attr("data-valmsg-for")) {
+					$(this).attr({
+						'data-valmsg-for': function (_, name) { return name.replace('[' + LastTRCount + ']', '[' + (parseInt(LastTRCount) + 1) + ']'); }
+					});
+				}
+				if ($(this).attr("for")) {
+					$(this).attr({
+						'for': function (_, name) { return name.replace('_' + LastTRCount + '_', '_' + (parseInt(LastTRCount) + 1) + '_'); }
+					});
+				}
+			});
+
+			$trLast.after($trNew);
+			var form = $("#_AddJobRoundFrom").closest("form");
+			form.removeData('validator');
+			form.removeData('unobtrusiveValidation');
+			$.validator.unobtrusive.parse(form);
+			$('[data-toggle="tooltip"]').tooltip();
+			$(".applyselect").select2();
+			$(".ddmembertype").change(function () {
+				HideShowmemberTD(this);
+			});
+			$(".ddEmpList").change(function () {
+				FillEmpName(this);
+			});
+
+		}
+
+		function HideShowmemberTD(obj) {
+			var a = $(obj).find("option:selected").val();
+
+			if (a === "Internal") {
+
+
+				$(obj).closest("tr").find("td.Internal").show();
+				$(obj).closest("tr").find("td.External").hide();
+			}
+			else {
+				$(obj).closest("tr").find("td.Internal").hide();
+				$(obj).closest("tr").find("td.External").show();
+			}
+		}
+
+
+		function FillEmpName(obj) {
+			var a = $(obj).find("option:selected").text();
+			var b = $(obj).find("option:selected").attr("email");
+
+			$(obj).closest("tr").find("td .txtname").val(a)
+			$(obj).closest("tr").find("td .txtemail").val(b)
+
+		}
+
+		function DeleteRow(obj) {
+			var count = 0;
+			var TotalRowCount = $('#tblmember').find("tbody tr").length;
+			ConfirmMsgBox("Are you sure want to delete", '', function () {
+
+				$(obj).closest('tr').remove();
+				$("#tblmember TBODY TR").each(function (i) {
+					$(this).closest("tr").find("label").each(function () {
+						$(this).attr({
+							'id': function (_, id) { var arr = id.split('_'); return id.replace(arr[1], i); },
+						});
+						$(this).html(i + 1)
+					});
+
+					$(this).closest("tr").find("div").each(function () {
+						$(this).attr({
+							'id': function (_, id) { var arr = id.split('_'); return id.replace(arr[1], i); },
+						});
+					});
+
+
+					$(this).closest("tr").find("input").each(function () {
+						$(this).attr({
+							'id': function (_, id) { return id.replace('_' + (parseInt(i) + 1) + '_', '_' + i + '_'); },
+							'name': function (_, name) { return name.replace('[' + (parseInt(i) + 1) + ']', '[' + i + ']'); },
+						});
+
+					});
+
+
+
+					$(this).closest("tr").find("textarea").each(function () {
+						$(this).attr({
+							'id': function (_, id) { return id.replace('_' + (parseInt(i) + 1) + '_', '_' + i + '_'); },
+							'name': function (_, name) { return name.replace('[' + (parseInt(i) + 1) + ']', '[' + i + ']'); },
+						});
+
+					});
+
+
+					$(this).closest("tr").find("span").each(function () {
+						if ($(this).attr("data-valmsg-for")) {
+							$(this).attr({
+								'data-valmsg-for': function (_, name) { return name.replace('[' + (parseInt(i) + 1) + ']', '[' + i + ']'); },
+							});
+						}
+						if ($(this).attr("for")) {
+							$(this).attr({
+								'for': function (_, id) { return id.replace('_' + (parseInt(i) + 1) + '_', '_' + i + '_'); },
+							});
+						}
+					});
+				});
+				var form = $("#_AddJobRoundFrom").closest("form");
+				form.removeData('validator');
+				form.removeData('unobtrusiveValidation');
+				$.validator.unobtrusive.parse(form);
+
+			})
+		}
+
+
+		function ActionOnSuccess(obj) {
+
+			if (obj.Status) {
+
+				window.location.reload();
+			}
+			else {
+				CloseLoadingDialog();
+				FailToaster(obj.SuccessMessage);
+			}
+
+		}
+
+		$(".btnSyncRound").click(function (e) {
+			SyncInterviewRound();
+		});
+		function SyncInterviewRound() {
+			ConfirmMsgBox('Are you sure want to Sync With Master','', function () {
+				var ID = '@ViewBag.REC_ReqID';
+				ShowLoadingDialog();
+				$.ajax({
+					url: "/CommonAjax/REC_SyncInterviewRoundJSON",
+					type: "Get",
+					async: true,
+					data: { REC_ReqID: ID },
+					success: function (data) {
+						if (data.Status) {
+							window.location.reload();
+						}
+						else {
+							CloseLoadingDialog();
+							FailToaster(data.SuccessMessage);
+						}
+					},
+					error: function (er) {
+						alert(er);
+					}
+				});
+			});
+
+		}
+
+
+		function AddNewRowSlot() {
+			var LastTRCount = parseInt($('#tblSlot').find("tbody tr").length) - 1;
+
+			var $tableBody = $('#tblSlot').find("tbody"),
+				$trLast = $tableBody.find("tr:last"),
+				$trNew = $trLast.clone();
+			$trNew.find("td:last").html('<a onclick="DeleteSlotRow(this)" class="remove" data-toggle="tooltip" title="Remove"><i class="fas fa-window-close red-clr m-0" aria-hidden="true"></i></a>')
+
+
+			$trNew.find("div").each(function () {
+				$(this).attr({
+					'id': function (_, id) { var arr = id.split('_'); return id.replace(arr[1], LastTRCount + 1); },
+				});
+
+			});
+
+			$trNew.find("label").each(function () {
+				$(this).attr({
+					'id': function (_, id) { var arr = id.split('_'); return id.replace(arr[1], LastTRCount + 1); },
+				});
+				$(this).html(parseInt($('#tblSlot').find("tbody tr").length) + 1)
+			});
+
+			$trNew.find("input").each(function (i) {
+				$(this).attr({
+					'id': function (_, name) { return name.replace('_' + LastTRCount + '_', '_' + (parseInt(LastTRCount) + 1) + '_'); },
+					'name': function (_, name) { return name.replace('[' + LastTRCount + ']', '[' + (parseInt(LastTRCount) + 1) + ']'); },
+				});
+				$(this).val('')
+			});
+
+
+			$trNew.find("span").each(function (i) {
+				if ($(this).attr("data-valmsg-for")) {
+					$(this).attr({
+						'data-valmsg-for': function (_, name) { return name.replace('[' + LastTRCount + ']', '[' + (parseInt(LastTRCount) + 1) + ']'); }
+					});
+				}
+				if ($(this).attr("for")) {
+					$(this).attr({
+						'for': function (_, name) { return name.replace('_' + LastTRCount + '_', '_' + (parseInt(LastTRCount) + 1) + '_'); }
+					});
+				}
+			});
+
+			$trLast.after($trNew);
+			var form = $("#_AddJobRoundFrom").closest("form");
+			form.removeData('validator');
+			form.removeData('unobtrusiveValidation');
+			$.validator.unobtrusive.parse(form);
+			$('[data-toggle="tooltip"]').tooltip();
+		}
+
+		function DeleteSlotRow(obj) {
+			var count = 0;
+			var TotalRowCount = $('#tblSlot').find("tbody tr").length;
+			ConfirmMsgBox("Are you sure want to delete", '', function () {
+
+				$(obj).closest('tr').remove();
+				$("#tblSlot TBODY TR").each(function (i) {
+					$(this).closest("tr").find("label").each(function () {
+						$(this).attr({
+							'id': function (_, id) { var arr = id.split('_'); return id.replace(arr[1], i); },
+						});
+						$(this).html(i + 1)
+					});
+
+					$(this).closest("tr").find("div").each(function () {
+						$(this).attr({
+							'id': function (_, id) { var arr = id.split('_'); return id.replace(arr[1], i); },
+						});
+					});
+
+
+					$(this).closest("tr").find("input").each(function () {
+						$(this).attr({
+							'id': function (_, id) { return id.replace('_' + (parseInt(i) + 1) + '_', '_' + i + '_'); },
+							'name': function (_, name) { return name.replace('[' + (parseInt(i) + 1) + ']', '[' + i + ']'); },
+						});
+
+					});
+
+					$(this).closest("tr").find("span").each(function () {
+						if ($(this).attr("data-valmsg-for")) {
+							$(this).attr({
+								'data-valmsg-for': function (_, name) { return name.replace('[' + (parseInt(i) + 1) + ']', '[' + i + ']'); },
+							});
+						}
+						if ($(this).attr("for")) {
+							$(this).attr({
+								'for': function (_, id) { return id.replace('_' + (parseInt(i) + 1) + '_', '_' + i + '_'); },
+							});
+						}
+					});
+				});
+				var form = $("#_AddJobRoundFrom").closest("form");
+				form.removeData('validator');
+				form.removeData('unobtrusiveValidation');
+				$.validator.unobtrusive.parse(form);
+
+			})
+		}
+
+
+		function ProjectTaggingSuccess(obj) {
+
+				if (obj.Status) {
+					SuccessToaster(obj.SuccessMessage);
+					window.location.reload();
+				}
+				else {
+					CloseLoadingDialog();
+					FailToaster(obj.SuccessMessage);
+				}
+			}
+
+	</script>
+}

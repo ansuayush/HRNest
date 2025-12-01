@@ -1,0 +1,43 @@
+﻿@model IList<Project.Attachment.Document.List>
+
+@if (Model != null)
+{
+    <div class="col-sm-8">
+        <table class="table lg-table mt-0">
+            <thead>
+                <tr>
+                    <th class="w-33">S.No</th>
+                    <th>Document Type	</th>
+                    <th>Description</th>
+                    
+                    <th class="w-33">Attachment</th>
+                    <th class="w-33">Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                @{ int COunt = 0;}
+                @foreach (var item in Model)
+                {
+                    COunt++;
+                <tr>
+                    <td>
+                        @COunt
+                        <input type="hidden" class="hdnID" value="@item.ID" />
+                    </td>
+                    <td>@item.DocumentType </td>
+                    <td>@item.Description</td>
+                    <td>
+                        <a target="_blank" href="@item.AttachmentPath" class="color-green">Download</a>
+                    </td>
+
+                    <td class="text-center">
+                        <a onclick="DeleteRecord(this)" data-toggle="tooltip" data-original-title="Remove">
+                            <i class="fas fa-window-close m-0 red-clr" aria-hidden="true"></i>
+                        </a>
+                    </td>
+                </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}

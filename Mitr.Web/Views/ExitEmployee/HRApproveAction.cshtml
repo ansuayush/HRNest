@@ -1,0 +1,464 @@
+﻿
+@{
+	ViewBag.Title = "HRApproveAction";
+	Layout = "~/Views/Shared/_Layout.cshtml";
+
+}
+
+@using (Ajax.BeginForm("HRApproveAction", "ExitEmployee",
+	 new { src = clsApplicationSetting.EncryptQueryString(ViewBag.MenuID.ToString() + "*/ExitEmployee/HRApproveAction") },
+	 new AjaxOptions { HttpMethod = "POST", OnSuccess = "BindTarget", OnFailure = "CloseLoadingDialog()", OnBegin = "ShowLoadingDialog();" },
+ new { @id = "HRApprovalActionFrom" })
+ )
+{
+	<div class="inner-main defult-height pb-0">
+		<input type="hidden" id="hdfid" value="@ViewBag.ID " />
+		<input type="hidden" id="hodid" value="" />
+		<input type="hidden" id="L2" value="" />
+		<input type="hidden" id="L3" value="" />
+		<input type="hidden" id="L4" value="" />
+		<input type="hidden" id="L5" value="" />
+		<div class="row">
+			<div class="inner-main defult-height p-3 pb-0">
+				<h1 class="heading-one mb-3">Resignation Request </h1>
+                <div class="row">
+                    <div class="col-sm-12 form-group">
+                        <ul class="list-unstyled inline-li m-0 rqt-dtl">
+                            <li>
+                                <label>Req No</label>
+                                <label id="labelreq"></label>
+                            </li>
+                            <li>
+                                <label>Requested Date</label>
+                                <label id="labelreqdate"></label>
+                            </li>
+                            <li>
+                                <label>Requested by</label>
+                                <label id="labelreqby"></label>
+                            </li>
+
+
+
+                            <li>
+                                <label>Location</label>
+                                <label id="labelloc"></label>
+                            </li>
+                            <li>
+                                <label>Department</label>
+
+                                <label id="labeldept"></label>
+                            </li>
+                            <li>
+                                <label>Designation</label>
+
+                                <label id="labeldesg"></label>
+                            </li>
+
+                        </ul>
+                    </div>
+                    <div class="col-xl-3 col-lg-4 form-group">
+                        <label>Reason for Resignation</label>
+                        <p id="pReason"></p>
+                    </div>
+                    <div class="col-xl-3 col-lg-4 form-group" data-popover-content="#comment" data-toggle="popover" data-placement="top" data-original-title="" title="">
+                        <label>Employee's Comment on Resignation</label>
+                        <p><span class="ellipsis-text" id="spanComment"></span><span class="cmt-view">View</span></p>
+                        <div id="comment" style="display: none">
+                            <div class="popover-body">
+                                <button type="button" class="popover-close close"> <i class="fas fa-times"></i> </button>
+                                <span id="spanFullComment"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-12"></div>
+                    <div class="col-xl-3 col-lg-4 form-group align-self-end"><strong>Notice Period as per Policy: <span class="red-clr" id="NPAP"></span></strong></div>
+                    <div class="col-xl-3 col-lg-4 form-group align-self-end" id="divEPNP"><strong>Employee proposed notice period: <span class="red-clr" id="EPNP"></span></strong>  </div>
+                    <div class="col-sm-12"></div>
+                    <div class="col-xl-3 col-lg-4 col-sm-6 wh-575 form-group" id="divERDAP">
+                        <label>Relieving date as per policy</label>
+                        <p id="RDateP"></p>
+                    </div>
+                    <div class="col-xl-3 col-lg-4  col-sm-6 wh-575 form-group" id="divEPRD">
+                        <label>Employee Proposed Relieving Date</label>
+                        <p id="ERDate"></p>
+                    </div>
+                    <div class="col-sm-12"></div>
+
+                    <div class="col-xl-6 col-lg-8 form-group " data-popover-content="#comment1" data-toggle="popover" data-placement="top" data-original-title="" title="" id="divRNANP">
+                        <label>Reason for not accepting the notice period</label>
+                        <p><span class="ellipsis-text" id="spanReasonNP"></span><span class="cmt-view">View</span></p>
+                        <div id="comment1" style="display: none">
+                            <div class="popover-body">
+                                <button type="button" class="popover-close close"> <i class="fas fa-times"></i> </button>
+                                <span id="spanFullReasonNP"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-12"></div>
+                    <div class="col-xl-12 col-lg-12 form-group " id="divlevelComment" style="display:none">
+                       
+                        <div class="col-sm-12"></div>
+                        <div class="col-xl-6 col-lg-8 form-group ">
+                            <hr>
+                            <span class="hr-aps"><i class="fas fa-check"></i>Approval Comments</span>
+                        </div>
+                        <div class="col-sm-12"></div>
+
+                        <div class="col-xl-6 col-lg-8 form-group">
+
+                            <div class="table-responsive">
+                                <table class="table table-striped  mb-0 mt-0 vt-a" id="TabellevelComment">
+                                    <thead>
+                                        <tr>
+                                            <th width="50">Level</th>
+                                            <th width="150">Name</th>
+                                            <th width="100">Suggested Relieving Date</th>
+                                            <th>Reason for Declining Notice Period</th>
+
+                                            <th>Comment on Resignation</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+
+
+                    </div>
+                    <div class="col-sm-12" id="divR" style="display:none">
+                        <div class="row">
+                            <div class="col-xl-6 col-lg-8 form-group ">
+                                <hr>
+                                <span class="hr-aps"><i class="fas fa-list"></i>Reason for Continuing</span>
+                            </div>
+                            <div class="col-sm-12">
+                            </div>
+
+
+
+                            <div class="col-xl-3 col-sm-6 wh-575 form-group">
+                                <label>Attachment</label>
+                                <p class="h-38 p-ctr" >
+                                    <button id="btnDownload1" onclick="DownloadFileRFP()" target='_blank' class='green-clr'><i class="fas fa-download float-right" data-toggle="tooltip" title="" data-original-title="Download"></i></button>
+                                </p>
+                                <label id="Pfile"></label>
+                            </div>
+                            <div class="col-xl-3 col-lg-4 form-group " data-popover-content="#comment4" data-toggle="popover" data-placement="top" data-original-title="" title="">
+                                <label>Reason </label>
+                                <p><span class="ellipsis-text" id="spanRReason"></span><span class="cmt-view">View</span></p>
+                                <div id="comment4" style="display: none">
+                                    <div class="popover-body">
+                                        <button type="button" class="popover-close close"> <i class="fas fa-times"></i> </button>
+                                        <span id="spanFullRReason"></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-sm-12 text-left">
+                        <button type="button" name="Command" id="btnR" value="Add" class="btn mtr-y-bg btn-l ripplelink " data-toggle="modal" data-target="#rfc"> <i class="fas fa-user-shield"></i> Record Resolution</button>
+                        <button type="button" name="Command" id="btnF" value="Add" class="btn blk-gdn-btn btn-l ripplelink " data-toggle="modal" data-target="#fts"><i class="fas fa-share"></i> Forward</button>
+                        <button type="button" name="Command" value="Add" id="btnA" class="btn mtr-o-grn btn-l ripplelink " data-toggle="modal" data-target="#dc"><i class="fas fa-user-check"></i>Approve &amp; Proceed</button>
+                        <button type="button" class="btn cnl-btn btn-l ripplelink" onclick="ShowLoadingDialog();window.location='@Url.Action("HRApproval", new { src = clsApplicationSetting.EncryptQueryString(ViewBag.MenuID.ToString() + "*/ExitEmployee/HRApproval*0")  })';"><i class="fas fa-times"></i>Close</button>
+                    </div>
+                </div>
+			</div>
+		</div>
+	</div>
+}
+<div class="modal fade" id="rfc">
+	<div class="modal-dialog modal-dialog-centered modal-md">
+		<div class="modal-content ">
+			<input type="hidden" id="hdnUploadActualFileName" />
+			<input type="hidden" id="hdnUploadNewFileName" />
+			<input type="hidden" id="hdnUploadFileUrl" />
+			<!-- Modal Header -->
+			<div class="modal-header">
+				<h4 class="modal-title">Reason for Continuing</h4>
+				<button type="button" class="close" data-dismiss="modal">&times;</button>
+			</div>
+
+			<!-- Modal body -->
+			<div class="modal-body">
+				<div class="row">
+					<div class="col-sm-6 form-group">
+						<label>Attachment<sup>*<sup></sup></label>
+						<input type="file" id="txtAttachment" class="form-control  " value="" onchange="UploadDocument()">
+						<input type="text" id="txtAttachmentfile" style="display:none" ; class="form-control Mandatory" value="" >
+						<span id="sptxtAttachmentfile" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+
+					</div>
+					<div class="col-sm-12 form-group">
+						<label>Reason<sup>*<sup></sup></label>
+						<input type="text" id="txtReason" class="form-control Mandatory" value="" onchange="HideErrorMessage(this)">
+						<span id="sptxtReason" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+					</div>
+				</div>
+				<!-- Modal footer -->
+				<div class="p-0 text-center ">
+					<button type="button" class="btn cnl-btn ripplelink" data-dismiss="modal"><i class="fas fa-times"></i>Close</button>
+					<button type="button" class="btn mtr-o-grn btn-l" onclick="SaveRecord()"><i class="fas fa-paper-plane"></i>Submit</button>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div class="modal fade" id="fts">
+	<div class="modal-dialog modal-dialog-centered modal-md">
+		<div class="modal-content ">
+
+			<!-- Modal Header -->
+			<div class="modal-header">
+				<h4 class="modal-title"><i class="fas fa-cogs"></i>Process Flow</h4>
+				<button type="button" class="close" data-dismiss="modal">&times;</button>
+			</div>
+
+			<!-- Modal body -->
+			<div class="modal-body">
+				<div class="row">
+					<div class="col-sm-12">
+						<table class="table mt-0">
+							<tbody>
+								<tr>
+									<td><strong>Level 1 <sup class="red-clr">*</sup></strong></td>
+									<td colspan="0" class="tw-100">
+
+										<select class="form-control applyselect Mandatory" id="ddllavel" onchange="HideErrorMessage(this)">
+										</select>
+										<span id="spddllavel" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+
+										
+									</td>
+								</tr>
+								<tr>
+									<td><strong>Level 2 </strong></td>
+									<td colspan="0" class="tw-100">
+										<select class="form-control applyselect" id="ddllaveltwo">
+										</select>
+									</td>
+								</tr>
+								<tr>
+									<td><strong>Level 3 </strong></td>
+									<td colspan="0" class="tw-100">
+										<select class="form-control applyselect" id="ddllavelthree">
+										</select>
+									</td>
+								</tr>
+								<tr>
+									<td><strong>Level 4 </strong></td>
+									<td colspan="0" class="tw-100">
+										<select class="form-control applyselect" id="ddllavelfour">
+										</select>
+									</td>
+								</tr>
+								<tr>
+									<td><strong>Level 5 </strong></td>
+									<td colspan="0" class="tw-100">
+										<select class="form-control applyselect" id="ddllavelfive">
+										</select>
+									</td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
+				</div>
+				<!-- Modal footer -->
+				<div class="p-0 text-center ">
+					<button type="button" class="btn cnl-btn ripplelink" data-dismiss="modal"><i class="fas fa-times"></i>Close</button>
+					<button type="submit" class="btn mtr-o-grn btn-l ripplelink pull-right" data-toggle="modal" data-target="#fts" name="Command" value="Add" onclick="SaveProcessflow()"><i class="fas fa-paper-plane"></i>Submit</button>
+					@*<button type="submit" class="btn mtr-o-grn btn-l " name="Command" value="Submit" onclick="SaveProcessflow()"><i class="fas fa-paper-plane"></i>Submit</button>*@
+
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<div class="modal fade confirmmsg" id="dc">
+    <div class="modal-dialog modal-dialog-centered modal-md ">
+        <div class="modal-content">
+            <!-- Modal Header -->
+            <div class="swal-icon swal-icon--warning">
+                <span class="swal-icon--warning__body">
+                    <span class="swal-icon--warning__dot"></span>
+                </span>
+            </div>
+
+            <div class="modal-body ">
+                <div class="swal-title text-center">Do you verify your desire to authorize the request directly?</div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" data-dismiss="modal" data-toggle="modal" class="btn cnl-btn">No</button>
+                <a data-toggle="modal" onclick="DisplaydataDirect()" data-target="#int1" class="btn mtr-o-grn">Yes</a>
+
+            </div>
+
+        </div>
+
+
+
+    </div>
+
+</div>
+<div class="modal fade" id="int1">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content ">
+
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <h4 class="modal-title">Instructions</h4>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+
+            <!-- Modal body -->
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-sm-12 form-group">
+                        <h3 class="subheading">Instructions for Asset Handover</h3>
+                        <div class="table-responsive">
+                            <div id="tblInstructions">
+
+                            </div>
+                            @*<table class="table table-striped  mb-0 mt-0 vt-a">
+            <thead>
+                <tr>
+                    <th width="30">Action</th>
+                    <th>Department </th>
+                    <th width="100">Location</th>
+                    <th width="100">HOD </th>
+                    <th width="500">Remarks</th>
+                    <th width="150">Notification CC</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td class="text-center"><a data-toggle="tooltip" title="Deactivate"><i class="fas fa-window-close m-0 red-clr" aria-hidden="true"></i> </a></td>
+                    <td>Admin</td>
+                    <td>
+                        <select class="form-control dpselect">
+                            <option>Select</option>
+                            <option selected="">Delhi</option>
+                            <option>Punjab</option>
+                            <option>Uttrakhand</option>
+                            <option>Goa</option>
+                        </select>
+                    </td>
+                    <td>
+                        <select class="form-control dpselect">
+                            <option>Select</option>
+                            <option selected="">Rohit</option>
+                            <option>Rakesh</option>
+                            <option>Rahul</option>
+                            <option>Deepak</option>
+                        </select>
+                    </td>
+                    <td><textarea class="form-control" placeholder="Enter Instructions "></textarea></td>
+                    <td>
+                        <select class="form-control dpselect" multiple="">
+                            <option>Select</option>
+                            <option selected="">Violeena (vborghin@c3india.org)</option>
+                            <option>Arun (arun@c3india.org)</option>
+                        </select>
+                    </td>
+                </tr>
+
+            </tbody>
+        </table>*@
+                        </div>
+                    </div>
+                    <div class="col-sm-3 form-group">
+                        <label>Relieving Date</label>
+                        <input type="Date"  id="txtRelievingDate" class="form-control" placeholder="Enter Task" name="">
+                    </div>
+                    <div class="col-sm-3 align-self-center">
+                        <input type="checkbox" id="annoance" name="Feedback">
+                        <label for="annoance" class="mb-0"> Deactivate Exit Survey</label>
+                    </div>
+                    <div class="col-sm-12">
+                        <h3 class="subheading">Instructions for Task Handover</h3>
+                    </div>
+                    <div class="col-sm-3 form-group">
+                        <label>Task <sup>*</sup></label>
+                        <input type="text" class="form-control" placeholder="Enter Task" name="" id="txttask" onchange="HideErrorMessage(this)">
+                        <span id="sptxttask" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+                    </div>
+                    <div class="col-sm-3 wh-575 form-group">
+                        <label>Select Employee  <sup>*</sup></label>
+                        <select class="form-control applyselect Mandatory" id="ddlEMP" onchange="HideErrorMessage(this)">
+                        </select>
+                        <span id="spddlEMP" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+                    </div>
+                    <div class="col-sm-2 wh-575 form-group">
+                        <label>Priority  <sup>*</sup></label>
+                        <select class="form-control applyselect Mandatory" id="ddlP" onchange="HideErrorMessage(this)">
+                            <option>Select</option>
+                            <option>High</option>
+                            <option>Medium</option>
+                            <option>Low</option>
+                        </select>
+                        <span id="spddlP" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+                    </div>
+                    <div class="col-sm-4 form-group align-self-end ">
+                        <button type="button" class="btn green-clr  m-0" onclick="AddHandoverTask();"><i class="fas fa-plus"></i>Add</button>
+                    </div>
+                    <div class="col-sm-12 form-group">
+                        <div class="table-responsive">
+                            <div id="tblHandOvertask">
+
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-12 form-group">
+                        <label>Direct Confirmation Remarks</label>
+                        <textarea class="form-control" placeholder="Enter Instructions " id="txtDCRemark"></textarea>
+                    </div>
+                    <div class="col-sm-12">
+                        <h3 class="subheading">Attachment</h3>
+                    </div>
+                    <div class="col-sm-3 form-group">
+                        <label>Upload</label>
+                        <input type="file" placeholder="Enter" class="form-control" id="fileAttachmentScopeofwork" onchange="UploadAttachmentFileScope()">
+                        <input type="hidden" id="hdnfileAttachmentScopeActualName" />
+                        <input type="hidden" id="hdnfileAttachmentScopeNewName" />
+                        <input type="hidden" id="hdnfileAttachmentScopeFileUrl" />
+                    </div>
+                    <div class="col-sm-5 form-group">
+                        <label>Description</label>
+                        <textarea class="form-control maxSize[1200]"  placeholder="Enter Description" id="txtDescription"></textarea>
+                    </div>
+                    <div class="col-sm-4 form-group align-self-end ">
+                        <button type="button" class="btn green-clr  m-0" onclick="AddDocuments();"><i class="fas fa-plus"></i>Add</button>
+                    </div>
+                    <div class="col-sm-12 form-group">
+                        <div class="table-responsive">
+                            <div id="tblUploadingDocument">
+
+                            </div>
+                           
+                        </div>
+                    </div>
+                </div>
+                <!-- Modal footer -->
+                <div class="p-0 text-center ">
+                    <button type="button" class="btn cnl-btn ripplelink" data-dismiss="modal"><i class="fas fa-times"></i>Close</button>
+                    <button type="submit" name="Command" value="Add" class="btn blk-gdn-btn btn-l ripplelink " data-toggle="modal" data-target="#mailer1"><i class="fas fa-envelope-open"></i> Mailer</button>
+                    <button type="button" name="Command" value="Save" class="btn mtr-o-grn btn-l" onclick="SaveInstrunction()"><i class="fas fa-paper-plane""></i> Submit</button>
+                    @*<a href="../other-department/admin-it_noc-request-list.html" class="btn mtr-o-grn btn-l "><i class="fas fa-paper-plane"></i>Submit</a>*@
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@section scripts    {
+	@System.Web.Optimization.Scripts.Render("~/bundle/unobtrusivejs")
+	@System.Web.Optimization.Scripts.Render("~/bundle/dataTablesjs")
+
+	<script src="~/assets/design/scripts/DevScriptExit/HRApprovalAction.js"></script>
+	<script src="~/assets/design/Scripts/AddInit.js?v=@clsApplicationSetting.GetWebConfigValue("Version")"></script>
+
+
+
+}

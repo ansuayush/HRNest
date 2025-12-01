@@ -1,0 +1,76 @@
+﻿@using System.Data
+@model Mitr.Models.inputBoard
+
+@section style{
+    @System.Web.Optimization.Styles.Render("~/bundle/dataTablecss")
+}
+
+
+<div class="right_col" role="main">
+    @Html.Partial("HeaderMsg_Partial")
+    <h1 class="heading-one">
+        Membership Registration
+
+    </h1>
+
+    @using (Ajax.BeginForm("_MainBoardMemDetails", "Board",
+            new { src = clsApplicationSetting.EncryptQueryString(ViewBag.MenuID.ToString() + "*/Board/_MainBoardMemDetails") },
+            new AjaxOptions { HttpMethod = "POST", OnSuccess = "BindTarget" },
+        new { @id = "_MainBoardMemDetailsFrom" })
+        )
+    {
+
+        <div class="tab-main mb-5">
+            <div class="row text-clr">
+                <div class="col-md-6">
+                    <ul id="tabs" class="nav nav-tabs " role="tablist">
+                        <li class="nav-item"> <a tabvalue="0" class="nav-link active ripplelink AnchorApproval" data-toggle="tab" role="tab"><i class="fal fa-envelope-open"></i>Current Member</a> </li>
+                        <li class="nav-item"> <a tabvalue="1" class="nav-link ripplelink AnchorApproval" data-toggle="tab" role="tab"><i class="fa fa-check" aria-hidden="true"></i>Old Member</a></li>
+
+                    </ul>
+                </div>
+
+                @Html.HiddenFor(model => model.Approve)
+                <div style="display:none">
+                    <button type="submit" class="btn mtr-g-grn btn-l ripplelink" id="btnSearch" name="Command" value="Search"><i class="fas fa-search"></i>Search</button>
+                </div>
+
+            </div>
+        </div>
+    }
+    <div id="TargetDiv"></div>
+
+</div>
+
+
+@section scripts    {
+    @System.Web.Optimization.Scripts.Render("~/bundle/dataTablesjs")
+    @System.Web.Optimization.Scripts.Render("~/bundle/unobtrusivejs")
+    <script>
+        $(document).ready(function () {
+            $("#btnSearch").click();
+        });
+        $('.AnchorApproval').on('click', function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+            var att = $(this).attr("tabvalue");
+            $(".AnchorApproval.active").removeClass("active");
+            $(this).addClass("active");
+            $("#Approve").val(att);
+            ShowLoadingDialog();
+            $("#btnSearch").click();
+        });
+        
+function BindTarget(args) {
+    CloseLoadingDialog();
+    $("#TargetDiv").empty();
+    $("#TargetDiv").html(args);
+   
+    DatatableScriptsWithColumnSearch("tableApprove");
+
+   
+}
+
+    </script>
+
+}

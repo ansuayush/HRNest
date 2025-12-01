@@ -1,0 +1,172 @@
+﻿@model DataSet
+@using System.Data
+@{ 
+    var lstComponent = from emp in Model.Tables[1].AsEnumerable()
+                       select new
+                       {
+                           Componentid = emp.Field<int>("Componentid"),
+                           Component = emp.Field<string>("Component").ToString(),
+                           Amount = emp.Field<double>("Amt"),
+                           Doctype = emp.Field<string>("Doctype").ToString(),                          
+                       };
+    var lstEmpComponent = lstComponent.ToList();
+}
+<div class="slr-dtl-box ">
+
+    <div class="bgbox">
+        <div class="row">
+            <div class="col-sm-2 align-self-center">
+                <img src="@Model.Tables[0].Rows[0]["Logo"]" alt="">
+            </div>
+            <div class="col-sm-8 text-center">
+                <strong class="cntitle">@Model.Tables[0].Rows[0]["CompanyName"]</strong><br>
+                <small class="fn-md">@Model.Tables[0].Rows[0]["Address"]</small>
+            </div>
+
+
+        </div>
+    </div>
+    <div class="text-center">
+        <h2 class="heading-one">Full and Final Settlement   </h2>
+    </div>
+    <div class="row">
+
+
+        <div class="col-sm-12 text-center">
+            <h2 class="heading-one"><u>Employee Details</u></h2>
+        </div>
+        <div class="col-sm-12">
+            <table class="table tdbrd-none">
+                <tr>
+                    <td width="200">Name</td>
+                    <td width="200">@Model.Tables[0].Rows[0]["emp_name"]</td>
+                    <td width="200">Employee ID</td>
+                    <td>@Model.Tables[0].Rows[0]["emp_code"]</td>
+                </tr>
+                <tr>
+                    <td>Designation </td>
+                    <td>@Model.Tables[0].Rows[0]["Designation"]</td>
+                    <td>Hourly Rate</td>
+                    <td>@(string.Format("{0:#,0}", Convert.ToDecimal(Model.Tables[0].Rows[0]["HourlyRate"])))</td>
+                </tr>
+
+                <tr>
+                    <td>Date of Joining </td>
+                    <td>@Model.Tables[0].Rows[0]["DateOfJoining"]</td>
+                    <td>Date of Leaving</td>
+                    <td>@Model.Tables[0].Rows[0]["lastworking_day"]</td>
+                </tr>
+
+                <tr>
+                    <td>Annual Leave Balance </td>
+                    <td>@Model.Tables[0].Rows[0]["ALBalance"]</td>
+                    <td>CL/SL Balance</td>
+                    <td>@Model.Tables[0].Rows[0]["CLSLBalance"]</td>
+                </tr>
+
+                <tr>
+                    <td>Notice Period Payable  </td>
+                    <td>@Model.Tables[0].Rows[0]["np_payable"]</td>
+                    <td>Notice Period Recovery</td>
+                    <td>@Model.Tables[0].Rows[0]["np_recovery"]</td>
+                </tr>
+
+            </table>
+        </div>
+        <div class="col-sm-12">
+            <h2 class="heading-one">Package Details</h2>
+            <table class="table mb-0">
+                <thead>
+
+                    <tr>
+                        <th>Details</th>
+                        <th width="150">Due (@Model.Tables[0].Rows[0]["Period"])</th>
+                        <th width="150">Drawn (Paid)</th>
+                        <th width="150" class="text-center">Payable</th>
+                    </tr>
+
+                </thead>
+                <tbody>
+                    @foreach (var item in lstEmpComponent.Where(n => n.Doctype == "Earning" || n.Doctype == "OtherEarning"))
+                    {
+                        <tr>
+                            <td>@item.Component</td>
+                            <td class="text-right">@string.Format("{0:#,0}", Convert.ToDecimal(item.Amount)).ToString()</td>
+                            <td class="text-right">@string.Format("{0:#,0}", Convert.ToDecimal(item.Amount)).ToString()</td>
+                            <td class="text-right"></td>
+                        </tr>
+                    }
+
+                    <tr class="lgt-mtr-o-bg fn-bold">
+                        @{
+                            decimal GrossAmt = lstEmpComponent.Where(n => n.Doctype == "Earning" || n.Doctype == "OtherEarning").Sum(n => Convert.ToDecimal(n.Amount));
+                        }
+                        <td>Gross Salary</td>
+                        <td class="text-right">@string.Format("{0:#,0}", Convert.ToDecimal(GrossAmt)).ToString()</td>
+                        <td class="text-right">@string.Format("{0:#,0}", Convert.ToDecimal(GrossAmt)).ToString()</td>
+                        <td class="text-right"></td>
+                    </tr>
+                    <tr class="fn-bold">
+                        <td colspan="4">Benefits</td>
+
+                    </tr>
+                    @foreach (var item in lstEmpComponent.Where(n => n.Doctype == "Fixed"))
+                    {
+                        <tr>
+                            <td>@item.Component</td>
+                            <td class="text-right">@string.Format("{0:#,0}", Convert.ToDecimal(item.Amount)).ToString()</td>
+                            <td class="text-right"></td>
+                            <td class="text-right">@string.Format("{0:#,0}", Convert.ToDecimal(item.Amount)).ToString()</td>
+                        </tr>
+                    }
+                    @{
+                        decimal SalaryBenefits = lstEmpComponent.Where(n => n.Doctype == "Earning" || n.Doctype == "OtherEarning" || n.Doctype == "Fixed").Sum(n => Convert.ToDecimal(n.Amount));
+                    }
+                    <tr class="lgt-mtr-o-bg fn-bold">
+                        <td>Total Salary & Benefits Payable</td>
+                        <td class="text-right">@string.Format("{0:#,0}", Convert.ToDecimal(SalaryBenefits)).ToString()</td>
+                        <td class="text-right"></td>
+                        <td class="text-right">@string.Format("{0:#,0}", Convert.ToDecimal(SalaryBenefits)).ToString()</td>
+
+                    </tr>
+
+                    <tr class="fn-bold">
+                        <td colspan="4">Add : Other Payables</td>
+                    </tr>
+                    <tr>
+                        <td>NP/AL Payable</td>
+                        <td class="text-right"></td>
+                        <td class="text-right"></td>
+                        <td class="text-right"></td>
+                    </tr>
+                    <tr class="fn-bold">
+                        <td colspan="4">Less: Deductions</td>
+                    </tr>
+                    @foreach (var item in lstEmpComponent.Where(n => n.Doctype == "Deduction"))
+                    {
+                        <tr>
+                            <td>@item.Component</td>
+                            <td class="text-right">@string.Format("{0:#,0}", Convert.ToDecimal(item.Amount)).ToString()</td>
+                            <td class="text-right">@string.Format("{0:#,0}", Convert.ToDecimal(item.Amount)).ToString()</td>
+                            <td class="text-right"></td>
+                        </tr>
+                    }
+
+                </tbody>
+                <tfoot>
+                    <tr class="lgt-mtr-o-bg fn-bold">
+                        <td>Net Payable</td>
+                        <td class="text-right"> 2,72,035.00</td>
+                        <td class="text-right">2,48,052.00</td>
+                        <td class="text-right"> 23,983.00</td>
+
+                    </tr>
+                </tfoot>
+
+            </table>
+        </div>
+    </div>
+
+</div>
+
+

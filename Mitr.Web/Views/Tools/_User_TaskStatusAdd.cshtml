@@ -1,0 +1,89 @@
+﻿
+@model User_Task.StatusList
+
+
+
+@using (Ajax.BeginForm("_User_TaskStatusAdd", "Tools",
+		new { src = ViewBag.src },
+		new AjaxOptions { HttpMethod = "POST", OnSuccess = "OnSuccess" },
+	new { @id = "_User_TaskStatusAddFrom" })
+	)
+{
+
+	@Html.AntiForgeryToken()
+	@Html.HiddenFor(x => Model.StatusID)
+	<div class="row">
+		<div class="col-lg-6 col-md-6 col-sm-6 form-group">
+			<label>Name<sup>*</sup></label>
+			@if (Model.ReadOnly)
+			{
+				@Html.HiddenFor(model => model.StatusName)
+				<label class="form-control"> @Model.StatusName</label>
+			}
+			else
+			{
+				@Html.TextBoxFor(model => model.StatusName, new { @class = "form-control" })
+				@Html.ValidationMessageFor(model => model.StatusName, "", new { @class = "text-danger" })
+			}
+		</div>
+		<div class="col-lg-6 col-md-6 col-sm-6 form-group">
+			<label>Display Name<sup>*</sup></label>
+			@Html.TextBoxFor(model => model.DisplayName, new { @class = "form-control" })
+			@Html.ValidationMessageFor(model => model.DisplayName, "", new { @class = "text-danger" })
+		</div>
+		<div class="col-lg-6 col-md-6 col-sm-6 form-group">
+			<label>Type<sup>*</sup></label>
+			@if (Model.ReadOnly)
+			{
+				@Html.HiddenFor(model => model.Type)
+				<label class="form-control"> @Model.Type</label>
+			}
+			else
+			{
+				@Html.TextBoxFor(model => model.Type, new { @class = "form-control" })
+				@Html.ValidationMessageFor(model => model.Type, "", new { @class = "text-danger" })
+			}
+		</div>
+		<div class="col-lg-6 col-md-6 col-sm-6 form-group">
+			<label>Color<sup>*</sup></label>
+			@Html.TextBoxFor(model => model.StatusColor, new { @class = "form-control" })
+			@Html.ValidationMessageFor(model => model.StatusColor, "", new { @class = "text-danger" })
+		</div>
+		<div class="col-lg-6 col-md-6 col-sm-6 form-group">
+			<label>Priority<sup>*</sup></label>
+			@Html.TextBoxFor(model => model.Priority, new { @class = "form-control" })
+			@Html.ValidationMessageFor(model => model.Priority, "", new { @class = "text-danger" })
+		</div>
+		<div class="col-md-12 form-group">
+			<label>User For</label>
+			<ul class="list-unstyled inline-li">
+				<li>
+					<input type="checkbox" id="week_1" name="@Html.NameFor(model => model.UseFor_Name)" @((Model.UseFor != null ? Model.UseFor.Contains("All") ? "checked" : "" : "")) value="All">
+					<label for="week_1"> All </label>
+				</li>
+				<li>
+					<input type="checkbox" id="week_2" name="@Html.NameFor(model => model.UseFor_Name)" @((Model.UseFor != null ? Model.UseFor.Contains("Creator") ? "checked" : "" : "")) value="Creator">
+					<label for="week_2"> Creator  </label>
+				</li>
+				<li>
+					<input type="checkbox" id="week_3" name="@Html.NameFor(model => model.UseFor)" @((Model.UseFor != null ? Model.UseFor.Contains("Assignee") ? "checked" : "" : "")) value="Assignee">
+					<label for="week_3">  Assignee    </label>
+				</li>
+			</ul>
+			@Html.ValidationMessageFor(model => model.UseFor, "", new { @class = "text-danger" })
+		</div>
+	</div>
+
+	<div class="row">
+
+		@if (Model.StatusID > 0)
+		{
+			<button type="submit" class="btn mtr-o-grn btn-l ripplelink pull-right" name="Command" value="Add"><i class="fa fa-paper-plane" aria-hidden="true"></i> Update</button>
+		}
+		else
+		{
+			<button type="submit" class="btn mtr-o-grn btn-l ripplelink pull-right" name="Command" value="Add"><i class="fa fa-paper-plane" aria-hidden="true"></i> Submit</button>
+		}
+	</div>
+
+}

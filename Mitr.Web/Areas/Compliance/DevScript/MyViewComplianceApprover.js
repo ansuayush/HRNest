@@ -1,0 +1,2025 @@
+﻿$(document).ready(function () {
+
+
+
+
+    $(function () {
+        $('.datepicker').datepicker({
+            changeMonth: true,
+            changeYear: true,
+            dateFormat: "dd-mm-yy",
+            yearRange: "-20:+10"
+        });
+
+    });
+
+    var obj = {
+        ParentId: 0,
+        masterTableType: DropDownTypeEnum.SubCategory,
+        isMasterTableType: false,
+        isManualTable: false,
+        manualTable: 0,
+        manualTableId: 0
+    }
+    LoadMasterDropdown('ddlSubCategory', obj, 'Select', false);
+
+    var obj1 = {
+        ParentId: 0,
+        masterTableType: DropDownTypeEnum.RiskType,
+        isMasterTableType: false,
+        isManualTable: false,
+        manualTable: 0,
+        manualTableId: 0
+    }
+    LoadMasterDropdown('dldRisk', obj1, 'Select', false);
+
+    LoadMasterDropdown('ddlDoer', {
+        ParentId: 0,
+        masterTableType: 0,
+        isMasterTableType: false,
+        isManualTable: true,
+        manualTable: ManaulTableEnum.EmployeeWithoutLWD,
+        manualTableId: 0
+    }, 'Select', false);
+
+    LoadMasterDropdown('ddlsecDoer', {
+        ParentId: 0,
+        masterTableType: 0,
+        isMasterTableType: false,
+        isManualTable: true,
+        manualTable: ManaulTableEnum.EmployeeWithoutLWD,
+        manualTableId: 0
+    }, 'Select', false);
+
+    LoadMasterDropdown('PC', {
+        ParentId: 0,
+        masterTableType: 0,
+        isMasterTableType: false,
+        isManualTable: true,
+        manualTable: ManaulTableEnum.EmployeeWithoutLWD,
+        manualTableId: 0
+    }, 'Select', false);
+
+    LoadMasterDropdown('PC2', {
+        ParentId: 0,
+        masterTableType: 0,
+        isMasterTableType: false,
+        isManualTable: true,
+        manualTable: ManaulTableEnum.EmployeeWithoutLWD,
+        manualTableId: 0
+    }, 'Select', false);
+
+    LoadMasterDropdown('EscalateTo', {
+        ParentId: 0,
+        masterTableType: 0,
+        isMasterTableType: false,
+        isManualTable: true,
+        manualTable: ManaulTableEnum.EmployeeWithoutLWD,
+        manualTableId: 0
+    }, '', false);
+
+
+
+    if (EditId > 0) {
+        // GetComplianceDocNo(EditId);
+        EditComplianceMaster(EditId);
+    }
+    else {
+        GetComplianceDocNo(0);
+    }
+
+
+});
+
+
+function ChangeCategory(ctrl) {
+
+    HideErrorMessage(ctrl);
+
+    var subId = ctrl.value;
+
+    if (subId != 'Select') {
+        CommonAjaxMethod(virtualPath + 'ComplianceTransaction/ChangeCategory', { id: subId }, 'GET', function (response) {
+
+            var data = response.data.data.Table;
+            $('#Category').val(data[0].CategoryId)
+            $('#cate').html(data[0].Category);
+
+        });
+    }
+    else {
+        $('#cate').html('Select');
+    }
+
+}
+
+function ChangeRiskType(ctrl) {
+
+    HideErrorMessage(ctrl);
+
+    var subId = ctrl.value;
+
+    if (subId != 'Select') {
+        CommonAjaxMethod(virtualPath + 'ComplianceTransaction/ChangeRiskType', { id: subId }, 'GET', function (response) {
+            var data = response.data.data.Table;
+            $('#description').html(data[0].description);
+            $('#vh').show();
+
+        });
+    }
+    else {
+        $('#vh').hide();
+
+    }
+
+}
+
+function PCChange(ctrl) {
+    HideErrorMessage(ctrl);
+    $('.ra_yes').hide();
+    $('#PC').removeClass('Mandatory');
+    $("#PC").val('Select').trigger('change');
+    $("#PC2").val('Select').trigger('change');
+    $('#spPC').hide();
+    if ($(ctrl).val() == 'ra_yes') {
+        $('#PC').addClass('Mandatory');
+    }
+    $('.' + $(ctrl).val()).show();
+}
+var TaskSubDetails = [];
+var TaskTransId = 0;
+function EditComplianceMaster(id) {
+    TaskTransId = id;
+    CommonAjaxMethod(virtualPath + 'ComplianceTransaction/GetComplianceTransById', { id: id }, 'GET', function (response) {
+        console.log(response);
+        var data = response.data.data.Table;
+
+        var subtask = response.data.data.Table1;
+        var conditions = response.data.data.Table2;
+        var documents = response.data.data.Table3;
+        var JustifyRemarks = response.data.data.Table4;
+        var MaxVersion = response.data.data.Table5;
+        var uploadedDocument = response.data.data.Table6;
+        var ResubmitData = response.data.data.Table7;
+        var complianceMaster = data[0];
+        var status = complianceMaster.Status;
+        var StatusCode = complianceMaster.StatusCode;
+        var ApproveVisible= complianceMaster.ApproveVisible;
+        
+        if (ApproveVisible == 'Y')
+        {
+            $('#btnApproved').show();
+            $('#btnResubmit').show();
+        }
+
+
+        BindDocData(uploadedDocument, status);
+        if (ResubmitData.length > 0) {
+            $('#divResubmit1').show();
+            $('#divResubmit2').show();
+            BindResubmitData(ResubmitData);
+        }
+
+
+        TaskSubDetails = subtask;
+        $('#saveCompliance').show();
+
+        $('.heading-one').html('View Compliances');
+        $('#versionTxt').css('display', 'block');
+        $('#hdnMaxVersionID').val(MaxVersion[0].VersionID);
+        $('#start').html(MaxVersion[0].VersionID);
+        $('#end').html(MaxVersion[0].VersionID);
+        $('.ver_next').addClass('isDisabled');
+        $('.ver_prev').removeClass('isDisabled');
+        if (MaxVersion[0].VersionID == 1) {
+            $('.ver_prev').addClass('isDisabled');
+        }
+
+
+        $('#prevVersion').val(MaxVersion[0].VersionID - 1);
+
+        $('#Doc_no').html(complianceMaster.Doc_No);
+        $('#Doc_Date').html(ChangeDateFormatToddMMYYY(complianceMaster.Doc_Date));
+       
+       
+
+        $('#hdnComplianceMasterId').val(complianceMaster.id);
+        $('#ddlSubCategory').val(complianceMaster.SubCategary).trigger('change');
+        $('#Category').val(complianceMaster.Categary);
+        $('#ddlCompType').val(complianceMaster.ComplianceType).trigger('change');
+        $("#subsubcate").val(complianceMaster.SubSubCategary);
+        $('#dldRisk').val(complianceMaster.RiskType).trigger('change');
+        $('#ComplianceName').val(complianceMaster.ComplianceName);
+        $('#LeadDay').val(complianceMaster.LeadDay);
+        $('#LeadHour').val(complianceMaster.LeadHour);
+        $('#LeadMin').val(complianceMaster.LeadMin);
+        $('#startDate').val(ChangeDateFormatToddMMYYY(complianceMaster.EffectiveDate));
+        $('#isApproval').val('ra_' + (complianceMaster.IsApproval ? 'yes' : 'no')).trigger('change');
+        $('#isEscalation').val('er_' + (complianceMaster.IsEscalation ? 'yes' : 'no')).trigger('change');
+        $('#ddlDoer').val(complianceMaster.Doer).trigger('change');
+        $('#DepartmentId').val(complianceMaster.Department);
+        $('#ddlsecDoer').val(complianceMaster.SecDoer == 0 ? 'Select' : complianceMaster.SecDoer).trigger('change');
+        $('#PC').val(complianceMaster.ProcessController1 == 0 ? 'Select' : complianceMaster.ProcessController1).trigger('change');
+        $('#PC2').val(complianceMaster.ProcessController2 == 0 ? 'Select' : complianceMaster.ProcessController2).trigger('change');
+        $('#isChecklist').val('subtask_' + (complianceMaster.IsChecklist ? 'yes' : 'no')).trigger('change');
+        $('#ClosureType').val(complianceMaster.ClosureType).trigger('change');
+        if (complianceMaster.IsEscalation) {
+            $('#EscalateTo').val(complianceMaster.EscalateTo.split(',')).trigger('change');
+        }
+        $('#EscalationTime').val(complianceMaster.EscalationTime);
+        $('#ReminderTime').val(complianceMaster.ReminderTime);
+
+        if (complianceMaster.ComplianceType == 1) {
+            $('#ddlFrequency').val('Select').trigger('change');
+            $('#ddlFrequency').prop('disabled', true);
+            $('#ddlFrequency').removeClass('Mandatory');
+            $('#dayofM').removeClass('Mandatory');
+            $('#dayofY').removeClass('Mandatory');
+        }
+
+        $('#startDate').prop('disabled', true);
+        $('#ddlCompType').prop('disabled', true);
+        $('#dueDate').val(ChangeDateFormatToddMMYYY(complianceMaster.DueOn));
+        var freq = complianceMaster.Frequency;
+
+        if (freq == 1) {
+            $('#ddlFrequency').val('weekly_1').trigger('change');
+            $('#ddlFrequency').prop('disabled', true);
+            $('#' + complianceMaster.FrequencyCont).prop('checked', true);
+            $('input[name="weekly"]').attr('disabled', true);
+        }
+
+        if (freq == 2) {
+            $('#ddlFrequency').val('months_2').trigger('change');
+            $('#ddlFrequency').prop('disabled', true);
+            $('#checkAllone').prop('disabled', true);
+
+            var arr = complianceMaster.FrequencyCont.split(',');
+            $('#dayofM').val(complianceMaster.DayOF);
+            $('#dayofM').prop('disabled', true);
+
+            for (var i = 0; i < arr.length; i++) {
+                $('#M_' + arr[i]).prop('checked', true);
+            }
+            $('.itemCheckboxone').prop('disabled', true);
+        }
+
+        if (freq == 3) {
+            $('#ddlFrequency').val('yearly_3').trigger('change');
+            $('#ddlFrequency').prop('disabled', true);
+            var id = complianceMaster.FrequencyCont
+            $('#dayofY').val(complianceMaster.DayOF);
+            $('#dayofY').prop('disabled', true);
+
+            $('#Y_' + id).prop('checked', true);
+            $('input[name="year"]').attr('disabled', true);
+        }
+
+        for (var i = 0; i < subtask.length; i++) {
+            var id = i + 1;
+            if (i == 0) {
+
+                $("#subTaskName-" + id).val(subtask[i].Subtask_Name);
+                $("#responseType-" + id).val(subtask[i].SubTaskType + "_" + id).trigger('change');
+                if (subtask[i].IsMandatory == true) {
+                    $("#mandatory-" + id).prop('checked', true);
+                }
+            }
+            else {
+                addSubTaskRow();
+                $("#subTaskName-" + id).val(subtask[i].Subtask_Name);
+                $("#responseType-" + id).val(subtask[i].SubTaskType + "_" + id).trigger('change');
+                if (subtask[i].IsMandatory == true) {
+                    $("#mandatory-" + id).prop('checked', true);
+                }
+            }
+        }
+
+        BindUL(subtask);
+
+
+
+        for (var i = 0; i < conditions.length; i++) {
+            var id = i + 1;
+            if (i == 0) {
+                $("#conditionInput-" + id).val(conditions[i].Condition);
+            }
+            else {
+                addConditionRow();
+                $("#conditionInput-" + id).val(conditions[i].Condition);
+
+            }
+        }
+
+        for (var i = 0; i < documents.length; i++) {
+            var id = i + 1;
+            if (i == 0) {
+                $('#hdnUploadActualFileName_' + id).val(documents[i].ActualFileName);
+                $('#hdnUploadNewFileName_' + id).val(documents[i].ActualFileName);
+                $('#hdnUploadFileUrl_' + id).val(documents[i].FileURL);
+
+                $('#imageDescription-' + id).val(documents[i].Description);
+
+                if (documents[i].FileURL != "" || documents[i].FileURL != null) {
+                    $('#imageDescription-' + id).addClass('Mandatory');
+                }
+
+            }
+            else {
+                addImageRow();
+                $('#hdnUploadActualFileName_' + id).val(documents[i].ActualFileName);
+                $('#hdnUploadNewFileName_' + id).val(documents[i].ActualFileName);
+                $('#hdnUploadFileUrl_' + id).val(documents[i].FileURL);
+                $('#imageDescription-' + id).val(documents[i].Description);
+
+                if (documents[i].FileURL != "" || documents[i].FileURL != null) {
+                    $('#imageDescription-' + id).addClass('Mandatory');
+                }
+            }
+        }
+
+
+
+        if (JustifyRemarks.length > 0) {
+            for (var i = 0; i < JustifyRemarks.length; i++) {
+                var id = i + 2;
+
+                var element = `<label>Justification in case of updation in compliance<sup>*</sup></label>
+                <textarea name="" placeholder="Enter" id="remarks_${id}" class="form-control  h-100"></textarea>`;
+
+
+                $('#Justremarks').append(element);
+
+
+                $("#remarks_" + id).val(JustifyRemarks[i].Description);
+                $("#remarks_" + id).prop('disabled', true);
+
+            }
+
+
+        }
+
+
+
+        if (status == 3) {
+            $("#btnSave").hide();
+            $("#btnSubmit").hide();
+            if (StatusCode == 4 || StatusCode == 13 || StatusCode == 17) {
+                $('#btnComplete').show();
+            }
+            else {
+                // Get all elements with the class name 'your-class'
+                let elements = document.querySelectorAll('.disableDetails');
+                // Loop through each element and disable it
+                elements.forEach(function (element) {
+                    element.disabled = true;
+                });
+            }
+        }
+
+
+    });
+}
+
+function ChangePrevCompliance() {
+
+    ChangeComplianceMasterVersion(EditId, $('#prevVersion').val());
+}
+
+function ChangeNextCompliance() {
+    if ($('#nextVersion').val() != $('#hdnMaxVersionID').val()) {
+        ChangeComplianceMasterVersion(EditId, $('#nextVersion').val());
+    }
+    else {
+        clearFormControl();
+        EditComplianceMaster(EditId);
+    }
+}
+
+
+function ChangeComplianceMasterVersion(id, version) {
+    CommonAjaxMethod(virtualPath + 'ComplianceTransaction/ChangeComplianceVersion', { id: id, version: version }, 'GET', function (response) {
+        console.log(response);
+        var data = response.data.data.Table;
+        var subtask = response.data.data.Table1;
+        var conditions = response.data.data.Table2;
+        var documents = response.data.data.Table3;
+        var JustifyRemarks = response.data.data.Table4;
+        var Version = response.data.data.Table5;
+        var complianceMaster = data[0];
+
+        clearFormControl();
+        $('#saveCompliance').hide();
+        if (Version[0].VersionID != $('#hdnMaxVersionID').val()) {
+            $('.ver_next').removeClass('isDisabled');
+            $('#nextVersion').val(Version[0].VersionID + 1);
+
+
+        }
+        else {
+            $('.ver_next').addClass('isDisabled');
+        }
+        if (Version[0].VersionID == 1) {
+            $('.ver_prev').addClass('isDisabled');
+            $('#start').html('1');
+        }
+        else {
+            $('#prevVersion').val(Version[0].VersionID - 1);
+            $('.ver_prev').removeClass('isDisabled');
+            $('#start').html(Version[0].VersionID);
+        }
+
+
+        $('.heading-one').html('Update Compliances');
+        $('#versionTxt').css('display', 'block');
+
+        $('#Doc_no').html(complianceMaster.Doc_No);
+        $('#Doc_Date').html(ChangeDateFormatToddMMYYY(complianceMaster.Doc_Date));
+        $('#hdnComplianceMasterId').val(complianceMaster.id);
+        $('#ddlSubCategory').val(complianceMaster.SubCategary).trigger('change');
+        $('#Category').val(complianceMaster.Categary);
+        $('#ddlCompType').val(complianceMaster.ComplianceType);
+        $("#subsubcate").val(complianceMaster.SubSubCategary);
+        $('#dldRisk').val(complianceMaster.RiskType).trigger('change');
+        $('#ComplianceName').val(complianceMaster.ComplianceName);
+        $('#LeadDay').val(complianceMaster.LeadDay);
+        $('#LeadHour').val(complianceMaster.LeadHour);
+        $('#LeadMin').val(complianceMaster.LeadMin);
+        $('#startDate').val(ChangeDateFormatToddMMYYY(complianceMaster.EffectiveDate));
+        $('#isApproval').val('ra_' + (complianceMaster.IsApproval ? 'yes' : 'no')).trigger('change');
+        $('#isEscalation').val('er_' + (complianceMaster.IsEscalation ? 'yes' : 'no')).trigger('change');
+        $('#ddlDoer').val(complianceMaster.Doer).trigger('change');
+        $('#DepartmentId').val(complianceMaster.Department);
+        $('#ddlsecDoer').val(complianceMaster.SecDoer == 0 ? 'Select' : complianceMaster.SecDoer).trigger('change');
+        $('#PC').val(complianceMaster.ProcessController1 == 0 ? 'Select' : complianceMaster.ProcessController1).trigger('change');
+        $('#PC2').val(complianceMaster.ProcessController2 == 0 ? 'Select' : complianceMaster.ProcessController1).trigger('change');
+        $('#isChecklist').val('subtask_' + (complianceMaster.IsChecklist ? 'yes' : 'no')).trigger('change');
+        $('#ClosureType').val(complianceMaster.ClosureType).trigger('change');
+        if (complianceMaster.IsEscalation) {
+            $('#EscalateTo').val(complianceMaster.EscalateTo.split(',')).trigger('change');
+        }
+        $('#EscalationTime').val(complianceMaster.EscalationTime);
+        $('#ReminderTime').val(complianceMaster.ReminderTime);
+
+        if (complianceMaster.ComplianceType == 1) {
+            $('#ddlFrequency').val('Select').trigger('change');
+            $('#ddlFrequency').prop('disabled', true);
+            $('#ddlFrequency').removeClass('Mandatory');
+            $('#dayofM').removeClass('Mandatory');
+            $('#dayofY').removeClass('Mandatory');
+        }
+
+        $('#startDate').prop('disabled', true);
+        $('#ddlCompType').prop('disabled', true);
+
+        var freq = complianceMaster.Frequency;
+
+        if (freq == 1) {
+            $('#ddlFrequency').val('weekly_1').trigger('change');
+            $('#ddlFrequency').prop('disabled', true);
+            $('#' + complianceMaster.FrequencyCont).prop('checked', true);
+            $('input[name="weekly"]').attr('disabled', true);
+        }
+
+        if (freq == 2) {
+            $('#ddlFrequency').val('months_2').trigger('change');
+            $('#ddlFrequency').prop('disabled', true);
+            $('#checkAllone').prop('disabled', true);
+
+            var arr = complianceMaster.FrequencyCont.split(',');
+            $('#dayofM').val(complianceMaster.DayOF);
+            $('#dayofM').prop('disabled', true);
+
+            for (var i = 0; i < arr.length; i++) {
+                $('#M_' + arr[i]).prop('checked', true);
+            }
+            $('.itemCheckboxone').prop('disabled', true);
+        }
+
+        if (freq == 3) {
+            $('#ddlFrequency').val('yearly_3').trigger('change');
+            $('#ddlFrequency').prop('disabled', true);
+            var id = complianceMaster.FrequencyCont
+            $('#dayofY').val(complianceMaster.DayOF);
+            $('#dayofY').prop('disabled', true);
+
+            $('#Y_' + id).prop('checked', true);
+            $('input[name="year"]').attr('disabled', true);
+        }
+
+
+
+        for (var i = 0; i < subtask.length; i++) {
+            var id = i + 1;
+            if (i == 0) {
+
+                $("#subTaskName-" + id).val(subtask[i].Subtask_Name);
+                $("#responseType-" + id).val(subtask[i].SubTaskType + "_" + id).trigger('change');
+                if (subtask[i].IsMandatory == true) {
+                    $("#mandatory-" + id).prop('checked', true);
+                }
+            }
+            else {
+                addSubTaskRow();
+                $("#subTaskName-" + id).val(subtask[i].Subtask_Name);
+                $("#responseType-" + id).val(subtask[i].SubTaskType + "_" + id).trigger('change');
+                if (subtask[i].IsMandatory == true) {
+                    $("#mandatory-" + id).prop('checked', true);
+                }
+            }
+        }
+
+        for (var i = 0; i < conditions.length; i++) {
+            var id = i + 1;
+            if (i == 0) {
+                $("#conditionInput-" + id).val(conditions[i].Condition);
+            }
+            else {
+                addConditionRow();
+                $("#conditionInput-" + id).val(conditions[i].Condition);
+
+            }
+        }
+
+        for (var i = 0; i < documents.length; i++) {
+            var id = i + 1;
+            if (i == 0) {
+                $('#hdnUploadActualFileName_' + id).val(documents[i].ActualFileName);
+                $('#hdnUploadNewFileName_' + id).val(documents[i].ActualFileName);
+                $('#hdnUploadFileUrl_' + id).val(documents[i].FileURL);
+
+                $('#imageDescription-' + id).val(documents[i].Description);
+
+                if (documents[i].FileURL != "" || documents[i].FileURL != null) {
+                    $('#imageDescription-' + id).addClass('Mandatory');
+                }
+
+            }
+            else {
+                addImageRow();
+                $('#hdnUploadActualFileName_' + id).val(documents[i].ActualFileName);
+                $('#hdnUploadNewFileName_' + id).val(documents[i].ActualFileName);
+                $('#hdnUploadFileUrl_' + id).val(documents[i].FileURL);
+                $('#imageDescription-' + id).val(documents[i].Description);
+
+                if (documents[i].FileURL != "" || documents[i].FileURL != null) {
+                    $('#imageDescription-' + id).addClass('Mandatory');
+                }
+            }
+        }
+
+
+
+
+        for (var i = 0; i < JustifyRemarks.length; i++) {
+            var id = i + 2;
+
+
+            var element = `<label>Justification in case of updation in compliance<sup>*</sup></label>
+                <textarea name="" placeholder="Enter" id="remarks_${id}" class="form-control  h-100"></textarea>`;
+
+
+            $('#Justremarks').append(element);
+
+
+            $("#remarks_" + id).val(JustifyRemarks[i].Description);
+            $("#remarks_" + id).prop('disabled', true);
+
+        }
+
+
+    });
+}
+
+
+
+function ChangeDepartment(ctrl) {
+
+    HideErrorMessage(ctrl);
+
+    var subId = ctrl.value;
+
+    if (subId != 'Select') {
+        CommonAjaxMethod(virtualPath + 'ComplianceTransaction/GetDepartment', { id: subId }, 'GET', function (response) {
+            var data = response.data.data.Table;
+            $('#DepartmentId').val(data[0].DepartmentID);
+            $('#Department').html(data[0].Department);
+
+        });
+    }
+}
+
+function ClearFormControl() {
+
+    $('#txtSubCate').val('');
+    $('#hdnMasterTableId').val('');
+    $('#hdnCateId').val('');
+
+
+}
+
+
+
+function GetComplianceDocNo(id) {
+    ClearFormControl();
+    CommonAjaxMethod(virtualPath + 'ComplianceTransaction/GetComplianceDocNo', { id: id }, 'GET', function (response) {
+        console.log(response);
+        var data = response.data.data.Table;
+        var Doc_No = data[0].Doc_No;
+        $('#Doc_no').html(Doc_No);
+        $('#Doc_Date').html(ChangeDateFormatToddMMYYY(data[0].TaskDate));
+
+    });
+
+
+}
+//function Activate(id)
+//{
+
+//    var x = confirm("Do you want to change the status of this record?");
+
+//    if (x)
+//    { 
+//        var obj = {
+//            ID: 0,
+//            SubCategory: '',
+//            TableType: '',
+//            Code: '',
+//            MasterTableId: id,
+//            IsActive: 1,
+//            IPAddress: $('#hdnIP').val()?"":" "    
+//        }
+//        CommonAjaxMethod(virtualPath + 'DigitalLibrary/SaveSubCategory', obj, 'POST', function (response) {
+//            BindSubcategory();
+//            ClearFormControl();
+//        });
+//    }
+//}
+
+
+var Week;
+
+function validateRadioButtons() {
+    var radioButtons = document.getElementsByName('weekly');
+    var isSelected = false;
+
+    for (var i = 0; i < radioButtons.length; i++) {
+        if (radioButtons[i].checked) {
+            isSelected = true;
+            Week = radioButtons[i].id;
+            break;
+        }
+    }
+
+    if (!isSelected) {
+        $('#spWeekly').html('Please select atleast a week!!');
+        $('#spWeekly').show();
+        return false;
+    }
+    else {
+        $('#spWeekly').hide();
+    }
+    return true;
+}
+
+
+document.getElementById('checkAllone').addEventListener('change', function () {
+    var checkboxes = document.querySelectorAll('.itemCheckboxone');
+    checkboxes.forEach(function (checkbox) {
+        checkbox.checked = this.checked;
+    }, this);
+});
+
+
+var Month = [];
+function validateMonthForm() {
+    var dayOfInput = document.getElementById('dayofM');
+    var dayOfValue = parseInt(dayOfInput.value);
+    var isDayOfValid = true;
+
+    // Month-Day Mapping
+    var monthDayLimits = {
+        'M_1': 31, 'M_2': 28, 'M_3': 31, 'M_4': 30,
+        'M_5': 31, 'M_6': 30, 'M_7': 31, 'M_8': 31,
+        'M_9': 30, 'M_10': 31, 'M_11': 30, 'M_12': 31
+    };
+
+    var monthDayName = {
+        'M_1': 'Jan', 'M_2': 'Feb', 'M_3': 'Mar', 'M_4': 'Apr',
+        'M_5': 'May', 'M_6': 'June', 'M_7': 'Jul', 'M_8': 'Aug',
+        'M_9': 'Sept', 'M_10': 'Oct', 'M_11': 'Nov', 'M_12': 'Dec'
+    };
+
+    // Get selected months
+    var checkboxes = document.querySelectorAll('.itemCheckboxone');
+    var selectedMonths = [];
+
+    Month = [];
+    checkboxes.forEach(function (checkbox) {
+        if (checkbox.checked) {
+            selectedMonths.push(checkbox.id);
+            var id = checkbox.id.split('_')[1];
+            Month.push(id);
+        }
+    });
+
+    var isChecked = selectedMonths.length > 0;
+
+
+    if (dayOfValue === "" || dayOfValue <= 0) {
+        document.getElementById('spdayofM').innerText = 'Invalid no.of Days!!';
+        document.getElementById('spdayofM').style.display = 'inline';
+        isDayOfValid = false;
+    } else if (isDayOfValid) {
+        document.getElementById('spdayofM').style.display = 'none';
+    }
+
+    if (!isChecked) {
+        document.getElementById('spdayofM').innerText = 'Please select atleast one month';
+        document.getElementById('spdayofM').style.display = 'inline';
+        isDayOfValid = false;
+    } else {
+        document.getElementById('spdayofM').innerText = 'Invalid no.of Days!!';
+        document.getElementById('spdayofM').style.display = 'none';
+
+    }
+
+
+
+
+    // Validate Day of Month according to selected months
+    selectedMonths.forEach(function (month) {
+        if (dayOfValue > monthDayLimits[month]) {
+            isDayOfValid = false;
+            document.getElementById('spdayofM').innerText = `Day of should not be greater than ${monthDayLimits[month]} for ${monthDayName[month]}.`;
+            document.getElementById('spdayofM').style.display = 'inline';
+        }
+    });
+
+
+    // Validate if at least one month is selected
+
+
+    if (checkboxes && isDayOfValid) {
+
+        return true;
+    } else {
+
+        return false;
+    }
+}
+
+function formatNumber(value) {
+    // Check if the number is an integer
+    if (Number.isInteger(value)) {
+        return value.toFixed(1); // Append .0 to integer values
+    }
+    return value.toString(); // Leave decimal values as they are
+}
+
+
+
+var Year;
+function validateYearForm() {
+    var dayOfInput = document.getElementById('dayofY');
+    var dayOfValue = parseInt(dayOfInput.value);
+    var isDayOfValid = true;
+
+    // Month-Day Mapping
+    var monthDayLimits = {
+        'Y_1': 31, 'Y_2': 28, 'Y_3': 31, 'Y_4': 30,
+        'Y_5': 31, 'Y_6': 30, 'Y_7': 31, 'Y_8': 31,
+        'Y_9': 30, 'Y_10': 31, 'Y_11': 30, 'Y_12': 31
+    };
+
+
+
+    // Get selected month
+    var selectedMonth = document.querySelector('input[name="year"]:checked');
+    var selectedMonthId = selectedMonth ? selectedMonth.id : null;
+    Year = selectedMonth ? selectedMonth.id.split('_')[1] : null;
+
+    // Validate Day of field is not empty or less than or equal to 0
+    if (!dayOfValue || dayOfValue <= 0) {
+        document.getElementById('spdayofY').innerText = 'Invalid no.of Days!!';
+        document.getElementById('spdayofY').style.display = 'inline';
+        isDayOfValid = false;
+    } else if (isDayOfValid) {
+        document.getElementById('spdayofY').style.display = 'none';
+    }
+
+    // Validate if a month is selected
+    if (!selectedMonth) {
+        document.getElementById('spdayofY').innerText = 'Please select atleast one month!!';
+        document.getElementById('spdayofY').style.display = 'inline';
+    } else {
+        document.getElementById('spdayofY').innerText = 'Invalid no.of Days!!';
+        document.getElementById('spdayofY').style.display = 'none';
+    }
+
+    // Validate Day of Month according to the selected month
+    if (selectedMonthId && dayOfValue > monthDayLimits[selectedMonthId]) {
+        isDayOfValid = false;
+        document.getElementById('spdayofY').innerText = `Day of should not be greater than ${monthDayLimits[selectedMonthId]} for the selected month.`;
+        document.getElementById('spdayofY').style.display = 'inline';
+    }
+
+
+
+    if (selectedMonth && isDayOfValid) {
+
+        return true;
+    } else {
+
+        return false;
+    }
+}
+
+
+
+var rowIdCounter = 1;
+
+function addSubTaskRow() {
+    rowIdCounter++;
+    var rowId = "row-" + rowIdCounter;
+    var subTaskNameId = "subTaskName-" + rowIdCounter;
+    var responseTypeId = "responseType-" + rowIdCounter;
+    var mandatoryId = "mandatory-" + rowIdCounter;
+
+    var newRow = `
+        <tr id="${rowId}">
+            <td><input type="text" id="${subTaskNameId}" value="" class="form-control Mandatory"  onchange="HideErrorMessage(this)"  Mandatory" placeholder="Enter" name="subTaskName[]">
+             <span id="sp${subTaskNameId}" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+            </td>
+            <td>
+                <select class="form-control applyselect Mandatory"  onchange="HideErrorMessage(this)"  id="${responseTypeId}" name="responseType[]">
+                    <option >Select</option>
+                    <option value="Text_${rowIdCounter}">Text</option>
+                    <option value="Numeric_${rowIdCounter}">Numeric</option>
+                    <option value="Attachment_${rowIdCounter}">Attachment</option>
+                </select>
+                <span id="sp${responseTypeId}" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+            </td>
+            <td>
+                <div class="switch--box">
+                    <label class="cswitch m-0">
+                        <input class="cswitch--input" id="${mandatoryId}" type="checkbox" name="mandatory[]"/><span class="cswitch--trigger wrapper"></span>
+                    </label>
+                </div>
+            </td>
+            <td class="text-center"><i class="fas fa-window-close red-clr" data-toggle="tooltip" title="Remove" aria-hidden="true" onclick="removeSubTaskRow('${rowId}', this)"></i></td>
+        </tr>
+    `;
+
+    $('#subTaskTableBody').append(newRow);
+    $("#" + responseTypeId).select2();  // Apply select2 to the new select element
+    $('[data-toggle="tooltip"]').tooltip();
+}
+
+function removeSubTaskRow(rowId, ctrl) {
+    $(ctrl).tooltip('dispose');
+    $('#' + rowId).remove();
+}
+
+
+// this will remove all tasks at once
+// this will remove all tasks at once
+function removeAllSubTaskRows() {
+    for (var i = 2; i <= rowIdCounter; i++) {
+        var rowId = 'row-' + i;
+        var rowElement = document.getElementById(rowId);
+
+        if (rowElement) {
+            $(rowElement).tooltip('dispose');
+            rowElement.remove();
+        }
+    }
+}
+
+var objTaskQuestion = [];
+function gatherTableData() {
+
+
+    for (var i = 1; i <= rowIdCounter; i++) {
+        var subTaskNameElement = document.getElementById('subTaskName-' + i);
+        var responseTypeElement = document.getElementById('responseType-' + i);
+        var mandatoryElement = document.getElementById('mandatory-' + i);
+
+        if (subTaskNameElement && responseTypeElement && mandatoryElement) {
+
+            var obj = {
+                SubtaskName: subTaskNameElement.value,
+                SubTaskType: responseTypeElement.value.split('_')[0],
+                IsMandatory: mandatoryElement.checked
+            }
+            objTaskQuestion.push(obj);
+
+        }
+    }
+
+}
+
+// Function to remove a row from the table
+function removeRow(rowId) {
+    var row = document.getElementById(rowId);
+    row.remove();
+}
+
+var conditionRowCounter = 1;
+
+// Function to add a new row
+function addConditionRow() {
+    conditionRowCounter++;
+    var rowId = "conditionRow-" + conditionRowCounter;
+    var inputId = "conditionInput-" + conditionRowCounter;
+
+    var newRow = `
+        <tr id="${rowId}">
+            <td><input type="text" id="${inputId}" class="form-control conditionInput" placeholder="Enter Condition" name="conditions[]"></td>
+            <td class="text-center"></td>
+        </tr>
+    `;
+
+    $('#conditionsTableBody').append(newRow);
+
+    $('[data-toggle="tooltip"]').tooltip();
+
+}
+
+// Function to remove a row
+
+function removeAllConditionRow(rowId, ctrl) {
+    for (var i = 1; i <= conditionRowCounter; i++) {
+        var rowId = 'conditionRow-' + i;
+        var rowElement = document.getElementById(rowId);
+
+        if (rowElement) {
+            $(rowElement).tooltip('dispose');
+            rowElement.remove();
+        }
+    }
+}
+
+function removeAllSubTaskRowChange() {
+    for (var i = 1; i <= rowIdCounter; i++) {
+        var rowId = 'row-' + i;
+        var rowElement = document.getElementById(rowId);
+
+        if (rowElement) {
+            $(rowElement).tooltip('dispose');
+            rowElement.remove();
+        }
+    }
+}
+
+function removeAllImageRows() {
+    for (var i = 1; i <= imageRowCounter; i++) {
+        var rowId = 'imageRow-' + i;
+        var rowElement = document.getElementById(rowId);
+
+        if (rowElement) {
+            $(rowElement).tooltip('dispose');
+            rowElement.remove();
+        }
+    }
+}
+function removeConditionRow(rowId, ctrl) {
+    $(ctrl).tooltip('dispose');
+    $('#' + rowId).remove();
+}
+
+// Function to get array of values
+
+var objConditions = [];
+function getConditionValues() {
+
+    $('.conditionInput').each(function () {
+        var value = $(this).val().trim();
+        if (value !== '') {
+            var obj = {
+                Condition: value,
+            }
+            objConditions.push(obj);
+        }
+    });
+
+}
+
+var imageRowCounter = 1;
+
+// Function to add a new row  
+function addImageRow(row) {
+    imageRowCounter++;
+    var rowId = "imageRow-" + imageRowCounter;
+    var fileId = "imageFile_" + imageRowCounter;
+    var descriptionId = "imageDescription-" + imageRowCounter;
+
+    var newRow = `
+        <tr id="${rowId}">
+           <td>
+                <input type="file" id="${fileId}" class="form-control imageFile" onchange="UploadocumentQuesReport(this.id)"  placeholder="Upload Image" name="imageFiles[]">
+                <input type="hidden" id="hdnUploadActualFileName_${imageRowCounter}" />
+                <input type="hidden" id="hdnUploadNewFileName_${imageRowCounter}" />
+                <input type="hidden" id="hdnUploadFileUrl_${imageRowCounter}" />
+                <a id="ancUploadActualFileName_${imageRowCounter}" onclick="DownloadFileQuotation(this)"><i class="fas fa-download float-right" data-toggle="tooltip" title="Download"></i></a>
+           </td>
+            <td>
+                <textarea id="${descriptionId}" class="form-control imageDescription" onchange="HideErrorMessage(this)"  placeholder="Enter Description" name="imageDescriptions[]"></textarea>
+                 <span id="sp${descriptionId}" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+            </td>
+            <td class="text-center"></td>
+        </tr>
+    `;
+
+
+    $('#imageTableBody').append(newRow);
+
+
+    $('[data-toggle="tooltip"]').tooltip();
+
+
+
+}
+
+// Function to remove a row
+function removeImageRow(rowId, ctrl) {
+    $(ctrl).tooltip('dispose');
+    $('#' + rowId).remove();
+
+}
+
+// Function to get array of values
+
+var objImageDescrption = [];
+function getImageRowValues() {
+    var imageRows = [];
+
+    $('.imageFile').each(function (index) {
+        var fileId = $(this).attr('id');
+        var descriptionId = fileId.replace('imageFile', 'imageDescription');
+
+        var imageFile = $('#hdnUploadFileUrl_' + fileId.split('_')[1]).val().trim();
+        var imageDescription = $('#imageDescription-' + fileId.split('_')[1]).val().trim();
+
+        if (imageFile !== '' || imageDescription !== '') {
+            var obj = {
+                ActualFileName: $('#hdnUploadActualFileName_' + fileId.split('_')[1]).val(),
+                NewFileName: $('#hdnUploadNewFileName_' + fileId.split('_')[1]).val(),
+                FileURL: $('#hdnUploadFileUrl_' + fileId.split('_')[1]).val(),
+                Description: $('#imageDescription-' + fileId.split('_')[1]).val()
+            }
+            objImageDescrption.push(obj);
+        }
+    });
+
+    return imageRows;
+}
+
+function UploadocumentQuesReport(id) {
+
+
+    var array = id.split('_');
+    var fileUpload = $("#" + id).get(0);
+
+    var files = fileUpload.files;
+    if (files.length > 0) {
+
+        // Create FormData object
+        var fileData = new FormData();
+
+        // Looping over all files and add it to FormData object
+        for (var i = 0; i < files.length; i++) {
+            fileData.append(files[i].name, files[i]);
+        }
+
+        $.ajax({
+            url: virtualPath + 'CommonMethod/UploadComplianceDocument',
+            type: "POST",
+            contentType: false, // Not to set any content header
+            processData: false, // Not to process data
+            data: fileData,
+
+            success: function (response) {
+                var result = JSON.parse(response);
+
+                if (result.ErrorMessage == "") {
+
+                    $('#hdnUploadActualFileName_' + array[1]).val(result.FileModel.ActualFileName);
+                    $('#hdnUploadNewFileName_' + array[1]).val(result.FileModel.NewFileName);
+                    $('#hdnUploadFileUrl_' + array[1]).val(result.FileModel.FileUrl);
+                    $('#imageDescription-' + array[1]).addClass('Mandatory');
+
+
+                }
+                else {
+
+
+                    FailToaster(result.ErrorMessage);
+
+                }
+            },
+            error: function (error) {
+                FailToaster(error);
+
+                isSuccess = false;
+            }
+
+        });
+    }
+    else {
+        $('#hdnUploadActualFileName_' + array[1]).val('');
+        $('#hdnUploadNewFileName_' + array[1]).val('');
+        $('#hdnUploadFileUrl_' + array[1]).val('');
+        $('#imageDescription-' + array[1]).removeClass('Mandatory');
+        $('#spimageDescription-' + array[1]).hide();
+
+
+        return "error";
+
+    }
+
+    return "";
+
+
+}
+
+function DownloadFileQuotation(ctrl) {
+    var id = ctrl.id.split('_');
+    var controlNo = id[1];
+    var fileURl = $('#hdnUploadFileUrl_' + controlNo).val();
+    var fileName = $('#hdnUploadActualFileName_' + controlNo).val();
+    if (fileURl.length > 0) {
+        if (fileURl != null || fileURl != undefined) {
+            var stSplitFileName = fileName.split(".");
+            var link = document.createElement("a");
+            link.download = stSplitFileName[0];
+            link.href = fileURl;
+            link.click();
+        }
+    }
+    else {
+        FailToaster("Please select file to attach!");;
+    }
+}
+
+
+function handleVisibility() {
+    var leadHour;
+    var leadDay;
+    var leadMin;
+    var totalSum;
+    if ($("#LeadDay").val() == "") {
+        $("#LeadDay").val(0);
+    }
+    if ($("#LeadHour").val() == "") {
+        $("#LeadHour").val(0);
+    }
+    if ($("#LeadMin").val() == "") {
+        $("#LeadMin").val(0);
+    }
+
+    if ($("#ddlFrequency").val() == 'weekly_1') {
+
+        leadDay = parseInt($("#LeadDay").val(), 10);
+        leadHour = parseInt($("#LeadHour").val(), 10);
+        leadMin = parseInt($("#LeadMin").val(), 10);
+
+        totalSum = leadDay * 24 * 60 + leadHour * 60 + leadMin;
+
+        var totalTime = 7 * 24 * 60;
+
+        if (totalSum > totalTime) {
+            return false;
+        }
+
+        else {
+            return true;
+        }
+
+    }
+
+    else if ($("#ddlFrequency").val() == 'months_2') {
+
+
+
+        leadDay = parseInt($("#LeadDay").val(), 10);
+        leadHour = parseInt($("#LeadHour").val(), 10);
+        leadMin = parseInt($("#LeadMin").val(), 10);
+
+        totalSum = leadDay * 24 * 60 + leadHour * 60 + leadMin;
+
+        var totalTime = 31 * 24 * 60;
+
+        if (totalSum > totalTime) {
+            return false;
+        }
+
+        else {
+            return true;
+        }
+
+    }
+
+    else {
+        leadDay = parseInt($("#LeadDay").val(), 10);
+        leadHour = parseInt($("#LeadHour").val(), 10);
+        leadMin = parseInt($("#LeadMin").val(), 10);
+
+        totalSum = leadDay * 24 * 60 + leadHour * 60 + leadMin;
+
+        var totalTime = 366 * 24 * 60;
+
+        if (totalSum > totalTime) {
+
+            return false;
+        }
+
+        else {
+
+            return true;
+        }
+    }
+}
+
+
+function SaveComplianceTrans(from) {
+
+
+
+    if (checkValidationOnSubmit('Mandatory') == true) {
+
+
+        var obj = handleVisibility();
+
+        var errormessage = '';
+
+        if (obj == false) {
+
+            errormessage = 'The Given Lead day is greater than the Expected time.';
+
+            FailToaster(errormessage);
+            return;
+        }
+
+        objTaskQuestion.length = 0
+        objConditions.length = 0;
+        objImageDescrption.length = 0;
+
+        gatherTableData();
+        getConditionValues();
+        getImageRowValues();
+
+        var freq = $('#ddlFrequency').val();
+
+        if (freq != 'Select') {
+            var weekId = $('#ddlFrequency').val().split('_')[1];
+        }
+        else {
+            WeekId = 0;
+        }
+        var isBool;
+        if (weekId == 1) {
+            isBool = validateRadioButtons();
+        }
+        else if (weekId == 2) {
+            isBool = validateMonthForm();
+        }
+        else if (weekId == 3) {
+            isBool = validateYearForm();
+        }
+        else {
+            isBool = true;
+        }
+
+        if (isBool == true) {
+            var FrequencyCont;
+            var day;
+            if (weekId == 1) {
+                FrequencyCont = Week;
+                day = 0;
+            }
+            else if (weekId == 2) {
+                FrequencyCont = Month.join();
+                day = $('#dayofM').val();
+            }
+            else if (weekId == 3) {
+                FrequencyCont = Year;
+                day = $('#dayofY').val();
+            }
+            else {
+                FrequencyCont = '';
+                day = 0;
+            }
+
+            var ComplianceMasterModel = {
+                id: $('#hdnComplianceMasterId').val() ? $('#hdnComplianceMasterId').val() : 0,
+                Doc_No: $('#Doc_no').html(),
+                DocDate: ChangeDateFormat($('#Doc_Date').html()),
+                SubCategary: $('#ddlSubCategory').val(),
+                Categary: $('#Category').val(),
+                ComplianceType: $('#ddlCompType').val(),
+                SubSubCategary: $("#subsubcate").val(),
+                RiskType: $('#dldRisk').val(),
+                ComplianceName: $('#ComplianceName').val(),
+                Frequency: weekId,
+                DayOF: day,
+                FrequencyCont: FrequencyCont,
+                LeadDay: $('#LeadDay').val(),
+                LeadHour: $('#LeadHour').val(),
+                LeadMin: $('#LeadMin').val(),
+                EffectiveDate: ChangeDateFormat($('#startDate').val()),
+                IsApproval: $('#isApproval').val().split('_')[1] == 'yes' ? 1 : 0,
+                IsEscalation: $('#isEscalation').val().split('_')[1] == 'yes' ? 1 : 0,
+                Doer: $('#ddlDoer').val(),
+                Department: $('#DepartmentId').val(),
+                SecDoer: $('#ddlsecDoer').val(),
+                ProcessController1: $('#PC').val(),
+                ProcessController2: $('#PC2').val(),
+                IsChecklist: $('#isChecklist').val().split('_')[1] == 'yes' ? 1 : 0,
+                ClosureType: $('#ClosureType').val(),
+                EscalateTo: $('#EscalateTo').val().join(),
+                EscalationTime: $('#EscalationTime').val(),
+                ReminderTime: $('#ReminderTime').val(),
+                DueDate: ChangeDateFormat($('#dueDate').val()) 
+            }
+
+            if (ComplianceMasterModel.IsChecklist == 0) {
+                objTaskQuestion = [];
+            }
+
+            if (ComplianceMasterModel.id > 0) {
+                var objRemark = {
+                    Remark: $('#remarks_1').val(),
+                }
+
+                var ComplianceModel = {
+                    ComplianceMasterModel: ComplianceMasterModel,
+                    complianceMasterSubTaskList: objTaskQuestion,
+                    ComplianceMasterConditionsList: objConditions,
+                    complianceMasterDocumentsList: objImageDescrption,
+                    remarkModel: objRemark
+                }
+            }
+            else {
+                var ComplianceModel = {
+                    ComplianceMasterModel: ComplianceMasterModel,
+                    complianceMasterSubTaskList: objTaskQuestion,
+                    ComplianceMasterConditionsList: objConditions,
+                    complianceMasterDocumentsList: objImageDescrption,
+                }
+            }
+            console.log(ComplianceModel);
+
+            CommonAjaxMethod(virtualPath + 'ComplianceTransaction/SaveComplianceTrans', { objComplianceMaster: ComplianceModel }, 'POST', function (response) {
+                if (response.ValidationInput == 1) {
+                    ComplianceManage();
+
+                }
+
+            });
+
+        }
+
+    }
+}
+
+function HideComplianceError(id) {
+    $('#' + id).hide();
+}
+
+function clearFormControl() {
+    $('.heading-one').html('Edit Compliances');  // Reset heading to default // Hide version text element
+
+    rowIdCounter = 1;
+    imageRowCounter = 1;
+    conditionRowCounter = 1;
+    // Clear compliance master fields
+    $('#hdnComplianceMasterId').val('');
+    $('#ddlSubCategory').val('Select').trigger('change');
+    $('#Category').val('Select');
+    $('#subsubcate').val('');
+    $('#dldRisk').val('Select').trigger('change');
+    $('#ComplianceName').val('');
+    $('#LeadDay').val('');
+    $('#LeadHour').val('');
+    $('#LeadMin').val('');
+    $('#startDate').val('').prop('disabled', false);
+    $('#isApproval').val('Select').trigger('change');
+    $('#isEscalation').val('Select').trigger('change');
+    $('#ddlDoer').val('Select').trigger('change');
+    $('#DepartmentId').val('');
+    $('#ddlsecDoer').val('Select').trigger('change');
+    $('#PC').val('Select').trigger('change');
+    $('#PC2').val('Select').trigger('change');
+    $('#isChecklist').val('Select').trigger('change');
+    $('#ClosureType').val('');
+    $('#EscalateTo').val('').trigger('change');
+    $('#EscalationTime').val('');
+    $('#ReminderTime').val('');
+
+    $('#ddlFrequency').val('Select').prop('disabled', false).trigger('change');
+    $('#dayofM').val('').prop('disabled', false);
+    $('#dayofY').val('').prop('disabled', false);
+    $('input[name="weekly"]').attr('disabled', false).prop('checked', false);
+    $('input[name="year"]').attr('disabled', false).prop('checked', false);
+    $('#checkAllone').prop('disabled', false);
+    $('.itemCheckboxone').prop('disabled', false).prop('checked', false);
+
+
+
+    var ele = `<tr id="row-1">
+        <td><input type="text" id="subTaskName-1" value="" class="form-control Mandatory" placeholder="Enter" onchange="HideErrorMessage(this)" name="subTaskName[]"><span id="spsubTaskName-1" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span></td>
+        <td>
+            <select class="form-control applyselect Mandatory" id="responseType-1" onchange="HideErrorMessage(this)" name="responseType[]">
+                <option>Select</option>
+                <option value="Text_1">Text</option>
+                <option value="Numeric_1">Numeric</option>
+                <option value="Attachment_1">Attachment</option>
+            </select>
+            <span id="spresponseType-1" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+        </td>
+        <td>
+            <div class="switch--box">
+                <label class="cswitch m-0">
+                    <input class="cswitch--input" type="checkbox" id="mandatory-1" name="mandatory[]"><span class="cswitch--trigger wrapper"></span>
+                </label>
+            </div>
+        </td>
+        <td class="text-center">
+            <i class="fas fa-window-close" data-toggle="tooltip" title="Remove" aria-hidden="true"></i>
+        </td>
+    </tr>`;
+
+    $('#subTaskTableBody').html(ele);
+
+    var ele2 = `  <tr id="conditionRow-1">
+                            <td><input type="text" id="conditionInput-1" class="form-control conditionInput" placeholder="Enter Condition" name="conditions[]"></td>
+                            <td class="text-center"><i class="fas fa-window-close" data-toggle="tooltip" title="Remove" aria-hidden="true"></i></td>
+                        </tr>`;
+
+
+
+
+    $('#conditionsTableBody').html(ele2);
+
+
+    var ele3 = `<tr id="imageRow-1" class="imageRow">
+                            <td>
+                                <input type="file" id="imageFile_1" class="form-control imageFile" onchange="UploadocumentQuesReport(this.id)" placeholder="Upload Image" name="imageFiles[]"><a id="ancUploadActualFileName_1" onclick="DownloadFileQuotation(this)"><i class="fas fa-download float-right" data-toggle="tooltip" title="Download"></i></a>
+                                <input type="hidden" id="hdnUploadActualFileName_1" />
+                                <input type="hidden" id="hdnUploadNewFileName_1" />
+                                <input type="hidden" id="hdnUploadFileUrl_1" />
+
+                            </td>
+                            <td>
+                                <textarea id="imageDescription-1" class="form-control imageDescription" onchange="HideErrorMessage(this)" placeholder="Enter Description" name="imageDescriptions[]"></textarea>
+                                <span id="spimageDescription-1" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+                            </td>
+                            <td class="text-center"><i class="fas fa-window-close" data-toggle="tooltip" title="Remove" aria-hidden="true"></i></td>
+                        </tr>`;
+
+    $('#imageTableBody').html(ele3);
+
+    // Clear justification remarks fields
+    $('#Justremarks').empty();
+
+
+}
+
+function BindDocArray(objarrayinner, d) {
+    $("#tblDocumentDetails").find('tbody').html('');
+    if (d == 3) {
+        for (var i = 0; i < objarrayinner.length; i++) {
+
+            var newtbblData = "<tr><td><input type='hidden' value= '" + objarrayinner[i].FileURL + "' id='hdnAttachUrl_" + objarrayinner[i].Id + "' /> <input type='hidden' value= '" + objarrayinner[i].ActualFileName + "'  id='hdnActulName_" + objarrayinner[i].Id + "' />" + objarrayinner[i].Description + "</td><td><a href='#' onclick='return DownloadAttachFile(" + objarrayinner[i].Id + ")'>Download <i class='fas fa-download float-right' data-toggle='tooltip' title='Download'></i></a></td>" +
+                "<td></td></tr> ";
+
+            $("#tblDocumentDetails").find('tbody').append(newtbblData);
+        }
+    }
+    else {
+
+        for (var i = 0; i < objarrayinner.length; i++) {
+
+            var newtbblData = "<tr><td><input type='hidden' value= '" + objarrayinner[i].FileURL + "' id='hdnAttachUrl_" + objarrayinner[i].Id + "' /> <input type='hidden' value= '" + objarrayinner[i].ActualFileName + "'  id='hdnActulName_" + objarrayinner[i].Id + "' />" + objarrayinner[i].Description + "</td><td><a href='#' onclick='return DownloadAttachFile(" + objarrayinner[i].Id + ")'>Download <i class='fas fa-download float-right' data-toggle='tooltip' title='Download'></i></a></td>" +
+                "<td class='text-center'><a href='#' onclick='EditDocArrayRows(this," + objarrayinner[i].Id + ")'><i class='fas fa-edit green-clr' data-toggle='tooltip' title='' data-original-title='Edit'></i></a><span class='divline'>|</span>   <a class='disableDetails'  title='Click to Remove' data-toggle='tooltip' data-original-title='Click to Remove' onclick='deleteDocArrayRows(this," + objarrayinner[i].Id + ")'><i class='fas fa-window-close m-0 red-clr' aria-hidden='true'></i> </a></td>  </tr> ";
+
+            $("#tblDocumentDetails").find('tbody').append(newtbblData);
+        }
+    }
+
+
+}
+
+var DocArray = [];
+var DocArrayId = 0;
+function BindDocData(data4, d) {
+    if (data4.length > 0)
+        DocArrayId = data4[0].MaxId;
+
+    for (var i = 0; i < data4.length; i++) {
+        DocArrayId = i + 1;
+
+        var objarrayinner =
+        {
+            Id: DocArrayId,
+            ActualFileName: data4[i].ActualFileName,
+            NewFileName: data4[i].NewFileName,
+            FileURL: data4[i].FileURL,
+            Description: data4[i].Description,
+            Compliance_TransID: data4[i].id
+        }
+        DocArray.push(objarrayinner);
+
+    }
+    BindDocArray(DocArray, d);
+}
+
+function UploadOtherDocumentExtra() {
+
+    if (checkValidationOnSubmit('Description') == true) {
+        var DocOtherNature = document.getElementById("txtdescription").value;
+
+        var fileUpload = $("#fileDescription").get(0);
+
+        var files = fileUpload.files;
+        if (files.length > 0) {
+
+            // Create FormData object
+            var fileData = new FormData();
+
+            // Looping over all files and add it to FormData object
+            for (var i = 0; i < files.length; i++) {
+                fileData.append(files[i].name, files[i]);
+            }
+
+            $.ajax({
+                url: virtualPath + 'CommonMethod/UploadComplianceUserTransation',
+                type: "POST",
+                contentType: false, // Not to set any content header
+                processData: false, // Not to process data
+                data: fileData,
+
+                success: function (response) {
+                    var result = JSON.parse(response);
+
+                    if (result.ErrorMessage == "") {
+
+                        DocArrayId = DocArrayId + 1;
+                        var loop = DocArrayId;
+
+
+                        var objarrayinner =
+                        {
+                            Id: loop,
+                            ActualFileName: result.FileModel.ActualFileName,
+                            NewFileName: result.FileModel.NewFileName,
+                            FileURL: result.FileModel.FileUrl,
+                            Description: DocOtherNature,
+                            Compliance_TransID: 0
+
+                        }
+
+                        DocArray.push(objarrayinner);
+
+                        var newtbblData = "<tr><td><input type='hidden' value= '" + objarrayinner.FileURL + "' id='hdnAttachUrl_" + objarrayinner.Id + "' /> <input type='hidden' value= '" + objarrayinner.ActualFileName + "'  id='hdnActulName_" + objarrayinner.Id + "' />" + objarrayinner.Description + "</td><td><a href='#' onclick='return DownloadAttachFile(" + objarrayinner.Id + ")'>Download <i class='fas fa-download float-right' data-toggle='tooltip' title='Download'></i></a></td>" +
+                            "<td class='text-center'><a href='#' onclick='EditDocArrayRows(this," + objarrayinner.Id + ")'><i class='fas fa-edit green-clr' data-toggle='tooltip' title='' data-original-title='Edit'></i></a><span class='divline'>|</span><a class='HideClass'  title='Click to Remove' data-toggle='tooltip' data-original-title='Click to Remove' onclick='deleteDocArrayRows(this," + objarrayinner.Id + ")'><i class='fas fa-window-close m-0 red-clr' aria-hidden='true'></i> </a></td></tr> ";
+
+                        $("#tblDocumentDetails").find('tbody').append(newtbblData);
+                        $("#fileDescription").val('');
+                        ClearFileData();
+
+
+
+                    }
+                    else {
+
+                        FailToaster(result.ErrorMessage);
+
+                        //document.getElementById('hReturnMessage').innerHTML = result.ErrorMessage;
+                        //$('#btnShowModel').click();
+                    }
+                }
+                ,
+                error: function (error) {
+
+                    FailToaster(error);
+                    //document.getElementById('hReturnMessage').innerHTML = error;
+                    //$('#btnShowModel').click();
+                    isSuccess = false;
+                }
+
+            });
+        }
+        else if ($("#hdnDescActualFileName").val() != "") {
+            var itemId = $("#hdnItemId").val();
+            DocArray = DocArray.filter(function (itemParent) { return (itemParent.Id!=itemId); });
+
+            var objarrayinner1 =
+            {
+                Id: itemId,
+                ActualFileName: $("#hdnDescActualFileName").val(),
+                NewFileName: $("#hdnDescNewFileName").val(),
+                FileURL: $("#hdnDescUrl").val(),
+                Description: $("#txtdescription").val(),
+                Compliance_TransID: $("#hdnCompliance_TransID").val()
+
+            }
+            DocArray.push(objarrayinner1);
+            BindDocArray(DocArray, 0);
+        }
+        else {
+            FailToaster("Please select file to attach!");
+            //document.getElementById('hReturnMessage').innerHTML = "Please select file to attach!";
+            //$('#btnShowModel').click();
+        }
+    }
+
+
+}
+function deleteDocArrayRows(obj, id) {
+    ConfirmMsgBox("Are you sure want to delete", '', function () {
+        var data = DocArray.filter(function (itemParent) { return (itemParent.Id == id); });
+        var url = data[0].FileURL;
+
+        CommonAjaxMethod(virtualPath + 'CommonMethod/DeleteFile', { FileUrl: url }, 'POST', function (response) {
+            $(obj).closest('tr').remove();
+            DocArray = DocArray.filter(function (itemParent) { return (itemParent.Id != id); });
+        });
+
+    })
+
+}
+
+function EditDocArrayRows(obj, id) {
+    var data = DocArray.filter(function (itemParent) { return (itemParent.Id == id); });
+    
+    $("#txtFileName").val(data[0].ActualFileName);
+    $("#txtdescription").val(data[0].Description);
+    $("#hdnDescActualFileName").val(data[0].ActualFileName);
+    $("#hdnDescNewFileName").val(data[0].NewFileName);
+    $("#hdnDescUrl").val(data[0].FileURL);
+    $("#hdnItemId").val(id);
+    $("#hdnCompliance_TransID").val(data[0].Compliance_TransID);
+
+
+}
+function UploadocumentTask(no) {
+
+
+
+    var fileUpload = $("#fileTaskDescription_" + no).get(0);
+
+    var files = fileUpload.files;
+    if (files.length > 0) {
+
+        // Create FormData object
+        var fileData = new FormData();
+
+        // Looping over all files and add it to FormData object
+        for (var i = 0; i < files.length; i++) {
+            fileData.append(files[i].name, files[i]);
+        }
+
+        $.ajax({
+            url: virtualPath + 'CommonMethod/UploadComplianceUserTransation',
+            type: "POST",
+            contentType: false, // Not to set any content header
+            processData: false, // Not to process data
+            data: fileData,
+
+            success: function (response) {
+                var result = JSON.parse(response);
+
+                if (result.ErrorMessage == "") {
+
+                    $('#txtTaskFileName_' + no).val(result.FileModel.ActualFileName);
+                    $('#hdnTaskActualFileName_' + no).val(result.FileModel.ActualFileName);
+                    $('#hdnTaskNewFileName_' + no).val(result.FileModel.NewFileName);
+                    $('#hdnTaskUrl_' + no).val(result.FileModel.FileUrl);
+
+
+
+                }
+                else {
+
+
+                    FailToaster(result.ErrorMessage);
+                    //document.getElementById('hReturnMessage').innerHTML = result.ErrorMessage;
+                    //$('#btnShowModel').click();
+                }
+            }
+            ,
+            error: function (error) {
+                FailToaster(error);
+                //document.getElementById('hReturnMessage').innerHTML = error;
+                //$('#btnShowModel').click();
+                isSuccess = false;
+            }
+
+        });
+    }
+    else {
+        FailToaster("Please select file to attach!");
+        //document.getElementById('hReturnMessage').innerHTML = "Please select file to attach!";
+        //$('#btnShowModel').click();
+    }
+
+}
+function SetFileName(ctr) {
+    var fileUpload = $("#fileDescription").get(0);
+    // Looping over all files and add it to FormData object
+    var files = fileUpload.files;
+    for (var i = 0; i < files.length; i++) {
+        $("#txtFileName").val(files[i].name);
+    }
+
+
+}
+function SetTaskFileName(ctrl, no) {
+    var fileUpload = $("#" + ctrl.id).get(0);
+    // Looping over all files and add it to FormData object
+    var files = fileUpload.files;
+    for (var i = 0; i < files.length; i++) {
+        // $("#txtTaskFileName_" + no).val(files[i].name);
+        UploadocumentTask(no);
+    }
+}
+function ClearFileData() {
+    $("#txtFileName").val("");
+    $("#txtdescription").val('');
+    $("#hdnDescActualFileName").val('');
+    $("#hdnDescNewFileName").val('');
+    $("#hdnDescUrl").val('');
+}
+
+function DownloadAttachFile(id) {
+
+    var fileURl = $('#hdnAttachUrl_' + id).val();
+    var fileName = $('#hdnActulName_' + id).val();
+    if (fileURl != null || fileURl != undefined) {
+        var stSplitFileName = fileName.split(".");
+        var link = document.createElement("a");
+        link.download = stSplitFileName[0];
+        link.href = fileURl;
+        link.click();
+    }
+}
+
+
+function BindUL(subtask) {
+    var $ele = $('#ulSubTask');
+    $ele.empty();
+    var mandate = "";
+    var mandateSign = "";
+    $.each(subtask, function (ii, vall) {
+        var strData = "";
+        var chkData = "";
+        var forFile = "";
+        if (vall.IsMandatory == true) {
+            mandate = "SubTaskMandate";
+
+            mandateSign = "*";
+        }
+        else {
+            mandate = "";
+
+            mandateSign = "";
+        }
+        if (vall.IsChecked == true) {
+            chkData = "checked";
+        }
+        else {
+            chkData = "";
+        }
+
+        if (vall.SubTaskType == "Numeric") {
+            strData = '<li class="tasklsit">' +
+                '<div class="taskcheck" >' +
+                '<input type="checkbox" class="chkData" id="task' + vall.id + '" name="2" ' + chkData + ' ><label for="task' + vall.id + '"></label>' +
+                ' </div>' +
+                '<h2 class="tasktitle"> ' + vall.Subtask_Name + '</h2>' +
+                '<div class="task-contain"> ' +
+                '<div class="row"> ' +
+
+
+                ' <div class="form-group col-sm-2"> ' +
+                '<label> Response Type <sup>' + mandateSign + '</sup ></label> ' +
+                '<input type="number" class="form-control disableDetails ' + mandate + ' " id="txtTaskResponse_' + vall.id + '"  value="' + vall.SubTaskResponse1 + '" /> <span id="sptxtTaskResponse_' + vall.id + '" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>' +
+                '</div> ' +
+                '</div> ' +
+                '</div> ' +
+                '</li> ';
+            $ele.append($(strData));
+
+        }
+        else if (vall.SubTaskType == "Attachment") {
+            if (vall.SubTaskResponse1 == "") {
+                forFile = 'style="display:none;"';
+            }
+            strData = '<li class="tasklsit">' +
+                '<div class="taskcheck" >' +
+                '<input type="checkbox" class="chkData" id="task' + vall.id + '" name="2" ' + chkData + '><label for="task' + vall.id + '"></label>' +
+                ' </div>' +
+                '<h2 class="tasktitle"> ' + vall.Subtask_Name + '</h2>' +
+                '<div class="task-contain"> ' +
+                '<div class="row"> ' +
+
+
+                ' <div class="form-group col-sm-2"> ' +
+                '<label> Response Type <sup>' + mandateSign + '</sup></label> ' +
+
+                '<input type="file" id="fileTaskDescription_' + vall.id + '" class="form-control disableDetails" placeholder="" onchange="UploadocumentTask(' + vall.id + ')">' +
+                '<input type="text" id="txtTaskFileName_' + vall.id + '"  class="form-control ' + mandate + '" style="display:none;" value="' + vall.SubTaskResponse1 + '"  />' +
+                '<span id="sptxtTaskFileName_' + vall.id + '" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>' +
+                '<input type="hidden" id="hdnTaskActualFileName_' + vall.id + '" value="' + vall.SubTaskResponse1 + '" />' +
+                '<input type="hidden" id="hdnTaskNewFileName_' + vall.id + '"  value="' + vall.SubTaskResponse2 + '"/>' +
+                '<input type="hidden" id="hdnTaskUrl_' + vall.id + '"  value="' + vall.SubTaskResponse3 + '"/>' +
+                '<a ' + forFile + '  href="#" onclick="return DownloadTaskFile(' + vall.id + ')" class="vwdwn showatchimg">Download <i class="fas fa-download vwdwnicon showatchimgicon rmatch green-clr" data-toggle="tooltip" title="Download"></i></a>' +
+
+                '</div> ' +
+                '</div> ' +
+                '</div> ' +
+                '</li> ';
+            $ele.append($(strData));
+
+        }
+        else {
+            strData = '<li class="tasklsit">' +
+                '<div class="taskcheck" >' +
+                '<input type="checkbox" class="chkData" id="task' + vall.id + '" name="2" ' + chkData + '><label for="task' + vall.id + '"></label>' +
+                ' </div>' +
+                '<h2 class="tasktitle"> ' + vall.Subtask_Name + '</h2>' +
+                '<div class="task-contain"> ' +
+                '<div class="row"> ' +
+
+
+                ' <div class="form-group col-sm-10"> ' +
+                '<label > Response Type <sup>' + mandateSign + '</sup ></label> ' +
+                '<textarea class="form-control disableDetails ' + mandate + ' " id="txtTaskTextResponse_' + vall.id + '" placeholder = "Enter"  >' + vall.SubTaskResponse1 + '</textarea> <span id="sptxtTaskTextResponse_' + vall.id + '" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>' +
+                '</div> ' +
+                '</div> ' +
+                '</div> ' +
+                '</li> ';
+            $ele.append($(strData));
+
+        }
+
+    })
+}
+function DownloadTaskFile(id) {
+    var fileURl = $('#hdnTaskUrl_' + id).val();
+    var fileName = $('#hdnTaskActualFileName_' + id).val();
+    if (fileURl != null || fileURl != undefined) {
+        var stSplitFileName = fileName.split(".");
+        var link = document.createElement("a");
+        link.download = stSplitFileName[0];
+        link.href = fileURl;
+        link.click();
+    }
+}
+function CompleteTask(from) {
+    var obj =
+    {
+        Id: TaskTransId,
+        FromAction: from,
+        ActionStatus: from,
+        Remark: 'Completed'
+    }
+    CommonAjaxMethod(virtualPath + 'ComplianceTransaction/ApproveResubmitCompliance', obj, 'POST', function (response) {
+
+        ComplianceMaster();
+    });
+}
+function SaveData(from) {
+    var IsValid = true;
+    var TaskList = [];
+    var v1 = "";
+    var v2 = "";
+    var v3 = "";
+    var v4 = false;
+    if (from == 2) {
+        if (checkValidationOnSubmit('SubTaskMandate') == true) {
+            IsValid = true;
+        }
+        else {
+            IsValid = false;
+        }
+    }
+
+    if (IsValid == true) {
+        for (var i = 0; i < TaskSubDetails.length; i++) {
+            var isChecked = false;
+            if (TaskSubDetails[i].SubTaskType == "Numeric") {
+                v1 = $('#txtTaskResponse_' + TaskSubDetails[i].id).val();
+                isChecked = document.getElementById('task' + TaskSubDetails[i].id).checked;
+                v4 = isChecked;
+            }
+            else if (TaskSubDetails[i].SubTaskType == "Text") {
+                v1 = $('#txtTaskTextResponse_' + TaskSubDetails[i].id).val();
+                isChecked = document.getElementById('task' + TaskSubDetails[i].id).checked;
+                v4 = isChecked;
+            }
+            else {
+                v1 = $('#hdnTaskActualFileName_' + TaskSubDetails[i].id).val();
+                v2 = $('#hdnTaskNewFileName_' + TaskSubDetails[i].id).val();
+                v3 = $('#hdnTaskUrl_' + TaskSubDetails[i].id).val();
+                isChecked = document.getElementById('task' + TaskSubDetails[i].id).checked;
+                v4 = isChecked;
+            }
+            var objTask =
+            {
+                Id: TaskSubDetails[i].id,
+                SubTaskResponse1: v1,
+                SubTaskResponse2: v2,
+                SubTaskResponse3: v3,
+                IsChecked: v4
+            }
+            TaskList.push(objTask);
+        }
+        var obj =
+        {
+            Id: TaskTransId,
+            IsSubmit: from,
+            ComplianceMasterSubTaskList: TaskList,
+            ComplianceMasterSubTaskList: TaskList,
+            ComplianceTranAttachmentList: DocArray
+        }
+        CommonAjaxMethod(virtualPath + 'ComplianceTransaction/SaveComplianceUserTransation', obj, 'POST', function (response) {
+
+            ComplianceMaster();
+        });
+    }
+
+}
+
+function CancleView(from) {
+    if (from == 1) {
+        ComplianceMaster();
+    }
+    else if (from == 2) {
+        ComplianceManage();
+
+    }
+    else {
+        ComplianceApproval();
+    }
+
+}
+
+function ResubmitApproveCompliance(from) {
+    if (from == 5) {
+        var obj =
+        {
+            Id: TaskTransId,
+            FromAction: from,
+            ActionStatus: from,
+            Remark: 'Approve'
+        }
+        CommonAjaxMethod(virtualPath + 'ComplianceTransaction/ApproveResubmitCompliance', obj, 'POST', function (response) {
+
+            ComplianceApproval();
+        });
+    }
+    else {
+        if (checkValidationOnSubmit('Resubmission') == true) {
+            var obj =
+            {
+                Id: TaskTransId,
+                FromAction: from,
+                ActionStatus: from,
+                Remark: $('#txtResubmission').val()
+            }
+            CommonAjaxMethod(virtualPath + 'ComplianceTransaction/ApproveResubmitCompliance', obj, 'POST', function (response) {
+                
+                $('#btnApproved').hide();
+                ComplianceApproval();
+            });
+        }
+    }
+}
+
+function BindResubmitData(objarrayinner) {
+
+    for (var i = 0; i < objarrayinner.length; i++) {
+
+        var newtbblData = "<tr><td>" + ChangeDateFormatToddMMYYY(objarrayinner[i].AddedWhen) + "</td><td>" + objarrayinner[i].AddedBy + "</td><td>" + objarrayinner[i].Remark + "</td>" +
+            "</tr> ";
+
+        $("#tblResubmit").find('tbody').append(newtbblData);
+    }
+
+
+
+}
+
+function CheckForOneTime(ctrl) {
+    $('#dueDate').val('');
+    if (ctrl.value == "1") {
+        $('#divDueDate').show();
+
+    }
+    else {
+        $('#divDueDate').hide();
+    }
+}

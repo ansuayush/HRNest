@@ -1,0 +1,399 @@
+﻿
+@{
+    ViewBag.Title = "AddTrainingType";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+<!-- Start -->
+<div class="inner-main pt-3 defult-height">
+    <h1 class="heading-one mb-3">Add Training Type</h1>
+    <input type="hidden" id="hdnUploadFileUrl1" />
+    <input type="hidden" id="hdnUploadActualFileName1" />
+    <input type="hidden" id="hdnUploadNewFileName1" />
+
+    <div class="row">
+        <div class="col-sm-8 ">
+            <div class="row">
+				<div class="col-md-6 form-group">
+					<label>Training Type Name <sup>*</sup></label>
+					<input id="txtTrainingTypeName" onblur="CheckTrainingTypeDetailsExists(this)" type="text" class="form-control Mandatory" placeholder="Enter Title" value="" onchange="HideErrorMessage(this)">
+					<label id="lblAddTrainingNameConfirmation"></label>
+                    <span id="sptxtTrainingTypeName" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+					<input type="hidden" id="hddAddUserId" class="hdnRecordExit" />
+				</div>
+                <div class="col-md-6 form-group">
+                    <label>Training Description  <sup>*</sup></label>
+                    <input id="txtTrainingDesc" type="text" class="form-control Mandatory" placeholder="Enter Title" value="" onchange="HideErrorMessage(this)">
+                    <span id="sptxtTrainingDesc" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+                </div>
+                <div class="col-md-6 form-group">
+                    <label>Applicable To<sup>*</sup></label>
+					<select id="ddlApplicableTo" class="form-control dpselect Mandatory" onchange="HideErrorMessage(this)">						
+					</select>
+                    <span id="spddlApplicableTo" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+                </div>
+
+
+                <div class="col-md-6 form-group" style="display:none" id="divApplicabledesignation">
+                    <label>Applicable Designation <sup>*</sup></label>
+                    <select id="ddlApplicableDesignations" class="form-control dpselect" multiple="" onchange="HideErrorMessage(this)">
+                    </select>
+                    <input type="hidden" id="hdnSelectDesinations" />
+                    <span id="spddlApplicableDesignations" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+                </div>
+
+				<div class="col-md-12 form-group">
+					<label>Skills to be Eamed <sup>*</sup></label>
+					<select class="form-control dpselect Mandatory" multiple="" id="ddlSkills" onchange="HideErrorMessage(this)">
+					</select>
+					<span id="spddlSkills" class="text-danger field-validation-error" style="display:none;">Hey, You missed this field!!</span>
+					<input type="hidden" id="hdnSelectSkills" />
+				</div>
+                <div class="col-sm-12 mb-2">
+                    <ul class="list-unstyled inlin-list">
+                        <li>
+                            <input type="checkbox" id="complaint" name="1">
+                            <label for="complaint"> Supervisor Assessment Required</label>
+                        </li>
+                        <li>
+                            <input type="checkbox" id="employee" name="2">
+                            <label for="employee"> Declaration required for Attendees</label>
+                        </li>
+
+                        <li>
+                            <input type="checkbox" id="bond" name="3">
+                            <label for="bond"> Bond require or not</label>
+                        </li>
+
+                    </ul>
+                </div>
+                <div id="AddPassport" style="display:none;" class="col-md-12 form-group">
+                    <label>Attachment</label>
+                    <input type="file" class="form-control" name="" id="fileUpload" onchange="UploadFileScope()">
+                    <input type="hidden" id="hdnfileScopeActualName" />
+                    <input type="hidden" id="hdnfileScopeNewName" />
+                    <input type="hidden" id="hdnfileScopeFileUrl" />
+
+                    <div class="vwdwn showatchimg">
+                        <a id="linkAttachement" href="" target="_blank" style="margin-top: -18px;">
+                            <label id="lblAttachement" class="ellipsis w-170">
+                            </label>
+                        </a>
+                        
+                            <div id="divDeleteAttach" class="DeleteAttachicon" >
+                                <a title='Click to Remove' onclick="DeleteAttachment();" data-toggle='tooltip' data-original-title='Click to Remove'><i class='fas fa-window-close m-0 red-clr' aria-hidden='true'></i> </a>
+                            </div>
+                            <button id="btnDownload1" onclick='DownloadFile();' target='_blank' class='delete rmatch green-clr' data-toggle="tooltip" title="" data-original-title="Download"><i class='fas fa-download'></i></button>
+                        
+
+                    </div>
+
+                </div>
+                
+				
+                <div class="text-center col-md-12 mt-2">
+                    <button type="submit" class="btn mtr-o-grn" name="Command" value="Add" onclick="ShowandCloseLoader();SaveTrainingType();"><i class="fas fa-save"></i>Save</button>
+                    <button type="button" class="btn cnl-btn" data-dismiss="modal" onclick="ShowLoadingDialog();window.location='/Capacity/TrainingType';" ><i class="fas fa-times"></i> Cancel</button>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+
+</div>
+@section scripts    {
+    @System.Web.Optimization.Scripts.Render("~/bundle/unobtrusivejs")
+    @System.Web.Optimization.Scripts.Render("~/bundle/dataTablesjs")
+    <script src="~/assets/design/Scripts/AddInit.js?v=@clsApplicationSetting.GetWebConfigValue("Version")"></script>
+    <script src="~/Areas/Capacity/DevScript/AddTrainingType.js"></script>
+
+    <script>
+		 var IsEDUser = '@ViewBag.IsED';
+       var loggedinUserid = '@ViewBag.UserId';
+		var loggedinUserName = '@ViewBag.UserName';
+		var UserGrade = '@ViewBag.Grade';
+        var IsPM = '@ViewBag.IsPM';
+        var CManagerID = '@ViewBag.ManagerID';
+        var TraingTypeID =   '@ViewBag.Id';
+    </script>
+}
+
+<script>
+    $(function () {
+        $("#datepicker").datepicker({
+            autoclose: true,
+            todayHighlight: true
+        }).datepicker('update', new Date());
+    });
+
+</script>
+<script>
+    // JavaScript Document
+    $(function () {
+        $('#js-nav-toggle').click(function (e) {
+            e.preventDefault();
+            $("html").toggleClass("is-sideopen");
+            $("#js-nav-toggle").toggleClass("is-active");
+        });
+
+        var $content = $('.l-contents');
+        var $header = $('.l-header');
+
+
+        $content.click(function () {
+            $("html").removeClass("is-sideopen");
+        });
+
+
+        $header.click(function () {
+            $("html").removeClass("is-sideopen");
+        });
+
+
+    });
+
+
+    $(function () {
+
+        var $dropdown = $('.js-dropdown');
+        var $content = $('.l-contents');
+        var $toggle = $('#js-nav-toggle');
+
+
+        $('.js-dropdown-menu').hide();
+        $dropdown.click(function () {
+            $('i').removeClass('is-rotate');
+            $('.js-dropdown-menu').slideUp(200);
+            if ($('+.js-dropdown-menu', this).css('display') == 'none') {
+                $('i', this).addClass('is-rotate');
+                $('+.js-dropdown-menu', this).slideDown(200);
+            }
+        });
+
+
+        $content.click(function () {
+            $('i').removeClass('is-rotate');
+            $('.js-dropdown-menu').slideUp(200);
+            if ($('+.js-dropdown-menu', this).css('display') == 'none') {
+                $('i', this).addClass('is-rotate');
+                $('+.js-dropdown-menu', this).slideDown(200);
+            }
+        });
+
+
+        $toggle.click(function () {
+            $('i').removeClass('is-rotate');
+            $('.js-dropdown-menu').slideUp(200);
+            if ($('+.js-dropdown-menu', this).css('display') == 'none') {
+                $('i', this).addClass('is-rotate');
+                $('+.js-dropdown-menu', this).slideDown(200);
+            }
+        });
+
+    });
+
+    $(function () {
+        $('.is-ac-close').hide();
+        $(".is-ac-click").on("click", function () {
+            if ($(this).children('i').is('.fa-angle-right')) {
+                $(this).children('i')
+                    .removeClass('fa-angle-right')
+                    .addClass('fa-angle-down');
+            } else {
+                $(this).children('i')
+                    .removeClass('fa-angle-down')
+                    .addClass('fa-angle-right');
+            }
+            $(this).next().slideToggle(200);
+        });
+
+        $('.is-ac-close').hide();
+        $(".is-ac-bar").on("click", function () {
+
+            if ($(this).find('i').is('.fa-caret-down')) {
+
+                $(this).find('i')
+                    .removeClass()
+                    .addClass('fa fa-caret-up');
+            } else {
+                $(this).find('i')
+                    .removeClass()
+                    .addClass('fa fa-caret-down');
+            }
+            $(this).next().slideToggle(200);
+        });
+    });
+
+
+
+
+    //---------------------------------------------------
+    // ▼　tab
+    //---------------------------------------------------
+    $(function () {
+        var rwdTab = $('.c-tab'),
+            switchPoint = 768,
+            fadeSpeed = 300,
+            slideSpeed = 300;
+
+        var tabBtn = rwdTab.children('.c-tab-panel').children('.c-tab-heading'),
+            contentsArea = rwdTab.children('.c-tab-panel').children('.c-tab-body');
+
+        tabBtn.on('click', function () {
+            if (!$(this).hasClass('c-tab-active')) {
+                tabBtn.removeClass('c-tab-active');
+                $(this).addClass('c-tab-active');
+
+                if (window.innerWidth > switchPoint) {
+                    contentsArea.fadeOut(fadeSpeed);
+                    $(this).next().fadeIn(fadeSpeed);
+                } else {
+                    contentsArea.slideUp(slideSpeed);
+                    $(this).next().slideDown(slideSpeed);
+                }
+            }
+        });
+
+        tabBtn.first().click();
+    });
+
+
+
+</script>
+<!-- required -->
+<script type="text/javascript" src="https://mitr2.c3india.org/assets/design/js/stellarnav.min.js"></script>
+<script type="text/javascript">
+    jQuery(document).ready(function ($) {
+        jQuery('.stellarnav').stellarNav({
+            theme: 'dark',
+            breakpoint: 960,
+            position: 'right',
+
+        });
+    });
+</script>
+<!-- required -->
+<script>
+    $("document").ready(function () {
+
+        $('.dropdown-menu').on('click', function (e) {
+            if ($(this).hasClass('dropdown-menu-form')) {
+                e.stopPropagation();
+            }
+        });
+    });
+
+
+</script>
+<script>
+
+    var links = document.querySelectorAll('.ripplelink');
+
+    for (var i = 0, len = links.length; i < len; i++) {
+        links[i].addEventListener('click', function (e) {
+            var targetEl = e.target;
+            var inkEl = targetEl.querySelector('.ink');
+
+            if (inkEl) {
+                inkEl.classList.remove('animate');
+            }
+            else {
+                inkEl = document.createElement('span');
+                inkEl.classList.add('ink');
+                inkEl.style.width = inkEl.style.height = Math.max(targetEl.offsetWidth, targetEl.offsetHeight) + 'px';
+                targetEl.appendChild(inkEl);
+            }
+
+            inkEl.style.left = (e.offsetX - inkEl.offsetWidth / 2) + 'px';
+            inkEl.style.top = (e.offsetY - inkEl.offsetHeight / 2) + 'px';
+            inkEl.classList.add('animate');
+        }, false);
+    }
+</script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $(".dpselect").select2();
+
+    });
+</script>
+<script type="text/javascript">
+    $(window).scroll(function () {
+        if ($(this).scrollTop() > 50) {
+            $('.scrolltop:hidden').stop(true, true).fadeIn();
+        } else {
+            $('.scrolltop').stop(true, true).fadeOut();
+        }
+    });
+    $(function () { $(".scroll-btm").click(function () { $("html,body").animate({ scrollTop: $(".thetop").offset().top }, ""); return false }) })
+</script>
+<script>
+        //$(document).ready(function () {
+        //    $('[data-toggle="tooltip"]').tooltip();
+        //});
+
+        $(function () {
+            $('#finselector').change(function () {
+                $('.finyear').hide();
+                $('#' + $(this).val()).show();
+            });
+        });
+
+    </script>
+<script type="text/javascript">
+        function formChoice(x) {
+            if (x == 0) {
+                $('#field1').css('display', 'block');
+                $('#field2').css('display', 'none');
+            } else {
+                $('#field1').css('display', 'none');
+                $('#field2').css('display', 'block');
+            }
+        }
+
+    </script>
+
+    <script type="text/javascript">
+        $('#membertype ').on('change', function () {
+            $('#internal').css('display', 'none');
+            if ($(this).val() === 'internal') {
+                $('#internal').css('display', 'block');
+            }
+
+            $('#external').css('display', 'none');
+            if ($(this).val() === 'external') {
+                $('#external').css('display', 'block');
+            }
+        });
+
+    </script>
+
+
+
+
+    <script type="text/javascript">
+        $('#mt ').on('change', function () {
+            $('#me').css('display', 'none');
+            if ($(this).val() === 'me') {
+                $('#me').css('display', 'block');
+            }
+
+            $('#mi').css('display', 'none');
+            if ($(this).val() === 'mi') {
+                $('#mi').css('display', 'block');
+            }
+        });
+
+    </script>
+
+    <script type="text/javascript">
+        $('#mn ').on('change', function () {
+            $('#med').css('display', 'none');
+            if ($(this).val() === 'med') {
+                $('#med').css('display', 'block');
+            }
+
+        });
+
+    </script>
